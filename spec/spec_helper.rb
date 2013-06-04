@@ -10,23 +10,7 @@ if ENV['COVERAGE']
   SimpleCov.start
 end
 
-# enable VCR integration;
-# this allows us to record and re-play network
-# communication between client and server
-# using so called cassettes (YAML)
-require 'vcr'
-
 require 'occi'
-
-# enable VCR for HTTP/HTTPS connections
-# using RSPEC metadata integration;
-# this will automatically generate a named
-# cassette for each unit test
-VCR.configure do |c|
-  c.hook_into :webmock
-  c.cassette_library_dir = 'spec/cassettes'
-  c.configure_rspec_metadata!
-end
 
 # simplify the usage of VCR; this will allow us to use
 #

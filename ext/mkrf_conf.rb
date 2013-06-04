@@ -16,13 +16,8 @@ inst = Gem::DependencyInstaller.new
 inst.install "rake"
 
 if RUBY_PLATFORM == "java"
-  warn 'Installing dependencies specific for jRuby'
-
-  jrver = (JRUBY_VERSION || "").split('.').map{ |elm| elm.to_i }
-  if jrver[0] == 1 && jrver[1] < 7
-    warn 'Installing \'jruby-openssl\' for jRuby 1.6.x'
-    inst.install "jruby-openssl"
-  end
+  # Nothing to install for rOCCI-core
+  #warn 'Installing dependencies specific for jRuby'
 else
   warn 'Installing dependencies specific for Ruby'
 

@@ -9,17 +9,10 @@ require 'active_support/inflector'
 require 'active_support/notifications'
 
 require 'logger'
-
 require 'uuidtools'
-
-require 'httparty'
-
 require 'nokogiri'
-
 require 'rubygems/package'
-
 require 'zlib'
-
 require 'tempfile'
 
 require 'occi/version'
@@ -29,10 +22,6 @@ require 'occi/model'
 require 'occi/log'
 require 'occi/core'
 require 'occi/infrastructure'
-
-require 'occi/api/dsl'
-require 'occi/api/client/client_http'
-require 'occi/api/client/client_amqp'
 
 module Occi
 
