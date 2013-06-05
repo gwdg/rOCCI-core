@@ -10,7 +10,7 @@ if ENV['COVERAGE']
   SimpleCov.start
 end
 
-require 'occi'
+require 'occi-core'
 
 # simplify the usage of VCR; this will allow us to use
 #
