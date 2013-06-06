@@ -1,5 +1,4 @@
 require 'rspec'
-require 'occi'
 
 module Occi
   describe Collection do
