@@ -15,6 +15,8 @@ require 'rubygems/package'
 require 'zlib'
 require 'tempfile'
 
+require 'occi/helpers/inspect'
+
 require 'occi/version'
 require 'occi/collection'
 require 'occi/parser'
