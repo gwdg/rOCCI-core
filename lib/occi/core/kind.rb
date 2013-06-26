@@ -2,7 +2,7 @@ module Occi
   module Core
     class Kind < Occi::Core::Category
 
-      attr_accessor :entities, :parent, :actions, :location
+      attr_accessor :entities, :related, :actions, :location
 
       # @param [String ] scheme
       # @param [String] term
@@ -13,7 +13,7 @@ module Occi
       def initialize(scheme='http://schemas.ogf.org/occi/core#',
           term='kind',
           title=nil,
-          attributes=Occi::Core::AttributeProperties.new,
+          attributes=Occi::Core::Attributes.new,
           related=Occi::Core::Related.new,
           actions=Occi::Core::Actions.new,
           location=nil)
@@ -48,7 +48,7 @@ module Occi
         string = super
         string << ';rel=' + @related.join(' ').inspect if @related.any?
         string << ';location=' + self.location.inspect
-        string << ';attributes=' + @attributes.combine.keys.join(' ').inspect if @attributes.any?
+        string << ';attributes=' + @attributes.names.keys.join(' ').inspect if @attributes.any?
         string << ';actions=' + @actions.join(' ').inspect if @actions.any?
         string
       end

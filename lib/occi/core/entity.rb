@@ -10,11 +10,11 @@ module Occi
 
       self.mixins = Occi::Core::Mixins.new
 
-      self.attributes = Occi::Core::AttributeProperties.new
+      self.attributes = Occi::Core::Attributes.new
       self.attributes['occi.core.id'] = {:pattern => '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'}
       self.attributes['occi.core.title'] = {:mutable => true}
 
-      self.kind = Occi::Core::Kind.new scheme=' http ://schemas.ogf.org/occi/core #',
+      self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/core#',
                                        term='entity',
                                        title='entity',
                                        attributes=self.attributes
@@ -51,7 +51,13 @@ module Occi
       def initialize(kind = self.kind, mixins=[], attributes={}, actions=[], location=nil)
         @kind = self.class.kind.clone
         @mixins = Occi::Core::Mixins.new mixins
-        @attributes = Occi::Core::Attributes.new self.kind.attributes
+        @mixins.entity = self
+        attributes = self.class.kind.attributes if attributes.blank?
+        if attributes.kind_of? Occi::Core::Attributes
+          @attributes = Occi::Core::Attributes.new attributes.convert
+        else
+          @attributes = Occi::Core::Attributes.new attributes
+        end
         @actions = Occi::Core::Actions.new actions
         @location = location
       end
@@ -74,6 +80,8 @@ module Occi
       # @param [Array] mixins
       def mixins=(mixins)
         @mixins = Occi::Core::Mixins.new mixins
+        @mixins.entity = self
+        @mixins
       end
 
       # @param [Occi::Core::Attributes] attributes
@@ -154,14 +162,15 @@ module Occi
       def self.check(attributes, definitions, set_defaults=false)
         attributes = Occi::Core::Attributes.new(attributes)
         definitions.each_key do |key|
+          next if definitions.key?(key[1..-1])
           if definitions[key].kind_of? Occi::Core::Attributes
             attributes[key] = check(attributes[key], definitions[key])
           else
             properties = definitions[key]
             value = attributes[key]
-            value ||= properties.default if set_defaults or properties.required
-            raise "required attribute #{key} not found" if value.nil? && properties.required
-            next if value.nil? and not properties.required
+            value ||= properties.default if set_defaults or properties.required?
+            raise "required attribute #{key} not found" if value.nil? && properties.required?
+            next if value.blank? and not properties.required?
             case properties.type
               when 'number'
                 raise "attribute #{key} value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless value.kind_of?(Numeric)
@@ -172,11 +181,11 @@ module Occi
               else
                 raise "property type #{properties.type} is not one of the allowed types number, boolean or string"
             end
-            Occi::Log.warn "attribute #{key} with value #{value} does not match pattern #{properties.pattern}" if value.to_s.scan(Regexp.new(properties.pattern)).empty? if properties.pattern
+            Occi::Log.warn "attribute #{key} with value #{value} does not match pattern #{properties.pattern}" if value.to_s.scan(Regexp.new(properties.pattern)).blank? if properties.pattern
             attributes[key] = value
           end
         end
-        attributes.delete_if { |_, v| v.empty? } # remove empty attributes
+        attributes.delete_if { |_, v| v.blank? } # remove empty attributes
         attributes
       end
 
@@ -187,26 +196,26 @@ module Occi
         entity.kind = @kind.to_s if @kind
         entity.mixins = @mixins.join(' ').split(' ') if @mixins.any?
         entity.actions = @actions if @actions.any?
-        entity.attributes = @attributes if @attributes.any?
-        entity.id = id if id
+        entity.attributes = @attributes if @attributes.as_json.any?
+        entity.id = id.to_s if id
         entity
       end
 
       # @return [String] text representation
       def to_text
-        text = 'Category: ' + self.kind.term + ';scheme=' + self.kind.scheme.inspect + ';class="kind"' + "\n"
+        text = 'Category: ' + self.kind.term + ';scheme=' + self.kind.scheme.inspect + ';class="kind"'
         @mixins.each do |mixin|
           scheme, term = mixin.to_s.split('#')
           scheme << '#'
-          text << 'Category: ' + term + ';scheme=' + scheme.inspect + ';class="mixin"' + "\n"
+          text << "\n" + 'Category: ' + term + ';scheme=' + scheme.inspect + ';class="mixin"'
         end
-        @attributes.combine.each_pair do |name, value|
+        @attributes.names.each_pair do |name, value|
           value = value.inspect
-          text << 'X-OCCI-Attribute: ' + name + '=' + value + "\n"
+          text << "\n" + 'X-OCCI-Attribute: ' + name + '=' + value
         end
         @actions.each do |action|
           _, term = action.split('#')
-          text << 'Link: <' + self.location + '?action=' + term + '>;rel=' + action.inspect + "\n"
+          text << "\n" + 'Link: <' + self.location + '?action=' + term + '>;rel=' + action.inspect
         end
         text
       end
@@ -221,7 +230,7 @@ module Occi
           header['Category'] += ',' + term + ';scheme=' + scheme.inspect + ';class="mixin"'
         end
         attributes = []
-        @attributes.combine.each_pair do |name, value|
+        @attributes.names.each_pair do |name, value|
           attributes << name + '=' + value.inspect
         end
         header['X-OCCI-Attribute'] = attributes.join(',') if attributes.any?

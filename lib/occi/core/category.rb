@@ -22,10 +22,10 @@ module Occi
         @term = term
         @title = title
         case attributes
-          when Occi::Core::AttributeProperties
+          when Occi::Core::Attributes
             @attributes = attributes
           else
-            @attributes = Occi::Core::AttributeProperties.parse attributes
+            @attributes = Occi::Core::Attributes.parse attributes
         end
       end
 

@@ -4,7 +4,7 @@ module Occi
 
       mattr_accessor :attributes, :mixin
 
-      self.attributes = Occi::Core::AttributeProperties.new
+      self.attributes = Occi::Core::Attributes.new
 
       self.mixin = Occi::Core::Mixin.new scheme='http://schemas.ogf.org/occi/infrastructure#',
                                          term='resource_tpl',

@@ -9,21 +9,21 @@ module Occi
       def initialize(scheme='http://schemas.ogf.org/occi/core#',
           term='action',
           title=nil,
-          attributes=Occi::Core::AttributeProperties.new)
+          attributes=Occi::Core::Attributes.new)
         super scheme, term, title, attributes
       end
 
       # @return [String] text representation
       def to_text
         text = super
-        text << ';attributes=' + @attributes.combine.join(' ').inspect if @attributes.any?
+        text << ';attributes=' + @attributes.names.join(' ').inspect if @attributes.any?
         text
       end
 
       # @return [Hash] hash containing the HTTP headers of the text/occi rendering
       def to_header
         header = super
-        header["Category"] << ';attributes=' + @attributes.combine.join(' ').inspect if @attributes.any?
+        header["Category"] << ';attributes=' + @attributes.names.join(' ').inspect if @attributes.any?
         header
       end
 

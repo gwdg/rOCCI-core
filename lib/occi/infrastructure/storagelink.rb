@@ -12,7 +12,6 @@ module Occi
 
       self.actions = Occi::Core::Actions.new << online << offline
 
-      self.attributes = Occi::Core::AttributeProperties.new
       self.attributes['occi.storagelink.deviceid'] = {:mutable => true}
       self.attributes['occi.storagelink.mountpoint'] = {:mutable => true}
       self.attributes['occi.storagelink.state'] = {:pattern => 'active|inactive|error',

@@ -93,7 +93,7 @@ module Occi
                   networkinterface = Occi::Core::Link.new('http://schemas.ogf.org/occi/infrastructure#networkinterface')
                   networkinterface.attributes.occi!.core!.title = resource_alloc.xpath("item:ElementName/text()", 'item' => "#{RASD}").to_s
                   id = resource_alloc.xpath("item:Connection/text()", 'item' => "#{RASD}").to_s
-                  network = collection.resources.select { |resource| resource.attributes.occi!.core!.title == id }.first
+                  network = collection.resources.select { |resource| resource.attributes.occi!.core!.title.to_s == id }.first
                   raise "Network with id #{id} not found" unless network
                   networkinterface.attributes.occi!.core!.target = network
                 when "17" then
@@ -103,7 +103,7 @@ module Occi
                   host_resource = resource_alloc.xpath("item:HostResource/text()", 'item' => "#{RASD}").to_s
                   if host_resource.start_with? 'ovf:/disk/'
                     id = host_resource.gsub('ovf:/disk/', '')
-                    storage = collection.resources.select { |resource| resource.attributes.occi!.core!.title == id }.first
+                    storage = collection.resources.select { |resource| resource.attributes.occi!.core!.title.to_s == id }.first
                     raise "Disk with id #{id} not found" unless storage
                     storagelink.attributes.occi!.core!.target = storage
                   elsif host_resource.start_with? 'ovf:/file/'

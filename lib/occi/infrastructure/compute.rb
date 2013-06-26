@@ -29,7 +29,6 @@ module Occi
 
       self.actions = Occi::Core::Actions.new << start << stop << restart << suspend
 
-      self.attributes = Occi::Core::AttributeProperties.new
       self.attributes['occi.compute.architecture'] = {:mutable => true,
                                                       :pattern => 'x86|x64'}
       self.attributes['occi.compute.cores'] = {:type => 'number',

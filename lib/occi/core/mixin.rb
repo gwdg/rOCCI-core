@@ -13,7 +13,7 @@ module Occi
       def initialize(scheme='http://schemas.ogf.org/occi/core#',
           term='mixin',
           title=nil,
-          attributes=Occi::Core::AttributeProperties.new,
+          attributes=Occi::Core::Attributes.new,
           related=Occi::Core::Related.new,
           actions=Occi::Core::Actions.new,
           location='')
@@ -45,7 +45,7 @@ module Occi
         string = super
         string << ';rel=' + @related.join(' ').inspect if @related.any?
         string << ';location=' + self.location.inspect
-        string << ';attributes=' + @attributes.combine.keys.join(' ').inspect if @attributes.any?
+        string << ';attributes=' + @attributes.names.keys.join(' ').inspect if @attributes.any?
         string << ';actions=' + @actions.join(' ').inspect if @actions.any?
         string
       end
