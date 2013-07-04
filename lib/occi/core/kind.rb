@@ -18,8 +18,8 @@ module Occi
           actions=Occi::Core::Actions.new,
           location=nil)
         super(scheme, term, title, attributes)
-        @related  = Occi::Core::Related.new(related)
-        @actions  = Occi::Core::Actions.new(actions)
+        @related = Occi::Core::Related.new(related)
+        @actions = Occi::Core::Actions.new(actions)
         @entities = Occi::Core::Entities.new
         location.blank? ? @location = '/' + term + '/' : @location = location
       end
@@ -34,7 +34,7 @@ module Occi
 
       # @param [Hash] options
       # @return [Hashie::Mash] json representation
-      def as_json(options={ })
+      def as_json(options={})
         kind = Hashie::Mash.new
         kind.related = @related.join(' ').split(' ') if @related.any?
         kind.actions = @actions.join(' ').split(' ') if @actions.any?
@@ -48,7 +48,7 @@ module Occi
         string = super
         string << ';rel=' + @related.join(' ').inspect if @related.any?
         string << ';location=' + self.location.inspect
-        string << ';attributes=' + @attributes.combine.keys.join(' ').inspect if @attributes.any?
+        string << ';attributes=' + @attributes.names.keys.join(' ').inspect if @attributes.any?
         string << ';actions=' + @actions.join(' ').inspect if @actions.any?
         string
       end

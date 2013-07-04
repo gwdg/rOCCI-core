@@ -1,0 +1,4 @@
+# config/occi.yml
+core: &core
+  compatibility: true
+  verify_attribute_pattern: false

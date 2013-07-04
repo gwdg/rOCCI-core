@@ -16,10 +16,10 @@ module Occi
           category.related.first.should == 'http://a.a/b#a'
           category.location.should == '/a1-A/'
           category.attributes['a_1-_'].class.should == Occi::Core::Attributes
-          category.attributes['a_1-_']['a1-_a'].class.should == Occi::Core::AttributeProperties
+          category.attributes['a_1-_']['a1-_a'].class.should == Occi::Core::Properties
           category.attributes['a-1'].class.should == Occi::Core::Attributes
           category.attributes['a-1']['a'].class.should == Occi::Core::Attributes
-          category.attributes['a-1']['a']['b'].class.should == Occi::Core::AttributeProperties
+          category.attributes['a-1']['a']['b'].class.should == Occi::Core::Properties
           category.actions.to_a.first.to_s == 'http://a.a/a1#a1'
           category.actions.to_a.last.to_s == 'http://a.b1/b1#b2'
         end
