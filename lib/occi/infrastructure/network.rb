@@ -12,6 +12,7 @@ module Occi
 
       self.actions = Occi::Core::Actions.new << up << down
 
+      self.attributes = Occi::Core::Attributes.new
       self.attributes['occi.network.vlan'] = {:type => 'number',
                                               :mutable => true,
                                               :pattern => 'x86|x64'}

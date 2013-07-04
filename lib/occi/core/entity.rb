@@ -43,6 +43,18 @@ module Occi
         object
       end
 
+      def self.attribute_properties
+        attributes = Occi::Core::Attributes.new self.attributes
+        attributes.merge! Occi::Core::Attributes.new(self.superclass.attribute_properties) if self < Occi::Core::Entity
+        attributes
+      end
+
+      def attribute_properties
+        attributes = self.class.attribute_properties
+        @mixins.collect {|mixin| attributes.merge! Occi::Core::Attributes.new(mixin.attributes)}
+        attributes
+      end
+
       # @param [String] kind
       # @param [String] mixins
       # @param [Occi::Core::Attributes] attributes
@@ -52,9 +64,9 @@ module Occi
         @kind = self.class.kind.clone
         @mixins = Occi::Core::Mixins.new mixins
         @mixins.entity = self
-        attributes = self.class.kind.attributes if attributes.blank?
+        attributes = self.class.attribute_properties if attributes.blank?
         if attributes.kind_of? Occi::Core::Attributes
-          @attributes = Occi::Core::Attributes.new attributes.convert
+          @attributes = attributes.convert
         else
           @attributes = Occi::Core::Attributes.new attributes
         end
@@ -196,7 +208,7 @@ module Occi
         entity.kind = @kind.to_s if @kind
         entity.mixins = @mixins.join(' ').split(' ') if @mixins.any?
         entity.actions = @actions if @actions.any?
-        entity.attributes = @attributes if @attributes.as_json.any?
+        entity.attributes = @attributes.as_json if @attributes.as_json.any?
         entity.id = id.to_s if id
         entity
       end

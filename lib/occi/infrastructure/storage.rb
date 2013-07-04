@@ -26,6 +26,7 @@ module Occi
 
       self.actions = Occi::Core::Actions.new << online << offline << backup << snapshot << resize
 
+      self.attributes = Occi::Core::Attributes.new
       self.attributes['occi.storage.size'] = {:type => 'number',
                                               :mutable => true}
       self.attributes['occi.storage.state'] = {:pattern => 'online|offline|backup|snapshot|resize|degraded',

@@ -4,6 +4,8 @@ module Occi
 
       attr_accessor :links
 
+      self.attributes = Occi::Core::Attributes.new
+
       self.attributes['occi.core.summary'] = {:mutable => true}
 
       self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/core#',

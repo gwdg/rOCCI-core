@@ -2,7 +2,13 @@ module Occi
   module Core
     class Attributes < Hashie::Mash
 
+      attr_accessor :converted
+
       include Occi::Helpers::Inspect
+
+      def converted?
+        @converted||=false
+      end
 
       def [](key)
         if key.to_s.include? '.'
@@ -26,11 +32,11 @@ module Occi
             when Occi::Core::Attributes
               super(key, value)
             when Occi::Core::Properties
-              super(key, value)
+              super(key, value.clone)
               super(property_key, value.clone)
             when Hash
               properties = Occi::Core::Properties.new(value)
-              super(key, properties)
+              super(key, properties.clone)
               super(property_key, properties.clone)
             when Occi::Core::Entity
               raise "value #{value} derived from Occi::Core::Entity assigned but attribute of type #{self[property_key].type} required" unless self[property_key].type == 'string' if self[property_key]
@@ -66,16 +72,17 @@ module Occi
         self
       end
 
-      def convert(attributes=self.clone)
-        attributes.each do |key, value|
-          next if self.key?(key[1..-1])
+      def convert(attributes=self.deep_dup)
+        attributes.each_pair do |key, value|
+          next if attributes.key?(key[1..-1])
           case value
-            when Occi::Core::Properties
-              attributes[key] = nil
+            when Occi::Core::Attributes
+              value.convert!
             else
-              attributes[key] = value.convert
+              attributes[key] = nil
           end
         end
+        attributes.converted = true
         attributes
       end
 
