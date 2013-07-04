@@ -72,7 +72,7 @@ module Occi
         self
       end
 
-      def convert(attributes=self.deep_dup)
+      def convert(attributes=Occi::Core::Attributes.new(self))
         attributes.each_pair do |key, value|
           next if attributes.key?(key[1..-1])
           case value
