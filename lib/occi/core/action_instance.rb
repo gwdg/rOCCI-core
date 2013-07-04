@@ -21,7 +21,7 @@ module Occi
           action = Occi::Core::Action.new(scheme, term)
         end
         @action = action
-        @attributes = Occi::Core::Attributes.new attributes
+        @attributes = attributes.convert
       end
 
       # @param [Hash] options
