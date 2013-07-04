@@ -1,5 +1,3 @@
-require 'rspec'
-
 module Occi
   describe Collection do
 

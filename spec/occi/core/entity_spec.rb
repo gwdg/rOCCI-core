@@ -1,5 +1,3 @@
-require "rspec"
-
 module Occi
   module Core
     describe Entity do
