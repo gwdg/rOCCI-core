@@ -4,7 +4,9 @@ module Occi
 
       attr_accessor :links
 
-      self.attributes = Occi::Core::Attributes.split('occi.core.summary' => Occi::Core::AttributeProperties.new(:mutable => true))
+      self.attributes = Occi::Core::Attributes.new
+
+      self.attributes['occi.core.summary'] = {:mutable => true}
 
       self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/core#',
                                        term='resource',
@@ -52,7 +54,7 @@ module Occi
       # @return [String] text representation
       def to_text
         text = super
-        @links.each { |link| text << link.to_text_link + "\n" }
+        @links.each { |link| text << "\n" + link.to_text_link }
         text
       end
 

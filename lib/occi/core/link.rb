@@ -4,8 +4,8 @@ module Occi
 
       attr_accessor :rel, :source, :target
 
-      self.attributes = Occi::Core::Attributes.split('occi.core.target' => Occi::Core::AttributeProperties.new(:mutable => true),
-                                                     'occi.core.source' => Occi::Core::AttributeProperties.new(:mutable => true))
+      self.attributes['occi.core.target'] = {:mutable => true}
+      self.attributes['occi.core.source'] = {:mutable => true}
 
       self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/core#',
                                        term='link',
@@ -75,12 +75,12 @@ module Occi
         string << ';self=' + self.location.inspect if self.location
         categories = [@kind] + @mixins.join(',').split(',')
         string << ';category=' + categories.join(' ').inspect
-        @attributes.combine.each_pair do |name, value|
+        @attributes.names.each_pair do |name, value|
           value = value.inspect
           string << ';' + name + '=' + value
         end
         string << ';occi.core.target=' + self.target.to_s.inspect
-        string << ';occi.core.source=' + self.source.to_s.inspect if self.source
+        string << ';occi.core.source=' + self.source.to_s.inspect unless self.source.blank?
 
         string
       end

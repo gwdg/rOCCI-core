@@ -19,7 +19,12 @@ module Occi
       REGEXP_BOOL = /true|false/
 
       # Regular expressions for OCCI
-      REGEXP_TERM = /#{REGEXP_LOALPHA}(#{REGEXP_LOALPHA}|#{REGEXP_DIGIT}|-|_)*/
+      if Occi::Settings.compatibility
+        # Compatibility with terms starting with a number
+        REGEXP_TERM = /(#{REGEXP_LOALPHA}|#{REGEXP_DIGIT})(#{REGEXP_LOALPHA}|#{REGEXP_DIGIT}|-|_)*/
+      else
+        REGEXP_TERM = /#{REGEXP_LOALPHA}(#{REGEXP_LOALPHA}|#{REGEXP_DIGIT}|-|_)*/
+      end
       REGEXP_SCHEME = /#{URI::ABS_URI_REF}#/
       REGEXP_TYPE_IDENTIFIER = /#{REGEXP_SCHEME}#{REGEXP_TERM}/
       REGEXP_CLASS = /action|mixin|kind/
@@ -39,15 +44,27 @@ module Occi
       REGEXP_LINK_TYPE = /#{REGEXP_TYPE_IDENTIFIER}(\s+#{REGEXP_TYPE_IDENTIFIER})*/
 
       # Regular expression for OCCI Categories
-      REGEXP_CATEGORY = "Category:\\s*(?<term>#{REGEXP_TERM})" << # term (mandatory)
-          ";\\s*scheme=\"(?<scheme>#{REGEXP_SCHEME})\"" << # scheme (mandatory)
-          ";\\s*class=\"(?<class>#{REGEXP_CLASS})\"" << # class (mandatory)
-          "(;\\s*title=\"(?<title>#{REGEXP_QUOTED_STRING})\")?" << # title (optional)
-          "(;\\s*rel=\"(?<rel>#{REGEXP_TYPE_IDENTIFIER})\")?"<< # rel (optional)
-          "(;\\s*location=\"(?<location>#{URI::URI_REF})\")?" << # location (optional)
-          "(;\\s*attributes=\"(?<attributes>#{REGEXP_ATTRIBUTE_LIST})\")?" << # attributes (optional)
-          "(;\\s*actions=\"(?<actions>#{REGEXP_ACTION_LIST})\")?" << # actions (optional)
-          ';?' # additional semicolon at the end (not specified, for interoperability)
+      if Occi::Settings.compatibility
+        REGEXP_CATEGORY = "Category:\\s*(?<term>#{REGEXP_TERM})" << # term (mandatory)
+            ";\\s*scheme=\"(?<scheme>#{REGEXP_SCHEME})#{REGEXP_TERM}?\"" << # scheme (mandatory)
+            ";\\s*class=\"(?<class>#{REGEXP_CLASS})\"" << # class (mandatory)
+            "(;\\s*title=\"(?<title>#{REGEXP_QUOTED_STRING})\")?" << # title (optional)
+            "(;\\s*rel=\"(?<rel>#{REGEXP_TYPE_IDENTIFIER})\")?"<< # rel (optional)
+            "(;\\s*location=\"(?<location>#{URI::URI_REF})\")?" << # location (optional)
+            "(;\\s*attributes=\"(?<attributes>#{REGEXP_ATTRIBUTE_LIST})\")?" << # attributes (optional)
+            "(;\\s*actions=\"(?<actions>#{REGEXP_ACTION_LIST})\")?" << # actions (optional)
+            ';?' # additional semicolon at the end (not specified, for interoperability)
+      else
+        REGEXP_CATEGORY = "Category:\\s*(?<term>#{REGEXP_TERM})" << # term (mandatory)
+            ";\\s*scheme=\"(?<scheme>#{REGEXP_SCHEME})\"" << # scheme (mandatory)
+            ";\\s*class=\"(?<class>#{REGEXP_CLASS})\"" << # class (mandatory)
+            "(;\\s*title=\"(?<title>#{REGEXP_QUOTED_STRING})\")?" << # title (optional)
+            "(;\\s*rel=\"(?<rel>#{REGEXP_TYPE_IDENTIFIER})\")?"<< # rel (optional)
+            "(;\\s*location=\"(?<location>#{URI::URI_REF})\")?" << # location (optional)
+            "(;\\s*attributes=\"(?<attributes>#{REGEXP_ATTRIBUTE_LIST})\")?" << # attributes (optional)
+            "(;\\s*actions=\"(?<actions>#{REGEXP_ACTION_LIST})\")?" << # actions (optional)
+            ';?' # additional semicolon at the end (not specified, for interoperability)
+      end
 
       # Regular expression for OCCI Link Instance References
       REGEXP_LINK = "Link:\\s*\\<(?<uri>#{URI::URI_REF})\\>" << # uri (mandatory)
@@ -137,17 +154,17 @@ module Occi
         scheme = match[:scheme]
         title = match[:title]
         related = match[:rel].to_s.split
+        attributes = Occi::Core::Attributes.new
         if match[:attributes]
-          attributes = Hashie::Mash.new
           match[:attributes].split.each do |attribute|
             property_string = attribute[/#{REGEXP_ATTRIBUTE_DEF}/, -2]
-            properties = Occi::Core::AttributeProperties.new
+            properties = Occi::Core::Properties.new
             if property_string
               properties.required = true if property_string.include? 'required'
               properties.mutable = false if property_string.include? 'immutable'
             end
             name = attribute[/#{REGEXP_ATTRIBUTE_DEF}/, 1]
-            attributes.merge! name.split('.').reverse.inject(properties) { |a, n| {n => a} }
+            attributes.merge! name.split('.').reverse.inject(properties) { |a, n| Occi::Core::Attributes.new(n => a) }
           end
         end
         actions = match[:actions].to_s.split
@@ -197,7 +214,7 @@ module Occi
         # create an array of the list of attributes
         attributes = match[:attributes].sub(/^\s*;\s*/, '').split ';'
         # parse each attribute and create an OCCI Attribute object from it
-        attributes = attributes.inject(Occi::Core::Attributes.new) { |hsh, attribute| hsh.merge!(Occi::Parser::Text.attribute('X-OCCI-Attribute: ' + attribute)) }
+        attributes = attributes.inject(Hashie::Mash.new) { |hsh, attribute| hsh.merge!(Occi::Parser::Text.attribute('X-OCCI-Attribute: ' + attribute)) }
         Occi::Core::Link.new kind, mixins, attributes, actions, rel, target, source, location
       end
 

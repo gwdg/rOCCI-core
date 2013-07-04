@@ -11,7 +11,7 @@ describe "Parser" do
     # render collection to text/plain MIME type
     rendered_collection = collection.to_text
     # parse rendered collection and compare with original collection
-    Occi::Parser.parse('text/plain',rendered_collection).should == collection
+    Occi::Parser.parse('text/plain',rendered_collection).to_json.should == collection.to_json
 
     # add attributes to resource
     resource.id = UUIDTools::UUID.random_create.to_s
@@ -20,7 +20,7 @@ describe "Parser" do
     # render collection to text/plain MIME type
     rendered_collection = collection.to_text
     # parse rendered collection and compare with original collection
-    Occi::Parser.parse('text/plain',rendered_collection).should == collection
+    Occi::Parser.parse('text/plain',rendered_collection).to_json.should == collection.to_json
 
     # add mixin to resource
     resource.mixins << Occi::Core::Mixin.new
@@ -28,7 +28,7 @@ describe "Parser" do
     # render collection to text/plain MIME type
     rendered_collection = collection.to_text
     # parse rendered collection and compare with original collection
-    Occi::Parser.parse('text/plain',rendered_collection).should == collection
+    Occi::Parser.parse('text/plain',rendered_collection).to_json.should == collection.to_json
 
     # add link to resource
     link = resource.links.create
@@ -38,7 +38,7 @@ describe "Parser" do
     # render collection to text/plain MIME type
     rendered_collection = collection.to_text
     # parse rendered collection and compare with original collection
-    Occi::Parser.parse('text/plain',rendered_collection).should == collection
+    Occi::Parser.parse('text/plain',rendered_collection).to_json.should == collection.to_json
   end
 
   it "parses an OCCI message with MIME type application/occi+json containing an OCCI resource" do
