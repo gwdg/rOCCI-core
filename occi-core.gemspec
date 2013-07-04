@@ -13,15 +13,16 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{OCCI toolkit}
   gem.homepage      = 'https://github.com/gwdg/rOCCI-core'
 
-  gem.files         = `git ls-files`.split('\n')
-  gem.test_files    = `git ls-files -- {test,spec}/*`.split('\n')
+  gem.files         = `git ls-files`.split("\n")
+  gem.test_files    = `git ls-files -- {test,spec}/*`.split("\n")
   gem.require_paths = ['lib']
+  gem.extensions    = 'ext/mkrf_conf.rb'
 
   gem.add_dependency 'json'
   gem.add_dependency 'hashie'
   gem.add_dependency 'uuidtools', '>=2.1.3'
-  gem.add_dependency 'nokogiri'
-  gem.add_dependency 'activesupport'
+  gem.add_dependency 'nokogiri', '~>1.5.0'
+  gem.add_dependency 'activesupport', '~>3.2'
   gem.add_dependency 'settingslogic'
 
   gem.add_development_dependency 'rspec'
