@@ -1,16 +1,12 @@
-# make sure the local files will be loaded first;
-# this should prevent installed versions of this
-# gem to be included in the testing process
-$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$:.unshift(File.dirname(__FILE__))
+require 'rubygems'
+
+require 'occi-core'
 
 # enable coverage reports
 if ENV['COVERAGE']
   require 'simplecov'
   SimpleCov.start
 end
-
-require 'occi-core'
 
 # simplify the usage of VCR; this will allow us to use
 #

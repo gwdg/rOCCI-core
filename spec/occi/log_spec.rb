@@ -1,6 +1,3 @@
-require "rspec"
-require 'occi/log'
-
 module Occi
   describe Log do
 
