@@ -106,7 +106,9 @@ module Occi
             when /^X-OCCI-Attribute:/
               resource.attributes.merge! self.attribute(line)
             when /^Link:/
-              resource.links << self.link_string(line, resource)
+              link = self.link_string(line, resource)
+              resource.links << link
+              collection << link
           end
         end
         collection << resource if resource.kind_of? Occi::Core::Resource
