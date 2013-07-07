@@ -63,7 +63,7 @@ module Occi
       def as_json(options={})
         link = super
         link.rel = @rel.to_s if @rel
-        link.source = self.source.to_s if self.source.to_s
+        link.source = self.source.to_s unless self.source.to_s.blank?
         link.target = self.target.to_s if self.target
         link
       end
