@@ -68,6 +68,7 @@ module Occi
         class_name =  term.gsub('-', '_').capitalize
         if namespace.const_defined? class_name
           klass = namespace.const_get class_name
+          return klass.mixin if klass.respond_to? :mixin
           unless klass.ancestors.include? Occi::Core::Entity or klass.ancestors.include? Occi::Core::Category
             raise "OCCI Kind with type identifier #{scheme + term} could not be created as the corresponding class #{klass.to_s} already exists and is not derived from Occi::Core::Entity"
           end

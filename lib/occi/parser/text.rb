@@ -69,16 +69,16 @@ module Occi
       # Regular expression for OCCI Link Instance References
       if Occi::Settings.compatibility
         REGEXP_LINK = "Link:\\s*\\<(?<uri>#{URI::URI_REF})\\>" << # uri (mandatory)
-          ";\\s*rel=\"(?<rel>#{REGEXP_RESOURCE_TYPE})\"" << # rel (mandatory)
-          "(;\\s*self=\"(?<self>#{REGEXP_LINK_INSTANCE})\")?" << # self (optional)
-          "(;\\s*category=\"(?<category>#{REGEXP_LINK_TYPE})\")?" << # category (optional)
-          "(?<attributes>(;?\\s*(#{REGEXP_ATTRIBUTE_REPR}))*)" << # attributes (optional)
-          ';?' # additional semicolon at the end (not specified, for interoperability)
+            ";\\s*rel=\"(?<rel>#{REGEXP_RESOURCE_TYPE})\"" << # rel (mandatory)
+            "(;\\s*self=\"(?<self>#{REGEXP_LINK_INSTANCE})\")?" << # self (optional)
+            "(;\\s*category=\"(?<category>(;?\\s*(#{REGEXP_LINK_TYPE}))+)\")?" << # category (optional)
+            "(?<attributes>(;?\\s*(#{REGEXP_ATTRIBUTE_REPR}))*)" << # attributes (optional)
+            ';?' # additional semicolon at the end (not specified, for interoperability)
       else
         REGEXP_LINK = "Link:\\s*\\<(?<uri>#{URI::URI_REF})\\>" << # uri (mandatory)
             ";\\s*rel=\"(?<rel>#{REGEXP_RESOURCE_TYPE})\"" << # rel (mandatory)
             "(;\\s*self=\"(?<self>#{REGEXP_LINK_INSTANCE})\")?" << # self (optional)
-            "(;\\s*category=\"(?<category>#{REGEXP_LINK_TYPE})\")?" << # category (optional)
+            "(;\\s*category=\"(?<category>(;?\\s*(#{REGEXP_LINK_TYPE}))+)\")?" << # category (optional)
             "(?<attributes>(;\\s*(#{REGEXP_ATTRIBUTE_REPR}))*)" << # attributes (optional)
             ';?' # additional semicolon at the end (not specified, for interoperability)
       end
@@ -214,12 +214,16 @@ module Occi
 
         raise "could not match #{string}" unless match
 
-        categories = match[:category].split
-        kind = categories.shift
-        mixins = categories
-        actions = nil
-        rel = match[:rel]
         target = match[:uri]
+        rel = match[:rel]
+        if match[:category].blank?
+          kind = Occi::Core::Link.kind
+        else
+          categories = match[:category].split
+          kind = categories.shift
+          mixins = categories
+        end
+        actions = nil
         location = match[:self]
 
         # create an array of the list of attributes
