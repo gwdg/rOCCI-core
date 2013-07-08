@@ -67,7 +67,6 @@ X-OCCI-Attribute: occi.core.id="04106bce-87eb-4f8f-a665-2f624e54ba46"|
           collection = Occi::Parser::Text.resource resource_string.lines
           collection.resources.should have(1).resource
           collection.links.should have(5).links
-          puts collection.to_json
         end
 
       end

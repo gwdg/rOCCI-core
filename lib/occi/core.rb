@@ -1,5 +1,4 @@
 require 'occi/core/properties'
-require 'occi/core/attribute'
 require 'occi/core/attributes'
 require 'occi/core/category'
 require 'occi/core/categories'
