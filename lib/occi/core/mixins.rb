@@ -23,17 +23,20 @@ module Occi
 
       private
 
-      def convert(category)
-        category = super category
+      # TODO: fix mixin conversion
+      def convert(mixin)
+        mixin = super mixin
 
-        if category.kind_of? String
-          scheme, term = category.split '#'
+        if mixin.kind_of? String
+          scheme, term = mixin.split '#'
           scheme += '#'
 
-          klass = Occi::Core::Category.get_class scheme, term, [Occi::Core::Mixin.new]
-          category = klass.new(scheme, term)
+          mixin = Occi::Core::Category.get_class scheme, term, [Occi::Core::Mixin.new]
+          if mixin.respond_to? :new
+            mixin = mixin.new(scheme, term)
+          end
         end
-        category
+        mixin
       end
 
     end

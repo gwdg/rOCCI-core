@@ -33,6 +33,8 @@ module Occi
       link = resource.links.create
       link.id = UUIDTools::UUID.random_create.to_s
       link.target = 'http://example.com/resource/aee5acf5-71de-40b0-bd1c-2284658bfd0e'
+      link.source = resource
+      collection << link
 
       # render collection to text/plain MIME type
       rendered_collection = collection.to_text

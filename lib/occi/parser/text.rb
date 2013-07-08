@@ -67,12 +67,21 @@ module Occi
       end
 
       # Regular expression for OCCI Link Instance References
-      REGEXP_LINK = "Link:\\s*\\<(?<uri>#{URI::URI_REF})\\>" << # uri (mandatory)
-          ";\\s*rel=\"(?<rel>#{REGEXP_RESOURCE_TYPE})\"" << # rel (mandatory)
-          "(;\\s*self=\"(?<self>#{REGEXP_LINK_INSTANCE})\")?" << # self (optional)
-          "(;\\s*category=\"(?<category>#{REGEXP_LINK_TYPE})\")?" << # category (optional)
-          "(?<attributes>(;\\s*(#{REGEXP_ATTRIBUTE_REPR}))*)" << # attributes (optional)
-          ';?' # additional semicolon at the end (not specified, for interoperability)
+      if Occi::Settings.compatibility
+        REGEXP_LINK = "Link:\\s*\\<(?<uri>#{URI::URI_REF})\\>" << # uri (mandatory)
+            ";\\s*rel=\"(?<rel>#{REGEXP_RESOURCE_TYPE})\"" << # rel (mandatory)
+            "(;\\s*self=\"(?<self>#{REGEXP_LINK_INSTANCE})\")?" << # self (optional)
+            "(;\\s*category=\"(?<category>(;?\\s*(#{REGEXP_LINK_TYPE}))+)\")?" << # category (optional)
+            "(?<attributes>(;?\\s*(#{REGEXP_ATTRIBUTE_REPR}))*)" << # attributes (optional)
+            ';?' # additional semicolon at the end (not specified, for interoperability)
+      else
+        REGEXP_LINK = "Link:\\s*\\<(?<uri>#{URI::URI_REF})\\>" << # uri (mandatory)
+            ";\\s*rel=\"(?<rel>#{REGEXP_RESOURCE_TYPE})\"" << # rel (mandatory)
+            "(;\\s*self=\"(?<self>#{REGEXP_LINK_INSTANCE})\")?" << # self (optional)
+            "(;\\s*category=\"(?<category>(;?\\s*(#{REGEXP_LINK_TYPE}))+)\")?" << # category (optional)
+            "(?<attributes>(;\\s*(#{REGEXP_ATTRIBUTE_REPR}))*)" << # attributes (optional)
+            ';?' # additional semicolon at the end (not specified, for interoperability)
+      end
 
       # Regular expression for OCCI Entity Attributes
       REGEXP_ATTRIBUTE = "X-OCCI-Attribute:\\s*(?<name>#{REGEXP_ATTRIBUTE_NAME})=(\"(?<string>#{REGEXP_QUOTED_STRING})\"|(?<number>#{REGEXP_NUMBER})|(?<bool>#{REGEXP_BOOL}))" <<
@@ -106,7 +115,9 @@ module Occi
             when /^X-OCCI-Attribute:/
               resource.attributes.merge! self.attribute(line)
             when /^Link:/
-              resource.links << self.link_string(line, resource)
+              link = self.link_string(line, resource)
+              resource.links << link
+              collection << link
           end
         end
         collection << resource if resource.kind_of? Occi::Core::Resource
@@ -203,16 +214,20 @@ module Occi
 
         raise "could not match #{string}" unless match
 
-        categories = match[:category].split
-        kind = categories.shift
-        mixins = categories
-        actions = nil
-        rel = match[:rel]
         target = match[:uri]
+        rel = match[:rel]
+        if match[:category].blank?
+          kind = Occi::Core::Link.kind
+        else
+          categories = match[:category].split
+          kind = categories.shift
+          mixins = categories
+        end
+        actions = nil
         location = match[:self]
 
         # create an array of the list of attributes
-        attributes = match[:attributes].sub(/^\s*;\s*/, '').split ';'
+        attributes = match[:attributes].sub(/^\s*;\s*/, ' ').split ' '
         # parse each attribute and create an OCCI Attribute object from it
         attributes = attributes.inject(Hashie::Mash.new) { |hsh, attribute| hsh.merge!(Occi::Parser::Text.attribute('X-OCCI-Attribute: ' + attribute)) }
         Occi::Core::Link.new kind, mixins, attributes, actions, rel, target, source, location
