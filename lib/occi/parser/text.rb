@@ -5,8 +5,10 @@ module Occi
       if RUBY_VERSION =~ /1.8/
         require 'oniguruma'
         REGEXP = Oniguruma::ORegexp
+        ONIG = true
       else
         REGEXP = Regexp
+        ONIG = false
       end
 
       # Regular expressions
@@ -228,7 +230,12 @@ module Occi
 
         # create an array of the list of attributes
         regexp=REGEXP.new '(\\s*'+REGEXP_ATTRIBUTE_REPR.to_s+')'
-        attributes = match[:attributes].sub(/^\s*;\s*/, ' ').scan(regexp).collect {|matches| matches.first}
+        attr_line = match[:attributes].sub(/^\s*;\s*/, ' ')
+        if ONIG
+          attributes = regexp.scan(attr_line).collect {|matches| matches.first}
+        else
+          attributes = attr_line.scan(regexp).collect {|matches| matches.first}
+        end
         # parse each attribute and create an OCCI Attribute object from it
         attributes = attributes.inject(Hashie::Mash.new) { |hsh, attribute| hsh.merge!(Occi::Parser::Text.attribute('X-OCCI-Attribute: ' + attribute)) }
         Occi::Core::Link.new kind, mixins, attributes, actions, rel, target, source, location
