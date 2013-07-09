@@ -227,7 +227,8 @@ module Occi
         location = match[:self]
 
         # create an array of the list of attributes
-        attributes = match[:attributes].sub(/^\s*;\s*/, ' ').split ' '
+        regexp=REGEXP.new '(\\s*'+REGEXP_ATTRIBUTE_REPR.to_s+')'
+        attributes = match[:attributes].sub(/^\s*;\s*/, ' ').scan(regexp).collect {|matches| matches.first}
         # parse each attribute and create an OCCI Attribute object from it
         attributes = attributes.inject(Hashie::Mash.new) { |hsh, attribute| hsh.merge!(Occi::Parser::Text.attribute('X-OCCI-Attribute: ' + attribute)) }
         Occi::Core::Link.new kind, mixins, attributes, actions, rel, target, source, location
