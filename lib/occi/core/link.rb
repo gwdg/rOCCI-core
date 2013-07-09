@@ -37,6 +37,7 @@ module Occi
       # set target attribute of link
       # @param [String] target
       def target=(target)
+        self.attributes['occi.core.target'] = target.to_s
         @target = target
       end
 
@@ -49,6 +50,7 @@ module Occi
       # set source attribute of link
       # @param [String] source
       def source=(source)
+        self.attributes['occi.core.source'] = source.to_s
         @source = source
       end
 
