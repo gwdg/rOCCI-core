@@ -67,7 +67,7 @@ module Occi
         when 'text/uri-list'
           locations << body.split("\n")
         when 'text/plain', nil
-          locations << Occi::Parser::Text.locations(body)
+          locations << Occi::Parser::Text.locations(body.split "\n")
         else
           nil
       end
