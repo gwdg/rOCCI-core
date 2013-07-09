@@ -229,10 +229,12 @@ module Occi
         location = match[:self]
 
         # create an array of the list of attributes
+        attributes = []
         regexp=REGEXP.new '(\\s*'+REGEXP_ATTRIBUTE_REPR.to_s+')'
         attr_line = match[:attributes].sub(/^\s*;\s*/, ' ')
         if ONIG
-          attributes = regexp.scan(attr_line).collect {|matches| matches.first}
+          attr_line_scans = regexp.scan(attr_line)
+          attributes = attr_line_scans.collect {|matches| matches.captures.first} if attr_line_scans
         else
           attributes = attr_line.scan(regexp).collect {|matches| matches.first}
         end
