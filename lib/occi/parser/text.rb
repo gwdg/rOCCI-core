@@ -5,17 +5,19 @@ module Occi
       if RUBY_VERSION =~ /1.8/
         require 'oniguruma'
         REGEXP = Oniguruma::ORegexp
+        ONIG = true
       else
         REGEXP = Regexp
+        ONIG = false
       end
 
       # Regular expressions
       REGEXP_QUOTED_STRING = /([^"\\]|\\.)*/
       REGEXP_LOALPHA = /[a-z]/
       REGEXP_DIGIT = /[0-9]/
-      REGEXP_INT = /#{REGEXP_DIGIT}*/
-      REGEXP_FLOAT = /#{REGEXP_DIGIT}*\.#{REGEXP_DIGIT}*/
-      REGEXP_NUMBER = /#{REGEXP_INT}|#{REGEXP_FLOAT}/
+      REGEXP_INT = /#{REGEXP_DIGIT}+/
+      REGEXP_FLOAT = /#{REGEXP_INT}\.#{REGEXP_INT}/
+      REGEXP_NUMBER = /#{REGEXP_FLOAT}|#{REGEXP_INT}/
       REGEXP_BOOL = /true|false/
 
       # Regular expressions for OCCI
@@ -201,7 +203,11 @@ module Occi
         raise "could not match #{string}" unless match
 
         value = match[:string] if match[:string]
-        value = match[:number].to_i if match[:number]
+
+        if match[:number]
+          match[:number].include?('.') ? value = match[:number].to_f : value = match[:number].to_i
+        end
+
         value = match[:bool] == "true" if match[:bool]
         Occi::Core::Attributes.split match[:name] => value
       end
@@ -227,8 +233,15 @@ module Occi
         location = match[:self]
 
         # create an array of the list of attributes
-        regexp=Regexp.new '(\\s*'+REGEXP_ATTRIBUTE_REPR.to_s+')'
-        attributes = match[:attributes].sub(/^\s*;\s*/, ' ').scan(regexp).collect {|matches| matches.first}
+        attributes = []
+        regexp=REGEXP.new '(\\s*'+REGEXP_ATTRIBUTE_REPR.to_s+')'
+        attr_line = match[:attributes].sub(/^\s*;\s*/, ' ')
+        if ONIG
+          attr_line_scans = regexp.scan(attr_line)
+          attributes = attr_line_scans.collect {|matches| matches.captures.first} if attr_line_scans
+        else
+          attributes = attr_line.scan(regexp).collect {|matches| matches.first}
+        end
         # parse each attribute and create an OCCI Attribute object from it
         attributes = attributes.inject(Hashie::Mash.new) { |hsh, attribute| hsh.merge!(Occi::Parser::Text.attribute('X-OCCI-Attribute: ' + attribute)) }
         Occi::Core::Link.new kind, mixins, attributes, actions, rel, target, source, location
