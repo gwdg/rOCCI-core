@@ -15,9 +15,9 @@ module Occi
       REGEXP_QUOTED_STRING = /([^"\\]|\\.)*/
       REGEXP_LOALPHA = /[a-z]/
       REGEXP_DIGIT = /[0-9]/
-      REGEXP_INT = /#{REGEXP_DIGIT}*/
-      REGEXP_FLOAT = /#{REGEXP_DIGIT}*\.#{REGEXP_DIGIT}*/
-      REGEXP_NUMBER = /#{REGEXP_INT}|#{REGEXP_FLOAT}/
+      REGEXP_INT = /#{REGEXP_DIGIT}+/
+      REGEXP_FLOAT = /#{REGEXP_INT}\.#{REGEXP_INT}/
+      REGEXP_NUMBER = /#{REGEXP_FLOAT}|#{REGEXP_INT}/
       REGEXP_BOOL = /true|false/
 
       # Regular expressions for OCCI
@@ -203,7 +203,11 @@ module Occi
         raise "could not match #{string}" unless match
 
         value = match[:string] if match[:string]
-        value = match[:number].to_i if match[:number]
+
+        if match[:number]
+          match[:number].include?('.') ? value = match[:number].to_f : value = match[:number].to_i
+        end
+
         value = match[:bool] == "true" if match[:bool]
         Occi::Core::Attributes.split match[:name] => value
       end
