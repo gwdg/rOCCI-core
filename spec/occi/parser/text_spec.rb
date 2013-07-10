@@ -10,19 +10,19 @@ module Occi
           category_string = 'Category: a_a1-_;scheme="http://a.a/a#";class="kind";title="aA1!\"§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
 
           category = Occi::Parser::Text.category category_string
-          category.term.should == 'a_a1-_'
-          category.scheme.should == 'http://a.a/a#'
-          category.class.should == Occi::Core::Kind
-          category.title.should == 'aA1!\"§$%&/()=?`´ß+*#-_.:,;<>'
-          category.related.first.should == 'http://a.a/b#a'
-          category.location.should == '/a1-A/'
-          category.attributes['a_1-_'].class.should == Occi::Core::Attributes
-          category.attributes['a_1-_']['a1-_a'].class.should == Occi::Core::Properties
-          category.attributes['a-1'].class.should == Occi::Core::Attributes
-          category.attributes['a-1']['a'].class.should == Occi::Core::Attributes
-          category.attributes['a-1']['a']['b'].class.should == Occi::Core::Properties
-          category.actions.to_a.first.to_s == 'http://a.a/a1#a1'
-          category.actions.to_a.last.to_s == 'http://a.b1/b1#b2'
+          category.term.should eq 'a_a1-_'
+          category.scheme.should eq 'http://a.a/a#'
+          category.class.should eq Occi::Core::Kind
+          category.title.should eq 'aA1!\"§$%&/()=?`´ß+*#-_.:,;<>'
+          category.related.first.should eq 'http://a.a/b#a'
+          category.location.should eq '/a1-A/'
+          category.attributes['a_1-_'].class.should eq Occi::Core::Attributes
+          category.attributes['a_1-_']['a1-_a'].class.should eq Occi::Core::Properties
+          category.attributes['a-1'].class.should eq Occi::Core::Attributes
+          category.attributes['a-1']['a'].class.should eq Occi::Core::Attributes
+          category.attributes['a-1']['a']['b'].class.should eq Occi::Core::Properties
+          category.actions.to_a.first.to_s.should eq 'http://a.a/a1#a1'
+          category.actions.to_a.last.to_s.should eq 'http://a.b1/b1#b2'
         end
 
       end
@@ -43,10 +43,10 @@ module Occi
           resource_string << %Q|\nX-OCCI-Attribute: org.opennebula.compute.cpu=1.0|
 
           collection = Occi::Parser::Text.resource resource_string.lines
-          collection.as_json.resources.first.attributes.occi.compute.cores.should eq(1)
-          collection.as_json.resources.first.attributes.org.opennebula.compute.cpu.should eq(1.0)
-          collection.as_json.resources.first.attributes.occi.compute.architecture.should eq("x86")
-          collection.as_json.resources.first.attributes.occi.compute.memory.should eq(1.7)
+          collection.resources.first.attributes['occi.compute.cores'].should eq(1)
+          collection.resources.first.attributes['org.opennebula.compute.cpu'].should eq(1.0)
+          collection.resources.first.attributes['occi.compute.architecture'].should eq("x86")
+          collection.resources.first.attributes['occi.compute.memory'].should eq(1.7)
         end
 
         it 'parses a string with an OCCI Resource including inline OCCI Link definitions' do
