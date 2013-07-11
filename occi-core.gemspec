@@ -12,6 +12,7 @@ Gem::Specification.new do |gem|
   gem.description   = %q{OCCI is a collection of classes to simplify the implementation of the Open Cloud Computing API in Ruby}
   gem.summary       = %q{OCCI toolkit}
   gem.homepage      = 'https://github.com/gwdg/rOCCI-core'
+  gem.license       = 'Apache License, Version 2.0'
 
   gem.files         = `git ls-files`.split("\n")
   gem.test_files    = `git ls-files -- {test,spec}/*`.split("\n")
