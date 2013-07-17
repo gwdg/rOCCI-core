@@ -65,7 +65,7 @@ module Occi
           end
         end
 
-        class_name =  term.gsub('-', '_').capitalize
+        class_name = self.sanitize_term_before_classify(term).classify
         if namespace.const_defined? class_name
           klass = namespace.const_get class_name
           return klass.mixin if klass.respond_to? :mixin
@@ -147,6 +147,18 @@ module Occi
 
       def to_s
         self.type_identifier
+      end
+
+      private
+
+      # Relaxed parser rules require additional checks on terms.
+      # TODO: a better solution?
+      # TODO: check for more characters
+      def self.sanitize_term_before_classify(term)
+        sanitized = term.downcase.gsub(/[\s\(\)\.\{\}\-;,\\\/\?\!\|\*\<\>]/, '_').gsub(/_+/, '_').chomp('_').reverse.chomp('_').reverse
+        sanitized = "uuid_#{sanitized}" if sanitized.match(/^[0-9]/)
+
+        sanitized
       end
 
     end
