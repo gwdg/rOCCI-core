@@ -14,8 +14,7 @@ Ruby
 
 The following setup is recommended
 
-* usage of the Ruby Version Manager
-* Ruby 1.9.3
+* Ruby 1.9.3+
 * RubyGems installed
 
 The following libraries / packages may be required to use rOCCI
@@ -51,7 +50,7 @@ To build and install the bleeding edge version from master
     git clone git://github.com/gwdg/rOCCI-core.git
     cd rOCCI-core
     rvm install ruby-1.9.3
-    rvm --create --ruby-version use 1.9.3@rOCCI-core
+    gem install bundler
     bundle install
     rake test
 
@@ -114,12 +113,12 @@ Currently only the following entries of OVF files are parsed
 * Disk in the DiskSection
 * Network in the NetworkSection
 * In the VirutalSystemSection:
-** Info
-** in the VirtualHardwareSection the items regarding
-*** Processor
-*** Memory
-*** Ethernet Adapter
-*** Parallel port
+    * Info
+    * in the VirtualHardwareSection the items regarding
+        * Processor
+        * Memory
+        * Ethernet Adapter
+        * Parallel port
 
 ### Using the OCCI model
 
@@ -127,6 +126,13 @@ The occi-core gem includes all OCCI Core classes necessary to handly arbitrary O
 
 Changelog
 ---------
+
+### Version 4.0
+* introduced compatibility mode (for OCCI-OS, on by default)
+* introduced new attribute handling for resources
+* completely rewrote OCCI parser
+* split the code into rOCCI-core, rOCCI-api and rOCCI-cli
+* internal changes, refactoring and some bugfixes
 
 ### Version 3.1
 * added basic OS Keystone support
