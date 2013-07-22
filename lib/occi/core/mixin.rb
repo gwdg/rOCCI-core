@@ -2,7 +2,7 @@ module Occi
   module Core
     class Mixin < Occi::Core::Category
 
-      attr_accessor :entities, :related, :actions, :location
+      attr_accessor :entities, :depends, :actions, :location, :applies
 
       # @param [String ] scheme
       # @param [String] term
@@ -14,15 +14,17 @@ module Occi
           term='mixin',
           title=nil,
           attributes=Occi::Core::Attributes.new,
-          related=Occi::Core::Related.new,
+          depends=Occi::Core::Dependencies.new,
           actions=Occi::Core::Actions.new,
-          location='')
+          location='',
+          applies=Occi::Core::Kinds.new)
 
         super(scheme, term, title, attributes)
-        @related  = Occi::Core::Related.new(related)
-        @actions  = Occi::Core::Actions.new(actions)
+        @depends = Occi::Core::Dependencies.new depends
+        @actions = Occi::Core::Actions.new actions
         @entities = Occi::Core::Entities.new
         location.blank? ? @location = '/mixins/' + term + '/' : @location = location
+        @applies = Occi::Core::Kinds.new applies
       end
 
       def location
@@ -31,9 +33,12 @@ module Occi
 
       # @param [Hash] options
       # @return [Hashie::Mash] json representation
-      def as_json(options={ })
+      def as_json(options={})
         mixin = Hashie::Mash.new
-        mixin.related = @related.join(' ').split(' ') if @related.any?
+        mixin.dependencies = @depends.join(' ').split(' ') if @depends.any?
+        mixin.applies = @applies.join(' ').split(' ') if @applies.any?
+        mixin.related = @depends.join(' ').split(' ') if @depends.any?
+        mixin.related = mixin.related.to_a + @applies.join(' ').split(' ') if @applies.any?
         mixin.actions = @actions if @actions.any?
         mixin.location = @location if @location
         mixin.merge! super

@@ -45,7 +45,7 @@ module Occi
                                        term='compute',
                                        title = 'compute resource',
                                        attributes=self.attributes,
-                                       related=Occi::Core::Related.new << Occi::Core::Resource.kind,
+                                       parent=Occi::Core::Resource.kind,
                                        actions = self.actions,
                                        location = '/compute/'
 

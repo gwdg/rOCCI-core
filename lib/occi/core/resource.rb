@@ -12,7 +12,7 @@ module Occi
                                        term='resource',
                                        title='resource',
                                        attributes=self.attributes,
-                                       related=Occi::Core::Related.new << Occi::Core::Entity.kind
+                                       parent=Occi::Core::Entity.kind
 
       # @param [String] kind
       # @param [Array] mixins

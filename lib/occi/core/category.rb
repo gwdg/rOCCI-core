@@ -34,19 +34,16 @@ module Occi
       # @param [String] term
       # @param [Array] related
       # @return [Class] ruby class with scheme as namespace, term as name and related kind as super class
-      def self.get_class(scheme, term, related=['http://schemas.ogf.org/occi/core#entity'])
-        related = related.to_a.flatten
+      def self.get_class(scheme, term, parent='http://schemas.ogf.org/occi/core#entity')
+        parent = parent.to_a.flatten
         scheme += '#' unless scheme.end_with? '#'
 
-        if related.first.to_s == 'http://schemas.ogf.org/occi/core#entity' or related.first.nil?
+        if parent.first.to_s == 'http://schemas.ogf.org/occi/core#entity' or parent.first.nil?
           parent = Occi::Core::Entity
-        elsif related.first.kind_of? Occi::Core::Kind
-          parent = related.first.entity_type
-        elsif related.first.kind_of? Occi::Core::Mixin
-          parent = related.first.class
+        elsif parent.first.kind_of? Occi::Core::Kind
+          parent = parent.first.entity_type
         else
-          related_scheme, related_term = related.first.to_s.split '#'
-          parent = self.get_class related_scheme, related_term
+          parent = self.get_class parent.first.to_s.split('#')
         end
 
         uri = URI.parse(scheme)
@@ -65,16 +62,20 @@ module Occi
           end
         end
 
+        # TODO ensure class name is safe
         class_name = self.sanitize_term_before_classify(term).classify
         if namespace.const_defined? class_name
           klass = namespace.const_get class_name
-          return klass.mixin if klass.respond_to? :mixin
-          unless klass.ancestors.include? Occi::Core::Entity or klass.ancestors.include? Occi::Core::Category
+          unless klass.ancestors.include? Occi::Core::Entity
             raise "OCCI Kind with type identifier #{scheme + term} could not be created as the corresponding class #{klass.to_s} already exists and is not derived from Occi::Core::Entity"
           end
         else
           klass = namespace.const_set class_name, Class.new(parent)
-          klass.kind = Occi::Core::Kind.new scheme, term, nil, {}, related unless parent.ancestors.include? Occi::Core::Category
+          klass.kind = Occi::Core::Kind.new scheme=scheme,
+                                            term=term,
+                                            title=nil,
+                                            attributes={},
+                                            parent=parent
         end
 
         klass

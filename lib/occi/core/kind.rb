@@ -2,7 +2,7 @@ module Occi
   module Core
     class Kind < Occi::Core::Category
 
-      attr_accessor :entities, :related, :actions, :location
+      attr_accessor :entities, :parent, :actions, :location
 
       # @param [String ] scheme
       # @param [String] term
@@ -14,11 +14,11 @@ module Occi
           term='kind',
           title=nil,
           attributes=Occi::Core::Attributes.new,
-          related=Occi::Core::Related.new,
+          parent=nil,
           actions=Occi::Core::Actions.new,
           location=nil)
         super(scheme, term, title, attributes)
-        @related = Occi::Core::Related.new(related)
+        @parent = parent
         @actions = Occi::Core::Actions.new(actions)
         @entities = Occi::Core::Entities.new
         location.blank? ? @location = '/' + term + '/' : @location = location
@@ -36,7 +36,8 @@ module Occi
       # @return [Hashie::Mash] json representation
       def as_json(options={})
         kind = Hashie::Mash.new
-        kind.related = @related.join(' ').split(' ') if @related.any?
+        kind.parent = @parent.to_s
+        kind.related = [@parent.to_s]
         kind.actions = @actions.join(' ').split(' ') if @actions.any?
         kind.location = @location if @location
         kind.merge! super
@@ -46,7 +47,7 @@ module Occi
       # @return [String] string representation of the kind
       def to_string
         string = super
-        string << ';rel=' + @related.join(' ').inspect if @related.any?
+        string << ';rel=' + @parent.to_s.inspect
         string << ';location=' + self.location.inspect
         string << ';attributes=' + @attributes.names.keys.join(' ').inspect if @attributes.any?
         string << ';actions=' + @actions.join(' ').inspect if @actions.any?
