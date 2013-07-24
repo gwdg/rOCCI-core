@@ -31,16 +31,19 @@ module Occi
         @location.clone
       end
 
+      def related
+        self.depends + self.applies
+      end
+
       # @param [Hash] options
       # @return [Hashie::Mash] json representation
       def as_json(options={})
         mixin = Hashie::Mash.new
-        mixin.dependencies = @depends.join(' ').split(' ') if @depends.any?
-        mixin.applies = @applies.join(' ').split(' ') if @applies.any?
-        mixin.related = @depends.join(' ').split(' ') if @depends.any?
-        mixin.related = mixin.related.to_a + @applies.join(' ').split(' ') if @applies.any?
-        mixin.actions = @actions if @actions.any?
-        mixin.location = @location if @location
+        mixin.dependencies = self.depends.join(' ').split(' ') if self.depends.any?
+        mixin.applies = self.applies.join(' ').split(' ') if self.applies.any?
+        mixin.related = self.related.join(' ').split(' ') if self.related.any?
+        mixin.actions = self.actions if self.actions.any?
+        mixin.location = self.location if self.location
         mixin.merge! super
         mixin
       end
@@ -48,10 +51,10 @@ module Occi
       # @return [String] text representation
       def to_string
         string = super
-        string << ';rel=' + @related.join(' ').inspect if @related.any?
+        string << ';rel=' + self.related.join(' ').inspect if self.related.any?
         string << ';location=' + self.location.inspect
-        string << ';attributes=' + @attributes.names.keys.join(' ').inspect if @attributes.any?
-        string << ';actions=' + @actions.join(' ').inspect if @actions.any?
+        string << ';attributes=' + self.attributes.names.keys.join(' ').inspect if self.attributes.any?
+        string << ';actions=' + self.actions.join(' ').inspect if self.actions.any?
         string
       end
 

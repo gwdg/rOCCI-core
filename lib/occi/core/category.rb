@@ -18,6 +18,7 @@ module Occi
           term='category',
           title=nil,
           attributes=Occi::Core::Attributes.new)
+        scheme += '#' unless scheme.end_with? '#'
         @scheme = scheme
         @term = term
         @title = title
@@ -34,17 +35,18 @@ module Occi
       # @param [String] term
       # @param [Array] related
       # @return [Class] ruby class with scheme as namespace, term as name and related kind as super class
-      def self.get_class(scheme, term, parent='http://schemas.ogf.org/occi/core#entity')
-        parent = parent.to_a.flatten
-        scheme += '#' unless scheme.end_with? '#'
-
-        if parent.first.to_s == 'http://schemas.ogf.org/occi/core#entity' or parent.first.nil?
-          parent = Occi::Core::Entity
-        elsif parent.first.kind_of? Occi::Core::Kind
-          parent = parent.first.entity_type
+      def self.get_class(scheme, term, parent=Occi::Core::Entity.kind)
+        parent ||= Occi::Core::Entity.kind
+        parent = parent.first if parent.kind_of? Array
+        if parent.to_s == 'http://schemas.ogf.org/occi/core#entity'
+          parent = Occi::Core::Entity.kind
+        elsif parent.kind_of? Occi::Core::Kind
+          parent = parent
         else
-          parent = self.get_class parent.first.to_s.split('#')
+          parent = self.get_class(*parent.to_s.split('#')).kind
         end
+
+        scheme += '#' unless scheme.end_with? '#'
 
         uri = URI.parse(scheme)
 
@@ -70,7 +72,7 @@ module Occi
             raise "OCCI Kind with type identifier #{scheme + term} could not be created as the corresponding class #{klass.to_s} already exists and is not derived from Occi::Core::Entity"
           end
         else
-          klass = namespace.const_set class_name, Class.new(parent)
+          klass = namespace.const_set class_name, Class.new(parent.entity_type)
           klass.kind = Occi::Core::Kind.new scheme=scheme,
                                             term=term,
                                             title=nil,
@@ -79,11 +81,6 @@ module Occi
         end
 
         klass
-      end
-
-      # @param [Occi::Model] model
-      def model=(model)
-        @related.model=model if @related
       end
 
       # @return [String] Type identifier of the category
@@ -99,7 +96,7 @@ module Occi
       # @param [String, Category] category Related Category or its type identifier
       # @return [true,false] true if category is related to category_id else false
       def related_to?(category)
-        if @related
+        if self.related
           self.related.each do |cat|
             return true if cat.to_s == category.to_s
           end
@@ -112,22 +109,22 @@ module Occi
       # @return [Hashie::Mash] json representation
       def as_json(options={})
         category = Hashie::Mash.new
-        category.scheme = @scheme if @scheme
-        category.term = @term if @term
-        category.title = @title if @title
-        category.attributes = @attributes if @attributes.any?
+        category.scheme = self.scheme
+        category.term = self.term
+        category.title = self.title if self.title
+        category.attributes = self.attributes if self.attributes.any?
         category
       end
 
       # @return [String] short text representation of the category
       def to_string_short
-        @term + ';scheme=' + @scheme.inspect + ';class=' + self.class.name.demodulize.downcase.inspect
+        self.term + ';scheme=' + self.scheme.inspect + ';class=' + self.class.name.demodulize.downcase.inspect
       end
 
       # @return [String] full text representation of the category
       def to_string
         string = self.to_string_short
-        string << ';title=' + @title.inspect if @title
+        string << ';title=' + self.title.inspect if self.title
         string
       end
 

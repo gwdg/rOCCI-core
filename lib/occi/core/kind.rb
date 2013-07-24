@@ -18,28 +18,32 @@ module Occi
           actions=Occi::Core::Actions.new,
           location=nil)
         super(scheme, term, title, attributes)
-        @parent = parent
+        @parent = [parent].flatten.first
         @actions = Occi::Core::Actions.new(actions)
         @entities = Occi::Core::Entities.new
         location.blank? ? @location = '/' + term + '/' : @location = location
       end
 
       def entity_type
-        self.class.get_class @scheme, @term, @related
+        self.class.get_class self.scheme, self.term, self.parent
       end
 
       def location
         @location.clone
       end
 
+      def related
+        [self.parent]
+      end
+
       # @param [Hash] options
       # @return [Hashie::Mash] json representation
       def as_json(options={})
         kind = Hashie::Mash.new
-        kind.parent = @parent.to_s
-        kind.related = [@parent.to_s]
-        kind.actions = @actions.join(' ').split(' ') if @actions.any?
-        kind.location = @location if @location
+        kind.parent = self.parent.to_s if self.parent
+        kind.related = self.related.join(' ').split(' ') if self.related.any?
+        kind.actions = self.actions.join(' ').split(' ') if self.actions.any?
+        kind.location = self.location if self.location
         kind.merge! super
         kind
       end
@@ -47,10 +51,10 @@ module Occi
       # @return [String] string representation of the kind
       def to_string
         string = super
-        string << ';rel=' + @parent.to_s.inspect
+        string << ';rel=' + self.related.first.to_s.inspect if self.related.any?
         string << ';location=' + self.location.inspect
-        string << ';attributes=' + @attributes.names.keys.join(' ').inspect if @attributes.any?
-        string << ';actions=' + @actions.join(' ').inspect if @actions.any?
+        string << ';attributes=' + self.attributes.names.keys.join(' ').inspect if self.attributes.any?
+        string << ';actions=' + self.actions.join(' ').inspect if self.actions.any?
         string
       end
 
