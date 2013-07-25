@@ -27,6 +27,14 @@ module Occi
         @applies = Occi::Core::Kinds.new applies
       end
 
+      # Check if this Mixin instance is related to another Mixin instance.
+      #
+      # @param kind [Occi::Core::Mixin, String] Mixin or Type Identifier of a Mixin where relation should be checked.
+      # @return [true,false]
+      def related_to?(mixin)
+        self.depends.any? { |dependency| dependency.to_s == mixin.to_s } or self.to_s == mixin.to_s
+      end
+
       def location
         @location.clone
       end

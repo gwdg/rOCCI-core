@@ -11,7 +11,7 @@ module Occi
           scheme, term = category.split '#'
           scheme       += '#'
 
-          klass    = Occi::Core::Category.get_class scheme, term, [Occi::Core::Kind.new]
+          klass    = Occi::Core::Kind.get_class scheme, term, [Occi::Core::Kind.new]
           category = klass.kind
         end
         category

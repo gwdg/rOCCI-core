@@ -23,7 +23,7 @@ module Occi
       def initialize(kind=self.kind, mixins=[], attributes={}, actions=[], rel=Occi::Core::Link.type_identifier, target=nil, source=nil, location=nil)
         super(kind, mixins, attributes, actions, location)
         scheme, term = rel.to_s.split('#')
-        @rel = Occi::Core::Category.get_class(scheme, term).kind if scheme && term
+        @rel = Occi::Core::Kind.get_class(scheme, term).kind if scheme && term
         @source = source if source
         @target = target
       end
