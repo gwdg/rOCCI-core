@@ -25,7 +25,7 @@ module Occi
                                        term='network',
                                        title = 'network resource',
                                        attributes=self.attributes,
-                                       related=Occi::Core::Related.new << Occi::Core::Resource.kind,
+                                       parent=Occi::Core::Resource.kind,
                                        actions = self.actions,
                                        location = '/network/'
 

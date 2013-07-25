@@ -54,6 +54,11 @@ To build and install the bleeding edge version from master
     bundle install
     rake test
 
+Documentation
+-------------
+
+[Code documentation can be found on RubyDoc.info](rubydoc.info/github/gwdg/rOCCI-core).
+
 Usage
 -----
 #### Logging
@@ -131,6 +136,8 @@ Changelog
 * introduced compatibility mode (for OCCI-OS, on by default)
 * introduced new attribute handling for resources
 * completely rewrote OCCI parser
+* improved action and mixin handling
+* aligned with latest draft of OCCI Core and OCCI JSON specification
 * split the code into rOCCI-core, rOCCI-api and rOCCI-cli
 * internal changes, refactoring and some bugfixes
 

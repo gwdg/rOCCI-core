@@ -22,7 +22,7 @@ module Occi
                                        term='storagelink',
                                        title = 'storage link',
                                        attributes = self.attributes,
-                                       related = Occi::Core::Related.new << Occi::Core::Link.kind,
+                                       parent=Occi::Core::Link.kind,
                                        actions = self.actions,
                                        location = '/storagelink/'
 
