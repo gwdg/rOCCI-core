@@ -36,7 +36,7 @@ module Occi
                                        term='storage',
                                        title = 'storage resource',
                                        attributes = self.attributes,
-                                       related = Occi::Core::Related.new << Occi::Core::Resource.kind,
+                                       parent=Occi::Core::Resource.kind,
                                        actions = self.actions,
                                        location = '/storage/'
 

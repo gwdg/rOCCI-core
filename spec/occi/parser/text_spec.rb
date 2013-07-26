@@ -21,8 +21,8 @@ module Occi
           category.attributes['a-1'].class.should eq Occi::Core::Attributes
           category.attributes['a-1']['a'].class.should eq Occi::Core::Attributes
           category.attributes['a-1']['a']['b'].class.should eq Occi::Core::Properties
-          category.actions.to_a.first.to_s.should eq 'http://a.a/a1#a1'
-          category.actions.to_a.last.to_s.should eq 'http://a.b1/b1#b2'
+          category.actions.to_a.any? {|action| action.to_s == 'http://a.a/a1#a1'}.should be_true
+          category.actions.to_a.any? {|action| action.to_s == 'http://a.b1/b1#b2'}.should be_true
         end
 
       end

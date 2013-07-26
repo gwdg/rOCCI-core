@@ -23,7 +23,7 @@ module Occi
                                        term='networkinterface',
                                        title = 'networkinterface link',
                                        attributes = self.attributes,
-                                       related = Occi::Core::Related.new << Occi::Core::Link.kind,
+                                       parent = Occi::Core::Link.kind,
                                        actions = self.actions,
                                        location = '/networkinterface/'
 

@@ -17,9 +17,10 @@ module Occi
                                            term='ipnetwork',
                                            title='IP network mixin',
                                            attributes=self.attributes,
-                                           related=Occi::Core::Related.new << Occi::Infrastructure::Network.kind,
+                                           dependencies=Occi::Core::Dependencies.new,
                                            actions=Occi::Core::Actions.new,
-                                           location='/mixins/ipnetwork/'
+                                           location='/mixins/ipnetwork/',
+                                           applies=Occi::Core::Kinds.new << Occi::Infrastructure::Network.kind
 
       end
     end

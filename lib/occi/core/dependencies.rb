@@ -1,6 +1,6 @@
 module Occi
   module Core
-    class Related < Occi::Core::Categories
+    class Dependencies < Occi::Core::Mixins
 
     end
   end

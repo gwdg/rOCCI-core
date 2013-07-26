@@ -39,8 +39,9 @@ module Occi
       network = Occi::Infrastructure::Network.kind
       collection = model.get(network)
       collection.kind_of? Occi::Collection
+      collection.kinds.should have(1).kind
       collection.kinds.first.should == network
-      collection.mixins.first.should == Occi::Infrastructure::Network::Ipnetwork.mixin
+      collection.mixins.should be_empty
       collection.actions.should be_empty
       collection.resources.should be_empty
       collection.links.should be_empty

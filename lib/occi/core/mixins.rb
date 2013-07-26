@@ -26,15 +26,8 @@ module Occi
       # TODO: fix mixin conversion
       def convert(mixin)
         mixin = super mixin
-
         if mixin.kind_of? String
-          scheme, term = mixin.split '#'
-          scheme += '#'
-
-          mixin = Occi::Core::Category.get_class scheme, term, [Occi::Core::Mixin.new]
-          if mixin.respond_to? :new
-            mixin = mixin.new(scheme, term)
-          end
+          mixin = Occi::Core::Mixin.new *mixin.split('#')
         end
         mixin
       end
