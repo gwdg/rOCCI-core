@@ -37,7 +37,7 @@ module Occi
       # set target attribute of link
       # @param [String] target
       def target=(target)
-        self.attributes['occi.core.target'] = target.to_s
+        self.attributes['occi.core.target'] = target
         @target = target
       end
 
@@ -50,7 +50,7 @@ module Occi
       # set source attribute of link
       # @param [String] source
       def source=(source)
-        self.attributes['occi.core.source'] = source.to_s
+        self.attributes['occi.core.source'] = source
         @source = source
       end
 
@@ -78,11 +78,10 @@ module Occi
         categories = [@kind] + @mixins.join(',').split(',')
         string << ';category=' + categories.join(' ').inspect
         @attributes.names.each_pair do |name, value|
-          value = value.inspect
+          next if value.to_s.blank?
+          value = value.to_s.inspect
           string << ';' + name + '=' + value
         end
-        string << ';occi.core.target=' + self.target.to_s.inspect
-        string << ';occi.core.source=' + self.source.to_s.inspect unless self.source.blank?
 
         string
       end
