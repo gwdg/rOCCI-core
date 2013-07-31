@@ -101,12 +101,12 @@ module Occi
         @attributes.occi!.compute!.state = state
       end
 
-      def storagelink(target, mixins=[], attributes=Occi::Core::Attributes.new)
-        link(target, Occi::Infrastructure::Storagelink.kind, mixins, attributes, rel=Occi::Infrastructure::Storage.type_identifier)
+      def storagelink(target, mixins=[], attributes=Occi::Core::Attributes.new, kind=Occi::Infrastructure::Storagelink.kind)
+        link(target, kind, mixins, attributes, rel=Occi::Infrastructure::Storage.type_identifier)
       end
 
-      def networkinterface(target, mixins=[], attributes=Occi::Core::Attributes.new)
-        link(target, Occi::Infrastructure::Networkinterface.kind, mixins, attributes)
+      def networkinterface(target, mixins=[], attributes=Occi::Core::Attributes.new, kind=Occi::Infrastructure::Networkinterface.kind)
+        link(target, kind, mixins, attributes)
       end
 
       def storagelinks
