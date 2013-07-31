@@ -106,7 +106,7 @@ module Occi
       end
 
       def networkinterface(target, mixins=[], attributes=Occi::Core::Attributes.new, kind=Occi::Infrastructure::Networkinterface.kind)
-        link(target, kind, mixins, attributes)
+        link(target, kind, mixins, attributes, rel=Occi::Infrastructure::Network.type_identifier)
       end
 
       def storagelinks
