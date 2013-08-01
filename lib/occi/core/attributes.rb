@@ -159,6 +159,10 @@ module Occi
           case value
             when Occi::Core::Attributes
               hash[key] = value.as_json unless value.as_json.size == 0
+            when Occi::Core::Entity
+              hash[key] = value.to_s unless value.to_s.empty?
+            when Occi::Core::Category
+              hash[key] = value.to_s
             else
               hash[key] = value.as_json if value
           end
