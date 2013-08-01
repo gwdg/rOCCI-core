@@ -243,7 +243,7 @@ module Occi
         end
         attributes = []
         @attributes.names.each_pair do |name, value|
-          attributes << name + '=' + value.inspect
+          attributes << name + '=' + value.to_s.inspect
         end
         header['X-OCCI-Attribute'] = attributes.join(',') if attributes.any?
         links = []
