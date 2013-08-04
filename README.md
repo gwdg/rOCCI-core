@@ -65,11 +65,6 @@ To build and install the bleeding edge version from master
     bundle exec rake test
     rake install
 
-Documentation
--------------
-
-[Code documentation can be found on RubyDoc.info](rubydoc.info/github/gwdg/rOCCI-core).
-
 Usage
 -----
 #### Logging
