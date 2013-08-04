@@ -36,9 +36,6 @@ Installation
 
 ### From RubyGems.org
 
-**[Mac OS X has some special requirements for the installation. Detailed information can be found in
-doc/macosx.md.](doc/macosx.md)**
-
 To install the most recent stable version
 
     gem install rake
