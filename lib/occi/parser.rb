@@ -71,7 +71,8 @@ module Occi
         else
           nil
       end
-      locations
+
+      locations.flatten
     end
 
   end
