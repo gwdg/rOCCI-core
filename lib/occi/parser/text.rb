@@ -1,15 +1,6 @@
 module Occi
   module Parser
     module Text
-      # Backwards compatibility for Ruby 1.8.7 and named groups in regular expressions
-      if RUBY_VERSION =~ /1.8/
-        require 'oniguruma'
-        REGEXP = Oniguruma::ORegexp
-        ONIG = true
-      else
-        REGEXP = Regexp
-        ONIG = false
-      end
 
       # Regular expressions
       REGEXP_QUOTED_STRING = /([^"\\]|\\.)*/
@@ -157,7 +148,7 @@ module Occi
 
       def self.category(string)
         # create regular expression from regexp string
-        regexp = REGEXP.new(REGEXP_CATEGORY)
+        regexp = Regexp.new(REGEXP_CATEGORY)
         # match string to regular expression
         match = regexp.match string
 
@@ -196,7 +187,7 @@ module Occi
 
       def self.attribute(string)
         # create regular expression from regexp string
-        regexp = REGEXP.new(REGEXP_ATTRIBUTE)
+        regexp = Regexp.new(REGEXP_ATTRIBUTE)
         # match string to regular expression
         match = regexp.match string
 
@@ -214,7 +205,7 @@ module Occi
 
       def self.link_string(string, source)
         # create regular expression from regexp string
-        regexp = REGEXP.new(REGEXP_LINK)
+        regexp = Regexp.new(REGEXP_LINK)
         # match string to regular expression
         match = regexp.match string
 
@@ -234,14 +225,10 @@ module Occi
 
         # create an array of the list of attributes
         attributes = []
-        regexp=REGEXP.new '(\\s*'+REGEXP_ATTRIBUTE_REPR.to_s+')'
+        regexp=Regexp.new '(\\s*'+REGEXP_ATTRIBUTE_REPR.to_s+')'
         attr_line = match[:attributes].sub(/^\s*;\s*/, ' ')
-        if ONIG
-          attr_line_scans = regexp.scan(attr_line)
-          attributes = attr_line_scans.collect {|matches| matches.captures.first} if attr_line_scans
-        else
-          attributes = attr_line.scan(regexp).collect {|matches| matches.first}
-        end
+        attributes = attr_line.scan(regexp).collect {|matches| matches.first}
+
         # parse each attribute and create an OCCI Attribute object from it
         attributes = attributes.inject(Hashie::Mash.new) { |hsh, attribute| hsh.merge!(Occi::Parser::Text.attribute('X-OCCI-Attribute: ' + attribute)) }
         Occi::Core::Link.new kind, mixins, attributes, actions, rel, target, source, location
@@ -249,7 +236,7 @@ module Occi
 
       def self.location(string)
         # create regular expression from regexp string
-        regexp = REGEXP.new(REGEXP_LOCATION)
+        regexp = Regexp.new(REGEXP_LOCATION)
         # match string to regular expression
         match = regexp.match string
 
