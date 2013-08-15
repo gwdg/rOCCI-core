@@ -10,10 +10,9 @@ Requirements
 ------------
 
 ### Ruby
-* at least version 1.9.2 is required
-* Ruby 1.9.3+ is recommended
-* RubyGems installed
-* rake installed (e.g., `gem install rake`)
+* Ruby 1.9.3 is required
+* RubyGems have to be installed
+* Rake has to be installed (e.g., `gem install rake`)
 
 ### Libraries/packages
 * libxslt1-dev/libxslt-devel

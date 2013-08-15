@@ -32,5 +32,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'yard'
   gem.add_development_dependency 'yard-rspec'
 
-  gem.required_ruby_version     = '>= 1.9.2'
+  gem.required_ruby_version     = '>= 1.9.3'
 end
