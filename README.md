@@ -10,25 +10,23 @@ Requirements
 ------------
 
 ### Ruby
-* at least version 1.8.7 is required
-* Ruby 1.9.3+ is recommended
-* RubyGems installed
-* rake installed (e.g., `gem install rake`)
+* Ruby 1.9.3 is required
+* RubyGems have to be installed
+* Rake has to be installed (e.g., `gem install rake`)
 
 ### Libraries/packages
 * libxslt1-dev/libxslt-devel
 * libxml2-dev/libxml2-devel
-* **only if using Ruby 1.8.7:** libonig-dev/oniguruma-devel (Linux) or oniguruma (Mac)
 
 ### Examples
 For distros based on Debian:
 ~~~
-apt-get install ruby rubygems ruby-dev libxslt1-dev libxml2-dev libonig-dev
+apt-get install ruby rubygems ruby-dev libxslt1-dev libxml2-dev
 ~~~
 
 For distros based on RHEL:
 ~~~
-yum install libxml2-devel libxslt-devel ruby-devel openssl-devel gcc gcc-c++ ruby rubygems oniguruma-devel
+yum install libxml2-devel libxslt-devel ruby-devel openssl-devel gcc gcc-c++ ruby rubygems
 ~~~
 
 Installation
@@ -73,7 +71,8 @@ The OCCI gem includes its own logging mechanism using a message queue. By defaul
 A new OCCI Logger can be initialized by specifying the log destination (either a filename or an IO object like
 STDOUT) and the log level.
 
-    Occi::Log.new(STDOUT,Occi::Log::INFO)
+    logger = Occi::Log.new STDOUT
+    logger.level = Occi::Log::INFO
 
 You can create multiple Loggers to receive the log output.
 
@@ -137,6 +136,10 @@ The occi-core gem includes all OCCI Core classes necessary to handly arbitrary O
 
 Changelog
 ---------
+
+### Version 4.1
+* Dropped support for Rubies 1.8.x
+* Updated dependencies
 
 ### Version 4.0
 * introduced compatibility mode (for OCCI-OS, on by default)
