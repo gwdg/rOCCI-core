@@ -5,6 +5,7 @@ module Occi
       # Regular expressions
       REGEXP_QUOTED_STRING = /([^"\\]|\\.)*/
       REGEXP_LOALPHA = /[a-z]/
+      REGEXP_ALPHA = /[a-zA-Z]/
       REGEXP_DIGIT = /[0-9]/
       REGEXP_INT = /#{REGEXP_DIGIT}+/
       REGEXP_FLOAT = /#{REGEXP_INT}\.#{REGEXP_INT}/
@@ -14,7 +15,7 @@ module Occi
       # Regular expressions for OCCI
       if Occi::Settings.compatibility
         # Compatibility with terms starting with a number
-        REGEXP_TERM = /(#{REGEXP_LOALPHA}|#{REGEXP_DIGIT})(#{REGEXP_LOALPHA}|#{REGEXP_DIGIT}|-|_)*/
+        REGEXP_TERM = /(#{REGEXP_ALPHA}|#{REGEXP_DIGIT})(#{REGEXP_ALPHA}|#{REGEXP_DIGIT}|-|_)*/
       else
         REGEXP_TERM = /#{REGEXP_LOALPHA}(#{REGEXP_LOALPHA}|#{REGEXP_DIGIT}|-|_)*/
       end
@@ -154,7 +155,7 @@ module Occi
 
         raise "could not match #{string}" unless match
 
-        term = match[:term]
+        term = match[:term].downcase
         scheme = match[:scheme]
         title = match[:title]
         related = match[:rel].to_s.split
