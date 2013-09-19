@@ -34,6 +34,15 @@ module Occi
           category.class.should eq Occi::Core::Kind
         end
 
+        it 'parses a string describing an OCCI Category with uppercase term' do
+          category_string = 'Category: TERM;scheme="http://a.a/a#";class=kind'
+
+          category = Occi::Parser::Text.category category_string
+          category.term.should eq 'term'
+          category.scheme.should eq 'http://a.a/a#'
+          category.class.should eq Occi::Core::Kind
+        end
+
       end
 
       describe '.resource' do
