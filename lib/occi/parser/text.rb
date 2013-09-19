@@ -40,7 +40,7 @@ module Occi
       if Occi::Settings.compatibility
         REGEXP_CATEGORY = "Category:\\s*(?<term>#{REGEXP_TERM})" << # term (mandatory)
             ";\\s*scheme=\"(?<scheme>#{REGEXP_SCHEME})#{REGEXP_TERM}?\"" << # scheme (mandatory)
-            ";\\s*class=\"(?<class>#{REGEXP_CLASS})\"" << # class (mandatory)
+            ";\\s*class=\"?(?<class>#{REGEXP_CLASS})\"?" << # class (mandatory)
             "(;\\s*title=\"(?<title>#{REGEXP_QUOTED_STRING})\")?" << # title (optional)
             "(;\\s*rel=\"(?<rel>#{REGEXP_TYPE_IDENTIFIER})\")?"<< # rel (optional)
             "(;\\s*location=\"(?<location>#{URI::URI_REF})\")?" << # location (optional)
