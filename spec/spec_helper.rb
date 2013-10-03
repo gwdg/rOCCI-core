@@ -1,12 +1,14 @@
 require 'rubygems'
 
-require 'occi-core'
-
 # enable coverage reports
 if ENV['COVERAGE']
   require 'simplecov'
+
+  SimpleCov.add_filter "/spec/"
   SimpleCov.start
 end
+
+require 'occi-core'
 
 # simplify the usage of VCR; this will allow us to use
 #
