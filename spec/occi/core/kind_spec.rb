@@ -37,6 +37,8 @@ module Occi
           expect(kind.related_to?(Occi::Core::Entity.kind)).to eq true
         end
 
+#	TODO: create empty kind instances, create relations and then check related_to()
+
       end
 
       describe '#as_json' do
@@ -47,6 +49,20 @@ module Occi
 	  hash=Hashie::Mash.new(JSON.parse(expected))
 	  expect(kind.as_json).to eql(hash)
         end
+
+#	TODO: Optional attributes, special characters
+
+      end
+
+      describe '#to_string' do
+
+        it 'produces a string correctly from freshly initialized object' do
+          kind = Occi::Core::Kind.new
+	  expected = 'kind;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/kind/"'
+	  expect(kind.to_string).to eql(expected)
+        end
+
+#	TODO: Different order of tokens, Optional attributes (?), special characters
 
       end
 
