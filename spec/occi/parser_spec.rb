@@ -112,5 +112,13 @@ module Occi
       compute_resources.first.attributes.occi!.compute!.memory.should == 0.25
     end
 
+#    ZS 11 Oct 2013: XML format not yet properly specified
+#    it "parses a XML file" do
+#      media_type = 'application/xml'
+#      body = File.read('spec/occi/test.xml')
+#      collection = Occi::Parser.parse(media_type, body)
+#      
+#    end
+
   end
 end
