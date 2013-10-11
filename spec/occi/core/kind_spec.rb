@@ -39,6 +39,17 @@ module Occi
 
       end
 
+      describe '#as_json' do
+
+        it 'renders JSON correctly from freshly initialized object' do
+          kind = Occi::Core::Resource.kind
+	  expected = '{"parent":"http://schemas.ogf.org/occi/core#entity","related":["http://schemas.ogf.org/occi/core#entity"],"location":"/new_location/","scheme":"http://schemas.ogf.org/occi/core#","term":"resource","title":"resource","attributes":{"occi":{"core":{"summary":{"type":"string","mutable":true,"pattern":".*"},"_summary":{"type":"string","mutable":true,"pattern":".*"}}}}}'
+	  hash=Hashie::Mash.new(JSON.parse(expected))
+	  expect(kind.as_json).to be_json_eql(hash)
+        end
+
+      end
+
     end
   end
 end
