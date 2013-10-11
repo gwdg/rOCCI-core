@@ -33,6 +33,31 @@ module Occi
         action
       end
 
+      # @return [String] text representation
+      def to_text
+        text = "Category: #{@action.to_string_short}"
+        @attributes.names.each_pair do |name, value|
+          value = value.inspect
+          text << "\nX-OCCI-Attribute: #{name}=#{value}"
+        end
+
+        text
+      end
+
+      # @return [Hash] hash containing the HTTP headers of the text/occi rendering
+      def to_header
+        header = Hashie::Mash.new
+        header['Category'] = @action.to_string_short
+
+        attributes = []
+        @attributes.names.each_pair do |name, value|
+          attributes << "#{name}=#{value.to_s.inspect}"
+        end
+        header['X-OCCI-Attribute'] = attributes.join(',') if attributes.any?
+
+        header
+      end
+
     end
   end
 end
