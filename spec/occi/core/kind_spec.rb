@@ -34,7 +34,7 @@ module Occi
 
         it 'checks if the kind is related to another kind' do
           kind = Occi::Core::Resource.kind
-          kind.related_to?(Occi::Core::Entity.kind).should be true
+          expect(kind.related_to?(Occi::Core::Entity.kind)).to eq true
         end
 
       end
@@ -42,10 +42,10 @@ module Occi
       describe '#as_json' do
 
         it 'renders JSON correctly from freshly initialized object' do
-          kind = Occi::Core::Resource.kind
-	  expected = '{"parent":"http://schemas.ogf.org/occi/core#entity","related":["http://schemas.ogf.org/occi/core#entity"],"location":"/new_location/","scheme":"http://schemas.ogf.org/occi/core#","term":"resource","title":"resource","attributes":{"occi":{"core":{"summary":{"type":"string","mutable":true,"pattern":".*"},"_summary":{"type":"string","mutable":true,"pattern":".*"}}}}}'
+          kind = Occi::Core::Kind.new
+	  expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#"}'
 	  hash=Hashie::Mash.new(JSON.parse(expected))
-	  expect(kind.as_json).to be_json_eql(hash)
+	  expect(kind.as_json).to eql(hash)
         end
 
       end
