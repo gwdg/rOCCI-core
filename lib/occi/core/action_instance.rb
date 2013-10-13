@@ -16,10 +16,18 @@ module Occi
                                            attributes=self.attributes
 
       def initialize(action = self.action, attributes=self.attributes)
+        raise ArgumentError, 'action cannot be nil' unless action
+        raise ArgumentError, 'attributes cannot be nil' unless attributes
+        raise ArgumentError, 'attributes must respond to #convert' unless attributes.respond_to? :convert
+
         if action.kind_of? String
           scheme, term = action.split '#'
+
+          raise ArgumentError, 'action scheme and term cannot be nil' unless scheme && term
+          raise ArgumentError, 'action scheme and term cannot be empty' if scheme.empty? || term.empty?
           action = Occi::Core::Action.new(scheme, term)
         end
+
         @action = action
         @attributes = attributes.convert
       end
@@ -42,6 +50,11 @@ module Occi
         end
 
         text
+      end
+
+      # @return [String] JSON representation
+      def to_json
+        @action.to_json
       end
 
       # @return [Hash] hash containing the HTTP headers of the text/occi rendering
