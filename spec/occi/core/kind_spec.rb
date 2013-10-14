@@ -58,11 +58,12 @@ module Occi
 
         it 'produces a string correctly from freshly initialized object' do
           kind = Occi::Core::Kind.new
-	  expected = 'kind;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/kind/"'
-	  expect(kind.to_string).to eql(expected)
+	  expected = ('scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/kind/";kind').split(/;/)
+	  actual = kind.to_string.split(/;/)
+	  expect(actual).to match_array(expected)
         end
 
-#	TODO: Different order of tokens, Optional attributes (?), special characters
+#	TODO: Optional attributes (?), special characters
 
       end
 
