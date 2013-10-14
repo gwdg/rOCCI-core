@@ -4,30 +4,32 @@ module Occi
 
       describe '#get_class' do
 
-        context 'gets OCCI Resource class' do
+        context 'OCCI Resource class' do
           let(:scheme){ 'http://schemas.ogf.org/occi/core' }
           let(:term){ 'resource' }
           let(:klass){ Occi::Core::Kind.get_class scheme, term }
 
-          it 'by term' do
+          it 'gets OCCI Resource class by term term and scheme' do
             expect(klass).to be Occi::Core::Resource
           end
-          it 'by scheme' do
+          it 'also gets the superclass' do
             expect(klass.superclass).to be Occi::Core::Entity
+						#TODO: Possibly move this test to resource_spec?
           end
         end
 
-        context 'gets non predefined OCCI class by term, scheme and related class' do
+        context 'non-predefined OCCI class' do
           let(:scheme){ 'http://example.com/occi' }
           let(:term){ 'test' }
           let(:related){ ['http://schemas.ogf.org/occi/core#resource'] }
           let(:klass){ Occi::Core::Kind.get_class scheme, term, related }
 
-          it 'by term' do
+          it 'gets non predefined OCCI class by term, scheme and related class' do
             expect(klass).to be Com::Example::Occi::Test
           end
-          it 'by scheme' do
+          it 'also gets the superclass' do
             expect(klass.superclass).to be Occi::Core::Resource
+						#TODO: Possibly move this test to resource_spec?
           end
         end
 
