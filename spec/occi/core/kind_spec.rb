@@ -50,7 +50,23 @@ module Occi
 	  expect(kind.as_json).to eql(hash)
         end
 
+        it 'renders JSON correctly with optional attributes' do
+          kind = Occi::Core::Kind.new
+	  kind.title = "test title"
+	  expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#","title":"test title"}'
+	  hash=Hashie::Mash.new(JSON.parse(expected))
+	  expect(kind.as_json).to eql(hash)
+        end
+
 #	TODO: Optional attributes, special characters
+
+        it 'renders JSON correctly with special characters' do
+          kind = Occi::Core::Kind.new
+	  kind.title = "Some special characters @#\$%"
+	  expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#","title":"Some special characters @#\$%"}'
+	  hash=Hashie::Mash.new(JSON.parse(expected))
+	  expect(kind.as_json).to eql(hash)
+        end
 
       end
 
@@ -63,7 +79,15 @@ module Occi
 	  expect(actual).to match_array(expected)
         end
 
-#	TODO: Optional attributes (?), special characters
+        it 'produces a string correctly with optional attributes' do
+          kind = Occi::Core::Kind.new
+	  kind.title = "test title"
+	  expected = ('scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/kind/";kind;title="test title"').split(/;/)
+	  actual = kind.to_string.split(/;/)
+	  expect(actual).to match_array(expected)
+        end
+
+#	TODO: Optional attributes, special characters
 
       end
 
