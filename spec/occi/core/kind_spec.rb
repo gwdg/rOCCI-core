@@ -42,6 +42,11 @@ module Occi
         it 'does not recognize non-existent relationship' do
           expect(base.related_to?(unrelated)).to eq false
         end
+
+        it 'recognizase transitive relationships' do
+	  grandchild = Occi::Core::Kind.new 'http://occi.test.case/core/kind/base', 'related', 'title', Occi::Core::Attributes.new, related
+          expect(grandchild.related_to?(base)).to eq true
+	end
       end
 
       describe '#as_json' do
