@@ -5,9 +5,9 @@ module Occi
       describe '#get_class' do
 
         context 'gets OCCI Resource class' do
-          scheme = 'http://schemas.ogf.org/occi/core'
-          term = 'resource'
-          klass = Occi::Core::Kind.get_class scheme, term
+          let(:scheme){ 'http://schemas.ogf.org/occi/core' }
+          let(:term){ 'resource' }
+          let(:klass){ Occi::Core::Kind.get_class scheme, term }
 
           it 'by term' do
             expect(klass).to be Occi::Core::Resource
@@ -18,10 +18,10 @@ module Occi
         end
 
         context 'gets non predefined OCCI class by term, scheme and related class' do
-          scheme = 'http://example.com/occi'
-          term = 'test'
-          related = ['http://schemas.ogf.org/occi/core#resource']
-          klass = Occi::Core::Kind.get_class scheme, term, related
+          let(:scheme){ 'http://example.com/occi' }
+          let(:term){ 'test' }
+          let(:related){ ['http://schemas.ogf.org/occi/core#resource'] }
+          let(:klass){ Occi::Core::Kind.get_class scheme, term, related }
 
           it 'by term' do
             expect(klass).to be Com::Example::Occi::Test
@@ -41,9 +41,9 @@ module Occi
       end
 
       describe '#related_to?' do
-        base = Occi::Core::Kind.new 'http://occi.test.case/core/kind', 'base'
-        related = Occi::Core::Kind.new 'http://occi.test.case/core/kind/base', 'related', 'title', Occi::Core::Attributes.new, base
-        unrelated = Occi::Core::Kind.new 'http://occi.test.case/core/kind', 'unrelated'
+        let(:base){ Occi::Core::Kind.new 'http://occi.test.case/core/kind', 'base' }
+        let(:related){ Occi::Core::Kind.new 'http://occi.test.case/core/kind/base', 'related', 'title', Occi::Core::Attributes.new, base }
+        let(:unrelated){ Occi::Core::Kind.new 'http://occi.test.case/core/kind', 'unrelated' }
 
         it 'recognizes existing relationship' do
           expect(related.related_to?(base)).to eq true
@@ -60,7 +60,7 @@ module Occi
       end
 
       describe '#as_json' do
-        kind = Occi::Core::Kind.new
+        let(:kind){ Occi::Core::Kind.new }
 
         it 'renders JSON correctly from freshly initialized object' do
           expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#"}'
@@ -86,7 +86,7 @@ module Occi
       end
 
       describe '#to_string' do
-        kind = Occi::Core::Kind.new
+        let(:kind){ Occi::Core::Kind.new }
 
         it 'produces a string correctly from freshly initialized object' do
           expected = ('scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/kind/";kind').split(/;/)
