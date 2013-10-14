@@ -29,7 +29,7 @@ module Occi
         end
 
         @action = action
-        @attributes = attributes.convert
+        @attributes = Occi::Core::Attributes.new(attributes)
       end
 
       # @param [Hash] options

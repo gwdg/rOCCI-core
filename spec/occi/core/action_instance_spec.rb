@@ -5,12 +5,20 @@ module Occi
       let(:action){ Occi::Core::Action.new }
 
       let(:attributes){ Occi::Core::Attributes.new }
-      let(:attributes_one){ Occi::Core::Attributes.split("occi.core.title" => "test") }
-      let(:attributes_multi){ Occi::Core::Attributes.split(
-        "occi.core.title" => "test",
-        "occi.core.id" => "1",
-        "org.opennebula.network.id" => 1
-      ) }
+      let(:attributes_one){
+        attrs = Occi::Core::Attributes.new
+        attrs["occi.core.title"] = "test"
+
+        attrs
+      }
+      let(:attributes_multi){
+        attrs = Occi::Core::Attributes.new
+        attrs["occi.core.title"] = "test"
+        attrs["occi.core.id"] = "1"
+        attrs["org.opennebula.network.id"] = 1
+
+        attrs
+      }
       let(:attributes_unconvertable){ { "not" => "convertable" } }
 
       let(:action_string){ 'http://rspec.rocci.cesnet.cz/occi/core#action' }
