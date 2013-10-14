@@ -4,21 +4,31 @@ module Occi
 
       describe '#get_class' do
 
-        it 'gets OCCI Resource class by term and scheme' do
+        context 'gets OCCI Resource class' do
           scheme = 'http://schemas.ogf.org/occi/core'
           term = 'resource'
           klass = Occi::Core::Kind.get_class scheme, term
-          klass.should be Occi::Core::Resource
-          klass.superclass.should be Occi::Core::Entity
+
+          it 'by term' do
+            expect(klass).to be Occi::Core::Resource
+	  end
+          it 'by scheme' do
+            expect(klass.superclass).to be Occi::Core::Entity
+	  end
         end
 
-        it 'gets non predefined OCCI class by term, scheme and related class' do
+        context 'gets non predefined OCCI class by term, scheme and related class' do
           scheme = 'http://example.com/occi'
           term = 'test'
           related = ['http://schemas.ogf.org/occi/core#resource']
           klass = Occi::Core::Kind.get_class scheme, term, related
-          klass.should be Com::Example::Occi::Test
-          klass.superclass.should be Occi::Core::Resource
+
+          it 'by term' do
+            expect(klass).to be Com::Example::Occi::Test
+	  end
+          it 'by scheme' do
+            expect(klass.superclass).to be Occi::Core::Resource
+	  end
         end
 
         it 'does not get OCCI class by term and scheme if it relates to existing class not derived from OCCI Entity' do
@@ -39,11 +49,11 @@ module Occi
           expect(related.related_to?(base)).to eq true
 	end
 
-        it 'does not recognize non-existent relationship' do
+        it 'does not give false positives on non-existent relationship' do
           expect(base.related_to?(unrelated)).to eq false
         end
 
-        it 'recognizase transitive relationships' #do #TODO This test actually works, but fails because te feature is not yet implemented
+        it 'recognizes transitive relationships' #do #TODO This test actually works, but fails because te feature is not yet implemented
 #	  grandchild = Occi::Core::Kind.new 'http://occi.test.case/core/kind/base', 'related', 'title', Occi::Core::Attributes.new, related
 #          expect(grandchild.related_to?(base)).to eq true
 #	end
