@@ -31,25 +31,17 @@ module Occi
       end
 
       describe '#related_to?' do
-        kind = Occi::Core::Kind.new
-        parent_kind = Occi::Core::Kind.new
-        unrelated = Occi::Core::Kind.new
-        kind.parent = parent_kind
+        base = Occi::Core::Kind.new 'http://occi.test.case/core/kind', 'base'
+        related = Occi::Core::Kind.new 'http://occi.test.case/core/kind/base', 'related', 'title', Occi::Core::Attributes.new, base
+        unrelated = Occi::Core::Kind.new 'http://occi.test.case/core/kind', 'unrelated'
 
-        it 'relates to parent' do
-          expect(kind.related_to?(parent_kind)).to eq true
+        it 'recognizes existing relationship' do
+          expect(related.related_to?(base)).to eq true
 	end
 
-        it 'is related to by parent' do
-          expect(parent_kind.related_to?(kind)).to eq true
-	end
-
-        it 'does not relate to unrelated object' do
-          expect(kind.related_to?(unrelated)).to eq false
+        it 'does not recognize non-existent relationship' do
+          expect(base.related_to?(unrelated)).to eq false
         end
-
-#	TODO: create empty kind instances, create relations and then check related_to()
-
       end
 
       describe '#as_json' do
