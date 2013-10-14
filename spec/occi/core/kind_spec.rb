@@ -34,7 +34,9 @@ module Occi
 
         it 'checks if the kind is related to another kind' do
           kind = Occi::Core::Resource.kind
-          expect(kind.related_to?(Occi::Core::Entity.kind)).to eq true
+          parent_kind = Occi::Core::Resource.kind
+          kind.parent = parent_kind
+          expect(kind.related_to?(parent_kind)).to eq true
         end
 
 #	TODO: create empty kind instances, create relations and then check related_to()
