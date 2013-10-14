@@ -11,6 +11,12 @@ module Occi
 
         attrs
       }
+      let(:attributes_wnil){
+        attrs = Occi::Core::Attributes.new
+        attrs["occi.core.title"] = nil
+
+        attrs
+      }
       let(:attributes_multi){
         attrs = Occi::Core::Attributes.new
         attrs["occi.core.title"] = "test"
@@ -96,24 +102,72 @@ X-OCCI-Attribute: occi.core.id="1"
 X-OCCI-Attribute: org.opennebula.network.id=1|
           expect(Occi::Core::ActionInstance.new(action, attributes_multi).to_text).to eq(expected)
         end
+
+        it 'renders to text w/ a nil attribute' do
+          expected = "Category: action;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\""
+          expect(Occi::Core::ActionInstance.new(action, attributes_wnil).to_text).to eq(expected)
+        end
       end
 
       context '#to_header' do
-        it 'renders default to hash'
-        it 'renders to hash w/ an attribute'
-        it 'renders to hash w/ attributes'
+        it 'renders default to hash' do
+          expected = {"Category" => "action_instance;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\""}
+          expect(Occi::Core::ActionInstance.new.to_header).to eq(expected)
+        end
+
+        it 'renders to hash w/ an attribute' do
+          expected = {
+            "Category" => "action;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\"",
+            "X-OCCI-Attribute" => "occi.core.title=\"test\""
+          }
+          expect(Occi::Core::ActionInstance.new(action, attributes_one).to_header).to eq(expected)
+        end
+
+        it 'renders to hash w/ attributes' do
+          expected = {
+            "Category" => "action;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\"",
+            "X-OCCI-Attribute" => "occi.core.title=\"test\",occi.core.id=\"1\",org.opennebula.network.id=1"
+          }
+          expect(Occi::Core::ActionInstance.new(action, attributes_multi).to_header).to eq(expected)
+        end
+
+        it 'renders to hash w/ a nil attribute' do
+          expected = {"Category" => "action;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\""}
+          expect(Occi::Core::ActionInstance.new(action, attributes_wnil).to_header).to eq(expected)
+        end
       end
 
       context '#to_json' do
         it 'renders default to JSON'
         it 'renders to JSON w/ an attribute'
         it 'renders to JSON w/ attributes'
+        it 'renders to JSON w/ a nil attribute'
       end
 
       context '#as_json' do
-        it 'renders default to Hashie::Mash'
-        it 'renders to Hashie::Mash w/ an attribute'
-        it 'renders to Hashie::Mash w/ attributes'
+        it 'renders default to Hashie::Mash' do
+          expected = Hashie::Mash.new({"action" => "http://schemas.ogf.org/occi/core#action_instance"})
+          expect(Occi::Core::ActionInstance.new.as_json).to eq(expected)
+        end
+
+        it 'renders to Hashie::Mash w/ an attribute' do
+          expected = Hashie::Mash.new({
+            "action" => "http://schemas.ogf.org/occi/core#action",
+            "attributes" => {"occi" => {"core" => {"title" => "test"}}}
+          })
+          expect(Occi::Core::ActionInstance.new(action, attributes_one).as_json).to eq(expected)
+        end
+
+        it 'renders to Hashie::Mash w/ attributes' do
+          expected = Hashie::Mash.new({
+            "action" => "http://schemas.ogf.org/occi/core#action",
+            "attributes" => {
+              "occi" => {"core" => {"title" => "test", "id" => "1"}},
+              "org" => {"opennebula" => {"network" => {"id" => 1}}}
+            }
+          })
+          expect(Occi::Core::ActionInstance.new(action, attributes_multi).as_json).to eq(expected)
+        end
       end
 
     end

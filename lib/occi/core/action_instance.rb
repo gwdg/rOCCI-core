@@ -45,7 +45,7 @@ module Occi
       def to_text
         text = "Category: #{@action.to_string_short}"
         @attributes.names.each_pair do |name, value|
-          value = value.inspect
+          value = value.to_s.inspect unless value && value.is_a?(Numeric)
           text << "\nX-OCCI-Attribute: #{name}=#{value}"
         end
 
@@ -54,7 +54,7 @@ module Occi
 
       # @return [String] JSON representation
       def to_json
-        @action.to_json
+        as_json.to_json
       end
 
       # @return [Hash] hash containing the HTTP headers of the text/occi rendering
@@ -64,7 +64,8 @@ module Occi
 
         attributes = []
         @attributes.names.each_pair do |name, value|
-          attributes << "#{name}=#{value.to_s.inspect}"
+          value = value.to_s.inspect unless value && value.is_a?(Numeric)
+          attributes << "#{name}=#{value}"
         end
         header['X-OCCI-Attribute'] = attributes.join(',') if attributes.any?
 
