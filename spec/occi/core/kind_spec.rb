@@ -31,12 +31,21 @@ module Occi
       end
 
       describe '#related_to?' do
+        kind = Occi::Core::Kind.new
+        parent_kind = Occi::Core::Kind.new
+        unrelated = Occi::Core::Kind.new
+        kind.parent = parent_kind
 
-        it 'checks if the kind is related to another kind' do
-          kind = Occi::Core::Resource.kind
-          parent_kind = Occi::Core::Resource.kind
-          kind.parent = parent_kind
+        it 'relates to parent' do
           expect(kind.related_to?(parent_kind)).to eq true
+	end
+
+        it 'is related to by parent' do
+          expect(parent_kind.related_to?(kind)).to eq true
+	end
+
+        it 'does not relate to unrelated object' do
+          expect(kind.related_to?(unrelated)).to eq false
         end
 
 #	TODO: create empty kind instances, create relations and then check related_to()
@@ -44,16 +53,15 @@ module Occi
       end
 
       describe '#as_json' do
+        kind = Occi::Core::Kind.new
 
         it 'renders JSON correctly from freshly initialized object' do
-          kind = Occi::Core::Kind.new
 	  expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#"}'
 	  hash=Hashie::Mash.new(JSON.parse(expected))
 	  expect(kind.as_json).to eql(hash)
         end
 
         it 'renders JSON correctly with optional attributes' do
-          kind = Occi::Core::Kind.new
 	  kind.title = "test title"
 	  expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#","title":"test title"}'
 	  hash=Hashie::Mash.new(JSON.parse(expected))
@@ -63,7 +71,6 @@ module Occi
 #	TODO: Optional attributes, special characters
 
         it 'renders JSON correctly with special characters' do
-          kind = Occi::Core::Kind.new
 	  kind.title = "Some special characters @#\$%"
 	  expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#","title":"Some special characters @#\$%"}'
 	  hash=Hashie::Mash.new(JSON.parse(expected))
@@ -73,16 +80,15 @@ module Occi
       end
 
       describe '#to_string' do
+        kind = Occi::Core::Kind.new
 
         it 'produces a string correctly from freshly initialized object' do
-          kind = Occi::Core::Kind.new
 	  expected = ('scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/kind/";kind').split(/;/)
 	  actual = kind.to_string.split(/;/)
 	  expect(actual).to match_array(expected)
         end
 
         it 'produces a string correctly with optional attributes' do
-          kind = Occi::Core::Kind.new
 	  kind.title = "test title"
 	  expected = ('scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/kind/";kind;title="test title"').split(/;/)
 	  actual = kind.to_string.split(/;/)
