@@ -75,7 +75,6 @@ module Occi
 	  expect(kind.as_json).to eql(hash)
         end
 
-#	TODO: Optional attributes, special characters
 
         it 'renders JSON correctly with special characters' do
 	  kind.title = "Some special characters @#\$%"
