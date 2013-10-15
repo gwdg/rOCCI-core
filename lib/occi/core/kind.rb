@@ -30,9 +30,7 @@ module Occi
       # @return [Class] Ruby class with scheme as namespace, term as name and parent kind as super class.
       def self.get_class(scheme, term, parent=Occi::Core::Entity.kind)
         parent ||= Occi::Core::Entity.kind
-				if scheme.nil? || term.nil?
-					raise ArgumentError, 'Mandatory argument cannot be nil'
-				end
+				raise ArgumentError, 'Mandatory argument cannot be nil' unless scheme && term
         if parent.kind_of? Array
           parent = parent.first
         end
