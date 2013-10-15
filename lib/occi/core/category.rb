@@ -76,7 +76,7 @@ module Occi
 
 			# @return [Bool] Indicating whether 
 			def self.valid_term?(term)
-				throw StandardError "Invalid characters in term" unless !(term =~ /^[a-z][a-z0-9_-]*$/).nil?
+				throw StandardError "Invalid characters in term #{term}" unless !(term =~ /^[a-z][a-z0-9_-]*$/).nil?
 			end
 
     end
