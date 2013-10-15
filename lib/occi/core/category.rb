@@ -74,7 +74,8 @@ module Occi
         self.type_identifier
       end
 
-			# @return [Bool] Indicating whether 
+      # @param term [String] Term to check.
+			# @return [Bool] Indicating whether term consists exclusively of valid characters.
 			def self.valid_term?(term)
 				!(term =~ /^[a-z][a-z0-9_-]*$/).nil?
 			end
