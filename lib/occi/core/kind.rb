@@ -42,6 +42,8 @@ module Occi
           parent = self.get_class(*parent.to_s.split('#')).kind
         end
 
+				Occi::Core::Category.valid_term?(term)
+
         unless scheme.end_with? '#'
           scheme += '#'
         end
