@@ -45,6 +45,10 @@ module Occi
 					it 'handles non-existent scheme' #do
 #						expect{Occi::Core::Kind.get_class 'http://doesnotexist/', 'resource'}.to raise_error
 #					end
+
+					it 'handles non-existent term' #do
+#						expect{Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', 'doesnotexist'}.to raise_error
+#					end
 					
 					it 'handles parent overriden with nil' do
 						expect(Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', 'resource', nil).to eq Occi::Core::Resource
