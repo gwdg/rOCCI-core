@@ -54,6 +54,14 @@ module Occi
 						expect(Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', 'resource', nil).to eq Occi::Core::Resource
 					end
 					
+					it 'copes with invalid characters in scheme' do
+						expect{Occi::Core::Kind.get_class 'http://schemas ogf.org/occi/core', 'resource'}.to raise_error(URI::InvalidURIError)
+					end
+
+					it 'copes with invalid characters in term' do
+						expect{Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', 'reso urce'}.to raise_error(StandardError)
+					end
+					
 					it 'handles nil scheme' do
 						expect{Occi::Core::Kind.get_class nil, 'resource'}.to raise_error(ArgumentError)
 					end
