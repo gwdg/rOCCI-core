@@ -40,6 +40,26 @@ module Occi
           expect { Occi::Core::Kind.get_class scheme, term, related }.to raise_error
         end
 
+				context 'in case of improper input' do
+
+					it 'handles non-existent scheme' #do
+#						expect{Occi::Core::Kind.get_class 'http://doesnotexist/', 'resource'}.to raise_error
+#					end
+					
+					it 'handles parent overriden with nil' do
+						expect(Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', 'resource', nil).to eq Occi::Core::Resource
+					end
+					
+					it 'handles nil scheme' do
+						expect{Occi::Core::Kind.get_class nil, 'resource'}.to raise_error(ArgumentError)
+					end
+
+					it 'handles nil resource' do
+						expect{Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', nil}.to raise_error(ArgumentError)
+					end
+
+				end
+
       end
 
       describe '#related_to?' do
