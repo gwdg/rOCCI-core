@@ -63,7 +63,7 @@ module Occi
           end
         end
 
-        class_name = self.sanitize_term_before_classify(term).classify
+        class_name = self.sanitize_term(term).classify
         if namespace.const_defined? class_name
           klass = namespace.const_get class_name
           unless klass.ancestors.include? Occi::Core::Entity
@@ -128,8 +128,8 @@ module Occi
       # Relaxed parser rules require additional checks on terms.
       # TODO: a better solution?
       # TODO: check for more characters
-      def self.sanitize_term_before_classify(term)
-        sanitized = term.downcase.gsub(/[^a-z0-9]/, '_').gsub(/_+/, '_').gsub(/^_|_$/, '')
+      def self.sanitize_term(term)
+        sanitized = term.downcase.gsub(/[^a-z0-9-]/, '_').gsub(/_+/, '_').gsub(/^_|_$/, '')
         sanitized = "uuid_#{sanitized}" if sanitized.match(/^[0-9]/)
 
         sanitized
