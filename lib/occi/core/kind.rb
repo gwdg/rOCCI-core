@@ -30,6 +30,7 @@ module Occi
       # @return [Class] Ruby class with scheme as namespace, term as name and parent kind as super class.
       def self.get_class(scheme, term, parent=Occi::Core::Entity.kind)
         parent ||= Occi::Core::Entity.kind
+        raise ArgumentError, 'Mandatory argument cannot be nil' unless scheme && term
         if parent.kind_of? Array
           parent = parent.first
         end
@@ -40,6 +41,9 @@ module Occi
         else
           parent = self.get_class(*parent.to_s.split('#')).kind
         end
+
+        term = self.sanitize_term(term) if Occi::Settings.compatibility
+        raise ArgumentError, "Invalid characters in term #{term}" unless Occi::Core::Category.valid_term?(term)
 
         unless scheme.end_with? '#'
           scheme += '#'
@@ -60,7 +64,7 @@ module Occi
           end
         end
 
-        class_name = self.sanitize_term_before_classify(term).classify
+        class_name = term.classify
         if namespace.const_defined? class_name
           klass = namespace.const_get class_name
           unless klass.ancestors.include? Occi::Core::Entity
@@ -123,10 +127,8 @@ module Occi
       private
 
       # Relaxed parser rules require additional checks on terms.
-      # TODO: a better solution?
-      # TODO: check for more characters
-      def self.sanitize_term_before_classify(term)
-        sanitized = term.downcase.gsub(/[\s\(\)\.\{\}\-;,\\\/\?\!\|\*\<\>]/, '_').gsub(/_+/, '_').chomp('_').reverse.chomp('_').reverse
+      def self.sanitize_term(term)
+        sanitized = term.downcase.gsub(/[^a-z0-9-]/, '_').gsub(/_+/, '_').gsub(/^_|_$/, '')
         sanitized = "uuid_#{sanitized}" if sanitized.match(/^[0-9]/)
 
         sanitized
