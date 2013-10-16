@@ -53,8 +53,17 @@ module Occi
             expect{Occi::Core::Kind.get_class 'doesnotexist', 'resource'}.to raise_error(StandardError)
           end
 
-          it 'copes with invalid characters in term' do
-            expect{Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', 'reso urce'}.to raise_error(ArgumentError)
+          context 'handling invalid characters in term' do
+            after { Occi::Settings.reload! }
+            it 'copes with compatibility on' do
+              Occi::Settings['compatibility'] = true
+              expect(Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', '# #resource$').to eq Occi::Core::Resource
+            end
+            
+            it 'copes with compatibility off' do
+              Occi::Settings['compatibility'] = false
+              expect{Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', '# #resource$'}.to raise_error(ArgumentError)
+            end
           end
           
           it 'handles nil scheme' do
