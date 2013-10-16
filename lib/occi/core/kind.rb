@@ -30,7 +30,7 @@ module Occi
       # @return [Class] Ruby class with scheme as namespace, term as name and parent kind as super class.
       def self.get_class(scheme, term, parent=Occi::Core::Entity.kind)
         parent ||= Occi::Core::Entity.kind
-				raise ArgumentError, 'Mandatory argument cannot be nil' unless scheme && term
+        raise ArgumentError, 'Mandatory argument cannot be nil' unless scheme && term
         if parent.kind_of? Array
           parent = parent.first
         end
@@ -42,7 +42,7 @@ module Occi
           parent = self.get_class(*parent.to_s.split('#')).kind
         end
 
-				throw StandardError, "Invalid characters in term #{term}" unless Occi::Core::Category.valid_term?(term)
+        raise ArgumentError, "Invalid characters in term #{term}" unless Occi::Core::Category.valid_term?(term)
 
         unless scheme.end_with? '#'
           scheme += '#'

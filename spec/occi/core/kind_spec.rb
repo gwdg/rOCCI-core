@@ -14,7 +14,7 @@ module Occi
           end
           it 'also gets the superclass' do
             expect(klass.superclass).to be Occi::Core::Entity
-						#TODO: Possibly move this test to resource_spec?
+            #TODO: Possibly move this test to resource_spec?
           end
         end
 
@@ -29,7 +29,7 @@ module Occi
           end
           it 'also gets the superclass' do
             expect(klass.superclass).to be Occi::Core::Resource
-						#TODO: Possibly move this test to resource_spec?
+            #TODO: Possibly move this test to resource_spec?
           end
         end
 
@@ -40,40 +40,40 @@ module Occi
           expect { Occi::Core::Kind.get_class scheme, term, related }.to raise_error
         end
 
-				context 'in case of improper input' do
+        context 'in case of improper input' do
 
-					it 'handles parent overriden with nil' do
-						expect(Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', 'resource', nil).to eq Occi::Core::Resource
-					end
-					
-					it 'copes with invalid characters in scheme' do
-						expect{Occi::Core::Kind.get_class 'http://schemas ogf.org/occi/core', 'resource'}.to raise_error(URI::InvalidURIError)
-					end
-					it 'copes with non-URI-like structure of the scheme' do
-						expect{Occi::Core::Kind.get_class 'doesnotexist', 'resource'}.to raise_error(StandardError)
-					end
+          it 'handles parent overriden with nil' do
+            expect(Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', 'resource', nil).to eq Occi::Core::Resource
+          end
+          
+          it 'copes with invalid characters in scheme' do
+            expect{Occi::Core::Kind.get_class 'http://schemas ogf.org/occi/core', 'resource'}.to raise_error(URI::InvalidURIError)
+          end
+          it 'copes with non-URI-like structure of the scheme' do
+            expect{Occi::Core::Kind.get_class 'doesnotexist', 'resource'}.to raise_error(StandardError)
+          end
 
-					it 'copes with invalid characters in term' do
-						expect{Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', 'reso urce'}.to raise_error(StandardError)
-					end
-					
-					it 'handles nil scheme' do
-						expect{Occi::Core::Kind.get_class nil, 'resource'}.to raise_error(ArgumentError)
-					end
+          it 'copes with invalid characters in term' do
+            expect{Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', 'reso urce'}.to raise_error(ArgumentError)
+          end
+          
+          it 'handles nil scheme' do
+            expect{Occi::Core::Kind.get_class nil, 'resource'}.to raise_error(ArgumentError)
+          end
 
-					it 'handles nil resource' do
-						expect{Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', nil}.to raise_error(ArgumentError)
-					end
+          it 'handles nil resource' do
+            expect{Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', nil}.to raise_error(ArgumentError)
+          end
 
-					it 'copes with invalid parent' do
+          it 'copes with invalid parent' do
             expect{Occi::Core::Kind.get_class 'http://example.com/occi', 'test', 'http://s  chemas.ogf.org/occi/core#resource'}.to raise_error(URI::InvalidURIError)
-					end
+          end
 
-					it 'copes with parent missing term' do
+          it 'copes with parent missing term' do
             expect{Occi::Core::Kind.get_class 'http://example.com/occi', 'test', 'http://s  chemas.ogf.org/occi/core'}.to raise_error(ArgumentError)
-					end
+          end
 
-				end
+        end
 
       end
 
@@ -111,7 +111,6 @@ module Occi
           hash=Hashie::Mash.new(JSON.parse(expected))
           expect(kind.as_json).to eql(hash)
         end
-
 
         it 'renders JSON correctly with special characters' do
           kind.title = "Some special characters @#\$%"
