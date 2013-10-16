@@ -4,16 +4,22 @@ module Occi
     context 'logging to files' do
       testIO = StringIO.new
       logger = Occi::Log.new(testIO)
+      Occi::Log.debug("Test Debug Text")
       Occi::Log.info("Test Info Text")
       Occi::Log.warn("Test Warning Text")
       Occi::Log.error("Test Error Text")
       Occi::Log.fatal("Test Fatal Text")
       logger.level=Occi::Log::ERROR
+      Occi::Log.debug("Second Debug Text")
       Occi::Log.info("Second Info Text")
       Occi::Log.warn("Second Warning Text")
       Occi::Log.error("Second Error Text")
       Occi::Log.fatal("Second Fatal Text")
       logger.close
+
+      it 'logs correctly with prioritiy DEBUG' do
+        expect(testIO.string).to match (/D.*DEBUG.*Test Debug Text/)
+      end
 
       it 'logs correctly with prioritiy INFO' do
         expect(testIO.string).to match (/I.*INFO.*Test Info Text/)
@@ -31,7 +37,11 @@ module Occi
         expect(testIO.string).to match (/F.*FATAL.*Test Fatal Text/)
       end
 
-      it 'does not log prioritiy INFO with log level set to ERROR' do
+      it 'does not log prioritiy DEBUG with log level set to ERROR' do
+        expect(testIO.string).to_not match (/D.*DEBUG.*Second Debug Text/)
+      end
+
+      it 'does not log prioritiy WARN with log level set to ERROR' do
         expect(testIO.string).to_not match (/I.*INFO.*Second Info Text/)
       end
 
@@ -61,29 +71,39 @@ module Occi
       logger.close
     end
 
-    context 'logging to a pipe' #do
-#			def log_and_test(priority)
-#        r, w = IO.pipe
-#        logger = Occi::Log.new(w)
-#        logger.level = priority
-#        Occi::Log.info("Test")
-#        line=r.readline
-#        expect(line).to include("Test")
-#        logger.close
-#			end
+    context 'reporting current log levels correctly' do
+      testIO = StringIO.new
+      logger = Occi::Log.new(testIO)
 
-#      it 'logs with priority INFO' #do
-#				log_and_test(Occi::Log::INFO)
-#      end
+      it 'has initial log level set to 0' do
+        expect(logger.level).to eq 0
+      end
 
-#      it 'logs with priority WARN'# do
-#				log_and_test(Occi::Log::WARN)
-#      end
+      it 'reports ERROR log level correctly' do
+        logger.level=Occi::Log::ERROR
+        expect(logger.level).to eq 3
+      end
 
-#      it 'logs with priority ERROR'
-#      it 'logs with priority FATAL'
+      logger.close
+    end
 
-#    end
+    it 'logs through a pipe' do
+      r, w = IO.pipe
+      logger = Occi::Log.new(w)
+      logger.level = Occi::Log::INFO
+      Occi::Log.info("Test")
+      r.readline.include?("Test")
+      logger.close
+    end
+
+    it 'logs through a pre-initiated Logger' do
+      r, w = IO.pipe
+      logger = Occi::Log.new(Logger.new(w))
+      logger.level = Occi::Log::INFO
+      Occi::Log.info("Test")
+      r.readline.include?("Test")
+      logger.close
+    end
 
   end
 end
