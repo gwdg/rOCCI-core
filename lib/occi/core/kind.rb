@@ -129,7 +129,7 @@ module Occi
       # TODO: a better solution?
       # TODO: check for more characters
       def self.sanitize_term_before_classify(term)
-        sanitized = term.downcase.gsub(/[\s\(\)\.\{\}\-;,\\\/\?\!\|\*\<\>]/, '_').gsub(/_+/, '_').chomp('_').reverse.chomp('_').reverse
+        sanitized = term.downcase.gsub(/[^a-z0-9]/, '_').gsub(/_+/, '_').gsub(/^_|_$/, '')
         sanitized = "uuid_#{sanitized}" if sanitized.match(/^[0-9]/)
 
         sanitized
