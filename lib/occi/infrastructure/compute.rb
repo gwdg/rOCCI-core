@@ -38,6 +38,8 @@ module Occi
                                                   :pattern => '(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*'}
       self.attributes['occi.compute.memory'] = {:type => 'number',
                                                 :mutable => true}
+      self.attributes['occi.compute.speed'] = {:type => 'number',
+                                                :mutable => true}
       self.attributes['occi.compute.state'] = {:pattern => 'inactive|active|suspended|error',
                                                :default => 'inactive'}
 

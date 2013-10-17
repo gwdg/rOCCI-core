@@ -56,7 +56,7 @@ module Occi
         it 'rejects non-matching values' do
           compute.architecture = 'z80'
           compute.model=modl
-          expect(compute.check).to raise_error
+          expect{compute.check}.to raise_error
         end
       end
 
@@ -82,7 +82,16 @@ module Occi
 #        end
       end
 
-      context '#speed'
+      context '#speed' do
+        it 'can be set and read' do
+          compute.speed = 3000.0
+          expect(compute.speed).to eq 3000.0
+        end
+        it 'rejects non-matching values' #do
+#          compute.memory = -4096
+#          expect(compute.check).to raise_error
+#        end
+      end
 
       context '#memory' do
         it 'can be set and read' do
