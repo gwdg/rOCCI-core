@@ -4,7 +4,7 @@ module Occi
 
       attr_accessor :links
 
-      self.attributes = Occi::Core::Attributes.new
+      self.attributes = Occi::Core::Attributes.new(Occi::Core::Entity.attributes)
 
       self.attributes['occi.core.summary'] = {:mutable => true}
 
@@ -31,7 +31,7 @@ module Occi
 
       # @return [String] summary attribute of the resource
       def summary
-        self.attributes.occi.core.summary if @attributes.occi.core if @attributes.occi
+        self.attributes.occi_.core_.summary
       end
 
       # set summary attribute of resource
