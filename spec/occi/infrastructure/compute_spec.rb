@@ -67,7 +67,7 @@ module Occi
         end
         it 'rejects non-matching values' #do
 #          compute.cores = -32
-#          expect(compute.check).to raise_error
+#          expect{compute.check}.to raise_error
 #        end
       end
 
@@ -78,7 +78,7 @@ module Occi
         end
         it 'rejects non-matching values' #do
 #          compute.hostname = 'testhostname'
-#          expect(compute.check).to raise_error
+#          expect{compute.check}.to raise_error
 #        end
       end
 
@@ -89,7 +89,7 @@ module Occi
         end
         it 'rejects non-matching values' #do
 #          compute.memory = -4096
-#          expect(compute.check).to raise_error
+#          expect{compute.check}.to raise_error
 #        end
       end
 
@@ -100,7 +100,7 @@ module Occi
         end
         it 'rejects non-matching values' #do
 #          compute.memory = -4096
-#          expect(compute.check).to raise_error
+#          expect{compute.check}.to raise_error
 #        end
       end
 
@@ -116,7 +116,7 @@ module Occi
         end
         it 'rejects non-matching values' #do
 #          compute.state = 'broken'
-#          expect(compute.check).to raise_error
+#          expect{compute.check}.to raise_error
 #        end
       end
 
