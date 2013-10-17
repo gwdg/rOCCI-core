@@ -4,7 +4,7 @@ module Occi
 
       attr_accessor :links
 
-      self.attributes = Occi::Core::Attributes.new
+      self.attributes = Occi::Core::Attributes.new(Occi::Core::Entity.attributes)
 
       self.attributes['occi.core.summary'] = {:mutable => true}
 

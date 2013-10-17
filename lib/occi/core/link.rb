@@ -4,6 +4,7 @@ module Occi
 
       attr_accessor :rel, :source, :target
 
+      self.attributes = Occi::Core::Attributes.new(Occi::Core::Entity.attributes)
       self.attributes['occi.core.target'] = {:mutable => true}
       self.attributes['occi.core.source'] = {:mutable => true}
 

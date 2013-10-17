@@ -29,7 +29,7 @@ module Occi
 
       self.actions = Occi::Core::Actions.new << start << stop << restart << suspend
 
-      self.attributes = Occi::Core::Attributes.new
+      self.attributes = Occi::Core::Attributes.new(Occi::Core::Resource.attributes)
       self.attributes['occi.compute.architecture'] = {:mutable => true,
                                                       :pattern => 'x86|x64'}
       self.attributes['occi.compute.cores'] = {:type => 'number',
@@ -51,7 +51,7 @@ module Occi
 
       require 'occi/infrastructure/resource_tpl'
       require 'occi/infrastructure/os_tpl'
-      self.mixins = Occi::Core::Mixins.new << Occi::Infrastructure::Resource_tpl.mixin << Occi::Infrastructure::Os_tpl.mixin
+      self.mixins = Occi::Core::Mixins.new << Occi::Infrastructure::ResourceTpl.mixin << Occi::Infrastructure::OsTpl.mixin
 
       def architecture
         @attributes.occi.compute.architecture if @attributes.occi.compute if @attributes.occi

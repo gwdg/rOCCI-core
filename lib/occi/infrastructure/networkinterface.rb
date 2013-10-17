@@ -12,7 +12,7 @@ module Occi
 
       self.actions = Occi::Core::Actions.new << up << down
 
-      self.attributes = Occi::Core::Attributes.new
+      self.attributes = Occi::Core::Attributes.new(Occi::Core::Link.attributes)
       self.attributes['occi.networkinterface.interface'] ={:mutable => true}
       self.attributes['occi.networkinterface.mac'] = {:mutable => true,
                                                       :pattern => '^([0-9a-fA-F]{2}[:-]){5}([0-9a-fA-F]{2})$'}
