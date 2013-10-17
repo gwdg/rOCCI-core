@@ -113,7 +113,7 @@ For categories already specified by the OCCI WG a method exists in the OCCI Mode
     model = Occi::Model.new
     model.register_infrastructure
 
-Further categories can either be registered from files which include OCCI collections in JSON formator or from parsed
+Further categories can either be registered from files which include OCCI collections in JSON format or or from parsed
  JSON objects (e.g. from the query interface of an OCCI service endpoint).
 
 #### Parsing OCCI messages
@@ -121,8 +121,8 @@ Further categories can either be registered from files which include OCCI collec
 The OCCI gem includes a Parser to easily parse OCCI messages. With a given media type (e.g. json,
 xml or plain text) the parser analyses the content of the message body and, if supplied,
 the message header. As the text/plain and text/occi media type do not clearly distinguish between a message with a
-category and a message with an entity which has a kind, it has to be specified if the message contains a category (e
-.g. for user defined mixins)
+category and a message with an entity which has a kind, it has to be specified if the message contains a category
+(e.g. for user defined mixins)
 
 OCCI messages can be parsed to an OCCI collection for example like
 
