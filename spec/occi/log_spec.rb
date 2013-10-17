@@ -2,62 +2,70 @@ module Occi
   describe Log do
 
     context 'logging to files' do
-      testIO = StringIO.new
-      logger = Occi::Log.new(testIO)
-      Occi::Log.debug("Test Debug Text")
-      Occi::Log.info("Test Info Text")
-      Occi::Log.warn("Test Warning Text")
-      Occi::Log.error("Test Error Text")
-      Occi::Log.fatal("Test Fatal Text")
-      logger.level=Occi::Log::ERROR
-      Occi::Log.debug("Second Debug Text")
-      Occi::Log.info("Second Info Text")
-      Occi::Log.warn("Second Warning Text")
-      Occi::Log.error("Second Error Text")
-      Occi::Log.fatal("Second Fatal Text")
-      logger.close
+      let!(:testIO){ StringIO.new}
+      let!(:logger){ Occi::Log.new(testIO) }
+      after(:each) do
+        logger.close
+      end
 
       it 'logs correctly with prioritiy DEBUG' do
+        Occi::Log.debug("Test Debug Text")
         expect(testIO.string).to match (/D.*DEBUG.*Test Debug Text/)
       end
 
       it 'logs correctly with prioritiy INFO' do
+        Occi::Log.info("Test Info Text")
         expect(testIO.string).to match (/I.*INFO.*Test Info Text/)
       end
 
       it 'logs correctly with prioritiy WARN' do
+        Occi::Log.warn("Test Warning Text")
         expect(testIO.string).to match (/W.*WARN.*Test Warning Text/)
       end
 
       it 'logs correctly with prioritiy ERROR' do
+        Occi::Log.error("Test Error Text")
         expect(testIO.string).to match (/E.*ERROR.*Test Error Text/)
       end
 
       it 'logs correctly with prioritiy FATAL' do
+        Occi::Log.fatal("Test Fatal Text")
         expect(testIO.string).to match (/F.*FATAL.*Test Fatal Text/)
       end
 
-      it 'does not log prioritiy DEBUG with log level set to ERROR' do
-        expect(testIO.string).to_not match (/D.*DEBUG.*Second Debug Text/)
-      end
+      context "with log level set to filter out some messages" do
+        before(:each) do
+          logger.level=Occi::Log::ERROR
+        end
+        it 'does not log prioritiy DEBUG with log level set to ERROR' do
+          Occi::Log.debug("Second Debug Text")
+          expect(testIO.string).to_not match (/D.*DEBUG.*Second Debug Text/)
+        end
 
-      it 'does not log prioritiy WARN with log level set to ERROR' do
-        expect(testIO.string).to_not match (/I.*INFO.*Second Info Text/)
-      end
+        it 'does not log prioritiy WARN with log level set to ERROR' do
+          Occi::Log.info("Second Info Text")
+          expect(testIO.string).to_not match (/I.*INFO.*Second Info Text/)
+        end
 
-      it 'does not log prioritiy WARN with log level set to ERROR' do
-        expect(testIO.string).to_not match (/W.*WARN.*Second Warning Text/)
-      end
+        it 'does not log prioritiy WARN with log level set to ERROR' do
+          Occi::Log.warn("Second Warning Text")
+          expect(testIO.string).to_not match (/W.*WARN.*Second Warning Text/)
+        end
 
-      it 'still logs with prioritiy ERROR' do
-        expect(testIO.string).to match (/E.*ERROR.*Second Error Text/)
-      end
+        it 'still logs with prioritiy ERROR' do
+          Occi::Log.error("Second Error Text")
+          expect(testIO.string).to match (/E.*ERROR.*Second Error Text/)
+        end
 
-      it 'still logs with prioritiy FATAL' do
-        expect(testIO.string).to match (/F.*FATAL.*Second Fatal Text/)
+        it 'still logs with prioritiy FATAL' do
+          Occi::Log.fatal("Second Fatal Text")
+          expect(testIO.string).to match (/F.*FATAL.*Second Fatal Text/)
+        end
       end
 
       it 'tells log lines apart correctly' do #This tests the correctness of the testing procedure rather than the code itself
+        Occi::Log.error("Second Error Text")
+        Occi::Log.fatal("Second Fatal Text")
         expect(testIO.string).to_not match (/E.*ERROR.*Test Fatal Text/)
       end
 
