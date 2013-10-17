@@ -31,7 +31,7 @@ module Occi
 
       # @return [String] target attribute of the link
       def target
-        @target ||= self.attributes.occi.core.target if @attributes.occi.core if @attributes.occi
+        @target ||= self.attributes.occi_.core_.target
         @target
       end
 
@@ -44,7 +44,7 @@ module Occi
 
       # @return [String] source attribute of the link
       def source
-        @source ||= self.attributes.occi.core.source if @attributes.occi.core if @attributes.occi
+        @source ||= self.attributes.occi_.core_.source
         @source
       end
 
