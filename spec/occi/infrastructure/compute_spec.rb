@@ -22,14 +22,24 @@ module Occi
         end
       end
 
-      it "creates a networkinterface to an existing network resource" do
-        target = Occi::Infrastructure::Network.new
-        # create a random ID as the network resource must already exist and therefore must have an ID assigned
-        target.id = UUIDTools::UUID.random_create.to_s
-        compute.networkinterface target
-        compute.links.should have(1).link
-        compute.links.first.should be_kind_of Occi::Infrastructure::Networkinterface
-        compute.links.first.target.should be target
+      context '#networkinterface' do
+        let(:target){
+          target = Occi::Infrastructure::Network.new
+          # create a random ID as the network resource must already exist and therefore must have an ID assigned
+          target.id = UUIDTools::UUID.random_create.to_s
+        }
+        it "creates a single networkinterface" do
+          compute.networkinterface target
+          expect(compute.links).to have(1).link
+        end
+        it "creates a networkinterface to a storage resource" do
+          compute.networkinterface target
+          expect(compute.links.first).to be_kind_of Occi::Infrastructure::Networkinterface
+        end
+        it "has the correct interface as target" do
+          compute.networkinterface target
+          expect(compute.links.first.target).to be target
+        end
       end
 
 
