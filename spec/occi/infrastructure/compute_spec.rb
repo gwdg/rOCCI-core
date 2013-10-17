@@ -65,6 +65,9 @@ module Occi
           compute.cores = 32
           expect(compute.cores).to eq 32
         end
+        it 'rejects non-numeric values' do
+          expect{compute.memory = 'a few'}.to raise_error
+        end
         it 'rejects non-matching values' #do
 #          compute.cores = -32
 #          expect{compute.check}.to raise_error
@@ -87,6 +90,9 @@ module Occi
           compute.speed = 3000.0
           expect(compute.speed).to eq 3000.0
         end
+        it 'rejects non-numeric values' do
+          expect{compute.memory = 'fast'}.to raise_error
+        end
         it 'rejects non-matching values' #do
 #          compute.memory = -4096
 #          expect{compute.check}.to raise_error
@@ -97,6 +103,9 @@ module Occi
         it 'can be set and read' do
           compute.memory = 4096
           expect(compute.memory).to eq 4096
+        end
+        it 'rejects non-numeric values' do
+          expect{compute.memory = 'a lot'}.to raise_error
         end
         it 'rejects non-matching values' #do
 #          compute.memory = -4096
