@@ -2,12 +2,17 @@ module Occi
   module Infrastructure
     describe Compute do
       let(:compute){ Occi::Infrastructure::Compute.new }
+      let(:modl){
+        modl = Occi::Model.new
+        modl.register_infrastructure
+        modl }
 
       context '#storagelink' do
         let(:target){
           target = Occi::Infrastructure::Storage.new
           # create a random ID as the storage resource must already exist and therefore must have an ID assigned
-          target.id = UUIDTools::UUID.random_create.to_s }
+          target.id = UUIDTools::UUID.random_create.to_s 
+          target }
         it "creates a single storagelink" do
           compute.storagelink target
           expect(compute.links).to have(1).link
@@ -27,7 +32,7 @@ module Occi
           target = Occi::Infrastructure::Network.new
           # create a random ID as the network resource must already exist and therefore must have an ID assigned
           target.id = UUIDTools::UUID.random_create.to_s
-        }
+          target }
         it "creates a single networkinterface" do
           compute.networkinterface target
           expect(compute.links).to have(1).link
@@ -48,10 +53,11 @@ module Occi
           compute.architecture = 'x64'
           expect(compute.architecture).to eq 'x64'
         end
-        it 'rejects non-matching values' #do
-#          compute.architecture = 'z80'
-#          expect(compute.check).to eq false
-#        end
+        it 'rejects non-matching values' do
+          compute.architecture = 'z80'
+          compute.model=modl
+          expect(compute.check).to raise_error
+        end
       end
 
       context '#cores' do
@@ -61,7 +67,7 @@ module Occi
         end
         it 'rejects non-matching values' #do
 #          compute.cores = -32
-#          expect(compute.check).to eq false
+#          expect(compute.check).to raise_error
 #        end
       end
 
@@ -72,7 +78,7 @@ module Occi
         end
         it 'rejects non-matching values' #do
 #          compute.hostname = 'testhostname'
-#          expect(compute.check).to eq false
+#          expect(compute.check).to raise_error
 #        end
       end
 
@@ -85,21 +91,23 @@ module Occi
         end
         it 'rejects non-matching values' #do
 #          compute.memory = -4096
-#          expect(compute.check).to eq false
+#          expect(compute.check).to raise_error
 #        end
       end
 
       context '#state' do
-        it 'has correct default value' #do
-#          expect(compute.state).to eq 'inactive'
-#        end
+        it 'has correct default value' do
+          compute.model=modl
+          compute.check
+          expect(compute.state).to eq 'inactive'
+        end
         it 'can be set and read' do
           compute.state = 'active'
           expect(compute.state).to eq 'active'
         end
         it 'rejects non-matching values' #do
 #          compute.state = 'broken'
-#          expect(compute.check).to eq false
+#          expect(compute.check).to raise_error
 #        end
       end
 
