@@ -1,6 +1,6 @@
 module Occi
   module Infrastructure
-    module Os_tpl
+    module OsTpl
 
       mattr_accessor :attributes, :mixin
 

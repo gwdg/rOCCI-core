@@ -12,7 +12,7 @@ module Occi
 
       self.actions = Occi::Core::Actions.new << up << down
 
-      self.attributes = Occi::Core::Attributes.new
+      self.attributes = Occi::Core::Attributes.new(Occi::Core::Link.attributes)
       self.attributes['occi.networkinterface.interface'] ={:mutable => true}
       self.attributes['occi.networkinterface.mac'] = {:mutable => true,
                                                       :pattern => '^([0-9a-fA-F]{2}[:-]){5}([0-9a-fA-F]{2})$'}
@@ -39,7 +39,7 @@ module Occi
       end
 
       def interface
-        @attributes.occi.networkinterface.interface if @attributes.occi.networkinterface if @attributes.occi
+        @attributes.occi_.networkinterface_.interface
       end
 
       def interface=(interface)
@@ -47,7 +47,7 @@ module Occi
       end
 
       def mac
-        @attributes.occi.networkinterface.mac if @attributes.occi.networkinterface if @attributes.occi
+        @attributes.occi_.networkinterface_.mac
       end
 
       def mac=(mac)
@@ -55,7 +55,7 @@ module Occi
       end
 
       def state
-        @attributes.occi.networkinterface.state if @attributes.occi.networkinterface if @attributes.occi
+        @attributes.occi_.networkinterface_.state
       end
 
       def state=(state)
@@ -63,7 +63,7 @@ module Occi
       end
 
       def address
-        @attributes.occi.networkinterface.address if @attributes.occi.networkinterface if @attributes.occi
+        @attributes.occi_.networkinterface_.address
       end
 
       def address=(address)
@@ -75,7 +75,7 @@ module Occi
       end
 
       def gateway
-        @attributes.occi.networkinterface.gateway if @attributes.occi.networkinterface if @attributes.occi
+        @attributes.occi_.networkinterface_.gateway
       end
 
       def gateway=(gateway)
@@ -87,7 +87,7 @@ module Occi
       end
 
       def allocation
-        @attributes.occi.networkinterface.allocation if @attributes.occi.networkinterface if @attributes.occi
+        @attributes.occi_.networkinterface_.allocation
       end
 
       def allocation=(allocation)
