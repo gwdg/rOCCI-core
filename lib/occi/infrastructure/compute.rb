@@ -54,7 +54,7 @@ module Occi
       self.mixins = Occi::Core::Mixins.new << Occi::Infrastructure::ResourceTpl.mixin << Occi::Infrastructure::OsTpl.mixin
 
       def architecture
-        @attributes.occi.compute.architecture if @attributes.occi.compute if @attributes.occi
+        @attributes.occi_.compute_.architecture
       end
 
       def architecture=(architecture)
@@ -62,7 +62,7 @@ module Occi
       end
 
       def cores
-        @attributes.occi.compute.cores if @attributes.occi.compute if @attributes.occi
+        @attributes.occi_.compute_.cores
       end
 
       def cores=(cores)
@@ -70,7 +70,7 @@ module Occi
       end
 
       def hostname
-        @attributes.occi.compute.hostname if @attributes.occi.compute if @attributes.occi
+        @attributes.occi_.compute_.hostname
       end
 
       def hostname=(hostname)
@@ -78,7 +78,7 @@ module Occi
       end
 
       def speed
-        @attributes.occi.compute.speed if @attributes.occi.compute if @attributes.occi
+        @attributes.occi_.compute_.speed
       end
 
       def speed=(speed)
@@ -86,7 +86,7 @@ module Occi
       end
 
       def memory
-        @attributes.occi.compute.memory if @attributes.occi.compute if @attributes.occi
+        @attributes.occi_.compute_.memory
       end
 
       def memory=(memory)
@@ -94,7 +94,7 @@ module Occi
       end
 
       def state
-        @attributes.occi.compute.state if @attributes.occi.compute if @attributes.occi
+        @attributes.occi_.compute_.state
       end
 
       def state=(state)

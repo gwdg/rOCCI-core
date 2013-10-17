@@ -28,7 +28,7 @@ module Occi
 
 
       def deviceid
-        @attributes.occi.storagelink.deviceid if @attributes.occi.storagelink if @attributes.occi
+        @attributes.occi_.storagelink_.deviceid
       end
 
       def deviceid=(deviceid)
@@ -36,7 +36,7 @@ module Occi
       end
 
       def mountpoint
-        @attributes.occi.storagelink.mountpoint if @attributes.occi.storagelink if @attributes.occi
+        @attributes.occi_.storagelink_.mountpoint
       end
 
       def mountpoint=(mountpoint)
@@ -44,7 +44,7 @@ module Occi
       end
 
       def state
-        @attributes.occi.storagelink.state if @attributes.occi.storagelink if @attributes.occi
+        @attributes.occi_.storagelink_.state
       end
 
       def state=(state)
