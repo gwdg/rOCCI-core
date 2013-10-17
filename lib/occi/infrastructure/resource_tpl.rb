@@ -1,6 +1,6 @@
 module Occi
   module Infrastructure
-    module Resource_tpl
+    module ResourceTpl
 
       mattr_accessor :attributes, :mixin
 

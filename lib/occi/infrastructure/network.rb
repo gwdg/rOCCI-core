@@ -12,7 +12,7 @@ module Occi
 
       self.actions = Occi::Core::Actions.new << up << down
 
-      self.attributes = Occi::Core::Attributes.new
+      self.attributes = Occi::Core::Attributes.new(Occi::Core::Resource.attributes)
       self.attributes['occi.network.vlan'] = {:type => 'number',
                                               :mutable => true,
                                               :pattern => 'x86|x64'}
@@ -41,7 +41,7 @@ module Occi
       end
 
       def vlan
-        @attributes.occi.nework.vlan if @attributes.occi.network if @attributes.occi
+        @attributes.occi_.nework_.vlan
       end
 
       def vlan=(vlan)
@@ -49,7 +49,7 @@ module Occi
       end
 
       def label
-        @attributes.occi.nework.label if @attributes.occi.network if @attributes.occi
+        @attributes.occi_.nework_.label
       end
 
       def label=(label)
@@ -57,7 +57,7 @@ module Occi
       end
 
       def state
-        @attributes.occi.nework.state if @attributes.occi.network if @attributes.occi
+        @attributes.occi_.nework_.state
       end
 
       def state=(state)
@@ -67,7 +67,7 @@ module Occi
       # IPNetwork Mixin attributes
 
       def address
-        @attributes.occi.network.address if @attributes.occi.network if @attributes.occi
+        @attributes.occi_.network_.address
       end
 
       def address=(address)
@@ -79,7 +79,7 @@ module Occi
       end
 
       def gateway
-        @attributes.occi.network.gateway if @attributes.occi.network if @attributes.occi
+        @attributes.occi_.network_.gateway
       end
 
       def gateway=(gateway)
@@ -91,7 +91,7 @@ module Occi
       end
 
       def allocation
-        @attributes.occi.network.allocation if @attributes.occi.network if @attributes.occi
+        @attributes.occi_.network_.allocation
       end
 
       def allocation=(allocation)

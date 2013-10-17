@@ -115,7 +115,7 @@ module Occi
 
       # @return [UUIDTools::UUID] id of the entity
       def id
-        @id ||= @attributes.occi.core.id if @attributes.occi.core if @attributes.occi
+        @id ||= @attributes.occi_.core_.id
         @id
       end
 
@@ -127,7 +127,7 @@ module Occi
 
       # @return [String] title attribute of entity
       def title
-        @attributes.occi.core.title if @attributes.occi.core if @attributes.occi
+        @attributes.occi_.core_.title
       end
 
       # @param [Occi::Model] model
