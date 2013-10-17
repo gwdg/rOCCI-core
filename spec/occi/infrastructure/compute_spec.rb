@@ -1,20 +1,23 @@
 module Occi
   module Infrastructure
     describe Compute do
-      let!(:compute){ Occi::Infrastructure::Compute.new }
+      let(:compute){ Occi::Infrastructure::Compute.new }
 
       context '#storagelink' do
-        target = Occi::Infrastructure::Storage.new
-        # create a random ID as the storage resource must already exist and therefore must have an ID assigned
-        target.id = UUIDTools::UUID.random_create.to_s
-        compute.storagelink target
+        let(:target){
+          target = Occi::Infrastructure::Storage.new
+          # create a random ID as the storage resource must already exist and therefore must have an ID assigned
+          target.id = UUIDTools::UUID.random_create.to_s }
         it "creates a single storagelink" do
+          compute.storagelink target
           expect(compute.links).to have(1).link
         end
         it "creates a storagelink to a storage resource" do
+          compute.storagelink target
           expect(compute.links.first).to be_kind_of Occi::Infrastructure::Storagelink
         end
         it "has the correct link as target" do
+          compute.storagelink target
           expect(compute.links.first.target).to be target
         end
       end
