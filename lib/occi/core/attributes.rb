@@ -14,7 +14,7 @@ module Occi
         if key.to_s.include? '.'
           key, string = key.to_s.split('.', 2)
           attributes = super(key)
-          raise "Attribute with key #{key} not found" unless attributes
+          raise Occi::Errors::AttributeMissingError, "Attribute with key #{key} not found" unless attributes
           attributes[string]
         else
           super(key)
@@ -28,6 +28,7 @@ module Occi
           self[key][string] = value
         else
           property_key = '_' + key.to_s
+
           case value
             when Occi::Core::Attributes
               super(key, value)
@@ -39,21 +40,27 @@ module Occi
               super(key, properties.clone)
               super(property_key, properties.clone)
             when Occi::Core::Entity
-              raise "value #{value} derived from Occi::Core::Entity assigned but attribute of type #{self[property_key].type} required" unless self[property_key].type == 'string' if self[property_key]
-              raise "value #{value} does not match pattern" unless value.to_s.match '^' + self[property_key].pattern + '$' if Occi::Settings.verify_attribute_pattern if self[property_key]
+              if self[property_key]
+                raise Occi::Errors::AttributeTypeError, "value #{value} derived from Occi::Core::Entity assigned but attribute of type #{self[property_key].type} required" unless self[property_key].type == 'string'
+                match_pattern(self[property_key].pattern, value)
+              end
               super(key, value)
             when String
-              raise "value #{value} of type String assigned but attribute of type #{self[property_key].type} required" unless self[property_key].type == 'string' if self[property_key]
-              raise "value #{value} does not match pattern" unless value.match '^' + self[property_key].pattern + '$' if Occi::Settings.verify_attribute_pattern if self[property_key]
+              if self[property_key]
+                raise Occi::Errors::AttributeTypeError, "value #{value} of type String assigned but attribute of type #{self[property_key].type} required" unless self[property_key].type == 'string'
+                match_pattern(self[property_key].pattern, value)
+              end
               super(key, value)
             when Numeric
-              raise "value #{value} of type String assigned but attribute of type #{self[property_key].type} required" unless self[property_key].type == 'number' if self[property_key]
-              raise "value #{value} does not match pattern" unless value.to_s.match '^' + self[property_key].pattern + '$' if Occi::Settings.verify_attribute_pattern if self[property_key]
+              if self[property_key]
+                raise Occi::Errors::AttributeTypeError, "value #{value} of type String assigned but attribute of type #{self[property_key].type} required" unless self[property_key].type == 'number'
+                match_pattern(self[property_key].pattern, value)
+              end
               super(key, value)
             when NilClass
               super(key, value)
             else
-              raise "value #{value} of type #{value.class} not supported as attribute"
+              raise Occi::Errors::AttributeTypeError, "value #{value} of type #{value.class} not supported as attribute"
           end
         end
       end
@@ -156,6 +163,9 @@ module Occi
         hash = {}
         self.each_pair do |key, value|
           next if self.key?(key[1..-1])
+          # TODO: find a better way to skip properties
+          next if key.start_with? '_'
+
           case value
             when Occi::Core::Attributes
               hash[key] = value.as_json unless value.as_json.size == 0
@@ -168,6 +178,18 @@ module Occi
           end
         end
         hash
+      end
+
+      private
+
+      def match_pattern(pattern, value)
+        if pattern
+          if Occi::Settings.verify_attribute_pattern && !Occi::Settings.compatibility
+            raise Occi::Errors::AttributeTypeError, "value #{value.to_s} does not match pattern #{pattern}" unless value.to_s.match "^#{pattern}$"
+          else
+            Occi::Log.warn "Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
+          end
+        end
       end
 
     end
