@@ -180,12 +180,6 @@ module Occi
 #          expect{compute.check}.to raise_error Occi::Errors::AttributeTypeError
 #        end
       end
-
-      context '#storagelinks'
-
-      context '#networkinterfaces'
-
-
     end
   end
 end
