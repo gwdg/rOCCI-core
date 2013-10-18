@@ -54,8 +54,8 @@ module Occi
           expect(compute.architecture).to eq 'x64'
         end
         it 'rejects non-matching values' #do
-#          compute.architecture = 'z80'
 #          compute.model=modl
+#          compute.architecture = 'z80'
 #          expect{compute.check}.to raise_error
 #        end
       end
@@ -69,6 +69,7 @@ module Occi
           expect{compute.memory = 'a few'}.to raise_error
         end
         it 'rejects non-matching values' #do
+#          compute.model=modl
 #          compute.cores = -32
 #          expect{compute.check}.to raise_error
 #        end
@@ -80,6 +81,7 @@ module Occi
           expect(compute.hostname).to eq 'testhostname'
         end
         it 'rejects non-matching values' #do
+#          compute.model=modl
 #          compute.hostname = 'testhostname'
 #          expect{compute.check}.to raise_error
 #        end
@@ -94,6 +96,7 @@ module Occi
           expect{compute.memory = 'fast'}.to raise_error
         end
         it 'rejects non-matching values' #do
+#          compute.model=modl
 #          compute.memory = -4096
 #          expect{compute.check}.to raise_error
 #        end
@@ -108,6 +111,7 @@ module Occi
           expect{compute.memory = 'a lot'}.to raise_error
         end
         it 'rejects non-matching values' #do
+#          compute.model=modl
 #          compute.memory = -4096
 #          expect{compute.check}.to raise_error
 #        end
@@ -123,10 +127,11 @@ module Occi
           compute.state = 'active'
           expect(compute.state).to eq 'active'
         end
-        it 'rejects non-matching values' #do
-#          compute.state = 'broken'
-#          expect{compute.check}.to raise_error
-#        end
+        it 'rejects non-matching values' do
+          compute.model=modl
+          compute.state = 1
+          expect{compute.check}.to raise_error Occi::Errors::AttributeTypeError
+        end
       end
 
       context '#storagelinks'
