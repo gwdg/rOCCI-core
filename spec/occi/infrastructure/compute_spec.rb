@@ -100,11 +100,20 @@ module Occi
           compute.architecture = 'x64'
           expect(compute.architecture).to eq 'x64'
         end
-        it 'rejects non-matching values' #do
-#          compute.model=modl
-#          compute.architecture = 'z80'
-#          expect{compute.check}.to raise_error
-#        end
+        context 'Pattern matching' do
+          before(:each) { Occi::Settings['compatibility']=false }
+          after(:each) { Occi::Settings.reload! }
+          it 'preserves non-matching values with verification settings off' do
+            Occi::Settings['verify_attribute_pattern']=false
+            compute.model=modl
+            expect{compute.architecture = 'z80'}.to_not raise_error
+          end
+          it 'rejects non-matching values with verification settings on' do
+            Occi::Settings['verify_attribute_pattern']=true
+            compute.model=modl
+            expect{compute.architecture = 'z80'}.to raise_error Occi::Errors::AttributeTypeError
+          end
+        end
       end
 
       context '#cores' do
@@ -115,11 +124,6 @@ module Occi
         it 'rejects non-numeric values' do
           expect{compute.memory = 'a few'}.to raise_error
         end
-        it 'rejects non-matching values' #do
-#          compute.model=modl
-#          compute.cores = -32
-#          expect{compute.check}.to raise_error
-#        end
       end
 
       context '#hostname' do
@@ -127,11 +131,20 @@ module Occi
           compute.hostname = 'testhostname'
           expect(compute.hostname).to eq 'testhostname'
         end
-        it 'rejects non-matching values' #do
-#          compute.model=modl
-#          compute.hostname = 'testhostname'
-#          expect{compute.check}.to raise_error
-#        end
+        context 'Pattern matching' do
+          before(:each) { Occi::Settings['compatibility']=false }
+          after(:each) { Occi::Settings.reload! }
+          it 'preserves non-matching values with verification settings off' do
+            Occi::Settings['verify_attribute_pattern']=false
+            compute.model=modl
+            expect{compute.hostname = 'notaproperhostname'}.to_not raise_error
+          end
+          it 'rejects non-matching values with verification settings on' do
+            Occi::Settings['verify_attribute_pattern']=true
+            compute.model=modl
+            expect{compute.hostname = 'notaproperhostname'}.to raise_error Occi::Errors::AttributeTypeError
+          end
+        end
       end
 
       context '#speed' do
@@ -142,11 +155,6 @@ module Occi
         it 'rejects non-numeric values' do
           expect{compute.memory = 'fast'}.to raise_error
         end
-        it 'rejects non-matching values' #do
-#          compute.model=modl
-#          compute.memory = -4096
-#          expect{compute.check}.to raise_error
-#        end
       end
 
       context '#memory' do
@@ -157,28 +165,37 @@ module Occi
         it 'rejects non-numeric values' do
           expect{compute.memory = 'a lot'}.to raise_error
         end
-        it 'rejects non-matching values' #do
-#          compute.model=modl
-#          compute.memory = -4096
-#          expect{compute.check}.to raise_error
-#        end
       end
 
       context '#state' do
-        it 'has correct default value' #do
-#          compute.model=modl
-#          compute.check
-#          expect(compute.state).to eq 'inactive'
-#        end
+        it 'has correct default value with set_defaults == true' do
+          compute.model=modl
+          compute.check(true)
+          expect(compute.state).to eq 'inactive'
+        end
+        it 'Does not tak the default value with set_defaults set to default' do
+          compute.model=modl
+          compute.check
+          expect(compute.state).to_not eq 'inactive'
+        end
         it 'can be set and read' do
           compute.state = 'active'
           expect(compute.state).to eq 'active'
         end
-        it 'rejects non-matching values' #do
-#          compute.model=modl
-#          compute.state = 'broken'
-#          expect{compute.check}.to raise_error Occi::Errors::AttributeTypeError
-#        end
+        context 'Pattern matching' do
+          before(:each) { Occi::Settings['compatibility']=false }
+          after(:each) { Occi::Settings.reload! }
+          it 'preserves non-matching values with verification settings off' do
+            Occi::Settings['verify_attribute_pattern']=false
+            compute.model=modl
+            expect{compute.state = 'broken'}.to_not raise_error
+          end
+          it 'rejects non-matching values with verification settings on' do
+            Occi::Settings['verify_attribute_pattern']=true
+            compute.model=modl
+            expect{compute.state = 'broken'}.to raise_error Occi::Errors::AttributeTypeError
+          end
+        end
       end
     end
   end
