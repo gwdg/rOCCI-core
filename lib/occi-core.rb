@@ -18,6 +18,7 @@ require 'settingslogic'
 
 require 'occi/helpers/inspect'
 
+require 'occi/errors'
 require 'occi/settings'
 require 'occi/log'
 require 'occi/version'
@@ -28,8 +29,6 @@ require 'occi/core'
 require 'occi/infrastructure'
 
 module Occi
-
-  VERIFY_ATTRIBUTE_PATTERN = false
 
   def kinds
     Occi::Core::Kinds.new

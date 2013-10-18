@@ -4,7 +4,8 @@ module Occi
 
       include Occi::Helpers::Inspect
 
-      attr_accessor :mixins, :attributes, :actions, :id, :model, :kind, :location
+      attr_accessor :mixins, :attributes, :actions, :id, :model, :location
+      attr_reader :kind
 
       class_attribute :kind, :mixins, :attributes, :actions
 
@@ -74,11 +75,6 @@ module Occi
         @location = location
       end
 
-      # @return [Occi::Core::Kind]
-      def kind
-        @kind
-      end
-
       # @param [Occi::Core::Kind,String] kind
       # @return [Occi::Core::Kind]
       def kind=(kind)
@@ -134,10 +130,13 @@ module Occi
       # @return [Occi::Model]
       def model=(model)
         @model = model
+
         @kind = (model.get_by_id(@kind.type_identifier) || @kind)
         @kind.entities << self
+
         @mixins.model = model
         @mixins.each { |mixin| mixin.entities << self }
+
         @actions.model = model
       end
 
@@ -154,50 +153,67 @@ module Occi
       end
 
       # check attributes against their definitions and set defaults
-      # @param [Occi::Model] model representation of the Occi model to check the attributes against
-      def check
-        raise "No model associated" unless @model
+      # @param [true,false] set default values for all empty attributes
+      def check(set_defaults = false)
+        raise 'no model has been assigned to this entity' unless @model
+
         definitions = Occi::Core::Attributes.new
-        definitions.merge!(@model.get_by_id(@kind.to_s).attributes)
+        definitions.merge! @model.get_by_id(@kind.to_s).attributes
+
         @mixins.each do |mixin_id|
           mixin = @model.get_by_id(mixin_id)
           next if mixin.nil?
+
           definitions.merge!(mixin.attributes) if mixin.attributes
         end if @mixins
 
-        @attributes = Entity.check(@attributes, definitions) if definitions
+        @attributes = Entity.check(@attributes, definitions, set_defaults)
       end
 
       # @param [Occi::Core::Attributes] attributes
       # @param [Occi::Core::Attributes] definitions
       # @param [true,false] set_defaults
       # @return [Occi::Core::Attributes] attributes with their defaults set
-      def self.check(attributes, definitions, set_defaults=false)
+      def self.check(attributes, definitions, set_defaults = false)
         attributes = Occi::Core::Attributes.new(attributes)
+
         definitions.each_key do |key|
           next if definitions.key?(key[1..-1])
+
           if definitions[key].kind_of? Occi::Core::Attributes
-            attributes[key] = check(attributes[key], definitions[key])
+            attributes[key] = Entity.check(attributes[key], definitions[key], set_defaults)
           else
             properties = definitions[key]
+
             value = attributes[key]
             value ||= properties.default if set_defaults or properties.required?
-            raise "required attribute #{key} not found" if value.nil? && properties.required?
-            next if value.blank? and not properties.required?
+            raise Occi::Errors::AttributeMissingError, "required attribute #{key} not found" if value.nil? && properties.required?
+
+            next if value.blank? && !properties.required?
             case properties.type
               when 'number'
-                raise "attribute #{key} value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless value.kind_of?(Numeric)
+                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless value.kind_of?(Numeric)
               when 'boolean'
-                raise "attribute #{key} value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless !!value == value
+                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless !!value == value
               when 'string'
-                raise "attribute #{key} with value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless value.kind_of?(String)
+                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless value.kind_of?(String)
               else
-                raise "property type #{properties.type} is not one of the allowed types number, boolean or string"
+                raise Occi::Errors::AttributePropertyTypeError, "property type #{properties.type} is not one of the allowed types number, boolean or string"
             end
-            Occi::Log.warn "attribute #{key} with value #{value} does not match pattern #{properties.pattern}" if value.to_s.scan(Regexp.new(properties.pattern)).blank? if properties.pattern
+
+            # TODO: DRY with Occi::Core::Attributes
+            if properties.pattern
+              if Occi::Settings.verify_attribute_pattern && !Occi::Settings.compatibility
+                message = "attribute #{key} with value #{value} does not match pattern #{properties.pattern}"
+                raise Occi::Errors::AttributeTypeError, message unless value.to_s.match "^#{properties.pattern}$"
+              else
+                Occi::Log.warn "Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
+              end
+            end
             attributes[key] = value
           end
         end
+
         attributes.delete_if { |_, v| v.blank? } # remove empty attributes
         attributes
       end
@@ -223,6 +239,9 @@ module Occi
           text << "\n" + 'Category: ' + term + ';scheme=' + scheme.inspect + ';class="mixin"'
         end
         @attributes.names.each_pair do |name, value|
+          # TODO: find a better way to skip properties
+          next if name.include? '._'
+
           value = value.inspect
           text << "\n" + 'X-OCCI-Attribute: ' + name + '=' + value
         end
@@ -244,6 +263,8 @@ module Occi
         end
         attributes = []
         @attributes.names.each_pair do |name, value|
+          # TODO: find a better way to skip properties
+          next if name.include? '._'
           attributes << name + '=' + value.to_s.inspect
         end
         header['X-OCCI-Attribute'] = attributes.join(',') if attributes.any?
