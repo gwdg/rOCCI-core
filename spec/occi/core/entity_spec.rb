@@ -74,6 +74,17 @@ module Occi
 #            expect{entity.check}.to raise_error(Occi::Errors::AttributeTypeError)
 #          end
         end
+        context '#title' do
+          it 'can be set and read' do
+            entity.title = 'TestTitle'
+            expect(entity.title).to eq 'TestTitle'
+          end
+          it 'rejects non-matching values' #do
+#            entity.model = Occi::Model.new
+#            entity.title = ''
+#            expect{entity.check}.to raise_error(Occi::Errors::AttributeTypeError)
+#          end
+        end
       end
 
     end
