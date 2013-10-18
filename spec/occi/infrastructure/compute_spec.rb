@@ -25,6 +25,14 @@ module Occi
           compute.storagelink target
           expect(compute.links.first.target).to be target
         end
+        it "has target with correct ID" do
+          compute.storagelink target
+          expect(compute.links.first.target.id).to eq target.id
+        end
+        it "shows correctly in collections" do
+          compute.storagelink target
+          expect(compute.storagelinks[0].target.id).to target.id
+        end
       end
 
       context '#networkinterface' do
