@@ -98,6 +98,38 @@ module Occi
         end
       end
 
+      context '#to_text' do
+        it 'renders fresh instance in text correctly' do
+          expected = ('Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"').split(/;/)
+          actual = entity.to_text.split(/;/)
+          expect(actual).to match_array(expected)
+        end
+        it 'renders instance with attributes in text correctly' #do
+#          entity.actions << testaction
+#          entity.title = 'TestTitle'
+#          entity.location = 'TestLoc'
+#          expected = ('Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"').split(/;/) # TODO: empty instance. Expand!
+#          actual = entity.to_text.split(/;/)
+#          expect(actual).to match_array(expected)
+#        end
+      end
+
+      context '#to_header' do
+        it 'renders fresh instance in HTML Header correctly' do
+          hash=Hashie::Mash.new
+          hash['Category']='entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"'
+          expect(entity.to_header).to eql(hash)
+        end
+        it 'renders instance with attributes in HTML Header correctly' #do
+#          entity.actions << testaction
+#          entity.title = 'TestTitle'
+#          entity.location = 'TestLoc'
+#          hash=Hashie::Mash.new
+#          hash['Category']='entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"'
+#          expect(entity.to_header).to eql(hash)
+#        end
+      end
+
     end
   end
 end
