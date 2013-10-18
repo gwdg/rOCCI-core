@@ -57,6 +57,25 @@ module Occi
         end
       end
 
+      context 'attributes' do
+        let(:entity){ Occi::Core::Entity.new }
+        context '#location' do
+          it 'can be set and read' do
+            entity.location = 'TestLoc'
+            expect(entity.location).to eq 'TestLoc'
+          end
+          it 'can be constructed from id' do
+            entity.id = UUIDTools::UUID.random_create.to_s
+            expect(entity.location).to eq '/entity/' + entity.id
+          end
+          it 'rejects non-matching values' #do
+#            entity.model = Occi::Model.new
+#            entity.location = ''
+#            expect{entity.check}.to raise_error(Occi::Errors::AttributeTypeError)
+#          end
+        end
+      end
+
     end
   end
 end
