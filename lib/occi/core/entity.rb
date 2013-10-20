@@ -274,7 +274,7 @@ module Occi
         header['X-OCCI-Attribute'] = attributes.join(',') if attributes.any?
 
         links = []
-        @actions.each { |action| links << "#{self.location}?action=#{action.term}>;rel=#{action.to_s}" }
+        @actions.each { |action| links << "<#{self.location}?action=#{action.term}>;rel=#{action.to_s}" }
         header['Link'] = links.join(',') if links.any?
 
         header
