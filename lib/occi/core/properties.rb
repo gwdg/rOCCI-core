@@ -27,6 +27,7 @@ module Occi
         hash.mutable = self.mutable if self.mutable
         hash.pattern = self.pattern if self.pattern
         hash.description = self.description if self.description
+
         hash
       end
 

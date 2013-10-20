@@ -14,7 +14,7 @@ module Occi
           term='category',
           title=nil,
           attributes=Occi::Core::Attributes.new)
-        scheme += '#' unless scheme.end_with? '#'
+        scheme << '#' unless scheme.end_with? '#'
         @scheme = scheme
         @term = term
         @title = title
@@ -44,19 +44,19 @@ module Occi
 
       # @return [String] Short text representation of the Category.
       def to_string_short
-        self.term + ';scheme=' + self.scheme.inspect + ';class=' + self.class.name.demodulize.downcase.inspect
+        "#{self.term};scheme=#{self.scheme.inspect};class=#{self.class.name.demodulize.downcase.inspect}"
       end
 
       # @return [String] Full text representation of the Category.
       def to_string
         string = self.to_string_short
-        string << ';title=' + self.title.inspect if self.title
+        string << ";title=#{self.title.inspect}" if self.title
         string
       end
 
       # @return [String] Text representation of the Category.
       def to_text
-        'Category: ' + self.to_string
+        "Category: #{self.to_string}"
       end
 
       # @return [Hash] Hash containing the HTTP headers of the text/occi rendering.

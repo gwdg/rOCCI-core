@@ -23,7 +23,7 @@ module Occi
         @depends = Occi::Core::Dependencies.new depends
         @actions = Occi::Core::Actions.new actions
         @entities = Occi::Core::Entities.new
-        location.blank? ? @location = '/mixins/' + term + '/' : @location = location
+        location.blank? ? @location = "/mixins/#{term}/" : @location = location
         @applies = Occi::Core::Kinds.new applies
       end
 
@@ -59,10 +59,10 @@ module Occi
       # @return [String] text representation
       def to_string
         string = super
-        string << ';rel=' + self.related.join(' ').inspect if self.related.any?
-        string << ';location=' + self.location.inspect
-        string << ';attributes=' + self.attributes.names.keys.join(' ').inspect if self.attributes.any?
-        string << ';actions=' + self.actions.join(' ').inspect if self.actions.any?
+        string << ";rel=#{self.related.join(' ').inspect}" if self.related.any?
+        string << ";location=#{self.location.inspect}"
+        string << ";attributes=#{self.attributes.names.keys.join(' ').inspect}" if self.attributes.any?
+        string << ";actions=#{self.actions.join(' ').inspect}" if self.actions.any?
         string
       end
 

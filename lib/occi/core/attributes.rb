@@ -27,7 +27,7 @@ module Occi
           super(key, Occi::Core::Attributes.new) unless self[key].kind_of? Occi::Core::Attributes
           self[key][string] = value
         else
-          property_key = '_' + key.to_s
+          property_key = "_#{key.to_s}"
 
           case value
             when Occi::Core::Attributes
@@ -103,7 +103,7 @@ module Occi
         self.each_key do |key|
           next if self.key?(key[1..-1])
           if self[key].kind_of? Occi::Core::Attributes
-            self[key].names.each_pair { |k, v| hash[key + '.' + k] = v unless v.blank? }
+            self[key].names.each_pair { |k, v| hash["#{key}.#{k}"] = v unless v.blank? }
           else
             hash[key] = self[key]
           end
