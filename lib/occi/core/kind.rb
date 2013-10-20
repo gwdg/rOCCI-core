@@ -21,7 +21,7 @@ module Occi
         @parent = [parent].flatten.first
         @actions = Occi::Core::Actions.new(actions)
         @entities = Occi::Core::Entities.new
-        location.blank? ? @location = '/' + term + '/' : @location = location
+        location.blank? ? @location = "/#{term}/" : @location = location
       end
 
       # @param scheme [String] The categorisation scheme.
@@ -31,9 +31,11 @@ module Occi
       def self.get_class(scheme, term, parent=Occi::Core::Entity.kind)
         parent ||= Occi::Core::Entity.kind
         raise ArgumentError, 'Mandatory argument cannot be nil' unless scheme && term
+
         if parent.kind_of? Array
           parent = parent.first
         end
+
         if parent.to_s == 'http://schemas.ogf.org/occi/core#entity'
           parent = Occi::Core::Entity.kind
         elsif parent.kind_of? Occi::Core::Kind
@@ -46,7 +48,7 @@ module Occi
         raise ArgumentError, "Invalid characters in term #{term}" unless Occi::Core::Category.valid_term?(term)
 
         unless scheme.end_with? '#'
-          scheme += '#'
+          scheme << '#'
         end
 
         uri = URI.parse(scheme)
@@ -117,10 +119,10 @@ module Occi
       # @return [String] string representation of the kind
       def to_string
         string = super
-        string << ';rel=' + self.related.first.to_s.inspect if self.related.any?
-        string << ';location=' + self.location.inspect
-        string << ';attributes=' + self.attributes.names.keys.join(' ').inspect if self.attributes.any?
-        string << ';actions=' + self.actions.join(' ').inspect if self.actions.any?
+        string << ";rel=#{self.related.first.to_s.inspect}" if self.related.any?
+        string << ";location=#{self.location.inspect}"
+        string << ";attributes=#{self.attributes.names.keys.join(' ').inspect}" if self.attributes.any?
+        string << ";actions=#{self.actions.join(' ').inspect}" if self.actions.any?
         string
       end
 

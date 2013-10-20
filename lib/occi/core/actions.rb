@@ -9,7 +9,7 @@ module Occi
 
         if category.kind_of? String
           scheme, term = category.split '#'
-          scheme       += '#'
+          scheme << '#'
           category = Occi::Core::Action.new(scheme, term)
         end
         category

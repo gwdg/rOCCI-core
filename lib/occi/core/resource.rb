@@ -48,13 +48,14 @@ module Occi
         link.source = self
         link.mixins = mixins
         @links << link
+
         link
       end
 
       # @return [String] text representation
       def to_text
         text = super
-        @links.each { |link| text << "\n" + link.to_text_link }
+        @links.each { |link| text << "\n#{link.to_text_link}" }
         text
       end
 

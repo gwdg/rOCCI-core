@@ -65,12 +65,14 @@ module Occi
         @kind = self.class.kind.clone
         @mixins = Occi::Core::Mixins.new mixins
         @mixins.entity = self
+
         attributes = self.class.attribute_properties if attributes.blank?
         if attributes.kind_of? Occi::Core::Attributes
           @attributes = attributes.convert
         else
           @attributes = Occi::Core::Attributes.new attributes
         end
+
         @actions = Occi::Core::Actions.new actions
         @location = location
       end
@@ -149,7 +151,7 @@ module Occi
       # @return [String] location of the entity
       def location
         return @location if @location
-        kind.location + id.gsub('urn:uuid:', '') if id
+        "#{kind.location}#{id.gsub('urn:uuid:', '')}" if id
       end
 
       # check attributes against their definitions and set defaults
@@ -232,41 +234,49 @@ module Occi
 
       # @return [String] text representation
       def to_text
-        text = 'Category: ' + self.kind.term + ';scheme=' + self.kind.scheme.inspect + ';class="kind"'
+        text = "Category: #{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\""
         @mixins.each do |mixin|
           scheme, term = mixin.to_s.split('#')
           scheme << '#'
-          text << "\n" + 'Category: ' + term + ';scheme=' + scheme.inspect + ';class="mixin"'
+          text << "\nCategory: #{term};scheme=#{scheme.inspect};class=\"mixin\""
         end
+
         @attributes.names.each_pair do |name, value|
           # TODO: find a better way to skip properties
           next if name.include? '._'
 
           value = value.inspect
-          text << "\n" + 'X-OCCI-Attribute: ' + name + '=' + value
+          text << "\nX-OCCI-Attribute: #{name}=#{value}"
         end
+
         @actions.each { |action| text << "\nLink: <#{self.location}?action=#{action.term}>;rel=#{action.to_s}" }
+
         text
       end
 
       # @return [Hash] hash containing the HTTP headers of the text/occi rendering
       def to_header
         header = Hashie::Mash.new
-        header['Category'] = self.kind.term + ';scheme=' + self.kind.scheme.inspect + ';class="kind"'
+        header['Category'] = "#{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\""
+
         @mixins.each do |mixin|
           scheme, term = mixin.to_s.split('#')
           scheme << '#'
-          header['Category'] += ',' + term + ';scheme=' + scheme.inspect + ';class="mixin"'
+          header['Category'] << ",#{term};scheme=#{scheme.inspect};class=\"mixin\""
         end
+
         attributes = []
         @attributes.names.each_pair do |name, value|
           # TODO: find a better way to skip properties
           next if name.include? '._'
-          attributes << name + '=' + value.to_s.inspect
+          attributes << "#{name}=#{value.to_s.inspect}"
         end
         header['X-OCCI-Attribute'] = attributes.join(',') if attributes.any?
+
         links = []
         @actions.each { |action| links << "#{self.location}?action=#{action.term}>;rel=#{action.to_s}" }
+        header['Link'] = links.join(',') if links.any?
+
         header
       end
 

@@ -73,15 +73,16 @@ module Occi
 
       # @return [String] text representation of link reference
       def to_string
-        string = '<' + self.target.to_s + '>'
-        string << ';rel=' + @rel.to_s.inspect
-        string << ';self=' + self.location.inspect if self.location
+        string = "<#{self.target.to_s}>"
+        string << ";rel=#{@rel.to_s.inspect}"
+        string << ";self=#{self.location.inspect}" if self.location
+
         categories = [@kind] + @mixins.join(',').split(',')
-        string << ';category=' + categories.join(' ').inspect
+        string << ";category=#{categories.join(' ').inspect}"
+
         @attributes.names.each_pair do |name, value|
           next if value.to_s.blank?
-          value = value.to_s.inspect
-          string << ';' + name + '=' + value
+          string << ";#{name}=#{value.to_s.inspect}"
         end
 
         string
@@ -89,7 +90,7 @@ module Occi
 
       # @return [String] text representation of link
       def to_text_link
-        'Link: ' + self.to_string
+        "Link: #{self.to_string}"
       end
 
     end
