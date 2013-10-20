@@ -82,7 +82,7 @@ module Occi
       def kind=(kind)
         if kind.kind_of? String
           scheme, term = kind.split '#'
-          kind = Occi::Core::Category.get_class scheme, term
+          kind = Occi::Core::Kind.get_class scheme, term
         end
         @kind = kind
       end
