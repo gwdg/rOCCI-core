@@ -2,7 +2,7 @@ module Occi
   module Core
     class Action < Occi::Core::Category
 
-      # @param [String ] scheme
+      # @param [String] scheme
       # @param [String] term
       # @param [String] title
       # @param [Hash] attributes
