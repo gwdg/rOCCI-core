@@ -245,9 +245,7 @@ module Occi
           value = value.inspect
           text << "\n" + 'X-OCCI-Attribute: ' + name + '=' + value
         end
-        @actions.each do |action|
-          text << "\n" + 'Link: <' + self.location + '?action=' + action.term + '>;rel=' + action.to_s
-        end
+        @actions.each { |action| text << "\nLink: <#{self.location}?action=#{action.term}>;rel=#{action.to_s}" }
         text
       end
 
@@ -268,9 +266,7 @@ module Occi
         end
         header['X-OCCI-Attribute'] = attributes.join(',') if attributes.any?
         links = []
-        @actions.each do |action|
-          links << self.location + '?action=' + action.term + '>;rel=' + action.inspect
-        end
+        @actions.each { |action| links << "#{self.location}?action=#{action.term}>;rel=#{action.to_s}" }
         header
       end
 
