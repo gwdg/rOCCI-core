@@ -42,10 +42,21 @@ module Occi
         end
       end
 
-      it "converts mixin type identifiers to objects if a mixin is added to the entities mixins" do
-        mixin = 'http://example.com/mynamespace#mymixin'
-        entity.mixins << mixin
-        expect(entity.mixins.first.to_s).to eq mixin
+      context '#kind' do
+        it 'accepts kind through assignment' #do
+#          entity.kind = 'http://example.com/testnamespace#test'
+#          debugger
+#          expect(entity).to be_kind_of 'Com::Example::Testnamespace::Test'.constantize
+#        end
+      end
+
+      context '#mixins' do
+        let(:mixin){ 'http://example.com/mynamespace#mymixin' }   
+
+        it "converts mixin type identifiers to objects if a mixin is added to the entities mixins" do
+          entity.mixins << mixin
+          expect(entity.mixins.first.to_s).to eq mixin
+        end
       end
 
       # TODO: check adding of model
@@ -120,8 +131,10 @@ module Occi
           entity.actions << testaction
           entity.title = 'TestTitle'
           entity.location = '/TestLoc/1'
+          entity.mixins <<  'http://example.com/mynamespace#mymixin'
 
           expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"
+Category: mymixin;scheme="http://example.com/mynamespace#";class="mixin"
 X-OCCI-Attribute: occi.core.title="TestTitle"
 Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity/action#testaction|
           expect(entity.to_text).to eq(expected)
@@ -140,9 +153,10 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
           entity.actions << testaction
           entity.title = 'TestTitle'
           entity.location = '/TestLoc/1'
+          entity.mixins <<  'http://example.com/mynamespace#mymixin'
 
           expected = Hashie::Mash.new
-          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"'
+          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind",mymixin;scheme="http://example.com/mynamespace#";class="mixin"'
           expected['X-OCCI-Attribute'] = 'occi.core.title="TestTitle"'
           expected['Link'] = '</TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity/action#testaction'
 
