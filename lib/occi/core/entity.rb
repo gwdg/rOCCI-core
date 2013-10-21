@@ -188,10 +188,12 @@ module Occi
             properties = definitions[key]
 
             value = attributes[key]
-            value ||= properties.default if set_defaults or properties.required?
-            raise Occi::Errors::AttributeMissingError, "required attribute #{key} not found" if value.nil? && properties.required?
+            value = properties.default if value.kind_of? Occi::Core::Properties
+            value ||= properties.default if set_defaults || properties.required?
 
-            next if value.blank? && !properties.required?
+            raise Occi::Errors::AttributeMissingError, "required attribute #{key} not found" if value.blank? && properties.required?
+            next if value.blank?
+
             case properties.type
               when 'number'
                 raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless value.kind_of?(Numeric)
