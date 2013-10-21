@@ -57,6 +57,12 @@ module Occi
                 match_pattern(self[property_key].pattern, value)
               end
               super(key, value)
+            when FalseClass, TrueClass
+              if self[property_key]
+                raise Occi::Errors::AttributeTypeError, "value #{value} of type String assigned but attribute of type #{self[property_key].type} required" unless self[property_key].type == 'boolean'
+                match_pattern(self[property_key].pattern, value)
+              end
+              super(key, value)
             when NilClass
               super(key, value)
             else
