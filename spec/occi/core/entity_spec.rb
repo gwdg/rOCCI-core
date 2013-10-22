@@ -170,13 +170,18 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
           defs = Occi::Core::Attributes.new
           defs['numbertype'] =   { :type => 'number',
                                            :default => 42,
-                                           :mutable => true }
+                                           :mutable => true,
+                                           :pattern => '^[0-9]+'  }
           defs['stringtype'] =   { :type => 'string',
                                            :pattern => '[adefltuv]+',
                                            :default => 'defaultvalue', 
                                            :mutable => true }
           defs['booleantype'] =  { :type => 'boolean',
                                            :default => true, 
+                                           :mutable => true,
+                                           :pattern => true }
+          defs['booleantypefalse'] =  { :type => 'boolean', #Regression test
+                                           :default => false, 
                                            :mutable => true }
           defs }
 
@@ -184,9 +189,11 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
           before(:each){ Occi::Settings['compatibility']=false 
                          Occi::Settings['verify_attribute_pattern']=true }
           after(:each) { Occi::Settings.reload! }
-          it 'refuses unsupportedi type' #do
-#            expect{attrs['numbertype'] = Hashie::Mash.new }.to raise_error(Occi::Errors::AttributePropertyTypeError)
-#          end
+          it 'refuses unsupported type' do
+            defs['othertype'] =   { :type => 'other',
+                                   :default => 'defaultvalue' }
+            expect{attributes = Occi::Core::Entity.check attrs, defs, true}.to raise_exception(Occi::Errors::AttributePropertyTypeError)
+          end
         end
 
         context 'defaults' do
@@ -194,33 +201,71 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
                          Occi::Settings['verify_attribute_pattern']=true }
           after(:each) { Occi::Settings.reload! }
 
-          it 'sets numeric default' do
-            attributes = Occi::Core::Entity.check attrs, defs, true
-            expect(attributes['numbertype']).to eq 42
+          context 'setting defaults' do
+            it 'sets numeric default' do
+              attributes = Occi::Core::Entity.check attrs, defs, true
+              expect(attributes['numbertype']).to eq 42
+            end
+            it 'sets string default' do
+              attributes = Occi::Core::Entity.check attrs, defs, true
+              expect(attributes['stringtype']).to eq 'defaultvalue'
+            end
+            it 'sets boolean default if true' #do
+#              attributes = Occi::Core::Entity.check attrs, defs, true
+#              expect(attributes['booleantype']).to eq true
+#            end
+            it 'sets boolean default if false' #do
+#              attributes = Occi::Core::Entity.check attrs, defs, true
+#              expect(attributes['booleantypefalse']).to eq true
+#            end
+            it 'can be checked twice in a row' do
+              attributes = Occi::Core::Entity.check attrs, defs, true
+              expect{ bttributes = Occi::Core::Entity.check attributes, defs, true }.to_not raise_exception
+            end
           end
-          it 'sets string default' do
-            attributes = Occi::Core::Entity.check attrs, defs, true
-            expect(attributes['stringtype']).to eq 'defaultvalue'
+          context 'skipping defaults if already set' do
+            it 'skips numeric default' do
+              attrs['numbertype'] = 12
+              attributes = Occi::Core::Entity.check attrs, defs, true
+              expect(attributes['numbertype']).to eq 12
+            end
+            it 'skips string default' do
+              attrs['stringtype'] = 'fault'
+              attributes = Occi::Core::Entity.check attrs, defs, true
+              expect(attributes['stringtype']).to eq 'fault'
+            end
+            it 'skips boolean default if true' #do
+#              attrs['booleantype'] = false
+#              attributes = Occi::Core::Entity.check attrs, defs, true
+#              expect(attributes['booleantype']).to eq false
+#            end
+            it 'skips boolean default if false' #do
+#              attrs['booleantype'] = true
+#              attributes = Occi::Core::Entity.check attrs, defs, true
+#              expect(attributes['booleantype']).to eq true
+#            end
           end
-          it 'sets boolean default' do
-            attributes = Occi::Core::Entity.check attrs, defs, true
-            expect(attributes['booleantype']).to eq true
+          context 'patterns' do
+            it 'checks string pattern' do
+              attrs['stringtype'] = 'bflmpsvz'
+              expect{attributes = Occi::Core::Entity.check attrs, defs, true}.to raise_exception(Occi::Errors::AttributeTypeError)
+            end
+            it 'checks numeric pattern' do
+              attrs['numbertype'] = -32
+              expect{attributes = Occi::Core::Entity.check attrs, defs, true}.to raise_exception(Occi::Errors::AttributeTypeError)
+            end
+            it 'checks boolean pattern' #do  # Possibly an overkill
+#              attrs['booleantype'] = false
+#              expect{attributes = Occi::Core::Entity.check attrs, defs, true}.to raise_exception(Occi::Errors::AttributeTypeError)
+#            end
           end
-          it 'can be checked twice in a row' do
-            attributes = Occi::Core::Entity.check attrs, defs, true
-            expect{ bttributes = Occi::Core::Entity.check attributes, defs, true }.to_not raise_exception
-          end
-#          attrs['stringtype'] = 'stringvalue'
-#          attrs['booleantype'] = false
-
-
         end
-
-
-
-
       end
-
+      context '#attribute_properties' do
+        it 'gets attribute properties' do
+          entity.attribute_properties
+        end
+      end
     end
   end
 end
