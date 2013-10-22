@@ -12,6 +12,7 @@ module Occi
           scheme << '#'
           category = Occi::Core::Action.new(scheme, term)
         end
+
         category
       end
 

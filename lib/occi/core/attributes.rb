@@ -6,6 +6,8 @@ module Occi
 
       include Occi::Helpers::Inspect
 
+      PROPERTY_KEYS = [:Type, :Required, :Mutable, :Default, :Description, :Pattern, :type, :required, :mutable, :default, :description, :pattern]
+
       def converted?
         @converted||=false
       end
@@ -28,46 +30,7 @@ module Occi
           self[key][string] = value
         else
           property_key = "_#{key.to_s}"
-
-          case value
-            when Occi::Core::Attributes
-              super(key, value)
-            when Occi::Core::Properties
-              super(key, value.clone)
-              super(property_key, value.clone)
-            when Hash
-              properties = Occi::Core::Properties.new(value)
-              super(key, properties.clone)
-              super(property_key, properties.clone)
-            when Occi::Core::Entity
-              if self[property_key]
-                raise Occi::Errors::AttributeTypeError, "value #{value} derived from Occi::Core::Entity assigned but attribute of type #{self[property_key].type} required" unless self[property_key].type == 'string'
-                match_pattern(self[property_key].pattern, value)
-              end
-              super(key, value)
-            when String
-              if self[property_key]
-                raise Occi::Errors::AttributeTypeError, "value #{value} of type String assigned but attribute of type #{self[property_key].type} required" unless self[property_key].type == 'string'
-                match_pattern(self[property_key].pattern, value)
-              end
-              super(key, value)
-            when Numeric
-              if self[property_key]
-                raise Occi::Errors::AttributeTypeError, "value #{value} of type String assigned but attribute of type #{self[property_key].type} required" unless self[property_key].type == 'number'
-                match_pattern(self[property_key].pattern, value)
-              end
-              super(key, value)
-            when FalseClass, TrueClass
-              if self[property_key]
-                raise Occi::Errors::AttributeTypeError, "value #{value} of type String assigned but attribute of type #{self[property_key].type} required" unless self[property_key].type == 'boolean'
-                match_pattern(self[property_key].pattern, value)
-              end
-              super(key, value)
-            when NilClass
-              super(key, value)
-            else
-              raise Occi::Errors::AttributeTypeError, "value #{value} of type #{value.class} not supported as attribute"
-          end
+          validate_and_assign(key, value, property_key)
         end
       end
 
@@ -123,7 +86,7 @@ module Occi
         hash ||= {}
         attributes = Occi::Core::Attributes.new
         hash.each_pair do |key, value|
-          if [:Type, :Required, :Mutable, :Default, :Description, :Pattern, :type, :required, :mutable, :default, :description, :pattern].any? { |k| value.key?(k) and not value[k].kind_of? Hash }
+          if PROPERTY_KEYS.any? { |k| value.key?(k) and not value[k].kind_of? Hash }
             value[:type] ||= value[:Type] ||= "string"
             value[:required] ||= value[:Required] ||= false
             value[:mutable] ||= value[:Mutable] ||= false
@@ -188,13 +151,52 @@ module Occi
 
       private
 
+      def validate_and_assign(key, value, property_key)
+        case value
+        when Occi::Core::Attributes
+          add_to_hashie(key, value)
+        when Occi::Core::Properties
+          add_to_hashie(key, value.clone)
+          add_to_hashie(property_key, value.clone)
+        when Hash
+          properties = Occi::Core::Properties.new(value)
+          add_to_hashie(key, properties.clone)
+          add_to_hashie(property_key, properties.clone)
+        when Occi::Core::Entity
+          match_type(value, self[property_key], 'string') if self[property_key]
+          add_to_hashie(key, value)
+        when String
+          match_type(value, self[property_key], 'string') if self[property_key]
+          add_to_hashie(key, value)
+        when Numeric
+          match_type(value, self[property_key], 'number') if self[property_key]
+          add_to_hashie(key, value)
+        when FalseClass, TrueClass
+          match_type(value, self[property_key], 'boolean') if self[property_key]
+          add_to_hashie(key, value)
+        when NilClass
+          add_to_hashie(key, value)
+        else
+          raise Occi::Errors::AttributeTypeError, "value #{value} of type #{value.class} not supported as attribute"
+        end
+      end
+
+      def add_to_hashie(*args)
+        Hashie::Mash.instance_method(:[]=).bind(self).call(*args)
+      end
+
+      def match_type(value, property, expected_type)
+        raise Occi::Errors::AttributeTypeError, "value #{value} derived from #{value.class} assigned but attribute of type #{property.type} required" unless property.type == expected_type
+        match_pattern(property.pattern, value)
+      end
+
       def match_pattern(pattern, value)
-        if pattern
-          if Occi::Settings.verify_attribute_pattern && !Occi::Settings.compatibility
-            raise Occi::Errors::AttributeTypeError, "value #{value.to_s} does not match pattern #{pattern}" unless value.to_s.match "^#{pattern}$"
-          else
-            Occi::Log.warn "Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
-          end
+        return if pattern.blank?
+
+        if Occi::Settings.verify_attribute_pattern && !Occi::Settings.compatibility
+          raise Occi::Errors::AttributeTypeError, "value #{value.to_s} does not match pattern #{pattern}" unless value.to_s.match "^#{pattern}$"
+        else
+          Occi::Log.warn "Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
         end
       end
 
