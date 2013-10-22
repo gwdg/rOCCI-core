@@ -9,6 +9,8 @@ module Occi
 
       class_attribute :kind, :mixins, :attributes, :actions
 
+      BOOLEAN_CLASSES = [TrueClass, FalseClass]
+
       self.mixins = Occi::Core::Mixins.new
 
       self.attributes = Occi::Core::Attributes.new
@@ -191,8 +193,10 @@ module Occi
             value = properties.default if value.kind_of? Occi::Core::Properties
             value ||= properties.default if set_defaults || properties.required?
 
-            raise Occi::Errors::AttributeMissingError, "required attribute #{key} not found" if value.blank? && properties.required?
-            next if value.blank?
+            unless BOOLEAN_CLASSES.include? value.class
+              raise Occi::Errors::AttributeMissingError, "required attribute #{key} not found" if value.blank? && properties.required?
+              next if value.blank?
+            end
 
             case properties.type
               when 'number'
@@ -214,11 +218,13 @@ module Occi
                 Occi::Log.warn "Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
               end
             end
+
             attributes[key] = value
           end
         end
 
-        attributes.delete_if { |_, v| v.blank? } # remove empty attributes
+        # remove empty attributes
+        attributes.delete_if { |_, v| v.blank? && !BOOLEAN_CLASSES.include?(v.class) }
         attributes
       end
 
