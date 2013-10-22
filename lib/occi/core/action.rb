@@ -10,20 +10,22 @@ module Occi
           term='action',
           title=nil,
           attributes=Occi::Core::Attributes.new)
-        super scheme, term, title, attributes
+        super(scheme, term, title, attributes)
       end
 
       # @return [String] text representation
       def to_text
         text = super
-        text << ";attributes=#{@attributes.names.join(' ').inspect}" if @attributes.any?
+        text << "#{@attributes.to_string_short}"
+
         text
       end
 
       # @return [Hash] hash containing the HTTP headers of the text/occi rendering
       def to_header
         header = super
-        header["Category"] << ";attributes=#{@attributes.names.join(' ').inspect}" if @attributes.any?
+        header["Category"] << "#{@attributes.to_string_short}"
+
         header
       end
 

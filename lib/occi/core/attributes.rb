@@ -122,6 +122,43 @@ module Occi
         return attribute
       end
 
+      # @return [String]
+      def to_string
+        attributes = ';'
+        attributes << to_header.gsub(',', ';')
+
+        attributes == ';' ? '' : attributes
+      end
+
+      # @return [String]
+      def to_string_short
+        any? ? ";attributes=#{names.keys.join(' ').inspect}" : ""
+      end
+
+      # @return [String]
+      def to_text
+        text = ""
+        names.each_pair do |name, value|
+          # TODO: find a better way to skip properties
+          next if name.include? '._'
+          text << "\nX-OCCI-Attribute: #{name}=#{value.inspect}"
+        end
+
+        text
+      end
+
+      # @return [Hash]
+      def to_header
+        attributes = []
+        names.each_pair do |name, value|
+          # TODO: find a better way to skip properties
+          next if name.include? '._'
+          attributes << "#{name}=#{value.to_s.inspect}"
+        end
+
+        attributes.join(',')
+      end
+
       def to_json(*a)
         as_json(*a).to_json(*a)
       end

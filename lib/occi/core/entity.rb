@@ -243,13 +243,7 @@ module Occi
           text << "\nCategory: #{term};scheme=#{scheme.inspect};class=\"mixin\""
         end
 
-        @attributes.names.each_pair do |name, value|
-          # TODO: find a better way to skip properties
-          next if name.include? '._'
-
-          value = value.inspect
-          text << "\nX-OCCI-Attribute: #{name}=#{value}"
-        end
+        text << @attributes.to_text
 
         @actions.each { |action| text << "\nLink: <#{self.location}?action=#{action.term}>;rel=#{action.to_s}" }
 
@@ -267,13 +261,8 @@ module Occi
           header['Category'] << ",#{term};scheme=#{scheme.inspect};class=\"mixin\""
         end
 
-        attributes = []
-        @attributes.names.each_pair do |name, value|
-          # TODO: find a better way to skip properties
-          next if name.include? '._'
-          attributes << "#{name}=#{value.to_s.inspect}"
-        end
-        header['X-OCCI-Attribute'] = attributes.join(',') if attributes.any?
+        attributes = @attributes.to_header
+        header['X-OCCI-Attribute'] = attributes unless attributes.blank?
 
         links = []
         @actions.each { |action| links << "<#{self.location}?action=#{action.term}>;rel=#{action.to_s}" }
