@@ -1,0 +1,13 @@
+Category: compute;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind"\nCategory: compute;scheme="http://opennebula.org/occi/infrastructure#";class="mixin"
+Category: monitoring;scheme="https://occi.carach5.ics.muni.cz/occi/infrastructure/os_tpl#";class="mixin"
+Category: small;scheme="https://occi.carach5.ics.muni.cz/occi/infrastructure/resource_tpl#";class="mixin"
+X-OCCI-Attribute: occi.core.id="ee13808d-7708-4341-a4ba-0e42e4818218"
+X-OCCI-Attribute: occi.core.title="TestVM"
+X-OCCI-Attribute: occi.compute.cores=1
+X-OCCI-Attribute: occi.compute.memory=1.7
+X-OCCI-Attribute: occi.compute.architecture="x86"
+X-OCCI-Attribute: occi.compute.speed=1
+X-OCCI-Attribute: occi.compute.state="active"
+X-OCCI-Attribute: org.opennebula.compute.cpu=1.0
+Link: </storage/e60aa2b8-0c86-5973-b93e-30c5c46d6eac>;rel="http://schemas.ogf.org/occi/infrastructure#storage";self="/storagelink/b2f7f1de-c60c-5b08-879c-81f52429c4ef";category="http://schemas.ogf.org/occi/infrastructure#storagelink";occi.core.id="b2f7f1de-c60c-5b08-879c-81f52429c4ef" occi.core.title="link to storage" occi.storagelink.deviceid="xvda" occi.storagelink.state="inactive" org.opennebula.storagelink.bus="ide" org.opennebula.storagelink.driver="tap2:tapdisk:aio:"
+Link: </network/e4bd81c4-adda-5626-840d-39bb7959db97>;rel="http://schemas.ogf.org/occi/infrastructure#network";self="/networkinterface/e75ab249-9325-511c-82b8-a7e4430381e3";category="http://schemas.ogf.org/occi/infrastructure#networkinterface";occi.core.id="e75ab249-9325-511c-82b8-a7e4430381e3" occi.core.title="link to network interface" occi.networkinterface.address="192.168.254.8" occi.networkinterface.mac="02:00:c0:a8:fe:08" occi.networkinterface.state="inactive" org.opennebula.networkinterface.bridge="xenbr0"

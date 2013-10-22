@@ -1,0 +1,11 @@
+Category: compute;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind"\nCategory: compute;scheme="http://opennebula.org/occi/infrastructure#";class="mixin"
+Category: monitoring;scheme="https://occi.carach5.ics.muni.cz/occi/infrastructure/os_tpl#";class="mixin"
+Category: small;scheme="https://occi.carach5.ics.muni.cz/occi/infrastructure/resource_tpl#";class="mixin"
+X-OCCI-Attribute: occi.core.id="ee13808d-7708-4341-a4ba-0e42e4818218"
+X-OCCI-Attribute: occi.core.title="TestVM"
+X-OCCI-Attribute: occi.compute.cores=1
+X-OCCI-Attribute: occi.compute.memory=1.7
+X-OCCI-Attribute: occi.compute.architecture="x86"
+X-OCCI-Attribute: occi.compute.speed=1
+X-OCCI-Attribute: occi.compute.state="active"
+X-OCCI-Attribute: org.opennebula.compute.cpu=1.0
