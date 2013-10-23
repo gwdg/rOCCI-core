@@ -1,0 +1,1 @@
+Dir[File.join(File.dirname(__FILE__), 'comparators', '*.rb')].each { |file| require file.gsub('.rb', '') }

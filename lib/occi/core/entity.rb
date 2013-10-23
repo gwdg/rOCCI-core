@@ -3,6 +3,7 @@ module Occi
     class Entity
 
       include Occi::Helpers::Inspect
+      include Occi::Helpers::Comparators::Entity
 
       attr_accessor :mixins, :attributes, :actions, :id, :model, :location
       attr_reader :kind

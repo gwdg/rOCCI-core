@@ -3,6 +3,7 @@ module Occi
     class Category
 
       include Occi::Helpers::Inspect
+      include Occi::Helpers::Comparators::Category
 
       attr_accessor :scheme, :term, :title, :attributes, :model
 

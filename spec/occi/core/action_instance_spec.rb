@@ -151,21 +151,21 @@ X-OCCI-Attribute: org.opennebula.network.id=1|
         end
 
         it 'renders to Hashie::Mash w/ an attribute' do
-          expected = Hashie::Mash.new({
-            "action" => "http://schemas.ogf.org/occi/core#action",
-            "attributes" => {"occi" => {"core" => {"title" => "test"}}}
-          })
+          expected = Hashie::Mash.new
+          expected.action = "http://schemas.ogf.org/occi/core#action"
+          expected.attributes = {"occi" => {"core" => {"title" => "test"}}}
+
           expect(Occi::Core::ActionInstance.new(action, attributes_one).as_json).to eq(expected)
         end
 
         it 'renders to Hashie::Mash w/ attributes' do
-          expected = Hashie::Mash.new({
-            "action" => "http://schemas.ogf.org/occi/core#action",
-            "attributes" => {
-              "occi" => {"core" => {"title" => "test", "id" => "1"}},
-              "org" => {"opennebula" => {"network" => {"id" => 1}}}
-            }
-          })
+          expected = Hashie::Mash.new
+          expected.action = "http://schemas.ogf.org/occi/core#action"
+          expected.attributes = {
+            "occi" => {"core" => {"title" => "test", "id" => "1"}},
+            "org" => {"opennebula" => {"network" => {"id" => 1}}}
+          }
+
           expect(Occi::Core::ActionInstance.new(action, attributes_multi).as_json).to eq(expected)
         end
       end
