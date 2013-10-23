@@ -3,6 +3,7 @@ module Occi
     class ActionInstance
 
       include Occi::Helpers::Inspect
+      include Occi::Helpers::Comparators::ActionInstance
 
       attr_accessor :action, :attributes, :model
 

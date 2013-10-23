@@ -3,6 +3,7 @@ module Occi
     class Properties
 
       include Occi::Helpers::Inspect
+      include Occi::Helpers::Comparators::Properties
 
       attr_accessor :default, :type, :required, :mutable, :pattern, :description
       alias_method :required?, :required
