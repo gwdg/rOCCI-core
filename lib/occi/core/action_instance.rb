@@ -22,9 +22,6 @@ module Occi
 
         if action.kind_of? String
           scheme, term = action.split '#'
-
-          raise ArgumentError, 'action scheme and term cannot be nil' unless scheme && term
-          raise ArgumentError, 'action scheme and term cannot be empty' if scheme.empty? || term.empty?
           action = Occi::Core::Action.new(scheme, term)
         end
 

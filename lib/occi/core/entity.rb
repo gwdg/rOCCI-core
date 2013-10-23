@@ -9,6 +9,8 @@ module Occi
 
       class_attribute :kind, :mixins, :attributes, :actions
 
+      BOOLEAN_CLASSES = [TrueClass, FalseClass]
+
       self.mixins = Occi::Core::Mixins.new
 
       self.attributes = Occi::Core::Attributes.new
@@ -189,10 +191,12 @@ module Occi
 
             value = attributes[key]
             value = properties.default if value.kind_of? Occi::Core::Properties
-            value ||= properties.default if set_defaults || properties.required?
+            value = properties.default if value.nil? && (set_defaults || properties.required?)
 
-            raise Occi::Errors::AttributeMissingError, "required attribute #{key} not found" if value.blank? && properties.required?
-            next if value.blank?
+            unless BOOLEAN_CLASSES.include? value.class
+              raise Occi::Errors::AttributeMissingError, "required attribute #{key} not found" if value.blank? && properties.required?
+              next if value.blank?
+            end
 
             case properties.type
               when 'number'
@@ -214,11 +218,13 @@ module Occi
                 Occi::Log.warn "Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
               end
             end
+
             attributes[key] = value
           end
         end
 
-        attributes.delete_if { |_, v| v.blank? } # remove empty attributes
+        # remove empty attributes
+        attributes.delete_if { |_, v| v.blank? && !BOOLEAN_CLASSES.include?(v.class) }
         attributes
       end
 
@@ -243,13 +249,7 @@ module Occi
           text << "\nCategory: #{term};scheme=#{scheme.inspect};class=\"mixin\""
         end
 
-        @attributes.names.each_pair do |name, value|
-          # TODO: find a better way to skip properties
-          next if name.include? '._'
-
-          value = value.inspect
-          text << "\nX-OCCI-Attribute: #{name}=#{value}"
-        end
+        text << @attributes.to_text
 
         @actions.each { |action| text << "\nLink: <#{self.location}?action=#{action.term}>;rel=#{action.to_s}" }
 
@@ -267,13 +267,8 @@ module Occi
           header['Category'] << ",#{term};scheme=#{scheme.inspect};class=\"mixin\""
         end
 
-        attributes = []
-        @attributes.names.each_pair do |name, value|
-          # TODO: find a better way to skip properties
-          next if name.include? '._'
-          attributes << "#{name}=#{value.to_s.inspect}"
-        end
-        header['X-OCCI-Attribute'] = attributes.join(',') if attributes.any?
+        attributes = @attributes.to_header
+        header['X-OCCI-Attribute'] = attributes unless attributes.blank?
 
         links = []
         @actions.each { |action| links << "<#{self.location}?action=#{action.term}>;rel=#{action.to_s}" }
