@@ -165,6 +165,47 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
         end
       end
 
+      context '#check' do
+                context 'unsupported types' do
+          it 'refuses unsupported type' do
+          end
+        end
+        context 'defaults' do
+          context 'setting defaults' do
+            it 'sets numeric default' #do
+#            end
+            it 'sets string default' #do
+#            end
+            it 'sets boolean default if true' #do
+#            end
+            it 'sets boolean default if false' #do
+#            end
+            it 'can be checked twice in a row' #do
+#            end
+          end
+          context 'skipping defaults if already set' do
+            it 'skips numeric default' #do
+#            end
+            it 'skips string default' #do
+#            end
+            it 'skips boolean default if true' #do
+#            end
+            it 'skips boolean default if false' #do
+#            end
+          end
+          context 'patterns' do
+            it 'checks string pattern' #do
+#            end
+            it 'checks numeric pattern' #do
+#            end
+          end
+          context 'mixins' do
+            it 'checks mixins' #do
+#            end
+          end
+        end
+      end
+
       context '.check' do
         let(:attrs){ attrs = Occi::Core::Attributes.new }
 
@@ -180,11 +221,14 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
                                            :mutable => true }
           defs['booleantype'] =  { :type => 'boolean',
                                            :default => true, 
-                                           :mutable => true,
-                                           :pattern => true }
+                                           :mutable => true}
           defs['booleantypefalse'] =  { :type => 'boolean', #Regression test
                                            :default => false, 
                                            :mutable => true }
+          defs['booleantypepattern'] =  { :type => 'boolean',
+                                           :default => true, 
+                                           :mutable => true,
+                                           :pattern => true }
           defs }
 
         context 'unsupported types' do
@@ -212,14 +256,14 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
               attributes = Occi::Core::Entity.check attrs, defs, true
               expect(attributes['stringtype']).to eq 'defaultvalue'
             end
-            it 'sets boolean default if true' #do
-#              attributes = Occi::Core::Entity.check attrs, defs, true
-#              expect(attributes['booleantype']).to eq true
-#            end
-            it 'sets boolean default if false' #do
-#              attributes = Occi::Core::Entity.check attrs, defs, true
-#              expect(attributes['booleantypefalse']).to eq false
-#            end
+            it 'sets boolean default if true' do
+              attributes = Occi::Core::Entity.check attrs, defs, true
+              expect(attributes['booleantype']).to eq true
+            end
+            it 'sets boolean default if false' do
+              attributes = Occi::Core::Entity.check attrs, defs, true
+              expect(attributes['booleantypefalse']).to eq false
+            end
             it 'can be checked twice in a row' do
               attributes = Occi::Core::Entity.check attrs, defs, true
               expect{ bttributes = Occi::Core::Entity.check attributes, defs, true }.to_not raise_exception
@@ -236,16 +280,16 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
               attributes = Occi::Core::Entity.check attrs, defs, true
               expect(attributes['stringtype']).to eq 'fault'
             end
-            it 'skips boolean default if true' #do
-#              attrs['booleantype'] = false
-#              attributes = Occi::Core::Entity.check attrs, defs, true
-#              expect(attributes['booleantype']).to eq false
-#            end
-            it 'skips boolean default if false' #do
-#              attrs['booleantype'] = true
-#              attributes = Occi::Core::Entity.check attrs, defs, true
-#              expect(attributes['booleantype']).to eq true
-#            end
+            it 'skips boolean default if true' do
+              attrs['booleantype'] = false
+              attributes = Occi::Core::Entity.check attrs, defs, true
+              expect(attributes['booleantype']).to eq false
+            end
+            it 'skips boolean default if false' do
+              attrs['booleantype'] = true
+              attributes = Occi::Core::Entity.check attrs, defs, true
+              expect(attributes['booleantype']).to eq true
+            end
           end
           context 'patterns' do
             it 'checks string pattern' do
@@ -256,17 +300,18 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
               attrs['numbertype'] = -32
               expect{attributes = Occi::Core::Entity.check attrs, defs, true}.to raise_exception(Occi::Errors::AttributeTypeError)
             end
-            it 'checks boolean pattern' #do  # Possibly an overkill
-#              attrs['booleantype'] = false
-#              expect{attributes = Occi::Core::Entity.check attrs, defs, true}.to raise_exception(Occi::Errors::AttributeTypeError)
-#            end
+            it 'checks boolean pattern' do  # Possibly an overkill
+              attrs['booleantypepattern'] = false
+              expect{attributes = Occi::Core::Entity.check attrs, defs, true}.to raise_exception(Occi::Errors::AttributeTypeError)
+            end
           end
         end
       end
       context '#attribute_properties' do
         it 'gets attribute properties' #do
+#           TODO: Awaiting routines to compare attribute objects
 #          expect(entity.attribute_properties).to eql expected
-        end
+#        end
       end
     end
   end
