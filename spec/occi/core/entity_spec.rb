@@ -1,5 +1,3 @@
-require 'ruby-debug'
-
 module Occi
   module Core
     describe Entity do
