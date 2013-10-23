@@ -27,11 +27,19 @@ module Occi
 
       context '#to_text' do
         it 'renders text correctly' do
-#          action.attributes['numbertype'] = 42
-#          action.attributes['stringtype'] = 'string'
-#          action.attributes['booleantype'] = true
+          action.attributes = Occi::Core::Attributes.new
+          action.attributes['numbertype'] =  { :type => 'number',
+                                               :default => 42,
+                                               :mutable => true }
+          action.attributes['stringtype'] =  { :type => 'string',
+                                               :pattern => '[adefltuv]+',
+                                               :default => 'defaultvalue',
+                                               :mutable => true }
+          action.attributes['booleantype'] = { :type => 'boolean',
+                                               :default => true,
+                                               :mutable => true }
 
-          expected = 'Category: testaction;scheme="http://schemas.ogf.org/occi/core/entity/action#";class="action";title="testaction action"'
+          expected = 'Category: testaction;scheme="http://schemas.ogf.org/occi/core/entity/action#";class="action";title="testaction action";attributes="numbertype stringtype booleantype"'
 
           expect(action.to_text).to eql expected
         end
@@ -39,13 +47,20 @@ module Occi
 
       context '#to_header' do
         it 'renders text correctly' do
-#          action.attributes['numbertype'] = 42
-#          action.attributes['stringtype'] = 'string'
-#          action.attributes['booleantype'] = true
+          action.attributes = Occi::Core::Attributes.new
+          action.attributes['numbertype'] =  { :type => 'number',
+                                               :default => 42,
+                                               :mutable => true }
+          action.attributes['stringtype'] =  { :type => 'string',
+                                               :pattern => '[adefltuv]+',
+                                               :default => 'defaultvalue',
+                                               :mutable => true }
+          action.attributes['booleantype'] = { :type => 'boolean',
+                                               :default => true,
+                                               :mutable => true }
 
-          expected = 'Category: testaction;scheme="http://schemas.ogf.org/occi/core/entity/action#";class="action";title="testaction action"'
-
-          expect(action.to_text).to eql expected 
+          expected = {:Category => "testaction;scheme=\"http://schemas.ogf.org/occi/core/entity/action#\";class=\"action\";title=\"testaction action\";attributes=\"numbertype stringtype booleantype\""}
+          expect(action.to_header).to eql expected 
         end
       end
 
