@@ -6,15 +6,14 @@ module Occi
 
       context '.category' do
 
-        it 'parses a string describing an OCCI Category' #do
-#          category_string = 'Category: a_a1-_;scheme="http://a.a/a#";class="kind";title="aA1!\"§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
+        it 'parses a string describing an OCCI Category' do
+          category_string = 'Category: a_a1-_;scheme="http://a.a/a#";class="kind";title="aA1!\"§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
 
-          # TODO: compare objects directly, do not rely on text rendering
-#          expected = 'Category: a_a1-_;scheme="http://a.a/a#";class="kind";title="aA1!"§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
+          category = Occi::Parser::Text.category category_string
+          expected = Marshal.restore("\x04\bo:\x15Occi::Core::Kind\r:\f@schemeI\"\x12http://a.a/a#\x06:\x06ET:\n@termI\"\va_a1-_\x06;\aT:\v@titleI\"%aA1!\\\"\xC2\xA7$%&/()=?`\xC2\xB4\xC3\x9F+*#-_.:,;<>\x06;\aT:\x10@attributesC:\eOcci::Core::Attributes{\aI\"\na_1-_\x06;\aTC;\v{\x06I\"\na1-_a\x06;\aTo:\eOcci::Core::Properties\v:\r@default0:\n@typeI\"\vstring\x06;\aF:\x0E@requiredF:\r@mutableF:\r@patternI\"\a.*\x06;\aF:\x11@description0I\"\ba-1\x06;\aTC;\v{\x06I\"\x06a\x06;\aTC;\v{\x06I\"\x06b\x06;\aTo;\f\v;\r0;\x0EI\"\vstring\x06;\aF;\x0FF;\x10F;\x11I\"\a.*\x06;\aF;\x120:\f@parentI\"\x13http://a.a/b#a\x06;\aT:\r@actionso:\x18Occi::Core::Actions\x06:\n@hash{\ao:\x17Occi::Core::Action\t;\x06I\"\x13http://a.a/a1#\x06;\aT;\bI\"\aa1\x06;\aT;\t0;\nC;\v{\x00To;\x17\t;\x06I\"\x14http://a.b1/b1#\x06;\aT;\bI\"\ab2\x06;\aT;\t0;\nC;\v{\x00T:\x0E@entitieso:\x19Occi::Core::Entities\x06;\x16{\x00:\x0E@locationI\"\v/a1-A/\x06;\aT")
 
-#          category = Occi::Parser::Text.category category_string
-#          expect(category.to_text).to eq expected
-#        end
+          expect(category).to eql expected
+        end
 
         it 'parses a string describing an OCCI Category with unquoted class value' do
           category_string = 'Category: a_a1-_;scheme="http://a.a/a#";class=kind'
@@ -79,6 +78,21 @@ module Occi
             expect(collection.links).to have(5).links
           end
         end
+      end
+      context '.categories' do
+        it 'parses all above as lines'
+      end
+      context '.resource' do
+      end
+      context '.link' do
+      end
+      context '.location' do
+      end
+      context '.locations' do
+      end
+      context '.attribute' do
+      end
+      context '.link_string' do
       end
     end
   end
