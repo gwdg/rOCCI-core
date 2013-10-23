@@ -191,9 +191,10 @@ module Occi
 
             value = attributes[key]
             value = properties.default if value.kind_of? Occi::Core::Properties
-            value ||= properties.default if set_defaults || properties.required?
 
             unless BOOLEAN_CLASSES.include? value.class
+              value ||= properties.default if set_defaults || properties.required?
+
               raise Occi::Errors::AttributeMissingError, "required attribute #{key} not found" if value.blank? && properties.required?
               next if value.blank?
             end
