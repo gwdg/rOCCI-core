@@ -61,7 +61,7 @@ module Occi
         string = super
         string << ";rel=#{self.related.join(' ').inspect}" if self.related.any?
         string << ";location=#{self.location.inspect}"
-        string << ";attributes=#{self.attributes.names.keys.join(' ').inspect}" if self.attributes.any?
+        string << self.attributes.to_string_short
         string << ";actions=#{self.actions.join(' ').inspect}" if self.actions.any?
         string
       end

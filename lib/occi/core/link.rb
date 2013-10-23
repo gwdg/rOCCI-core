@@ -80,10 +80,7 @@ module Occi
         categories = [@kind] + @mixins.join(',').split(',')
         string << ";category=#{categories.join(' ').inspect}"
 
-        @attributes.names.each_pair do |name, value|
-          next if value.to_s.blank?
-          string << ";#{name}=#{value.to_s.inspect}"
-        end
+        string << @attributes.to_string
 
         string
       end
