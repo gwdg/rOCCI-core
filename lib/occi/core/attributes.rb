@@ -5,6 +5,7 @@ module Occi
       attr_accessor :converted
 
       include Occi::Helpers::Inspect
+      include Occi::Helpers::Comparators::Attributes
 
       PROPERTY_KEYS = [:Type, :Required, :Mutable, :Default, :Description, :Pattern, :type, :required, :mutable, :default, :description, :pattern]
 
@@ -66,7 +67,7 @@ module Occi
         convert self
       end
 
-      # @return [Array] key value pair of full attribute names with their corresponding values
+      # @return [Hash] key value pair of full attribute names with their corresponding values
       def names
         hash = {}
         self.each_key do |key|
