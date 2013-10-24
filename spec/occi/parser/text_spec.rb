@@ -17,66 +17,40 @@ module Occi
 
         it 'parses a string describing an OCCI Category with unquoted class value' do
           category_string = 'Category: a_a1-_;scheme="http://a.a/a#";class=kind'
-
-          # TODO: compare objects directly, do not rely on text rendering
-          expected = 'Category: a_a1-_;scheme="http://a.a/a#";class="kind";location="/a_a1-_/"'
-
+          expected = Marshal.restore("\x04\bo:\x15Occi::Core::Kind\r:\f@schemeI\"\x12http://a.a/a#\x06:\x06ET:\n@termI\"\va_a1-_\x06;\aT:\v@title0:\x10@attributesC:\eOcci::Core::Attributes{\x00:\f@parent0:\r@actionso:\x18Occi::Core::Actions\x06:\n@hash{\x00:\x0E@entitieso:\x19Occi::Core::Entities\x06;\x0F{\x00:\x0E@locationI\"\r/a_a1-_/\x06;\aF")
           category = Occi::Parser::Text.category category_string
-          expect(category.to_text).to eql expected
+          expect(category).to eql expected
         end
 
         it 'parses a string describing an OCCI Category with uppercase term' do
           category_string = 'Category: TERM;scheme="http://a.a/a#";class=kind'
-
+          expected = Marshal.restore("\x04\bo:\x15Occi::Core::Kind\r:\f@schemeI\"\x12http://a.a/a#\x06:\x06ET:\n@termI\"\tterm\x06;\aT:\v@title0:\x10@attributesC:\eOcci::Core::Attributes{\x00:\f@parent0:\r@actionso:\x18Occi::Core::Actions\x06:\n@hash{\x00:\x0E@entitieso:\x19Occi::Core::Entities\x06;\x0F{\x00:\x0E@locationI\"\v/term/\x06;\aF")
           category = Occi::Parser::Text.category category_string
-          category.term.should eq 'term'
-          category.scheme.should eq 'http://a.a/a#'
-          category.class.should eq Occi::Core::Kind
+          expect(category).to eql expected
         end
 
       end
 
       context '.resource' do
-        context 'attributes' do
-          let(:resource_string){ File.open("spec/occi/parser/text_samples/occi_resource_w_attributes.text", "rb").read }
-          let(:collection){ Occi::Parser::Text.resource resource_string.lines }
-
-          it 'parses No. of cores' do
-            expect(collection.resources.first.attributes['occi.compute.cores']).to eq 1
-          end
-          it 'parses compute cpu' do
-            expect(collection.resources.first.attributes['org.opennebula.compute.cpu']).to eq 1.0
-          end
-          it 'parses architecture' do
-            expect(collection.resources.first.attributes['occi.compute.architecture']).to eq "x86"
-          end
-          it 'parses compute memory' do
-            expect(collection.resources.first.attributes['occi.compute.memory']).to eq 1.7
-          end
+        it 'parses attributes correctly' do
+          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_attributes.text", "rb").read
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_resource_w_attributes.dump", "rb"))
+          collection =  Occi::Parser::Text.resource resource_string.lines
+          expect(collection).to eql expected
         end
 
-        context 'inline links' do
-          let(:resource_string){ File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.text", "rb").read }
-          let(:collection){ Occi::Parser::Text.resource resource_string.lines }
-
-          it 'has the right number of resources' do
-            expect(collection.resources).to have(1).resource
-          end
-          it 'has the right number of links' do
-            expect(collection.links).to have(2).links
-          end
+        it 'parses inline links correctly' do
+          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.text", "rb").read
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.dump", "rb"))
+          collection = Occi::Parser::Text.resource resource_string.lines
+          expect(collection).to eql expected
         end
 
-        context 'inline Links and Mixins' do
-          let(:resource_string){ File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.text", "rb").read }
-          let(:collection){ Occi::Parser::Text.resource resource_string.lines }
-
-          it 'has the right number of resources' do
-            expect(collection.resources).to have(1).resource
-          end
-          it 'has the right number of links' do
-            expect(collection.links).to have(5).links
-          end
+        it 'parses inline Links and Mixins correctly' do
+          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.text", "rb").read
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.dump", "rb"))
+          collection =  Occi::Parser::Text.resource resource_string.lines
+          expect(collection).to eql expected
         end
       end
       context '.categories' do
