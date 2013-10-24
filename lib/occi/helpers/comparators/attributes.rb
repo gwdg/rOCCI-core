@@ -12,6 +12,10 @@ module Occi
           self == obj
         end
 
+        def hash
+          self.names.hash
+        end
+
       end
     end
   end
