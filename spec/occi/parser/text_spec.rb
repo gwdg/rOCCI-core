@@ -40,14 +40,14 @@ module Occi
         it 'parses inline links correctly' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.text", "rb").read
           expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.dump", "rb"))
-          collection = Occi::Parser::Text.category resource_string.lines
+          collection = Occi::Parser::Text.category resource_string
           expect(collection).to eql expected
         end
 
         it 'parses inline Links and Mixins correctly' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.text", "rb").read
           expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.dump", "rb"))
-          collection =  Occi::Parser::Text.category resource_string.lines
+          collection =  Occi::Parser::Text.category resource_string
           expect(collection).to eql expected
         end
       end
