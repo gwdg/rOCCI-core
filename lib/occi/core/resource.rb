@@ -42,11 +42,14 @@ module Occi
 
       def link(target, kind=Occi::Core::Link.kind, mixins=[], attributes=Occi::Core::Attributes.new, rel=Occi::Core::Resource.type_identifier)
         link = kind.entity_type.new
+
         link.rel = rel
         link.attributes = attributes
+        link.id ||= UUIDTools::UUID.random_create.to_s
         link.target = target
         link.source = self
         link.mixins = mixins
+
         @links << link
 
         link

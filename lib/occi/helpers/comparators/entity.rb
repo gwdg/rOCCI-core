@@ -12,6 +12,10 @@ module Occi
           self == obj
         end
 
+        def hash
+          [self.kind, self.attributes['occi.core.id']].hash
+        end
+
       end
     end
   end

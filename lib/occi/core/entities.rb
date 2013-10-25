@@ -3,6 +3,7 @@ module Occi
     class Entities < Set
 
       include Occi::Helpers::Inspect
+      include Occi::Helpers::Comparators::Entities
 
       attr_accessor :model
 
