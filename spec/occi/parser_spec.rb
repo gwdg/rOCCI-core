@@ -72,7 +72,8 @@ module Occi
 
       # add link to resource
       link = resource.links.create
-      link.target = 'http://example.com/resource/aee5acf5-71de-40b0-bd1c-2284658bfd0e'
+      link.target = '/resource/aee5acf5-71de-40b0-bd1c-2284658bfd0e'
+      link.source = resource.location
 
       # render collection to text/plain MIME type
       rendered_collection = collection.to_json

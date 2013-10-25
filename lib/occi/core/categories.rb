@@ -3,6 +3,7 @@ module Occi
     class Categories < Set
 
       include Occi::Helpers::Inspect
+      include Occi::Helpers::Comparators::Categories
 
       attr_accessor :model
 
