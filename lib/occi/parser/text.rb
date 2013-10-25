@@ -87,6 +87,7 @@ module Occi
 
 
       def self.categories(lines)
+        Occi::Log.debug('Parsing through Occi::Parser::Text.categories')
         collection = Occi::Collection.new
         lines.each do |line|
           line.strip!
@@ -97,6 +98,7 @@ module Occi
       end
 
       def self.resource(lines)
+        Occi::Log.debug('Parsing through Occi::Parser::Text.resource')
         collection = Occi::Collection.new
         resource = Occi::Core::Resource.new
         lines.each do |line|
@@ -119,6 +121,7 @@ module Occi
       end
 
       def self.link(lines)
+        Occi::Log.debug('Parsing through Occi::Parser::Text.link')
         collection = Occi::Collection.new
         link = Occi::Core::Link.new
         lines.each do |line|
