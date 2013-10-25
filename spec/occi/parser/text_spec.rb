@@ -29,29 +29,29 @@ module Occi
           expect(category).to eql expected
         end
 
-      end
 
-      context '.resource' do
         it 'parses attributes correctly' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_attributes.text", "rb").read
           expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_resource_w_attributes.dump", "rb"))
-          collection =  Occi::Parser::Text.resource resource_string.lines
+          collection =  Occi::Parser::Text.category resource_string
           expect(collection).to eql expected
         end
 
         it 'parses inline links correctly' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.text", "rb").read
           expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.dump", "rb"))
-          collection = Occi::Parser::Text.resource resource_string.lines
+          collection = Occi::Parser::Text.category resource_string.lines
           expect(collection).to eql expected
         end
 
         it 'parses inline Links and Mixins correctly' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.text", "rb").read
           expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.dump", "rb"))
-          collection =  Occi::Parser::Text.resource resource_string.lines
+          collection =  Occi::Parser::Text.category resource_string.lines
           expect(collection).to eql expected
         end
+      end
+      context '.resource' do
       end
       context '.categories' do
         it 'parses all above as lines'
@@ -67,6 +67,9 @@ module Occi
       context '.attribute' do
       end
       context '.link_string' do
+      end
+      context 'other OCCI implementations' do
+        it 'renders correctly OCCI from other sources'
       end
     end
   end
