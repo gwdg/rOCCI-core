@@ -1,8 +1,4 @@
-require 'occi/parser/text'
-require 'occi/parser/json'
-require 'occi/parser/xml'
-require 'occi/parser/ova'
-require 'occi/parser/ovf'
+Dir[File.join(File.dirname(__FILE__), 'parser', '*.rb')].each { |file| require file.gsub('.rb', '') }
 
 module Occi
   module Parser
@@ -18,58 +14,71 @@ module Occi
       Occi::Log.debug '### Parsing request data to OCCI Collection ###'
       collection = Occi::Collection.new
 
-      # remove trailing HTTP_ prefix if present
+      # remove the HTTP_ prefix if present
       header = Hash[header.map { |k, v| [k.gsub('HTTP_', '').upcase, v] }]
+      Occi::Log.debug "### Parsing headers: #{header.inspect}"
 
       if category
+        Occi::Log.debug '### Parsing categories from headers'
         collection = Occi::Parser::Text.categories(header.map { |k, v| v.to_s.split(',').collect { |w| "#{k}: #{w}" } }.flatten)
       else
         if entity_type == Occi::Core::Resource
+          Occi::Log.debug '### Parsing a resource from headers'
           collection = Occi::Parser::Text.resource(header.map { |k, v| v.to_s.split(',').collect { |w| "#{k}: #{w}" } }.flatten)
         elsif entity_type == Occi::Core::Link
+          Occi::Log.debug '### Parsing a link from headers'
           collection = Occi::Parser::Text.link(header.map { |k, v| v.to_s.split(',').collect { |w| "#{k}: #{w}" } }.flatten)
+        else
+          raise Occi::Errors::ParserTypeError, "Entity type #{entity_type} not supported"
         end
       end
 
+      Occi::Log.debug "### Parsing #{media_type} from body"
       case media_type
-        when 'text/uri-list'
-          nil
-        when 'text/occi'
-          nil
-        when 'text/plain', nil
-          if category
-            collection = Occi::Parser::Text.categories body.split "\n"
-          else
-            if entity_type == Occi::Core::Resource
-              collection = Occi::Parser::Text.resource body.split "\n"
-            elsif entity_type == Occi::Core::Link
-              collection = Occi::Parser::Text.link body.split "\n"
-            end
-          end
-        when 'application/occi+json', 'application/json'
-          collection = Occi::Parser::Json.collection body
-        when 'application/occi+xml', 'application/xml'
-          collection = Occi::Parser::Xml.collection body
-        when 'application/ovf', 'application/ovf+xml'
-          collection = Occi::Parser::Ovf.collection body
-        when 'application/ova'
-          collection = Occi::Parser::Ova.collection body
+      when 'text/uri-list'
+        nil
+      when 'text/occi'
+        nil
+      when 'text/plain', nil
+        if category
+          collection = Occi::Parser::Text.categories body.split "\n"
         else
-          raise "Content Type not supported"
+          if entity_type == Occi::Core::Resource
+            collection = Occi::Parser::Text.resource body.split "\n"
+          elsif entity_type == Occi::Core::Link
+            collection = Occi::Parser::Text.link body.split "\n"
+          else
+            raise Occi::Errors::ParserTypeError, "Entity type #{entity_type} not supported"
+          end
+        end
+      when 'application/occi+json', 'application/json'
+        collection = Occi::Parser::Json.collection body
+      when 'application/occi+xml', 'application/xml'
+        collection = Occi::Parser::Xml.collection body
+      when 'application/ovf', 'application/ovf+xml'
+        collection = Occi::Parser::Ovf.collection body
+      when 'application/ova'
+        collection = Occi::Parser::Ova.collection body
+      else
+        raise Occi::Errors::ParserTypeError, "Content type #{media_type} not supported"
       end
+
       collection
     end
 
     def self.locations(media_type, body, header)
+      Occi::Log.debug "### Parsing locations from request headers: #{header.inspect}"
       locations = Occi::Parser::Text.locations header.map { |k, v| v.to_s.split(',').collect { |w| "#{k}: #{w}" } }.flatten
-      locations << header['Location'] if !header['Location'].nil? && header['Location'].any?
+      locations << header['Location'] if header['Location'] && header['Location'].any?
+
+      Occi::Log.debug "### Parsing #{media_type} locations from body"
       case media_type
-        when 'text/uri-list'
-          locations << body.split("\n")
-        when 'text/plain', nil
-          locations << Occi::Parser::Text.locations(body.split "\n")
-        else
-          nil
+      when 'text/uri-list'
+        locations << body.split("\n")
+      when 'text/plain', nil
+        locations << Occi::Parser::Text.locations(body.split "\n")
+      else
+        nil
       end
 
       locations.flatten
