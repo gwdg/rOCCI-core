@@ -9,6 +9,13 @@ module Occi
 
       PROPERTY_KEYS = [:Type, :Required, :Mutable, :Default, :Description, :Pattern, :type, :required, :mutable, :default, :description, :pattern]
 
+      def initialize(source_hash = nil, default = nil, &blk)
+        # All internal Hashie::Mash elements in source_hash have to be re-typed
+        # to Occi::Core::Attributes, so we have to rebuild the object from scratch
+        source_hash = source_hash.to_hash if source_hash.kind_of? Hashie::Mash
+        super(source_hash, default, &blk)
+      end
+
       def converted?
         @converted||=false
       end
@@ -105,6 +112,7 @@ module Occi
             attributes[key] = self.parse attributes[key]
           end
         end
+
         attributes
       end
 
@@ -120,7 +128,8 @@ module Occi
             attribute.merge! Attributes.new(key => self.split(rest => value))
           end
         end
-        return attribute
+
+        attribute
       end
 
       # @return [String]
