@@ -151,6 +151,30 @@ module Occi
 
       end
 
+      context '#hash' do
+
+        it 'matches for clones' do
+          expect(category.hash).to eq category.clone.hash
+        end
+
+        it 'matches for the same instance' do
+          expect(category.hash).to eq category.hash
+        end
+
+        it 'does not match when term is different' do
+          expect(category.hash).not_to eq category_term.hash
+        end
+
+        it 'does not match when scheme is different' do
+          expect(category.hash).not_to eq category_scheme.hash
+        end
+
+        it 'does not match when scheme and term are different' do
+          expect(category.hash).not_to eq category_scheme_term
+        end
+
+      end
+
       # rendering
 
     end
