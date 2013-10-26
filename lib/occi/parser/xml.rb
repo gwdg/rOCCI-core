@@ -5,13 +5,14 @@ module Occi
       # @return [Occi::Collection]
       def self.collection(string)
 
-        hash = Hashie::Mash.new(Hash.from_xml(Nokogiri::XML(string)))
-
-        unless hash
-          Occi::Log.error "### Failed to parse XML input, nil returned"
-          raise Occi::Errors::ParserInputError, 'Nothing returned by the parser'
+        begin
+          parsed_xml = Nokogiri::XML(string) { |config| config.strict.nonet }
+        rescue Nokogiri::XML::SyntaxError => perr
+          Occi::Log.error "### Failed to parse XML input: #{perr.message}"
+          raise Occi::Errors::ParserInputError, perr.message
         end
 
+        hash = Hashie::Mash.new(Hash.from_xml(parsed_xml))
         Occi::Collection.new(hash)
       end
     end
