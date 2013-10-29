@@ -81,6 +81,29 @@ module Occi
         
       end
       context '.resource' do
+        it 'parses network resource from rOCCI server' do
+          resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rb").read
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_network_rocci_server.resource.dump", "rb"))
+          resource =  Occi::Parser::Text.resource resource_string
+          expect(resource).to eql expected
+        end
+
+        it 'parses storage resource from rOCCI server' do
+          resource_string = File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.text", "rb").read
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.resource.dump", "rb"))
+          resource =  Occi::Parser::Text.resource resource_string
+          expect(resource).to eql expected
+        end
+        
+        it 'parses compute resource from rOCCI server' do
+          resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rb").read
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.resource.dump", "rb"))
+          resource =  Occi::Parser::Text.resource resource_string
+          expect(resource).to eql expected
+        end
+
+
+
       end
       context '.categories' do
         it 'parses all above as lines'

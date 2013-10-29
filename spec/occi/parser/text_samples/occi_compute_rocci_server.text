@@ -1,0 +1,10 @@
+Category: compute;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind"
+Category: compute;scheme="http://opennebula.org/occi/infrastructure#";class="mixin"
+X-OCCI-Attribute: occi.core.id="4ddbfeae-22d7-5e50-8f85-ba18589e876b"
+X-OCCI-Attribute: occi.core.title="MonTest1"
+X-OCCI-Attribute: occi.compute.cores=1
+X-OCCI-Attribute: occi.compute.memory=0.256
+X-OCCI-Attribute: occi.compute.state="active"
+X-OCCI-Attribute: org.opennebula.compute.cpu=1.0
+Link: </storage/e60aa2b8-0c86-5973-b93e-30c5c46d6eac>;rel="http://schemas.ogf.org/occi/infrastructure#storage";self="/storagelink/b2f7f1de-c60c-5b08-879c-81f52429c4ef";category="http://schemas.ogf.org/occi/infrastructure#storagelink";occi.core.id="b2f7f1de-c60c-5b08-879c-81f52429c4ef" occi.core.title="monitoring" occi.storagelink.deviceid="xvda" occi.storagelink.state="inactive" org.opennebula.storagelink.bus="ide" org.opennebula.storagelink.driver="tap2:tapdisk:aio:"
+Link: </network/e4bd81c4-adda-5626-840d-39bb7959db97>;rel="http://schemas.ogf.org/occi/infrastructure#network";self="/networkinterface/e75ab249-9325-511c-82b8-a7e4430381e3";category="http://schemas.ogf.org/occi/infrastructure#networkinterface";occi.core.id="e75ab249-9325-511c-82b8-a7e4430381e3" occi.core.title="monitoring" occi.networkinterface.address="192.168.254.1" occi.networkinterface.mac="02:00:c0:a8:fe:01" occi.networkinterface.state="inactive" org.opennebula.networkinterface.bridge="xenbr0"
