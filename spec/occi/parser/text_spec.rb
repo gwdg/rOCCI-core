@@ -50,6 +50,35 @@ module Occi
           collection =  Occi::Parser::Text.category resource_string
           expect(collection).to eql expected
         end
+
+        it 'parses network resource from rOCCI server' do
+          resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rb").read
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_network_rocci_server.dump", "rb"))
+          collection =  Occi::Parser::Text.category resource_string
+          expect(collection).to eql expected
+        end
+        
+        it 'parses storage resource from rOCCI server' do
+          resource_string = File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.text", "rb").read
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.dump", "rb"))
+          collection =  Occi::Parser::Text.category resource_string
+          expect(collection).to eql expected
+        end
+        
+        it 'parses compute resource from rOCCI server' do
+          resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rb").read
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.dump", "rb"))
+          collection =  Occi::Parser::Text.category resource_string
+          expect(collection).to eql expected
+        end
+        
+        it 'parses model from rOCCI server' do
+          resource_string = File.open("spec/occi/parser/text_samples/occi_model_rocci_server.text", "rb").read
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_model_rocci_server.dump", "rb"))
+          collection =  Occi::Parser::Text.category resource_string
+          expect(collection).to eql expected
+        end
+        
       end
       context '.resource' do
       end
