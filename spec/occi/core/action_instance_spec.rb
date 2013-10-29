@@ -2,6 +2,7 @@ module Occi
   module Core
     describe ActionInstance do
 
+      let(:ai){ Occi::Core::ActionInstance.new }
       let(:action){ Occi::Core::Action.new }
 
       let(:attributes){ Occi::Core::Attributes.new }
@@ -32,7 +33,7 @@ module Occi
 
       context '#new' do
         it 'with defaults' do
-          expect { Occi::Core::ActionInstance.new }.not_to raise_error
+          expect { ai }.not_to raise_error
         end
 
         it 'fails without an action' do
@@ -66,27 +67,27 @@ module Occi
 
       context '#action' do
         it 'exposes associated action as Occi::Core::Action' do
-          expect(Occi::Core::ActionInstance.new.action).to be_a(Occi::Core::Action)
+          expect(ai.action).to be_a(Occi::Core::Action)
         end
       end
 
       context '#attributes' do
         it 'exposes associated attributes as Occi::Core::Attributes' do
-          expect(Occi::Core::ActionInstance.new.attributes).to be_a(Occi::Core::Attributes)
+          expect(ai.attributes).to be_a(Occi::Core::Attributes)
         end
       end
 
       context '#model' do
         # TODO: should ActionInstance have an associated model?
         it 'exposes associated model as Occi::Model (??)' #do
-          #expect(Occi::Core::ActionInstance.new.model).to be_a(Occi::Model)
+          #expect(ai.model).to be_a(Occi::Model)
         #end
       end
 
       context '#to_text' do
         it 'renders default to text' do
           expected = "Category: action_instance;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\""
-          expect(Occi::Core::ActionInstance.new.to_text).to eq(expected)
+          expect(ai.to_text).to eq(expected)
         end
 
         it 'renders to text w/ an attribute' do
@@ -112,7 +113,7 @@ X-OCCI-Attribute: org.opennebula.network.id=1|
       context '#to_header' do
         it 'renders default to hash' do
           expected = {"Category" => "action_instance;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\""}
-          expect(Occi::Core::ActionInstance.new.to_header).to eq(expected)
+          expect(ai.to_header).to eq(expected)
         end
 
         it 'renders to hash w/ an attribute' do
@@ -147,7 +148,7 @@ X-OCCI-Attribute: org.opennebula.network.id=1|
       context '#as_json' do
         it 'renders default to Hashie::Mash' do
           expected = Hashie::Mash.new({"action" => "http://schemas.ogf.org/occi/core#action_instance"})
-          expect(Occi::Core::ActionInstance.new.as_json).to eq(expected)
+          expect(ai.as_json).to eq(expected)
         end
 
         it 'renders to Hashie::Mash w/ an attribute' do
@@ -168,6 +169,104 @@ X-OCCI-Attribute: org.opennebula.network.id=1|
 
           expect(Occi::Core::ActionInstance.new(action, attributes_multi).as_json).to eq(expected)
         end
+      end
+
+      context '#==' do
+
+        it 'matches the same instance' do
+          expect(ai).to eq ai
+        end
+
+        it 'matches a clone' do
+          expect(ai).to eq ai.clone
+        end
+
+        it 'does not match with a different action' do
+          changed = ai.clone
+          changed.action = Occi::Core::Action.new(action_string)
+
+          expect(ai).not_to eq changed
+        end
+
+        it 'does not match with different attributes' do
+          changed = ai.clone
+          changed.attributes = attributes_one
+
+          expect(ai).not_to eq changed
+        end
+
+        it 'does not match a nil' do
+          expect(ai).not_to eq nil
+        end
+
+      end
+
+      context '#eql?' do
+
+        it 'matches the same instance' do
+          expect(ai).to eql ai
+        end
+
+        it 'matches a clone' do
+          expect(ai).to eql ai.clone
+        end
+
+        it 'does not match with a different action' do
+          changed = ai.clone
+          changed.action = Occi::Core::Action.new(action_string)
+
+          expect(ai).not_to eql changed
+        end
+
+        it 'does not match with different attributes' do
+          changed = ai.clone
+          changed.attributes = attributes_one
+
+          expect(ai).not_to eql changed
+        end
+
+        it 'does not match a nil' do
+          expect(ai).not_to eql nil
+        end
+
+      end
+
+      context '#equal?' do
+
+        it 'matches the same instance' do
+          expect(ai).to equal ai
+        end
+
+        it 'does not match clones' do
+          expect(ai).not_to equal ai.clone
+        end
+
+      end
+
+      context '#hash' do
+
+        it 'matches for clones' do
+          expect(ai.hash).to eq ai.clone.hash
+        end
+
+        it 'matches for the same instance' do
+          expect(ai.hash).to eq ai.hash
+        end
+
+        it 'does not match when action is different' do
+          ai_changed = ai.clone
+          ai_changed.action = Occi::Core::Action.new action_string
+
+          expect(ai.hash).not_to eq ai_changed.hash
+        end
+
+        it 'does not match when attributes are different' do
+          ai_changed = ai.clone
+          ai_changed.attributes = attributes_one
+
+          expect(ai.hash).not_to eq ai_changed.hash
+        end
+
       end
 
     end

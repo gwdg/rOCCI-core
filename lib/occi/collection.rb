@@ -2,6 +2,7 @@ module Occi
   class Collection
 
     include Occi::Helpers::Inspect
+    include Occi::Helpers::Comparators::Collection
 
     attr_accessor :kinds, :mixins, :actions, :resources, :links, :action, :model
 
@@ -28,15 +29,13 @@ module Occi
     end
 
     def <<(object)
-      object.kind_of? Occi::Core::Kind and self.kinds << object
-      object.kind_of? Occi::Core::Mixin and self.mixins << object
-      object.kind_of? Occi::Core::Action and self.actions << object
-      object.kind_of? Occi::Core::Resource and self.resources << object
-      object.kind_of? Occi::Core::Link and self.links << object
-    end
+      self.kinds << object if object.kind_of? Occi::Core::Kind
+      self.mixins << object if object.kind_of? Occi::Core::Mixin
+      self.actions << object if object.kind_of? Occi::Core::Action
+      self.resources << object if object.kind_of? Occi::Core::Resource
+      self.links << object if object.kind_of? Occi::Core::Link
 
-    def ==(category)
-      not intersect(category).empty?
+      self
     end
 
     # @return [Occi::Core::Categories] categories combined list of all kinds, mixins and actions

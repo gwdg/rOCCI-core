@@ -1,11 +1,11 @@
 module Occi
   module Helpers
     module Comparators
-      module Attributes
+      module Categories
 
         def ==(obj)
-          return false unless obj && obj.respond_to?(:names)
-          self.names == obj.names
+          return false unless obj && obj.respond_to?(:to_a)
+          self.to_a == obj.to_a
         end
 
         def eql?(obj)
@@ -13,7 +13,7 @@ module Occi
         end
 
         def hash
-          self.names.hash
+          self.to_a.hash
         end
 
       end

@@ -9,6 +9,13 @@ module Occi
 
       PROPERTY_KEYS = [:Type, :Required, :Mutable, :Default, :Description, :Pattern, :type, :required, :mutable, :default, :description, :pattern]
 
+      def initialize(source_hash = nil, default = nil, &blk)
+        # All internal Hashie::Mash elements in source_hash have to be re-typed
+        # to Occi::Core::Attributes, so we have to rebuild the object from scratch
+        source_hash = source_hash.to_hash if source_hash.kind_of? Hashie::Mash
+        super(source_hash, default, &blk)
+      end
+
       def converted?
         @converted||=false
       end
@@ -105,6 +112,7 @@ module Occi
             attributes[key] = self.parse attributes[key]
           end
         end
+
         attributes
       end
 
@@ -114,13 +122,14 @@ module Occi
         attribute = Attributes.new
         attributes.each do |name, value|
           key, _, rest = name.partition('.')
-          if rest.empty?
+          if rest.blank?
             attribute[key] = value
           else
             attribute.merge! Attributes.new(key => self.split(rest => value))
           end
         end
-        return attribute
+
+        attribute
       end
 
       # @return [String]
@@ -167,7 +176,7 @@ module Occi
       # @param [Hash] options
       # @return [Hashie::Mash] json representation
       def as_json(options={})
-        hash = {}
+        hash = Hashie::Mash.new
         self.each_pair do |key, value|
           next if self.key?(key[1..-1])
           # TODO: find a better way to skip properties
@@ -175,15 +184,16 @@ module Occi
 
           case value
             when Occi::Core::Attributes
-              hash[key] = value.as_json unless value.as_json.size == 0
+              hash[key] = value.as_json if value && value.as_json.size > 0
             when Occi::Core::Entity
-              hash[key] = value.to_s unless value.to_s.empty?
+              hash[key] = value.to_s unless value.blank?
             when Occi::Core::Category
               hash[key] = value.to_s
             else
               hash[key] = value.as_json if value
           end
         end
+
         hash
       end
 

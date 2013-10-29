@@ -16,6 +16,10 @@ module Occi
           self == obj
         end
 
+        def hash
+          self.instance_variables.map { |ivar| self.instance_variable_get ivar }.hash
+        end
+
       end
     end
   end

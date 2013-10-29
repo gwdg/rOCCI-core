@@ -3,7 +3,7 @@ module Occi
     describe Entities do
       let(:entities){ Occi::Core::Entities.new }
       let(:entity1){ Occi::Core::Entity.new }
-      let(:entity2){ Occi::Core::Entity.new }
+      let(:entity2){ Occi::Core::Entity.new 'http://example.org/test/schema#entity2' }
       let(:testaction){ Occi::Core::Action.new scheme='http://schemas.ogf.org/occi/core/entity/action#', term='testaction', title='testaction action' }
 
       context 'populating' do
