@@ -147,6 +147,7 @@ module Occi
       end
 
       def self.locations(lines)
+        Occi::Log.debug('Parsing through Occi::Parser::Text.locations')
         locations = []
         block = Proc.new { |line|
           line.strip!
@@ -159,6 +160,7 @@ module Occi
       private
 
       def self.category(string)
+        Occi::Log.debug('Parsing through Occi::Parser::Text.category')
         # create regular expression from regexp string
         regexp = Regexp.new(REGEXP_CATEGORY)
         # match string to regular expression
@@ -198,6 +200,7 @@ module Occi
       end
 
       def self.attribute(string)
+        Occi::Log.debug('Parsing through Occi::Parser::Text.attribute')
         # create regular expression from regexp string
         regexp = Regexp.new(REGEXP_ATTRIBUTE)
         # match string to regular expression
@@ -216,6 +219,7 @@ module Occi
       end
 
       def self.link_string(string, source)
+        Occi::Log.debug('Parsing through Occi::Parser::Text.link_string')
         # create regular expression from regexp string
         regexp = Regexp.new(REGEXP_LINK)
         # match string to regular expression
@@ -247,6 +251,7 @@ module Occi
       end
 
       def self.location(string)
+        Occi::Log.debug('Parsing through Occi::Parser::Text.location')
         # create regular expression from regexp string
         regexp = Regexp.new(REGEXP_LOCATION)
         # match string to regular expression
