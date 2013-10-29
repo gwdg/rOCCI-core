@@ -106,9 +106,28 @@ module Occi
 
       end
       context '.categories' do
-        it 'parses all above as lines'
-      end
-      context '.resource' do
+        it 'parses strings describing OCCI Categories' do
+          categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rb").read
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_categories.dump", "rb"))
+          categories = Occi::Parser::Text.categories categories_string
+          expect(categories).to eql expected
+        end
+
+        it 'parses strings describing OCCI Categories, skipping unparseable additions' do
+          categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rb").read
+          categories_string["\n"] = "\n\n&*$this won't parse\n"
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_categories.dump", "rb"))
+          categories = Occi::Parser::Text.categories categories_string
+          expect(categories).to eql expected
+        end
+
+        it 'does not fail on unparseable input' do
+          categories_string = "\n\n&*$this won't parse\n"
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_categories.dump", "rb"))
+          categories = Occi::Parser::Text.categories categories_string
+          expect(categories.blank?).to eql true
+        end
+
       end
       context '.link' do
       end
