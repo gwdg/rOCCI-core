@@ -89,11 +89,14 @@ module Occi
       def self.categories(lines)
         Occi::Log.debug('Parsing through Occi::Parser::Text.categories')
         collection = Occi::Collection.new
-        lines.each do |line|
+
+        block = Proc.new { |line|
           line.strip!
           category = self.category(line) if line.start_with? 'Category:'
           collection << category if category.kind_of? Occi::Core::Category
-        end
+        }
+
+        lines.respond_to?(:each) ? lines.each(&block) : lines.each_line(&block)
         collection
       end
 
@@ -101,7 +104,7 @@ module Occi
         Occi::Log.debug('Parsing through Occi::Parser::Text.resource')
         collection = Occi::Collection.new
         resource = Occi::Core::Resource.new
-        lines.each do |line|
+        block = Proc.new { |line|
           line.strip!
           case line
             when /^Category:/
@@ -115,7 +118,9 @@ module Occi
               resource.links << link
               collection << link
           end
-        end
+        }
+        lines.respond_to?(:each) ? lines.each(&block) : lines.each_line(&block)
+
         collection << resource if resource.kind_of? Occi::Core::Resource
         collection
       end
@@ -124,7 +129,7 @@ module Occi
         Occi::Log.debug('Parsing through Occi::Parser::Text.link')
         collection = Occi::Collection.new
         link = Occi::Core::Link.new
-        lines.each do |line|
+        block = Proc.new { |line|
           line.strip!
           case line
             when /^Category:/
@@ -134,17 +139,20 @@ module Occi
             when /^X-OCCI-Attribute:/
               link.attributes.merge! self.attribute(line)
           end
-        end
+        }
+        lines.respond_to?(:each) ? lines.each(&block) : lines.each_line(&block)
+
         collection << link if link.kind_of? Occi::Core::Link
         collection
       end
 
       def self.locations(lines)
         locations = []
-        lines.each do |line|
+        block = Proc.new { |line|
           line.strip!
           locations << self.location(line) if line.start_with? 'X-OCCI-Location:'
-        end
+        }
+        lines.respond_to?(:each) ? lines.each(&block) : lines.each_line(&block)
         locations
       end
 
