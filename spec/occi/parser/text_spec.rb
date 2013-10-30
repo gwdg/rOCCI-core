@@ -225,9 +225,44 @@ module Occi
         end
       end
 
+      context 'compatibility' do
+        after(:each) { Occi::Settings.reload! }
+        context 'terms' do
+          it 'parses uppercase term, compatibility on' do
+            Occi::Settings['compatibility']=true
+            category_string = 'Category: TERM;scheme="http://a.a/a#";class=kind'
+            expected = Marshal.restore("\x04\bo:\x15Occi::Core::Kind\r:\f@schemeI\"\x12http://a.a/a#\x06:\x06ET:\n@termI\"\tterm\x06;\aT:\v@title0:\x10@attributesC:\eOcci::Core::Attributes{\x00:\f@parent0:\r@actionso:\x18Occi::Core::Actions\x06:\n@hash{\x00:\x0E@entitieso:\x19Occi::Core::Entities\x06;\x0F{\x00:\x0E@locationI\"\v/term/\x06;\aF")
+            category = Occi::Parser::Text.category category_string
+            expect(category).to eql expected
+          end
+
+          it 'refuses uppercase term, compatibility off' do
+            Occi::Settings['compatibility']=false
+            category_string = 'Category: TERM;scheme="http://a.a/a#";class=kind'
+            expect{ category = Occi::Parser::Text.category category_string }.to raise_error(Occi::Errors::ParserInputError)
+          end
+
+          it 'parses term starting with number, compatibility on' do
+            Occi::Settings['compatibility']=true
+            category_string = 'Category: 1TERM;scheme="http://a.a/a#";class=kind'
+            expected = Marshal.restore("\x04\bo:\x15Occi::Core::Kind\r:\f@schemeI\"\x12http://a.a/a#\x06:\x06ET:\n@termI\"\n1term\x06;\aT:\v@title0:\x10@attributesC:\eOcci::Core::Attributes{\x00:\f@parent0:\r@actionso:\x18Occi::Core::Actions\x06:\n@hash{\x00:\x0E@entitieso:\x19Occi::Core::Entities\x06;\x0F{\x00:\x0E@locationI\"\f/1term/\x06;\aF")
+            category = Occi::Parser::Text.category category_string
+            expect(category).to eql expected
+          end
+
+          it 'refuses term starting with number, compatibility off' do
+            Occi::Settings['compatibility']=false
+            category_string = 'Category: 1TERM;scheme="http://a.a/a#";class=kind'
+            expect{ category = Occi::Parser::Text.category category_string }.to raise_error(Occi::Errors::ParserInputError)
+          end
+
+        end
+      end
+
       context 'other OCCI implementations' do
         it 'renders correctly OCCI from other sources'
       end
+
     end
   end
 end
