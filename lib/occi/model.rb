@@ -79,7 +79,7 @@ module Occi
     # @param [Occi::Collection,Occi::Core::Category,String] filter
     # @return [Occi::Collection] collection
     def get(filter = nil)
-      filter ? self.get_related_to(filter) : self
+      (filter && !filter.empty? ) ? self.get_related_to(filter) : self
     end
 
   end

@@ -75,6 +75,7 @@ module Occi
         else
           @attributes = Occi::Core::Attributes.new attributes
         end
+        @attributes['occi.core.id'] ||= UUIDTools::UUID.random_create.to_s
 
         @actions = Occi::Core::Actions.new actions
         @location = location
@@ -281,6 +282,11 @@ module Occi
       # @return [String] string representation of entity is its location
       def to_s
         self.location
+      end
+
+      # @return [Bool] Indicating whether this entity is "empty", i.e. required attributes are blank
+      def empty?
+        kind.empty? || attributes['occi.core.id'].blank?
       end
 
     end
