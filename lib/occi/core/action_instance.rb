@@ -70,6 +70,11 @@ module Occi
         header
       end
 
+      # @return [Bool] Indicating whether this action instance is "empty", i.e. required attributes are blank
+      def empty?
+        action.nil? || action.empty?
+      end
+
     end
   end
 end

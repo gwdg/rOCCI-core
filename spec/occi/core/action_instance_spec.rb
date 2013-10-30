@@ -269,6 +269,29 @@ X-OCCI-Attribute: org.opennebula.network.id=1|
 
       end
 
+      context '#empty?' do
+
+        it 'returns false for a new instance with defaults' do
+          expect(ai.empty?).to be_false
+        end
+
+        it 'returns true for an instance without an action' do
+          ai_changed = ai.clone
+          ai_changed.action = nil
+
+          expect(ai_changed.empty?).to be_true
+        end
+
+        it 'returns true for an instance with an empty action' do
+          ai_changed = ai.clone
+          ai_changed.action = Occi::Core::Action.new
+          ai_changed.action.term = nil
+
+          expect(ai_changed.empty?).to be_true
+        end
+
+      end
+
     end
   end
 end

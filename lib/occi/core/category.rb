@@ -80,6 +80,11 @@ module Occi
         self.type_identifier
       end
 
+      # @return [Bool] Indicating whether this category is "empty", i.e. required attributes are blank
+      def empty?
+        term.blank? || scheme.blank?
+      end
+
       # @param term [String] Term to check.
       # @return [Bool] Indicating whether term consists exclusively of valid characters.
       def self.valid_term?(term)
