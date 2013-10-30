@@ -189,10 +189,13 @@ module Occi
         location = match[:location]
         case match[:class]
           when 'kind'
+            Occi::Log.debug("class #{match[:class]} identified as kind")
             Occi::Core::Kind.new scheme, term, title, attributes, related, actions, location
           when 'mixin'
+            Occi::Log.debug("class #{match[:class]} identified as mixin")
             Occi::Core::Mixin.new scheme, term, title, attributes, related, actions, location
           when 'action'
+            Occi::Log.debug("class #{match[:class]} identified as action")
             Occi::Core::Action.new scheme, term, title, attributes
           else
             raise "Category with class #{match[:class]} not recognized in string: #{string}"
