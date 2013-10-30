@@ -75,6 +75,7 @@ module Occi
         else
           @attributes = Occi::Core::Attributes.new attributes
         end
+        @attributes['occi.core.id'] ||= UUIDTools::UUID.random_create.to_s
 
         @actions = Occi::Core::Actions.new actions
         @location = location

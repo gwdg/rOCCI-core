@@ -1,7 +1,11 @@
 module Occi
   module Core
     describe Entity do
-      let(:entity){ Occi::Core::Entity.new }
+      let(:entity){
+        entity = Occi::Core::Entity.new
+        entity.id = 'baf1'
+        entity
+      }
       let(:testaction){ Occi::Core::Action.new scheme='http://schemas.ogf.org/occi/core/entity/action#', term='testaction', title='testaction action' }
 
       it "initializes itself successfully" do
@@ -122,7 +126,8 @@ module Occi
 
       context '#to_text' do
         it 'renders fresh instance in text correctly' do
-          expected = 'Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"'
+          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"
+X-OCCI-Attribute: occi.core.id="baf1"|
           expect(entity.to_text).to eq(expected)
         end
 
@@ -134,6 +139,7 @@ module Occi
 
           expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"
 Category: mymixin;scheme="http://example.com/mynamespace#";class="mixin"
+X-OCCI-Attribute: occi.core.id="baf1"
 X-OCCI-Attribute: occi.core.title="TestTitle"
 Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity/action#testaction|
           expect(entity.to_text).to eq(expected)
@@ -144,6 +150,7 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
         it 'renders fresh instance in HTTP Header correctly' do
           expected = Hashie::Mash.new
           expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"'
+          expected['X-OCCI-Attribute'] = 'occi.core.id="baf1"'
 
           expect(entity.to_header).to eql(expected)
         end
@@ -156,7 +163,7 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
 
           expected = Hashie::Mash.new
           expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind",mymixin;scheme="http://example.com/mynamespace#";class="mixin"'
-          expected['X-OCCI-Attribute'] = 'occi.core.title="TestTitle"'
+          expected['X-OCCI-Attribute'] = 'occi.core.id="baf1",occi.core.title="TestTitle"'
           expected['Link'] = '</TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity/action#testaction'
 
           expect(entity.to_header).to eql(expected)
@@ -305,12 +312,31 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
           end
         end
       end
+
       context '#attribute_properties' do
         it 'gets attribute properties' #do
-#           TODO: Awaiting routines to compare attribute objects
-#          expect(entity.attribute_properties).to eql expected
-#        end
+          # TODO: Awaiting routines to compare attribute objects
+          #expect(entity.attribute_properties).to eql expected
+        #end
       end
+
+      context '#empty?' do
+
+        it 'returns false for a new instance with defaults' do
+          expect(entity.empty?).to be_false
+        end
+
+        it 'returns true for an instance without a kind'
+
+        it 'returns true for an instance without an identifier' do
+          ent = entity.clone
+          ent.id = nil
+
+          expect(ent.empty?).to be_true
+        end
+
+      end
+
     end
   end
 end
