@@ -101,10 +101,8 @@ module Occi
           resource =  Occi::Parser::Text.resource resource_string
           expect(resource).to eql expected
         end
-
-
-
       end
+
       context '.categories' do
         it 'parses strings describing OCCI Categories' do
           categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rb").read
@@ -131,6 +129,26 @@ module Occi
       end
 
       context '.link' do
+        it 'parses simple link' do
+          link_string = File.open("spec/occi/parser/text_samples/occi_link_simple.text", "rb").read
+          link = Occi::Parser::Text.link link_string
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_simple.dump", "rb"))
+          expect(link).to eql expected
+        end
+
+        it 'parses link with category' do
+          link_string = File.open("spec/occi/parser/text_samples/occi_link_w_category.text", "rb").read
+          link = Occi::Parser::Text.link link_string
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_w_category.dump", "rb"))
+          expect(link).to eql expected
+        end
+
+        it 'parses link with attributes' do
+          link_string = File.open("spec/occi/parser/text_samples/occi_link_w_attributes.text", "rb").read
+          link = Occi::Parser::Text.link link_string
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_w_attributes.dump", "rb"))
+          expect(link).to eql expected
+        end
       end
 
       context '.location' do
