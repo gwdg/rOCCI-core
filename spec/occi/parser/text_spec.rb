@@ -97,6 +97,18 @@ module Occi
           expect{ category = Occi::Parser::Text.category category_string }.to raise_error(Occi::Errors::ParserInputError)
         end
 
+        it 'raises error for a nonsensical class even with lenient regexp' do
+          category_string = 'Category: restart;scheme="http://schemas.ogf.org/occi/infrastructure/compute/action#";class="invalid";title="Restart Compute instance";attributes="method"'
+
+          regexp_category = Occi::Parser::Text.const_get('REGEXP_CATEGORY')
+          regexp_category_alt = regexp_category
+          regexp_category_alt['action'] = 'invalid'
+
+          Occi::Parser::Text.const_set('REGEXP_CATEGORY', regexp_category_alt)
+
+          expect{ category = Occi::Parser::Text.category category_string }.to raise_error(Occi::Errors::ParserInputError)
+          Occi::Parser::Text.const_set('REGEXP_CATEGORY', regexp_category)
+        end
       end
       context '.resource' do
         it 'parses network resource from rOCCI server' do
