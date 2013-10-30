@@ -10,7 +10,7 @@ module Occi
       REGEXP_INT = /#{REGEXP_DIGIT}+/
       REGEXP_FLOAT = /#{REGEXP_INT}\.#{REGEXP_INT}/
       REGEXP_NUMBER = /#{REGEXP_FLOAT}|#{REGEXP_INT}/
-      REGEXP_BOOL = /true|false/
+      REGEXP_BOOL = /\b(?<!\|)true(?!\|)\b|\b(?<!\|)false(?!\|)\b/
 
       # Regular expressions for OCCI
       if Occi::Settings.compatibility
@@ -21,11 +21,11 @@ module Occi
       end
       REGEXP_SCHEME = /#{URI::ABS_URI_REF}#/
       REGEXP_TYPE_IDENTIFIER = /#{REGEXP_SCHEME}#{REGEXP_TERM}/
-      REGEXP_CLASS = /action|mixin|kind/
+      REGEXP_CLASS = /\b(?<!\|)action(?!\|)\b|\b(?<!\|)mixin(?!\|)\b|\b(?<!\|)kind(?!\|)\b/
 
       REGEXP_ATTR_COMPONENT = /#{REGEXP_LOALPHA}(#{REGEXP_LOALPHA}|#{REGEXP_DIGIT}|-|_)*/
       REGEXP_ATTRIBUTE_NAME = /#{REGEXP_ATTR_COMPONENT}(\.#{REGEXP_ATTR_COMPONENT})*/
-      REGEXP_ATTRIBUTE_PROPERTY = /immutable|required/
+      REGEXP_ATTRIBUTE_PROPERTY = /\b(?<!\|)immutable(?!\|)\b|\b(?<!\|)required(?!\|)\b/
       REGEXP_ATTRIBUTE_DEF = /(#{REGEXP_ATTRIBUTE_NAME})(\{#{REGEXP_ATTRIBUTE_PROPERTY}(\s+#{REGEXP_ATTRIBUTE_PROPERTY})*\})?/
       REGEXP_ATTRIBUTE_LIST = /#{REGEXP_ATTRIBUTE_DEF}(\s+#{REGEXP_ATTRIBUTE_DEF})*/
       REGEXP_ATTRIBUTE_REPR = /#{REGEXP_ATTRIBUTE_NAME}=("#{REGEXP_QUOTED_STRING}"|#{REGEXP_NUMBER}|#{REGEXP_BOOL})/
