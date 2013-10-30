@@ -283,6 +283,11 @@ module Occi
         self.location
       end
 
+      # @return [Bool] Indicating whether this entity is "empty", i.e. required attributes are blank
+      def empty?
+        kind.empty? || attributes['occi.core.id'].blank?
+      end
+
     end
   end
 end

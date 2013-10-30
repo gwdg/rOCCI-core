@@ -32,6 +32,11 @@ module Occi
         hash
       end
 
+      # @return [Bool] Indicating whether this set of properties is "empty", i.e. no attributes are set
+      def empty?
+        as_json.empty?
+      end
+
     end
   end
 end
