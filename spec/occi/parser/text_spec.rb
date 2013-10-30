@@ -208,8 +208,23 @@ module Occi
 
       context '.attribute' do
       end
+
       context '.link_string' do
+        it 'parses string with category set' do
+          link_string = File.open("spec/occi/parser/text_samples/occi_link_simple.text", "rb").read
+          link = Occi::Parser::Text.link_string link_string, nil
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_simple.link_string.dump", "rb"))
+          expect(link).to eql expected
+        end
+
+        it 'parses string with category unset' do
+          link_string = 'Link: </compute/04106bce-87eb-4f8f-a665-2f624e54ba46?action=restart>; rel="http://schemas.ogf.org/occi/infrastructure/compute/action#restart"'
+          link = Occi::Parser::Text.link_string(link_string, "source")
+          expected = Marshal.restore("\x04\bo:\x15Occi::Core::Link\x0E:\n@kindo:\x15Occi::Core::Kind\r:\f@schemeI\"&http://schemas.ogf.org/occi/core#\x06:\x06EF:\n@termI\"\tlink\x06;\tF:\v@titleI\"\tlink\x06;\tF:\x10@attributesC:\eOcci::Core::Attributes{\x06I\"\tocci\x06;\tFC;\r{\x06I\"\tcore\x06;\tFC;\r{\rI\"\aid\x06;\tFo:\eOcci::Core::Properties\v:\r@default0:\n@typeI\"\vstring\x06;\tF:\x0E@requiredF:\r@mutableF:\r@patternI\"A[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\x06;\tF:\x11@description0I\"\b_id\x06;\tFo;\x0E\v;\x0F0;\x10@\x11;\x11F;\x12F;\x13@\x12;\x140I\"\ntitle\x06;\tFo;\x0E\v;\x0F0;\x10I\"\vstring\x06;\tF;\x11F;\x12T;\x13I\"\a.*\x06;\tF;\x140I\"\v_title\x06;\tFo;\x0E\v;\x0F0;\x10@\x17;\x11F;\x12T;\x13@\x18;\x140I\"\vtarget\x06;\tFo;\x0E\v;\x0F0;\x10I\"\vstring\x06;\tF;\x11F;\x12T;\x13I\"\a.*\x06;\tF;\x140I\"\f_target\x06;\tFo;\x0E\v;\x0F0;\x10@\x1D;\x11F;\x12T;\x13@\x1E;\x140I\"\vsource\x06;\tFo;\x0E\v;\x0F0;\x10I\"\vstring\x06;\tF;\x11F;\x12T;\x13I\"\a.*\x06;\tF;\x140I\"\f_source\x06;\tFo;\x0E\v;\x0F0;\x10@#;\x11F;\x12T;\x13@$;\x140:\f@parento;\a\r;\bI\"&http://schemas.ogf.org/occi/core#\x06;\tF;\nI\"\ventity\x06;\tF;\vI\"\ventity\x06;\tF;\fC;\r{\x06@\vC;\r{\x06@\rC;\r{\t@\x0F@\x10@\x13@\x14@\x15@\x16@\x19@\x1A;\x150:\r@actionso:\x18Occi::Core::Actions\x06:\n@hash{\x00:\x0E@entitieso:\x19Occi::Core::Entities\x06;\x18{\x00:\x0E@locationI\"\r/entity/\x06;\tF;\x16o;\x17\x06;\x18{\x00;\x19o;\x1A\x06;\x18{\x00;\eI\"\v/link/\x06;\tF:\f@mixinso:\x17Occi::Core::Mixins\a;\x18{\x00:\f@entity@\x00;\fIC;\r{\x06@\vIC;\r{\x06@\rIC;\r{\r@\x0F0@\x13@\x14@\x150@\x19@\x1A@\e0@\x1F@ @!0@%@&\x06:\x0F@convertedT\x06;\x1FT\x06;\x1FT;\x16o;\x17\x06;\x18{\x00;\e0:\t@relo;\a\r;\bI\"?http://schemas.ogf.org/occi/infrastructure/compute/action#\x06;\tT;\nI\"\frestart\x06;\tT;\v0;\fC;\r{\x00;\x15@';\x16o;\x17\x06;\x18{\x00;\x19o;\x1A\x06;\x18{\x00;\eI\"\x0E/restart/\x06;\tF:\f@sourceI\"\vsource\x06;\tT:\f@targetI\"A/compute/04106bce-87eb-4f8f-a665-2f624e54ba46?action=restart\x06;\tT:\b@id0")
+          expect(link).to eql expected
+        end
       end
+
       context 'other OCCI implementations' do
         it 'renders correctly OCCI from other sources'
       end
