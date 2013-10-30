@@ -166,7 +166,7 @@ module Occi
         # match string to regular expression
         match = regexp.match string
 
-        raise "could not match #{string}" unless match
+        raise Occi::Errors::ParserInputError, "could not match #{string}" unless match
 
         term = match[:term].downcase
         scheme = match[:scheme]
@@ -198,7 +198,7 @@ module Occi
             Occi::Log.debug("class #{match[:class]} identified as action")
             Occi::Core::Action.new scheme, term, title, attributes
           else
-            raise "Category with class #{match[:class]} not recognized in string: #{string}"
+            raise Occi::Errors::ParserInputError, "Category with class #{match[:class]} not recognized in string: #{string}"
         end
       end
 
@@ -209,7 +209,7 @@ module Occi
         # match string to regular expression
         match = regexp.match string
 
-        raise "could not match #{string}" unless match
+        raise Occi::Errors::ParserInputError, "could not match #{string}" unless match
 
         value = match[:string] if match[:string]
 
@@ -228,7 +228,7 @@ module Occi
         # match string to regular expression
         match = regexp.match string
 
-        raise "could not match #{string}" unless match
+        raise Occi::Errors::ParserInputError, "could not match #{string}" unless match
 
         target = match[:uri]
         rel = match[:rel]
@@ -260,7 +260,7 @@ module Occi
         # match string to regular expression
         match = regexp.match string
 
-        raise "could not match #{string}" unless match
+        raise Occi::Errors::ParserInputError, "could not match #{string}" unless match
 
         match[:location]
       end
