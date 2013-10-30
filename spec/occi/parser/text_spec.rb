@@ -129,12 +129,35 @@ module Occi
         end
 
       end
+
       context '.link' do
       end
+
       context '.location' do
+        it 'parses single location' do
+          location_string = "X-OCCI-Location: http://example.com:8090/a/b/vm1"
+          location = Occi::Parser::Text.location location_string
+          expected = "http://example.com:8090/a/b/vm1"
+          expect(location).to eql expected
+        end
       end
+
       context '.locations' do
+        let(:locations_string){ "X-OCCI-Location: http://example.com:8090/a/b/vm1\nX-OCCI-Location: http://example.com:8090/a/b/vm2" }
+        let(:expected){ ["http://example.com:8090/a/b/vm1", "http://example.com:8090/a/b/vm2"] }
+
+        it 'parses multiple locations' do
+          locations = Occi::Parser::Text.locations locations_string
+          expect(locations).to eql expected
+        end
+
+        it 'parses multiple locations, skipping unparseable additions' do
+          locations_string["\n"] = "\n\n&*$this won't parse\n"
+          locations = Occi::Parser::Text.locations locations_string
+          expect(locations).to eql expected
+        end
       end
+
       context '.attribute' do
       end
       context '.link_string' do
