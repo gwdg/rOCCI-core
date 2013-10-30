@@ -51,6 +51,14 @@ module Occi
           expect(collection).to eql expected
         end
 
+        it 'parses action correctly' do
+          category_string = 'Category: restart;scheme="http://schemas.ogf.org/occi/infrastructure/compute/action#";class="action";title="Restart Compute instance";attributes="method"'
+          category = Occi::Parser::Text.category category_string
+          expected = Marshal.restore("\x04\bo:\x17Occi::Core::Action\t:\f@schemeI\"?http://schemas.ogf.org/occi/infrastructure/compute/action#\x06:\x06ET:\n@termI\"\frestart\x06;\aT:\v@titleI\"\x1DRestart Compute instance\x06;\aT:\x10@attributesC:\eOcci::Core::Attributes{\x06I\"\vmethod\x06;\aTo:\eOcci::Core::Properties\v:\r@default0:\n@typeI\"\vstring\x06;\aF:\x0E@requiredF:\r@mutableF:\r@patternI\"\a.*\x06;\aF:\x11@description0")
+
+          expect(category).to eql expected
+        end
+
         it 'parses network resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rb").read
           expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_network_rocci_server.dump", "rb"))
@@ -79,6 +87,16 @@ module Occi
           expect(collection).to eql expected
         end
         
+        it 'raises error for obviously nonsensical class' do
+          category_string = 'Category: restart;scheme="http://schemas.ogf.org/occi/infrastructure/compute/action#";class="actions";title="Restart Compute instance";attributes="method"'
+          expect{ category = Occi::Parser::Text.category category_string }.to raise_error(Occi::Errors::ParserInputError)
+        end
+
+        it 'raises error for cleverly nonsensical class' do
+          category_string = 'Category: restart;scheme="http://schemas.ogf.org/occi/infrastructure/compute/action#";class="action|mixin";title="Restart Compute instance";attributes="method"'
+          expect{ category = Occi::Parser::Text.category category_string }.to raise_error(Occi::Errors::ParserInputError)
+        end
+
       end
       context '.resource' do
         it 'parses network resource from rOCCI server' do
