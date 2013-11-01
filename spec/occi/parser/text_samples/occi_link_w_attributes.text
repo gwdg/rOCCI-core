@@ -1,0 +1,7 @@
+Link: </storage/e60aa2b8-0c86-5973-b93e-30c5c46d6eac>;rel="http://schemas.ogf.org/occi/infrastructure#storage";self="/storagelink/b2f7f1de-c60c-5b08-879c-81f52429c4ef";category="http://schemas.ogf.org/occi/infrastructure#storagelink";occi.core.id="b2f7f1de-c60c-5b08-879c-81f52429c4ef" occi.core.title="monitoring" occi.storagelink.deviceid="xvda" occi.storagelink.state="inactive" org.opennebula.storagelink.bus="ide" org.opennebula.storagelink.driver="tap2:tapdisk:aio:"
+X-OCCI-Attribute: occi.storage.state="online"
+X-OCCI-Attribute: org.opennebula.storage.id="116"
+X-OCCI-Attribute: org.opennebula.storage.dev_prefix="xvd"
+X-OCCI-Attribute: org.opennebula.storage.driver="tap2:tapdisk:aio:"
+X-OCCI-Attribute: org.opennebula.storage.persistent="NO"
+
