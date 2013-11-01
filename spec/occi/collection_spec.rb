@@ -40,27 +40,27 @@ module Occi
       end
     end
       
-    context '.model' do
+    context '#model' do
       it 'registers a model' do
         expect(collection.model).to be_kind_of Occi::Model
       end
     end
       
-    context '.resources' do
+    context '#resources' do
       it 'can create a new OCCI Resource' do
         collection.resources.create 'http://schemas.ogf.org/occi/core#resource'
         expect(collection.resources.first).to be_kind_of Occi::Core::Resource
       end
     end
 
-    context '.check' do
+    context '#check' do
       it 'checks against model without failure' do
         collection.resources.create 'http://schemas.ogf.org/occi/core#resource'
         expect{ collection.check }.to_not raise_error
       end
     end
 
-    context '.get_related_to' do
+    context '#get_related_to' do
       before(:each){
         collection.kinds << Occi::Core::Resource.kind
         collection.kinds << Occi::Core::Link.kind
