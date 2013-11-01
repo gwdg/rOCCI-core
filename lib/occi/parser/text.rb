@@ -26,6 +26,7 @@ module Occi
           Occi::Log.debug('Parsing through Occi::Parser::Text.resource')
           collection = Occi::Collection.new
           resource = Occi::Core::Resource.new
+
           block = Proc.new { |line|
             line.strip!
             case line
@@ -51,6 +52,7 @@ module Occi
           Occi::Log.debug('Parsing through Occi::Parser::Text.link')
           collection = Occi::Collection.new
           link = Occi::Core::Link.new
+
           block = Proc.new { |line|
             line.strip!
             case line
@@ -71,11 +73,13 @@ module Occi
         def locations(lines)
           Occi::Log.debug('Parsing through Occi::Parser::Text.locations')
           locations = []
+
           block = Proc.new { |line|
             line.strip!
             locations << location(line) if line.start_with? 'X-OCCI-Location:'
           }
           lines.respond_to?(:each) ? lines.each(&block) : lines.each_line(&block)
+
           locations
         end
 
@@ -92,21 +96,25 @@ module Occi
           scheme = match[:scheme]
           title = match[:title]
           related = match[:rel].to_s.split
+
           attributes = Occi::Core::Attributes.new
           if match[:attributes]
             match[:attributes].split.each do |attribute|
               property_string = attribute[/#{REGEXP_ATTRIBUTE_DEF}/, -2]
               properties = Occi::Core::Properties.new
+
               if property_string
                 properties.required = true if property_string.include? 'required'
                 properties.mutable = false if property_string.include? 'immutable'
               end
+
               name = attribute[/#{REGEXP_ATTRIBUTE_DEF}/, 1]
               attributes.merge! name.split('.').reverse.inject(properties) { |a, n| Occi::Core::Attributes.new(n => a) }
             end
           end
           actions = match[:actions].to_s.split
           location = match[:location]
+
           case match[:class]
             when 'kind'
               Occi::Log.debug("class #{match[:class]} identified as kind")
@@ -169,7 +177,9 @@ module Occi
           attributes = attr_line.scan(regexp).collect {|matches| matches.first}
 
           # parse each attribute and create an OCCI Attribute object from it
-          attributes = attributes.inject(Hashie::Mash.new) { |hsh, attribute| hsh.merge!(Occi::Parser::Text.attribute('X-OCCI-Attribute: ' + attribute)) }
+          attributes = attributes.inject(Hashie::Mash.new) { |hsh, attribute|
+            hsh.merge!(Occi::Parser::Text.attribute("X-OCCI-Attribute: #{attribute}"))
+          }
           Occi::Core::Link.new kind, mixins, attributes, actions, rel, target, source, location
         end
 
