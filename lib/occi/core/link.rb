@@ -29,6 +29,11 @@ module Occi
         @target = target
       end
 
+      # @return [String] Type identifier of the Category.
+      def type_identifier
+        "#{self.kind.scheme}#{self.kind.term}"
+      end
+
       # @return [String] target attribute of the link
       def target
         @target ||= self.attributes.occi_.core_.target
