@@ -69,19 +69,23 @@ module Occi
     # @param [Occi::Collection] other_collection
     # @return [Occi::Collection]
     def merge!(other_collection)
-      merge other_collection, self
+      self.kinds.merge other_collection.kinds.select { |kind| get_by_id(kind.type_identifier).nil? }
+      self.mixins.merge other_collection.mixins.select { |mixin| get_by_id(mixin.type_identifier).nil? }
+      self.actions.merge other_collection.actions.select { |action| get_by_id(action.type_identifier).nil? }
+      self.resources.merge other_collection.resources.select { |resource| get_by_id(resource.id).nil? }
+      self.links.merge other_collection.links.select { |link| get_by_id(link.type_identifier).nil? }
+      self.action = other_collection.action if other_collection.action
     end
 
     # @param [Occi::Collection] other_collection
     # @param [Occi::Collection] collection
     # @return [Occi::Collection]
-    def merge(other_collection, collection=self.clone)
-      collection.kinds.merge other_collection.kinds.select { |kind| get_by_id(kind.type_identifier).nil? }
-      collection.mixins.merge other_collection.mixins.select { |mixin| get_by_id(mixin.type_identifier).nil? }
-      collection.actions.merge other_collection.actions.select { |action| get_by_id(action.type_identifier).nil? }
-      collection.resources.merge other_collection.resources.select { |resource| get_by_id(resource.id).nil? }
-      collection.links.merge other_collection.links.select { |link| get_by_id(link.type_identifier).nil? }
-      collection.action = other_collection.action if other_collection.action
+    def merge(other_collection, first=self)
+      collection = Occi::Collection.new
+
+      collection.merge!(first)
+      collection.merge!(other_collection)
+
       collection
     end
 
