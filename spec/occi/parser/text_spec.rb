@@ -159,32 +159,15 @@ module Occi
       end
 
       context '.link' do
-        it 'parses simple link' do
-          link_string = File.open("spec/occi/parser/text_samples/occi_link_simple.text", "rb").read
+        it 'parses link resource instance' do
+          link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rb").read
           link = Occi::Parser::Text.link link_string
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_simple.dump", "rb"))
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_resource_instance.dump", "rb"))
           expected.links.each { |exp| exp.id = 'emptied' }
           link.links.each { |lnk| lnk.id = 'emptied' }
           expect(link).to eql expected
         end
 
-        it 'parses link with category' do
-          link_string = File.open("spec/occi/parser/text_samples/occi_link_w_category.text", "rb").read
-          link = Occi::Parser::Text.link link_string
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_w_category.dump", "rb"))
-          expected.links.each { |exp| exp.id = 'emptied' }
-          link.links.each { |lnk| lnk.id = 'emptied' }
-          expect(link).to eql expected
-        end
-
-        it 'parses link with attributes' do
-          link_string = File.open("spec/occi/parser/text_samples/occi_link_w_attributes.text", "rb").read
-          link = Occi::Parser::Text.link link_string
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_w_attributes.dump", "rb"))
-          expected.links.each { |exp| exp.id = 'emptied' }
-          link.links.each { |lnk| lnk.id = 'emptied' }
-          expect(link).to eql expected
-        end
       end
 
       context '.location' do
@@ -220,6 +203,20 @@ module Occi
           link_string = File.open("spec/occi/parser/text_samples/occi_link_simple.text", "rb").read
           link = Occi::Parser::Text.link_string link_string, nil
           expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_simple.link_string.dump", "rb"))
+          expect(link).to eql expected
+        end
+
+        it 'parses link with category' do
+          link_string = File.open("spec/occi/parser/text_samples/occi_link_w_category.text", "rb").read
+          link = Occi::Parser::Text.link_string link_string, nil
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_w_category.dump", "rb"))
+          expect(link).to eql expected
+        end
+
+        it 'parses link with attributes' do
+          link_string = File.open("spec/occi/parser/text_samples/occi_link_w_attributes.text", "rb").read
+          link = Occi::Parser::Text.link_string link_string, nil
+          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_w_attributes.dump", "rb"))
           expect(link).to eql expected
         end
 
