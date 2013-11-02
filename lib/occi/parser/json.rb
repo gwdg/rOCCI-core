@@ -8,7 +8,7 @@ module Occi
         begin
           hash = Hashie::Mash.new(JSON.parse(body))
         rescue JSON::ParserError => perr
-          Occi::Log.error "### Failed to parse JSON input: #{perr.message}"
+          Occi::Log.error "Failed to parse JSON input: #{perr.message}"
           raise Occi::Errors::ParserInputError, perr.message
         end
         collection = Occi::Collection.new(hash)

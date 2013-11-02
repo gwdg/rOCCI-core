@@ -5,7 +5,7 @@ module Occi
       # @param [String] string
       # @return [Occi::Collection]
       def self.collection(string)
-        Occi::Log.debug '### Parsing ova format'
+        Occi::Log.debug 'Parsing ova format'
         tar = Gem::Package::TarReader.new(StringIO.new(string))
         ovf = mf = cert = nil
         files = {}
@@ -21,7 +21,7 @@ module Occi
           cert = tempfile.path if entry.full_name.end_with? '.cert'
         end
 
-        Occi::Log.debug "### In ova found: #{ovf} #{mf} #{cert}"
+        Occi::Log.debug "In ova found: #{ovf} #{mf} #{cert}"
         raise Occi::Errors::ParserInputError, 'No ovf file found' unless ovf
 
         File.read(mf).each_line do |line|
