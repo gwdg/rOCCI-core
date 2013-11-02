@@ -233,6 +233,8 @@ module Occi
 
       it 'copes with both collections empty'
 
+    end
+
     context '#merge!' do
       let(:collection){ collection = Occi::Collection.new 
         collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
@@ -329,8 +331,5 @@ module Occi
         end
       end
     end
-
-    end
-
   end
 end
