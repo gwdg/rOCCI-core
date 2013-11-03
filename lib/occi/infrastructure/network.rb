@@ -32,11 +32,13 @@ module Occi
       require 'occi/infrastructure/network/ipnetwork'
       self.mixins = Occi::Core::Mixins.new << Occi::Infrastructure::Network::Ipnetwork.mixin
 
-      def ipnetwork(boolean=true)
-        if boolean
-          mixins << Occi::Infrastructure::Network::Ipnetwork.mixin.type_identifier
+      def ipnetwork(add = true)
+        if add
+          Occi::Log.info "[#{self.class}] Adding mixin IPNetwork"
+          @mixins << Occi::Infrastructure::Network::Ipnetwork.mixin
         else
-          mixins.delete Occi::Infrastructure::Network::Ipnetwork.mixin.type_identifier
+          Occi::Log.info "[#{self.class}] Removing mixin IPNetwork"
+          @mixins.delete Occi::Infrastructure::Network::Ipnetwork.mixin
         end
       end
 
@@ -71,10 +73,7 @@ module Occi
       end
 
       def address=(address)
-        if @mixins.select { |mixin| mixin.kind_of? Occi::Infrastructure::Network::Ipnetwork }.empty?
-          Occi::Log.info 'Adding mixin IPNetwork mixin'
-          @mixins << Occi::Infrastructure::Network::Ipnetwork.new
-        end
+        add_ipnetwork_mixin
         @attributes.occi!.network!.address = address
       end
 
@@ -83,10 +82,7 @@ module Occi
       end
 
       def gateway=(gateway)
-        if @mixins.select { |mixin| mixin.kind_of? Occi::Infrastructure::Network::Ipnetwork }.empty?
-          Occi::Log.info 'Adding mixin IP network'
-          @mixins << Occi::Infrastructure::Network::Ipnetwork.new
-        end
+        add_ipnetwork_mixin
         @attributes.occi!.network!.gateway = gateway
       end
 
@@ -95,11 +91,14 @@ module Occi
       end
 
       def allocation=(allocation)
-        if @mixins.select { |mixin| mixin.kind_of? Occi::Infrastructure::Network::Ipnetwork }.empty?
-          Occi::Log.info 'Adding mixin IPNetwork mixin'
-          @mixins << Occi::Infrastructure::Network::Ipnetwork.new
-        end
+        add_ipnetwork_mixin
         @attributes.occi!.network!.allocation = allocation
+      end
+
+      private
+
+      def add_ipnetwork_mixin
+        ipnetwork(true) if @mixins.select { |mixin| mixin.type_identifier == Occi::Infrastructure::Network::Ipnetwork.mixin.type_identifier }.empty?
       end
 
     end

@@ -5,21 +5,24 @@ module Occi
 
     include ::Logger::Severity
 
-    attr_reader :logger
+    attr_reader :logger, :log_prefix
 
     # creates a new OCCI logger
     # @param [IO,String] log_dev The log device.  This is a filename (String) or IO object (typically +STDOUT+,
+    # @param [String] log_prefix String placed in front of every logged message
     #  +STDERR+, or an open file).
-    def initialize(log_dev)
+    def initialize(log_dev, log_prefix = '[rOCCI-core]')
       if log_dev.kind_of? Logger
         @logger = log_dev
       else
         @logger = Logger.new(log_dev)
       end
 
+      @log_prefix = log_prefix.blank? ? '' : log_prefix.strip
+
       # subscribe to log messages and send to logger
       @log_subscriber = ActiveSupport::Notifications.subscribe("log") do |name, start, finish, id, payload|
-        @logger.log(payload[:level], payload[:message]) if @logger
+        @logger.log(payload[:level], "#{@log_prefix} #{payload[:message]}") if @logger
       end
     end
 

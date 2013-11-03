@@ -217,7 +217,7 @@ module Occi
                 message = "attribute #{key} with value #{value} does not match pattern #{properties.pattern}"
                 raise Occi::Errors::AttributeTypeError, message unless value.to_s.match "^#{properties.pattern}$"
               else
-                Occi::Log.warn "Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
+                Occi::Log.warn "[#{self}] Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
               end
             end
 

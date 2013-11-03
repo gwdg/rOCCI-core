@@ -5,7 +5,7 @@ module Occi
       # @param [String] string
       # @return [Occi::Collection]
       def self.collection(string)
-        Occi::Log.debug 'Parsing ova format'
+        Occi::Log.debug "[#{self}] Parsing ova format"
         tar = Gem::Package::TarReader.new(StringIO.new(string))
         ovf = mf = cert = nil
         files = {}
@@ -21,7 +21,7 @@ module Occi
           cert = tempfile.path if entry.full_name.end_with? '.cert'
         end
 
-        Occi::Log.debug "In ova found: #{ovf} #{mf} #{cert}"
+        Occi::Log.debug "[#{self}] In ova found: #{ovf} #{mf} #{cert}"
         raise Occi::Errors::ParserInputError, 'No ovf file found' unless ovf
 
         File.read(mf).each_line do |line|
@@ -29,7 +29,7 @@ module Occi
           name = line.first
           sha1 = line.last
 
-          Occi::Log.debug "SHA1 hash #{Digest::SHA1.hexdigest(files[name])}"
+          Occi::Log.debug "[#{self}] SHA1 hash #{Digest::SHA1.hexdigest(files[name])}"
           raise Occi::Errors::ParserInputError, "SHA1 mismatch for file #{name}" unless Digest::SHA1.hexdigest(File.read(files[name])) == sha1
         end if mf
 
