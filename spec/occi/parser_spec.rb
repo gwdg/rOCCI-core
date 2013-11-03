@@ -42,6 +42,47 @@ module Occi
       Occi::Parser.parse('text/plain', rendered_collection).to_json.should == collection.to_json
     end
 
+    it "parses an OCCI message with MIME type text/occi containing an OCCI resource" do
+      # create new collection
+      collection = Occi::Collection.new
+      # create new resource within collection
+      resource = collection.resources.create
+
+      # render collection to text/occi MIME type
+      rendered_collection = collection.to_header
+      # parse rendered collection and compare with original collection
+      Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rendered_collection).to_header.should == collection.to_header
+
+      # add attributes to resource
+      resource.id = UUIDTools::UUID.random_create.to_s
+      resource.title = 'title'
+
+      # render collection to text/occi MIME type
+      rendered_collection = collection.to_header
+      # parse rendered collection and compare with original collection
+      Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rendered_collection).to_header.should == collection.to_header
+
+      # add mixin to resource
+      resource.mixins << Occi::Core::Mixin.new
+
+      # render collection to text/occi MIME type
+      rendered_collection = collection.to_header
+      # parse rendered collection and compare with original collection
+      Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rendered_collection).to_header.should == collection.to_header
+
+      # add link to resource
+      link = resource.links.create
+      link.id = UUIDTools::UUID.random_create.to_s
+      link.target = 'http://example.com/resource/aee5acf5-71de-40b0-bd1c-2284658bfd0e'
+      link.source = resource
+      collection << link
+
+      # render collection to text/occi MIME type
+      rendered_collection = collection.to_header
+      # parse rendered collection and compare with original collection
+      Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rendered_collection).to_header.should == collection.to_header
+    end
+
     it "parses an OCCI message with MIME type application/occi+json containing an OCCI resource" do
       # create new collection
       collection = Occi::Collection.new
