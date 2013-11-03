@@ -244,7 +244,7 @@ module Occi
         if Occi::Settings.verify_attribute_pattern && !Occi::Settings.compatibility
           raise Occi::Errors::AttributeTypeError, "value #{value.to_s} does not match pattern #{pattern}" unless value.to_s.match "^#{pattern}$"
         else
-          Occi::Log.warn "Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
+          Occi::Log.warn "[#{self.class}] Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
         end
       end
 

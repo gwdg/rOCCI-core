@@ -13,29 +13,29 @@ module Occi
       # @param [Hash] header optional header of the OCCI message
       # @return [Occi::Collection] list consisting of an array of locations and the OCCI object collection
       def parse(media_type, body, category=false, entity_type=Occi::Core::Resource, header={})
-        Occi::Log.debug '### Parsing request data to OCCI Collection ###'
+        Occi::Log.debug "[#{self}] Parsing request data to OCCI Collection"
         collection = Occi::Collection.new
 
         # remove the HTTP_ prefix if present
         header = Hash[header.map { |k, v| [k.gsub('HTTP_', '').upcase, v] }]
-        Occi::Log.debug "### Parsing headers: #{header.inspect}"
+        Occi::Log.debug "[#{self}] Parsing headers: #{header.inspect}"
 
         if category
-          Occi::Log.debug '### Parsing categories from headers'
+          Occi::Log.debug "[#{self}] Parsing categories from headers"
           collection = Occi::Parser::Text.categories(header.map { |k, v| v.to_s.split(',').collect { |w| "#{k}: #{w}" } }.flatten)
         else
           if entity_type == Occi::Core::Resource
-            Occi::Log.debug '### Parsing a resource from headers'
+            Occi::Log.debug "[#{self}] Parsing a resource from headers"
             collection = Occi::Parser::Text.resource(header.map { |k, v| v.to_s.split(',').collect { |w| "#{k}: #{w}" } }.flatten)
           elsif entity_type == Occi::Core::Link
-            Occi::Log.debug '### Parsing a link from headers'
+            Occi::Log.debug "[#{self}] Parsing a link from headers"
             collection = Occi::Parser::Text.link(header.map { |k, v| v.to_s.split(',').collect { |w| "#{k}: #{w}" } }.flatten)
           else
             raise Occi::Errors::ParserTypeError, "Entity type #{entity_type} not supported"
           end
         end
 
-        Occi::Log.debug "### Parsing #{media_type} from body"
+        Occi::Log.debug "[#{self}] Parsing #{media_type} from body"
         case media_type
         when 'text/uri-list'
           nil
@@ -69,11 +69,11 @@ module Occi
       end
 
       def locations(media_type, body, header)
-        Occi::Log.debug "### Parsing locations from request headers: #{header.inspect}"
+        Occi::Log.debug "[#{self}] Parsing locations from request headers: #{header.inspect}"
         locations = Occi::Parser::Text.locations header.map { |k, v| v.to_s.split(',').collect { |w| "#{k}: #{w}" } }.flatten
         locations << header['Location'] if header['Location'] && header['Location'].any?
 
-        Occi::Log.debug "### Parsing #{media_type} locations from body"
+        Occi::Log.debug "[#{self}] Parsing #{media_type} locations from body"
         case media_type
         when 'text/uri-list'
           locations << body.split("\n")

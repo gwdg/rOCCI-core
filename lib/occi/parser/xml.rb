@@ -8,7 +8,7 @@ module Occi
         begin
           parsed_xml = Nokogiri::XML(string) { |config| config.strict.nonet }
         rescue Nokogiri::XML::SyntaxError => perr
-          Occi::Log.error "Failed to parse XML input: #{perr.message}"
+          Occi::Log.error "[#{self}] Failed to parse XML input: #{perr.message}"
           raise Occi::Errors::ParserInputError, perr.message
         end
 

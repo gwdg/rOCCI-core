@@ -14,7 +14,7 @@ module Occi
 
     # register Occi Core categories enitity, resource and link
     def register_core
-      Occi::Log.info "### Registering OCCI Core categories enitity, resource and link ###"
+      Occi::Log.info "[#{self.class}] Registering OCCI Core categories enitity, resource and link"
       register Occi::Core::Entity.kind
       register Occi::Core::Resource.kind
       register Occi::Core::Link.kind
@@ -22,7 +22,7 @@ module Occi
 
     # register Occi Infrastructure categories
     def register_infrastructure
-      Occi::Log.info "### Registering OCCI Infrastructure categories ###"
+      Occi::Log.info "[#{self.class}] Registering OCCI Infrastructure categories"
       Occi::Infrastructure.categories.each { |category| register category }
     end
 
@@ -32,7 +32,7 @@ module Occi
     #  recursively searched for files with the extension .json .
     # @param [Sting] scheme_base_url base location for provider specific extensions of the OCCI model
     def register_files(path, scheme_base_url='http://localhost')
-      Occi::Log.info "### Initializing OCCI Model from #{path} ###"
+      Occi::Log.info "[#{self.class}] Initializing OCCI Model from #{path}"
       Dir.glob(path + '/**/*.json').each do |file|
         collection = Occi::Collection.new(JSON.parse(File.read(file)))
         # add location of service provider to scheme if it has a relative location
@@ -58,7 +58,7 @@ module Occi
 
     # @param [Occi::Core::Category] category
     def register(category)
-      Occi::Log.debug "### Registering category #{category}"
+      Occi::Log.debug "[#{self.class}] Registering category #{category}"
       # add model to category as back reference
       category.model = self
       @kinds << category unless get_by_id(category.to_s) if category.class.ancestors.include? Occi::Core::Kind
@@ -68,7 +68,7 @@ module Occi
 
     # @param [Occi::Core::Category] category
     def unregister(category)
-      Occi::Log.debug "### Unregistering category #{category.type_identifier}"
+      Occi::Log.debug "[#{self.class}] Unregistering category #{category.type_identifier}"
       @kinds.delete category
       @mixins.delete category
       @actions.delete category

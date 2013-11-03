@@ -9,7 +9,7 @@ module Occi
         include Occi::Parser::Text::Constants
 
         def categories(lines)
-          Occi::Log.debug('Parsing through Occi::Parser::Text.categories')
+          Occi::Log.debug "[#{self}] Parsing through Occi::Parser::Text.categories"
           collection = Occi::Collection.new
 
           block = Proc.new { |line|
@@ -23,7 +23,7 @@ module Occi
         end
 
         def resource(lines)
-          Occi::Log.debug('Parsing through Occi::Parser::Text.resource')
+          Occi::Log.debug "[#{self}] Parsing through Occi::Parser::Text.resource"
           collection = Occi::Collection.new
           resource = Occi::Core::Resource.new
 
@@ -49,7 +49,7 @@ module Occi
         end
 
         def link(lines)
-          Occi::Log.debug('Parsing through Occi::Parser::Text.link')
+          Occi::Log.debug "[#{self}] Parsing through Occi::Parser::Text.link"
           collection = Occi::Collection.new
           link = Occi::Core::Link.new
 
@@ -71,7 +71,7 @@ module Occi
         end
 
         def locations(lines)
-          Occi::Log.debug('Parsing through Occi::Parser::Text.locations')
+          Occi::Log.debug "[#{self}] Parsing through Occi::Parser::Text.locations"
           locations = []
 
           block = Proc.new { |line|
@@ -84,7 +84,7 @@ module Occi
         end
 
         def category(string)
-          Occi::Log.debug('Parsing through Occi::Parser::Text.category')
+          Occi::Log.debug "[#{self}] Parsing through Occi::Parser::Text.category"
           # create regular expression from regexp string
           regexp = Regexp.new( Occi::Settings.compatibility ?  REGEXP_CATEGORY : REGEXP_CATEGORY_STRICT )
           # match string to regular expression
@@ -117,13 +117,13 @@ module Occi
 
           case match[:class]
             when 'kind'
-              Occi::Log.debug("class #{match[:class]} identified as kind")
+              Occi::Log.debug "[#{self}] class #{match[:class]} identified as kind"
               Occi::Core::Kind.new scheme, term, title, attributes, related, actions, location
             when 'mixin'
-              Occi::Log.debug("class #{match[:class]} identified as mixin")
+              Occi::Log.debug "[#{self}] class #{match[:class]} identified as mixin"
               Occi::Core::Mixin.new scheme, term, title, attributes, related, actions, location
             when 'action'
-              Occi::Log.debug("class #{match[:class]} identified as action")
+              Occi::Log.debug "[#{self}] class #{match[:class]} identified as action"
               Occi::Core::Action.new scheme, term, title, attributes
             else
               raise Occi::Errors::ParserInputError, "Category with class #{match[:class]} not recognized in string: #{string}"
@@ -131,7 +131,7 @@ module Occi
         end
 
         def attribute(string)
-          Occi::Log.debug('Parsing through Occi::Parser::Text.attribute')
+          Occi::Log.debug "[#{self}] Parsing through Occi::Parser::Text.attribute"
           # create regular expression from regexp string
           regexp = Regexp.new(REGEXP_ATTRIBUTE)
           # match string to regular expression
@@ -150,7 +150,7 @@ module Occi
         end
 
         def link_string(string, source)
-          Occi::Log.debug('Parsing through Occi::Parser::Text.link_string')
+          Occi::Log.debug "[#{self}] Parsing through Occi::Parser::Text.link_string"
           # create regular expression from regexp string
           regexp = Regexp.new( Occi::Settings.compatibility ? REGEXP_LINK : REGEXP_LINK_STRICT )
           # match string to regular expression
@@ -184,7 +184,7 @@ module Occi
         end
 
         def location(string)
-          Occi::Log.debug('Parsing through Occi::Parser::Text.location')
+          Occi::Log.debug "[#{self}] Parsing through Occi::Parser::Text.location"
           # create regular expression from regexp string
           regexp = Regexp.new(REGEXP_LOCATION)
           # match string to regular expression

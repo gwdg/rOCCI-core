@@ -143,15 +143,12 @@ module Occi
         end
 
         def parse_compute_memory(resource_alloc, compute)
-          Occi::Log.debug('calculating memory in gb ')
           alloc_units = resource_alloc.xpath("item:AllocationUnits/text()", 'item' => "#{RASD}").to_s
 
-          Occi::Log.debug('allocated units in ovf file: ' + alloc_units)
           alloc_unit_bytes = alloc_units_bytes(alloc_units)
           capacity = calculate_capacity_bytes(resource_alloc.xpath("item:VirtualQuantity/text()", 'item' => "#{RASD}").to_s, alloc_unit_bytes)
           capacity_gb = calculate_capacity_gb(capacity)
 
-          Occi::Log.debug('virtual quantity of memory configured in gb: ' + capacity_gb.to_s)
           compute.memory = capacity_gb
           # compute.attributes.occi!.compute!.memory = resource_alloc.xpath("item:VirtualQuantity/text()", 'item' => "#{RASD}").to_s.to_i
 
