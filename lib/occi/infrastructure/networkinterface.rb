@@ -30,11 +30,13 @@ module Occi
       require 'occi/infrastructure/networkinterface/ipnetworkinterface'
       self.mixins = Occi::Core::Mixins.new << Occi::Infrastructure::Networkinterface::Ipnetworkinterface.mixin
 
-      def ipnetworkinterface(boolean=true)
-        if boolean
-          @mixins << Occi::Infrastructure::Networkinterface::Ipnetworkinterface.type_identifier
+      def ipnetworkinterface(add = true)
+        if add
+          Occi::Log.info "[#{self.class}] Adding mixin IPNetworkInterface"
+          @mixins << Occi::Infrastructure::Networkinterface::Ipnetworkinterface.mixin
         else
-          mixins.delete Occi::Infrastructure::Networkinterface::Ipnetworkinterface.type_identifier
+          Occi::Log.info "[#{self.class}] Removing mixin IPNetworkInterface"
+          @mixins.delete Occi::Infrastructure::Networkinterface::Ipnetworkinterface.mixin
         end
       end
 
@@ -67,10 +69,7 @@ module Occi
       end
 
       def address=(address)
-        if @mixins.select { |mixin| mixin.kind_of? Occi::Infrastructure::Networkinterface::Ipnetworkinterface }.empty?
-          Occi::Log.info 'Adding mixin IP network interface'
-          @mixins << Occi::Infrastructure::Networkinterface::Ipnetworkinterface.new
-        end
+        add_ipnetworkinterface_mixin
         @attributes.occi!.networkinterface!.address = address
       end
 
@@ -79,10 +78,7 @@ module Occi
       end
 
       def gateway=(gateway)
-        if @mixins.select { |mixin| mixin.kind_of? Occi::Infrastructure::Networkinterface::Ipnetworkinterface }.empty?
-          Occi::Log.info 'Adding mixin IP network interface'
-          @mixins << Occi::Infrastructure::Networkinterface::Ipnetworkinterface.new
-        end
+        add_ipnetworkinterface_mixin
         @attributes.occi!.networkinterface!.gateway = gateway
       end
 
@@ -91,11 +87,14 @@ module Occi
       end
 
       def allocation=(allocation)
-        if @mixins.select { |mixin| mixin.kind_of? Occi::Infrastructure::Networkinterface::Ipnetworkinterface }.empty?
-          Occi::Log.info 'Adding mixin IP network interface'
-          @mixins << Occi::Infrastructure::Networkinterface::Ipnetworkinterface.new
-        end
+        add_ipnetworkinterface_mixin
         @attributes.occi!.networkinterface!.allocation = allocation
+      end
+
+      private
+
+      def add_ipnetworkinterface_mixin
+        ipnetworkinterface(true) if @mixins.select { |mixin| mixin.type_identifier == Occi::Infrastructure::Networkinterface::Ipnetworkinterface.mixin.type_identifier }.empty?
       end
 
     end
