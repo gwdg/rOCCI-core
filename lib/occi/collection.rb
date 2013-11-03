@@ -80,7 +80,7 @@ module Occi
       collection.mixins.merge other_collection.mixins.select { |mixin| get_by_id(mixin.type_identifier).nil? }
       collection.actions.merge other_collection.actions.select { |action| get_by_id(action.type_identifier).nil? }
       collection.resources.merge other_collection.resources.select { |resource| get_by_id(resource.id).nil? }
-      collection.links.merge other_collection.links.select { |link| get_by_id(link.type_identifier).nil? }
+      collection.links.merge other_collection.links.select { |link| get_by_id(link.id).nil? }
       collection.action = other_collection.action if other_collection.action
       collection
     end
@@ -99,7 +99,7 @@ module Occi
       collection.mixins.replace other_collection.mixins.select { |mixin| get_by_id(mixin.type_identifier) }
       collection.actions.replace other_collection.actions.select { |action| get_by_id(action.type_identifier) }
       collection.resources.replace other_collection.resources.select { |resource| get_by_id(resource.id) }
-      collection.links.replace other_collection.links.select { |link| get_by_id(link.type_identifier) }
+      collection.links.replace other_collection.links.select { |link| get_by_id(link.id) }
       if collection.action == other_collection.action
         collection.action = other_collection.action
       else
