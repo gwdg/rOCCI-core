@@ -26,6 +26,8 @@ module Occi
           Occi::Log.debug "[#{self}] Parsing through Occi::Parser::Text.resource"
           collection = Occi::Collection.new
           resource = Occi::Core::Resource.new
+          resource.id = nil
+          links = []
 
           block = Proc.new { |line|
             line.strip!
@@ -39,12 +41,16 @@ module Occi
               when /^Link:/
                 link = link_string(line, resource)
                 resource.links << link
-                collection << link
+                links << link
             end
           }
           lines.respond_to?(:each) ? lines.each(&block) : lines.each_line(&block)
 
-          collection << resource if resource.kind_of? Occi::Core::Resource
+          if resource.kind_of?(Occi::Core::Resource) && !resource.empty?
+            collection << resource
+            links.each { |link| collection << link }
+          end
+
           collection
         end
 
@@ -52,6 +58,7 @@ module Occi
           Occi::Log.debug "[#{self}] Parsing through Occi::Parser::Text.link"
           collection = Occi::Collection.new
           link = Occi::Core::Link.new
+          link.id = nil
 
           block = Proc.new { |line|
             line.strip!
@@ -66,7 +73,7 @@ module Occi
           }
           lines.respond_to?(:each) ? lines.each(&block) : lines.each_line(&block)
 
-          collection << link if link.kind_of? Occi::Core::Link
+          collection << link if link.kind_of?(Occi::Core::Link) && !link.empty?
           collection
         end
 
