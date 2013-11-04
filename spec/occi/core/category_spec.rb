@@ -10,7 +10,19 @@ module Occi
       context '#new' do
 
         it 'with defaults' do
-          expect {Category.new}.not_to raise_error
+          expect { Category.new }.not_to raise_error
+        end
+
+        it 'fails without scheme' do
+          expect { Category.new nil }.to raise_error(ArgumentError)
+        end
+
+        it 'fails without term' do
+          expect { Category.new 'scheme', nil }.to raise_error(ArgumentError)
+        end
+
+        it 'passes without attributes' do
+          expect { Category.new 'scheme', 'term', nil, nil }.not_to raise_error
         end
 
       end
