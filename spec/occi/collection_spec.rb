@@ -352,15 +352,8 @@ module Occi
       it 'combines two empty sets into another empty one' do
         empty1 = Occi::Collection.new
         empty2 = Occi::Collection.new
-        items = 0
         empty1.merge(empty2)
-        items += empty1.kinds.count
-        items += empty1.mixins.count
-        items += empty1.actions.count
-        items += empty1.resources.count
-        items += empty1.links.count
-        items += 1 unless empty1.action.blank?
-        expect(items).to eql 0
+        expect(empty1.empty?).to eql true
       end
 
     end
@@ -672,14 +665,7 @@ module Occi
         }
         it 'works with both collections populated' do
           uniq1.intersect!(uniq2)
-          items = 0
-          items += uniq1.kinds.count
-          items += uniq1.mixins.count
-          items += uniq1.actions.count
-          items += uniq1.resources.count
-          items += uniq1.links.count
-          items += 1 unless uniq1.action.blank?
-          expect(items).to eql 0
+          expect(uniq1.empty?).to eql true
         end
 
         it 'works with both collections empty' do
@@ -687,42 +673,21 @@ module Occi
           empty2 = Occi::Collection.new
 
           empty1.intersect!(empty2)
-          items = 0
-          items += empty1.kinds.count
-          items += empty1.mixins.count
-          items += empty1.actions.count
-          items += empty1.resources.count
-          items += empty1.links.count
-          items += 1 unless empty1.action.blank?
-          expect(items).to eql 0
+          expect(empty1.empty?).to eql true
         end
 
         it 'works with first collection empty' do
           empty = Occi::Collection.new
    
           uniq1.intersect!(empty)
-          items = 0
-          items += uniq1.kinds.count
-          items += uniq1.mixins.count
-          items += uniq1.actions.count
-          items += uniq1.resources.count
-          items += uniq1.links.count
-          items += 1 unless uniq1.action.blank?
-          expect(items).to eql 0
+          expect(empty.empty?).to eql true
         end
 
         it 'works with second collection empty' do
           empty = Occi::Collection.new
    
           empty.intersect!(uniq2)
-          items = 0
-          items += empty.kinds.count
-          items += empty.mixins.count
-          items += empty.actions.count
-          items += empty.resources.count
-          items += empty.links.count
-          items += 1 unless empty.action.blank?
-          expect(items).to eql 0
+          expect(empty.empty?).to eql true
         end
       end
     end
@@ -764,6 +729,41 @@ module Occi
       end
     end
 
+    context '#empty?' do
+      let(:collection){ Occi::Collection.new }
+      it 'returns true for empty collection' do
+        expect(collection.empty?).to eql true
+      end
 
+      it 'does returns false for non-empty kinds' do
+        collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
+        expect(collection.empty?).to eql false
+      end
+
+      it 'does returns false for non-empty mixnis' do
+        collection.mixins << "http://example.com/occi/tags#my_mixin"
+        expect(collection.empty?).to eql false
+      end
+
+      it 'does returns false for non-empty actions' do
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
+        expect(collection.empty?).to eql false
+      end
+
+      it 'does returns false for non-empty action' do
+        collection.action = Occi::Core::ActionInstance.new
+        expect(collection.empty?).to eql false
+      end
+
+      it 'does returns false for non-empty resources' do
+        collection.resources << Occi::Core::Resource.new
+        expect(collection.empty?).to eql false
+      end
+
+      it 'does returns false for non-empty links' do
+        collection.links << Occi::Core::Link.new
+        expect(collection.empty?).to eql false
+      end
+    end
   end
 end
