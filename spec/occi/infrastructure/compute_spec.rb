@@ -196,7 +196,7 @@ module Occi
           expect(compute.state).to eq 'inactive'
         end
 
-        it 'Does not tak the default value with set_defaults set to default' do
+        it 'does not take the default value with set_defaults set to default' do
           compute.model=modl
           compute.check
           expect(compute.state).to_not eq 'inactive'
