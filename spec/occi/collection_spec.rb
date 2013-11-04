@@ -525,5 +525,206 @@ module Occi
         expect{ isection = collection.intersect(empty1, empty2)}.to_not raise_error
       end
     end
+    context '#intersect!' do
+      let(:collection){
+        collection = Occi::Collection.new 
+        collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
+        collection.kinds << "http://schemas.ogf.org/occi/infrastructure#network"
+        collection.mixins << "http://example.com/occi/tags#my_mixin"
+        collection.mixins << "http://example.com/occi/tags#still_another_mixin"
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#restart"
+        collection.action = Occi::Core::ActionInstance.new
+        collection.resources << Occi::Core::Resource.new
+        collection.resources << Occi::Core::Resource.new
+        collection.links << Occi::Core::Link.new
+        collection.links << Occi::Core::Link.new
+        collection }
+      context 'two fully initiated collections' do
+        let(:action){ Occi::Core::Action.new scheme='http://schemas.ogf.org/occi/core/entity/action#', term='testaction', title='testaction action' }
+        let(:coll2){
+          coll2 = Occi::Collection.new
+          coll2.kinds << "http://schemas.ogf.org/occi/infrastructure#storage"
+          coll2.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
+          coll2.mixins << "http://example.com/occi/tags#another_mixin"
+          coll2.mixins << "http://example.com/occi/tags#my_mixin"
+          coll2.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#stop"
+          coll2.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#restart"
+          coll2.action = Occi::Core::ActionInstance.new action
+          coll2.resources << Occi::Core::Resource.new
+          coll2.resources << collection.resources.first
+          coll2.links << Occi::Core::Link.new
+          coll2.links << collection.resources.first
+          coll2
+        }
+        before(:each){ collection.intersect!(coll2) }
+
+        context 'resulting collection' do
+          it 'has the correct number of kinds' do
+            expect(collection.kinds.count).to eql 1
+          end
+
+          it 'has the correct number of mixins' do
+            expect(collection.mixins.count).to eql 1
+          end
+
+          it 'has the correct number of actions' do
+            expect(collection.actions.count).to eql 1
+          end
+
+          it 'has the correct number of resources' do
+            expect(collection.resources.count).to eql 1
+          end
+
+          it 'has the correct number of links' do
+            expect(collection.links.count).to eql 1
+          end
+
+          it 'does not include unequal actions' do
+            expect(collection.action.blank?).to eql true
+          end
+
+          it 'holds kinds from first collection' do
+            expect(collection.kinds.subset?(collection.kinds)).to eql true
+          end
+
+          it 'holds mixins from first collection' do
+            expect(collection.mixins.subset?(collection.mixins)).to eql true
+          end
+
+          it 'holds actions from first collection' do
+            expect(collection.actions.subset?(collection.actions)).to eql true
+          end
+
+          it 'holds resources from first collection' do
+            expect(collection.resources.subset?(collection.resources)).to eql true
+          end
+
+          it 'holds links from first collection' do
+            expect(collection.links.subset?(collection.links)).to eql true
+          end
+
+          it 'holds kinds from other collection' do
+            expect(collection.kinds.subset?(coll2.kinds)).to eql true
+          end
+
+          it 'holds mixins from other collection' do
+            expect(collection.mixins.subset?(coll2.mixins)).to eql true
+          end
+
+          it 'holds actions from other collection' do
+            expect(collection.actions.subset?(coll2.actions)).to eql true
+          end
+
+          it 'holds resources from other collection' do
+            expect(collection.resources.subset?(coll2.resources)).to eql true
+          end
+
+          it 'holds links from other collection' do
+            expect(collection.links.subset?(coll2.links)).to eql true
+          end
+        end
+
+        context 'second original' do
+          it 'kept the correct number of kinds' do
+            expect(coll2.kinds.count).to eql 2
+          end
+
+          it 'kept the correct number of mixins' do
+            expect(coll2.mixins.count).to eql 2
+          end
+        
+          it 'kept the correct number of actions' do
+            expect(coll2.actions.count).to eql 2
+          end
+
+          it 'kept the correct number of resources' do
+            expect(coll2.resources.count).to eql 2
+          end
+
+          it 'kept the correct number of links' do
+            expect(coll2.links.count).to eql 2
+          end
+        end
+      end
+
+      context 'collections with no intersection' do
+        let(:action){ Occi::Core::Action.new scheme='http://schemas.ogf.org/occi/core/entity/action#', term='testaction', title='testaction action' }
+        let(:uniq1) {
+          uniq1 = Occi::Collection.new 
+          uniq1.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
+          uniq1.mixins << "http://example.com/occi/tags#my_mixin"
+          uniq1.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
+          uniq1.action = Occi::Core::ActionInstance.new
+          uniq1.resources << Occi::Core::Resource.new
+          uniq1.links << Occi::Core::Link.new
+          uniq1
+        }
+        let(:uniq2) {
+          uniq2 = Occi::Collection.new
+          uniq2.kinds << "http://schemas.ogf.org/occi/infrastructure#storage"
+          uniq2.mixins << "http://example.com/occi/tags#another_mixin"
+          uniq2.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#stop"
+          uniq2.action = Occi::Core::ActionInstance.new action
+          uniq2.resources << Occi::Core::Resource.new
+          uniq2.links << Occi::Core::Link.new
+          uniq2
+        }
+        it 'works with both collections populated' do
+          uniq1.intersect!(uniq2)
+          items = 0
+          items += uniq1.kinds.count
+          items += uniq1.mixins.count
+          items += uniq1.actions.count
+          items += uniq1.resources.count
+          items += uniq1.links.count
+          items += 1 unless uniq1.action.blank?
+          expect(items).to eql 0
+        end
+
+        it 'works with both collections empty' do
+          empty1 = Occi::Collection.new
+          empty2 = Occi::Collection.new
+
+          empty1.intersect!(empty2)
+          items = 0
+          items += empty1.kinds.count
+          items += empty1.mixins.count
+          items += empty1.actions.count
+          items += empty1.resources.count
+          items += empty1.links.count
+          items += 1 unless empty1.action.blank?
+          expect(items).to eql 0
+        end
+
+        it 'works with first collection empty' do
+          empty = Occi::Collection.new
+   
+          uniq1.intersect!(empty)
+          items = 0
+          items += uniq1.kinds.count
+          items += uniq1.mixins.count
+          items += uniq1.actions.count
+          items += uniq1.resources.count
+          items += uniq1.links.count
+          items += 1 unless uniq1.action.blank?
+          expect(items).to eql 0
+        end
+
+        it 'works with second collection empty' do
+          empty = Occi::Collection.new
+   
+          empty.intersect!(uniq2)
+          items = 0
+          items += empty.kinds.count
+          items += empty.mixins.count
+          items += empty.actions.count
+          items += empty.resources.count
+          items += empty.links.count
+          items += 1 unless empty.action.blank?
+          expect(items).to eql 0
+        end
+      end
+    end
   end
 end
