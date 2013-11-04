@@ -17,7 +17,7 @@ module Occi
           attributes=Occi::Core::Attributes.new)
         raise ArgumentError, 'scheme and term cannot be nil' unless scheme && term
         raise ArgumentError, 'scheme and term cannot be empty' if scheme.empty? || term.empty?
-        raise ArgumentError, 'attributes cannot be nil' unless attributes
+        attributes ||= Occi::Core::Attributes.new
 
         scheme << '#' unless scheme.end_with? '#'
         @scheme = scheme
