@@ -225,13 +225,16 @@ module Occi
         end
       end
 
-      it 'copes with en empty collection' do
+      it 'copes with an empty collection' do
         emptycol = Occi::Collection.new
         expect{merged = collection.merge(emptycol, collection)}.to_not raise_error
       end
 
-
-      it 'copes with both collections empty'
+      it 'copes with both collections empty' do
+        empty1 = Occi::Collection.new
+        empty2 = Occi::Collection.new
+        expect{merged = collection.merge(empty1, empty2)}.to_not raise_error
+      end
 
     end
 
@@ -330,6 +333,28 @@ module Occi
           end
         end
       end
+      it 'copes with other collection empty' do
+        emptycol = Occi::Collection.new
+        expect{ collection.merge!(emptycol) }.to_not raise_error
+      end
+
+      it 'copes with self empty' do
+        emptycol = Occi::Collection.new
+        expect{ emptycol.merge!(collection) }.to_not raise_error
+      end
+
+      it 'copes with both collections empty' do
+        empty1 = Occi::Collection.new
+        empty2 = Occi::Collection.new
+        expect{ empty1.merge(empty2) }.to_not raise_error
+      end
+
+      it 'combines two empty sets into another empty one' do
+        empty1 = Occi::Collection.new
+        empty2 = Occi::Collection.new
+        
+      end
+
     end
   end
 end
