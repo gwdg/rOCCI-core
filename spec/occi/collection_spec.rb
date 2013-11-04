@@ -726,5 +726,44 @@ module Occi
         end
       end
     end
+
+    context '#get_by_...' do
+      let(:collection){ collection = Occi::Collection.new 
+        collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
+        collection.mixins << "http://example.com/occi/tags#my_mixin"
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
+        collection.action = Occi::Core::ActionInstance.new
+        collection.resources << Occi::Core::Resource.new
+        collection.links << Occi::Core::Link.new
+        collection
+      }
+
+      context '#get_by_id' do
+        it 'finds entity by id' do
+          expect(collection.get_by_id(collection.links.first.id)).to eql collection.links.first
+        end
+
+        it 'finds category by id' do
+          expect(collection.get_by_id("http://example.com/occi/tags#my_mixin")).to eql collection.mixins.first
+        end
+
+        it 'fails gracefully' do
+          expect(collection.get_by_id("ID.notexist")).to eql nil
+        end
+
+      end
+
+      context '#get_by_location' do
+        it 'finds category by location' do
+          expect(collection.get_by_location("/mixins/my_mixin/")).to eql collection.mixins.first
+        end
+
+        it 'fails gracefully' do
+          expect(collection.get_by_location("/notexist/")).to eql nil
+        end
+      end
+    end
+
+
   end
 end
