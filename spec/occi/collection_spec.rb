@@ -765,5 +765,24 @@ module Occi
         expect(collection.empty?).to eql false
       end
     end
+    context '#as_json' do
+      let(:collection){ collection = Occi::Collection.new
+        collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
+        collection.mixins << "http://example.com/occi/tags#my_mixin"
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
+        collection.action = Occi::Core::ActionInstance.new
+        collection.resources << Occi::Core::Resource.new
+        collection.links << Occi::Core::Link.new
+        collection
+      }
+      it 'renders JSON correctly for a simple collection' do
+        expected = '{"action":{"action":"http://schemas.ogf.org/occi/core#action_instance"},"actions":[{"scheme":"http://schemas.ogf.org/occi/infrastructure/compute/action#","term":"start"}]}'
+#        expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#"}'
+        hash=Hashie::Mash.new(JSON.parse(expected))
+
+        expect(collection.as_json).to eql(hash) 
+      end
+
+    end
   end
 end
