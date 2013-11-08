@@ -18,6 +18,7 @@ require 'settingslogic'
 
 require 'occi/helpers/inspect'
 require 'occi/helpers/comparators'
+require 'occi/helpers/headermerge'
 
 require 'occi/errors'
 require 'occi/settings'
