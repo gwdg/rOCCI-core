@@ -940,7 +940,7 @@ module Occi
         second['a'] = 'd'
         second['c'] = 'c'
 
-        mash1 = header_merge(mash1, second, ',')
+        mash1 = Occi::Collection::header_merge(mash1, second, ',')
 
         expected = Hashie::Mash.new
         expected['a'] = 'a,d'

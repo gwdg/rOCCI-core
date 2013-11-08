@@ -185,9 +185,9 @@ module Occi
       header = Hashie::Mash.new
       header['Category'] = self.categories.collect { |category| category.to_string_short }.join(',') if self.categories.any?
       raise "Only one resource allowed for rendering to text/occi" if self.resources.size > 1
-      header = self.header_merge(header, self.resources.first.to_header) if self.resources.any?
+      header = self.class.header_merge(header, self.resources.first.to_header) if self.resources.any?
       header['Link'] = self.links.collect { |link| link.to_string }.join(',') if self.links.any?
-      header = self.header_merge(header, self.action.to_header) if self.action
+      header = self.class.header_merge(header, self.action.to_header) if self.action
       header
     end
 
