@@ -2,7 +2,6 @@ module Occi
   class Collection
 
     include Occi::Helpers::Inspect
-    include Occi::Helpers::HeaderMerge
     include Occi::Helpers::Comparators::Collection
 
     attr_accessor :kinds, :mixins, :actions, :resources, :links, :action, :model
@@ -186,10 +185,23 @@ module Occi
       header = Hashie::Mash.new
       header['Category'] = self.categories.collect { |category| category.to_string_short }.join(',') if self.categories.any?
       raise "Only one resource allowed for rendering to text/occi" if self.resources.size > 1
-      header = Occi::Helpers::HeaderMerge.header_merge(header, self.resources.first.to_header) if self.resources.any?
+      header = self.header_merge(header, self.resources.first.to_header) if self.resources.any?
       header['Link'] = self.links.collect { |link| link.to_string }.join(',') if self.links.any?
-      header = Occi::Helpers::HeaderMerge.header_merge(header, self.action.to_header) if self.action
+      header = self.header_merge(header, self.action.to_header) if self.action
       header
+    end
+
+    private
+
+    def self.header_merge(target, other, separator=',')
+      other.each_pair do |key,val|
+        if target.key?(key)
+          target[key] = "#{target[key]}#{separator}#{val}"
+        else
+          target[key] = val
+        end
+      end
+      target
     end
 
   end
