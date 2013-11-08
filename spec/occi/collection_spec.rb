@@ -776,11 +776,142 @@ module Occi
         collection
       }
       it 'renders JSON correctly for a simple collection' #do
-#        expected = "{\"action\":{\"action\":\"http://schemas.ogf.org/occi/core#action_instance\"},\"actions\":[{\"scheme\":\"http://schemas.ogf.org/occi/infrastructure/compute/action#\",\"term\":\"start\"}],\"kinds\":[{\"parent\":\"http://schemas.ogf.org/occi/core#resource\",\"related\":[\"http://schemas.ogf.org/occi/core#resource\"],\"actions\":[\"http://schemas.ogf.org/occi/infrastructure/compute/action#start\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#stop\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#restart\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#suspend\"],\"location\":\"/compute/\",\"scheme\":\"http://schemas.ogf.org/occi/infrastructure#\",\"term\":\"compute\",\"title\":\"compute resource\",\"attributes\":{\"occi\":{\"core\":{\"id\":{\"type\": \"string\",\"pattern\": \"[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\"},\"_id\":{\"type\": \"string\",\"pattern\": \"[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\"},\"title\":{\"type\": \"string\",\"mutable\": true,\"pattern\": \".*\"},\"_title\":{\"type\": \"string\",\"mutable\": true,\"pattern\": \".*\"},\"summary\":{\"type\": \"string\",\"mutable\": true,\"pattern\": \".*\"},\"_summary\":{\"type\": \"string\",\"mutable\": true,\"pattern\": \".*\"}},\"compute\":{\"architecture\":{\"type\": \"string\",\"mutable\": true,\"pattern\": \"x86|x64\"},\"_architecture\":{\"type\": \"string\",\"mutable\": true,\"pattern\": \"x86|x64\"},\"cores\":{\"type\": \"number\",\"mutable\": true,\"pattern\": \".*\"},\"_cores\":{\"type\": \"number\",\"mutable\": true,\"pattern\": \".*\"},\"hostname\":{\"type\": \"string\",\"mutable\": true,\"pattern\": \"(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*\"},\"_hostname\":{\"type\": \"string\",\"mutable\": true,\"pattern\": \"(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*\"},\"memory\":{\"type\": \"number\",\"mutable\": true,\"pattern\": \".*\"},\"_memory\":{\"type\": \"number\",\"mutable\": true,\"pattern\": \".*\"},\"speed\":{\"type\": \"number\",\"mutable\": true,\"pattern\": \".*\"},\"_speed\":{\"type\": \"number\",\"mutable\": true,\"pattern\": \".*\"},\"state\":{\"type\": \"string\",\"pattern\": \"inactive|active|suspended|error\"},\"_state\":{\"type\": \"string\",\"pattern\": \"inactive|active|suspended|error\"}}}}}],\"links\":[{\"kind\":\"http://schemas.ogf.org/occi/core#link\",\"attributes\":{\"occi\":{\"core\":{\"id\":\"#{collection.links.first.id}\"}}},\"id\":\"#{collection.links.first.id}\",\"rel\":\"http://schemas.ogf.org/occi/core#link\"}],\"mixins\":[{\"location\":\"/mixins/my_mixin/\",\"scheme\":\"http://example.com/occi/tags#\",\"term\":\"my_mixin\"}],\"resources\":[{\"kind\":\"http://schemas.ogf.org/occi/core#resource\",\"attributes\":{\"occi\":{\"core\":{\"id\":\"#{collection.resources.first.id}\"}}},\"id\":\"#{collection.resources.first.id}\"}]}"
+#        expected = "{\"action\":{\"action\":\"http://schemas.ogf.org/occi/core#action_instance\"},\"actions\":[{\"scheme\":\"http://schemas.ogf.org/occi/infrastructure/compute/action#\",\"term\":\"start\"}],\"kinds\":[{\"parent\":\"http://schemas.ogf.org/occi/core#resource\",\"related\":[\"http://schemas.ogf.org/occi/core#resource\"],\"actions\":[\"http://schemas.ogf.org/occi/infrastructure/compute/action#start\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#stop\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#restart\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#suspend\"],\"location\":\"/compute/\",\"scheme\":\"http://schemas.ogf.org/occi/infrastructure#\",\"term\":\"compute\",\"title\":\"computeresource\",\"attributes\":{\"occi\":{\"core\":{\"id\":{\"type\":\"string\",\"pattern\":\"[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\"},\"title\":{\"type\":\"string\",\"mutable\":true,\"pattern\":\".*\"},\"summary\":{\"type\":\"string\",\"mutable\":true,\"pattern\":\".*\"}},\"compute\":{\"architecture\":{\"type\":\"string\",\"mutable\":true,\"pattern\":\"x86|x64\"},\"cores\":{\"type\":\"number\",\"mutable\":true,\"pattern\":\".*\"},\"hostname\":{\"type\":\"string\",\"mutable\":true,\"pattern\":\"(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*\"},\"memory\":{\"type\":\"number\",\"mutable\":true,\"pattern\":\".*\"},\"speed\":{\"type\":\"number\",\"mutable\":true,\"pattern\":\".*\"},\"state\":{\"type\":\"string\",\"pattern\":\"inactive|active|suspended|error\"}}}}}],\"links\":[{\"kind\":\"http://schemas.ogf.org/occi/core#link\",\"attributes\":{\"occi\":{\"core\":{\"id\":\"#{collection.links.first.id}\"}}},\"id\":\"#{collection.links.first.id}\",\"rel\":\"http://schemas.ogf.org/occi/core#link\"}],\"mixins\":[{\"location\":\"/mixins/my_mixin/\",\"scheme\":\"http://example.com/occi/tags#\",\"term\":\"my_mixin\"}],\"resources\":[{\"kind\":\"http://schemas.ogf.org/occi/core#resource\",\"attributes\":{\"occi\":{\"core\":{\"id\":\"#{collection.resources.first.id}\"}}},\"id\":\"#{collection.resources.first.id}\"}]}"
 #        hash=Hashie::Mash.new(JSON.parse(expected))
 #        expect(collection.as_json).to eql(hash) 
 #      end
 
     end
+
+    context '#to_text' do
+      let(:collection){ Occi::Collection.new }
+      it 'renders text correctly for a simple collection' do
+        collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
+        collection.mixins << "http://example.com/occi/tags#my_mixin"
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
+        collection.action = Occi::Core::ActionInstance.new
+        collection.resources << Occi::Core::Resource.new
+        collection.links << Occi::Core::Link.new
+
+        expected = "Category: compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";title=\"compute resource\";rel=\"http://schemas.ogf.org/occi/core#resource\";location=\"/compute/\";attributes=\"occi.core.id occi.core.title occi.core.summary occi.compute.architecture occi.compute.cores occi.compute.hostname occi.compute.memory occi.compute.speed occi.compute.state\";actions=\"http://schemas.ogf.org/occi/infrastructure/compute/action#start http://schemas.ogf.org/occi/infrastructure/compute/action#stop http://schemas.ogf.org/occi/infrastructure/compute/action#restart http://schemas.ogf.org/occi/infrastructure/compute/action#suspend\"\nCategory: my_mixin;scheme=\"http://example.com/occi/tags#\";class=\"mixin\";location=\"/mixins/my_mixin/\"\nCategory: start;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\"\nCategory: resource;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\"\nX-OCCI-Attribute: occi.core.id=\"#{collection.resources.first.id}\"Link: <>;rel=\"http://schemas.ogf.org/occi/core#link\";self=\"/link/#{collection.links.first.id}\";category=\"http://schemas.ogf.org/occi/core#link\";occi.core.id=\"#{collection.links.first.id}\"Category: action_instance;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\""
+        expect(collection.to_text).to eql(expected)
+      end
+
+      it 'renders text correctly for an empty collection' do
+        expected = ''
+        expect(collection.to_text).to eql(expected)
+      end
+
+      it 'renders text correctly, kinds only' do
+        collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
+        expected = "Category: compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";title=\"compute resource\";rel=\"http://schemas.ogf.org/occi/core#resource\";location=\"/compute/\";attributes=\"occi.core.id occi.core.title occi.core.summary occi.compute.architecture occi.compute.cores occi.compute.hostname occi.compute.memory occi.compute.speed occi.compute.state\";actions=\"http://schemas.ogf.org/occi/infrastructure/compute/action#start http://schemas.ogf.org/occi/infrastructure/compute/action#stop http://schemas.ogf.org/occi/infrastructure/compute/action#restart http://schemas.ogf.org/occi/infrastructure/compute/action#suspend\"\n"
+        expect(collection.to_text).to eql(expected)
+      end
+
+      it 'renders text correctly, mixins only' do
+        collection.mixins << "http://example.com/occi/tags#my_mixin"
+        expected = "Category: my_mixin;scheme=\"http://example.com/occi/tags#\";class=\"mixin\";location=\"/mixins/my_mixin/\"\n"
+        expect(collection.to_text).to eql(expected)
+      end
+
+      it 'renders text correctly, actions only' do
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#restart"
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#stop"
+        expected = "Category: start;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\"\nCategory: restart;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\"\nCategory: stop;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\"\n"
+        expect(collection.to_text).to eql(expected)
+      end
+
+      it 'renders text correctly, action instance only' do
+        action = Occi::Core::Action.new scheme='http://schemas.ogf.org/occi/core/entity/action#', term='testaction', title='testaction action'
+        collection.action = Occi::Core::ActionInstance.new action
+        expected = "Category: testaction;scheme=\"http://schemas.ogf.org/occi/core/entity/action#\";class=\"action\""
+        expect(collection.to_text).to eql(expected)
+      end
+
+      it 'renders text correctly, resources only' do
+        collection.resources << Occi::Core::Resource.new
+        expected = "Category: resource;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\"\nX-OCCI-Attribute: occi.core.id=\"#{collection.resources.first.id}\""
+        expect(collection.to_text).to eql(expected)
+      end
+
+      it 'renders text correctly, links only' do
+        collection.links << Occi::Core::Link.new
+        expected = "Link: <>;rel=\"http://schemas.ogf.org/occi/core#link\";self=\"/link/#{collection.links.first.id}\";category=\"http://schemas.ogf.org/occi/core#link\";occi.core.id=\"#{collection.links.first.id}\""
+        expect(collection.to_text).to eql(expected)
+      end
+
+    end
+
+    context '#to_header' do
+      let(:collection){ Occi::Collection.new }
+      it 'renders header correctly for a simple collection' do
+        collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
+        collection.mixins << "http://example.com/occi/tags#my_mixin"
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
+        collection.action = Occi::Core::ActionInstance.new
+        collection.resources << Occi::Core::Resource.new
+        collection.links << Occi::Core::Link.new
+
+        expected=Hashie::Mash.new
+        expected["Category"] = "compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\",my_mixin;scheme=\"http://example.com/occi/tags#\";class=\"mixin\",start;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\",resource;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\",action_instance;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\""
+        expected["Link"] = "<>;rel=\"http://schemas.ogf.org/occi/core#link\";self=\"/link/#{collection.links.first.id}\";category=\"http://schemas.ogf.org/occi/core#link\";occi.core.id=\"#{collection.links.first.id}\""
+        expected["X-OCCI-Attribute"] = "occi.core.id=\"#{collection.resources.first.id}\""
+        expect(collection.to_header).to eql(expected)
+      end
+
+      it 'renders text correctly for an empty collection' do
+        expected=Hashie::Mash.new
+        expect(collection.to_header).to eql(expected)
+      end
+
+      it 'renders text correctly, kinds only' do
+        collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
+        expected=Hashie::Mash.new
+        expected["Category"] = "compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\""
+        expect(collection.to_header).to eql(expected)
+      end
+
+      it 'renders text correctly, mixins only' do
+        collection.mixins << "http://example.com/occi/tags#my_mixin"
+        expected=Hashie::Mash.new
+        expected["Category"] = "my_mixin;scheme=\"http://example.com/occi/tags#\";class=\"mixin\""
+        expect(collection.to_header).to eql(expected)
+      end
+
+      it 'renders text correctly, actions only' do
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#restart"
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#stop"
+        expected=Hashie::Mash.new
+        expected["Category"] = "start;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\",restart;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\",stop;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\""
+        expect(collection.to_header).to eql(expected)
+      end
+
+      it 'renders text correctly, action instance only' do
+        action = Occi::Core::Action.new scheme='http://schemas.ogf.org/occi/core/entity/action#', term='testaction', title='testaction action'
+        collection.action = Occi::Core::ActionInstance.new action
+        expected=Hashie::Mash.new
+        expected["Category"] = "testaction;scheme=\"http://schemas.ogf.org/occi/core/entity/action#\";class=\"action\""
+        expect(collection.to_header).to eql(expected)
+      end
+
+      it 'renders text correctly, resources only' do
+        collection.resources << Occi::Core::Resource.new
+        expected=Hashie::Mash.new
+        expected["Category"] = "resource;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\""
+        expected["X-OCCI-Attribute"] = "occi.core.id=\"#{collection.resources.first.id}\""
+        expect(collection.to_header).to eql(expected)
+      end
+
+      it 'renders text correctly, links only' do
+        collection.links << Occi::Core::Link.new
+        expected=Hashie::Mash.new
+        expected["Link"] = "<>;rel=\"http://schemas.ogf.org/occi/core#link\";self=\"/link/#{collection.links.first.id}\";category=\"http://schemas.ogf.org/occi/core#link\";occi.core.id=\"#{collection.links.first.id}\""
+        expect(collection.to_header).to eql(expected)
+      end
+
+    end
+
   end
 end
