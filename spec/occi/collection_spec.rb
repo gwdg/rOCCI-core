@@ -765,23 +765,40 @@ module Occi
         expect(collection.empty?).to eql false
       end
     end
+
     context '#as_json' do
-      let(:collection){ collection = Occi::Collection.new
+      it 'renders JSON correctly for a simple collection' do
+        collection = Occi::Collection.new
         collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
         collection.mixins << "http://example.com/occi/tags#my_mixin"
         collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
         collection.action = Occi::Core::ActionInstance.new
         collection.resources << Occi::Core::Resource.new
         collection.links << Occi::Core::Link.new
-        collection
-      }
-      it 'renders JSON correctly for a simple collection' do
         expected = "{\"action\":{\"action\":\"http://schemas.ogf.org/occi/core#action_instance\"},\"actions\":[{\"scheme\":\"http://schemas.ogf.org/occi/infrastructure/compute/action#\",\"term\":\"start\"}],\"kinds\":[{\"parent\":\"http://schemas.ogf.org/occi/core#resource\",\"related\":[\"http://schemas.ogf.org/occi/core#resource\"],\"actions\":[\"http://schemas.ogf.org/occi/infrastructure/compute/action#start\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#stop\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#restart\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#suspend\"],\"location\":\"/compute/\",\"scheme\":\"http://schemas.ogf.org/occi/infrastructure#\",\"term\":\"compute\",\"title\":\"compute resource\",\"attributes\":{\"occi\":{\"core\":{\"id\":{\"type\":\"string\",\"pattern\":\"[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\"},\"title\":{\"type\":\"string\",\"mutable\":true,\"pattern\":\".*\"},\"summary\":{\"type\":\"string\",\"mutable\":true,\"pattern\":\".*\"}},\"compute\":{\"architecture\":{\"type\":\"string\",\"mutable\":true,\"pattern\":\"x86|x64\"},\"cores\":{\"type\":\"number\",\"mutable\":true,\"pattern\":\".*\"},\"hostname\":{\"type\":\"string\",\"mutable\":true,\"pattern\":\"(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\\\-]*[a-zA-Z0-9])\\\\.)*\"},\"memory\":{\"type\":\"number\",\"mutable\":true,\"pattern\":\".*\"},\"speed\":{\"type\":\"number\",\"mutable\":true,\"pattern\":\".*\"},\"state\":{\"type\":\"string\",\"pattern\":\"inactive|active|suspended|error\"}}}}}],\"links\":[{\"kind\":\"http://schemas.ogf.org/occi/core#link\",\"attributes\":{\"occi\":{\"core\":{\"id\":\"#{collection.links.first.id}\"}}},\"id\":\"#{collection.links.first.id}\",\"rel\":\"http://schemas.ogf.org/occi/core#link\"}],\"mixins\":[{\"location\":\"/mixins/my_mixin/\",\"scheme\":\"http://example.com/occi/tags#\",\"term\":\"my_mixin\"}],\"resources\":[{\"kind\":\"http://schemas.ogf.org/occi/core#resource\",\"attributes\":{\"occi\":{\"core\":{\"id\":\"#{collection.resources.first.id}\"}}},\"id\":\"#{collection.resources.first.id}\"}]}"
         
         hash=Hashie::Mash.new(JSON.parse(expected))
         expect(collection.as_json).to eql(hash) 
       end
 
+      it 'renders JSON for an empty collection' do
+        collection = Occi::Collection.new
+        hash=Hashie::Mash.new
+        expect(collection.as_json).to eql(hash) 
+      end
+
+      it 'renders JSON for a collection with no resources' do
+        collection = Occi::Collection.new
+        collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
+        collection.mixins << "http://example.com/occi/tags#my_mixin"
+        collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
+        collection.action = Occi::Core::ActionInstance.new
+        collection.links << Occi::Core::Link.new
+        expected = "{\"action\":{\"action\":\"http://schemas.ogf.org/occi/core#action_instance\"},\"actions\":[{\"scheme\":\"http://schemas.ogf.org/occi/infrastructure/compute/action#\",\"term\":\"start\"}],\"kinds\":[{\"parent\":\"http://schemas.ogf.org/occi/core#resource\",\"related\":[\"http://schemas.ogf.org/occi/core#resource\"],\"actions\":[\"http://schemas.ogf.org/occi/infrastructure/compute/action#start\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#stop\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#restart\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#suspend\"],\"location\":\"/compute/\",\"scheme\":\"http://schemas.ogf.org/occi/infrastructure#\",\"term\":\"compute\",\"title\":\"compute resource\",\"attributes\":{\"occi\":{\"core\":{\"id\":{\"type\":\"string\",\"pattern\":\"[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\"},\"title\":{\"type\":\"string\",\"mutable\":true,\"pattern\":\".*\"},\"summary\":{\"type\":\"string\",\"mutable\":true,\"pattern\":\".*\"}},\"compute\":{\"architecture\":{\"type\":\"string\",\"mutable\":true,\"pattern\":\"x86|x64\"},\"cores\":{\"type\":\"number\",\"mutable\":true,\"pattern\":\".*\"},\"hostname\":{\"type\":\"string\",\"mutable\":true,\"pattern\":\"(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\\\-]*[a-zA-Z0-9])\\\\.)*\"},\"memory\":{\"type\":\"number\",\"mutable\":true,\"pattern\":\".*\"},\"speed\":{\"type\":\"number\",\"mutable\":true,\"pattern\":\".*\"},\"state\":{\"type\":\"string\",\"pattern\":\"inactive|active|suspended|error\"}}}}}],\"links\":[{\"kind\":\"http://schemas.ogf.org/occi/core#link\",\"attributes\":{\"occi\":{\"core\":{\"id\":\"#{collection.links.first.id}\"}}},\"id\":\"#{collection.links.first.id}\",\"rel\":\"http://schemas.ogf.org/occi/core#link\"}],\"mixins\":[{\"location\":\"/mixins/my_mixin/\",\"scheme\":\"http://example.com/occi/tags#\",\"term\":\"my_mixin\"}]}"
+        
+        hash=Hashie::Mash.new(JSON.parse(expected))
+        expect(collection.as_json).to eql(hash) 
+      end
     end
 
     context '#to_text' do
