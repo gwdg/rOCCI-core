@@ -146,20 +146,77 @@ module Occi
         model
       }
 
-      it 'registers a kind' do
+      it 'unregisters a kind' do
         model.unregister(kind)
         expect(model.kinds.include?(kind)).to eql false
       end
 
-      it 'registers a mixin' do
+      it 'unregisters a mixin' do
         model.unregister(mixin)
         expect(model.mixins.include?(mixin)).to eql false
       end
 
-      it 'registers an action' do
+      it 'unregisters an action' do
         model.unregister(action)
         expect(model.actions.include?(action)).to eql false
       end
+    end
+
+    context '#register_collection' do
+      let(:kind){ Occi::Core::Kind.new }
+      let(:mixin){ Occi::Core::Mixin.new }
+      let(:action){ Occi::Core::Action.new }
+      let(:collection) { collection = Occi::Collection.new
+        collection << kind
+        collection << mixin
+        collection << action
+        collection
+      }
+      let(:model){ model = Occi::Model.new
+        model.register_collection(collection)
+        model
+      }
+
+      it 'registers a kind' do
+        expect(model.kinds.include?(kind)).to eql true
+      end
+
+      it 'registers a mixin' do
+        expect(model.mixins.include?(mixin)).to eql true
+      end
+
+      it 'registers an action' do
+        expect(model.actions.include?(action)).to eql true
+      end
+    end
+
+    context '#reset' do
+      let(:entity){ Occi::Core::Entity.new 'http://example.org/test/schema#testentity' }
+      let(:kind){ kind = Occi::Core::Kind.new 
+        kind.entities << entity 
+        kind }
+      let(:mixin){ Occi::Core::Mixin.new }
+      let(:action){ Occi::Core::Action.new }
+      let(:model){ model = Occi::Model.new
+        model.register(kind)
+        model.register(mixin)
+        model.register(action)
+        model
+      }
+
+#      before(:each){ model.reset }
+
+      it 'unregisters entities' do
+        found = false
+        model.kinds.each { |kind|
+          if kind.entities.include?(entity)
+            kind = true
+          end
+        }
+        expect(found).to eql false
+      end
+
+      
     end
 
 
