@@ -110,5 +110,58 @@ module Occi
         end
       end
     end
+
+    context '#register' do
+      let(:kind){ Occi::Core::Kind.new }
+      let(:mixin){ Occi::Core::Mixin.new }
+      let(:action){ Occi::Core::Action.new }
+      let(:model){ model = Occi::Model.new 
+        model.register(kind)
+        model.register(mixin)
+        model.register(action)
+        model
+      }
+
+      it 'registers a kind' do
+        expect(model.kinds.include?(kind)).to eql true
+      end
+
+      it 'registers a mixin' do
+        expect(model.mixins.include?(mixin)).to eql true
+      end
+
+      it 'registers an action' do
+        expect(model.actions.include?(action)).to eql true
+      end
+    end
+
+    context '#unregister' do
+      let(:kind){ Occi::Core::Kind.new }
+      let(:mixin){ Occi::Core::Mixin.new }
+      let(:action){ Occi::Core::Action.new }
+      let(:model){ model = Occi::Model.new
+        model.register(kind)
+        model.register(mixin)
+        model.register(action)
+        model
+      }
+
+      it 'registers a kind' do
+        model.unregister(kind)
+        expect(model.kinds.include?(kind)).to eql false
+      end
+
+      it 'registers a mixin' do
+        model.unregister(mixin)
+        expect(model.mixins.include?(mixin)).to eql false
+      end
+
+      it 'registers an action' do
+        model.unregister(action)
+        expect(model.actions.include?(action)).to eql false
+      end
+    end
+
+
   end
 end
