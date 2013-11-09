@@ -195,7 +195,9 @@ module Occi
       let(:kind){ kind = Occi::Core::Kind.new 
         kind.entities << entity 
         kind }
-      let(:mixin){ Occi::Core::Mixin.new }
+      let(:mixin){ mixin = Occi::Core::Mixin.new 
+        mixin.entities << entity
+        mixin }
       let(:action){ Occi::Core::Action.new }
       let(:model){ model = Occi::Model.new
         model.register(kind)
@@ -204,18 +206,19 @@ module Occi
         model
       }
 
-#      before(:each){ model.reset }
+      before(:each){ model.reset }
 
-      it 'unregisters entities' do
+      it 'unregisters entities from kinds' do
         found = false
-        model.kinds.each { |kind|
-          if kind.entities.include?(entity)
-            kind = true
-          end
-        }
+        model.kinds.each { |kind| found = true if kind.entities.include?(entity) }
         expect(found).to eql false
       end
 
+      it 'unregisters entities from mixins' do
+        found = false
+        model.mixins.each { |mixin| found = true if mixin.entities.include?(entity) }
+        expect(found).to eql false
+      end
       
     end
 
