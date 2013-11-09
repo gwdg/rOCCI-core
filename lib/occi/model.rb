@@ -53,7 +53,7 @@ module Occi
 
     # clear all entities from all categories
     def reset()
-      categories.each { |category| category.entities = [] if category.respond_to? :entities }
+      categories.each { |category| category.entities = Occi::Core::Entities.new if category.respond_to? :entities }
     end
 
     # @param [Occi::Core::Category] category
