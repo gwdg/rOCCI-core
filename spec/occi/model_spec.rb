@@ -85,10 +85,6 @@ module Occi
           expect(collection.kinds.count).to eql 1
         end
 
-        it 'returns the right number of kinds' do
-          expect(collection.kinds).to have(1).kind
-        end
-
         it 'starts with a network kind' do
           expect(collection.kinds.first).to eql network
         end
@@ -219,9 +215,49 @@ module Occi
         model.mixins.each { |mixin| found = true if mixin.entities.include?(entity) }
         expect(found).to eql false
       end
-      
     end
 
+    context '#register_files' do
+      context 'for correct and existing files' do
+        let(:model){ model = Occi::Model.new
+          model.register_files('spec/occi/collection_samples')
+          model
+        }
 
+        it 'read the right number of mixins' do
+          expect(model.mixins.count).to eql 2
+        end
+
+        it 'read the right number of actions' do
+          expect(model.actions.count).to eql 2
+        end
+
+        it 'read the right number of resources' do
+          expect(model.resources.count).to eql 2
+        end
+
+        it 'read the right number of links' do
+          expect(model.links.count).to eql 2
+        end
+
+        it 'read the action' do
+          expect(model.action.blank?).to eql false
+        end
+      end
+
+      context 'for inexistent directory' do
+        it 'fails gracefully' do
+          model = Occi::Model.new
+          expect{ model.register_files('this/directory/does/not/exist') }.to raise_exception(ArgumentError)
+        end
+      end
+
+      context 'for invalid input' do
+        it 'fails gracefully' do
+          model = Occi::Model.new
+          expect{ model.register_files('spec/occi') }.to raise_exception(ArgumentError)
+        end
+      end
+    end
   end
 end
