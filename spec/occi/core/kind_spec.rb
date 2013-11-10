@@ -109,21 +109,21 @@ module Occi
         let(:kind){ Occi::Core::Kind.new }
 
         it 'renders JSON correctly from freshly initialized object' do
-          expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#"}'
+          expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#","attributes":{}}'
           hash=Hashie::Mash.new(JSON.parse(expected))
           expect(kind.as_json).to eql(hash)
         end
 
         it 'renders JSON correctly with optional attributes' do
           kind.title = "test title"
-          expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#","title":"test title"}'
+          expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#","title":"test title","attributes":{}}'
           hash=Hashie::Mash.new(JSON.parse(expected))
           expect(kind.as_json).to eql(hash)
         end
 
         it 'renders JSON correctly with special characters' do
           kind.title = "Some special characters @#\$%"
-          expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#","title":"Some special characters @#\$%"}'
+          expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#","title":"Some special characters @#\$%","attributes":{}}'
           hash=Hashie::Mash.new(JSON.parse(expected))
           expect(kind.as_json).to eql(hash)
         end

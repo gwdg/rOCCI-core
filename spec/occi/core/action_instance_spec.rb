@@ -147,7 +147,7 @@ X-OCCI-Attribute: org.opennebula.network.id=1|
 
       context '#as_json' do
         it 'renders default to Hashie::Mash' do
-          expected = Hashie::Mash.new({"action" => "http://schemas.ogf.org/occi/core#action_instance"})
+          expected = Hashie::Mash.new({"action" => "http://schemas.ogf.org/occi/core#action_instance", "attributes" => {}})
           expect(ai.as_json).to eq(expected)
         end
 
