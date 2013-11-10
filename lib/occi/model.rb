@@ -33,6 +33,7 @@ module Occi
     # @param [Sting] scheme_base_url base location for provider specific extensions of the OCCI model
     def register_files(path, scheme_base_url='http://localhost')
       Occi::Log.info "[#{self.class}] Initializing OCCI Model from #{path}"
+      raise ArgumentError, "Directory \"#{path}\" does not exist" unless File.directory?(path)
       Dir.glob(path + '/**/*.json').each do |file|
         collection = Occi::Collection.new(JSON.parse(File.read(file)))
         # add location of service provider to scheme if it has a relative location
