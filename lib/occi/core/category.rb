@@ -44,7 +44,7 @@ module Occi
         category.scheme = self.scheme
         category.term = self.term
         category.title = self.title if self.title
-        category.attributes = self.attributes.as_json if self.attributes.any?
+        category.attributes = self.attributes.any? ? self.attributes.as_json : Occi::Core::Attributes.new.as_json
         category
       end
 

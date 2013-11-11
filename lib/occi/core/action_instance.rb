@@ -35,7 +35,7 @@ module Occi
       def as_json(options={})
         action = Hashie::Mash.new
         action.action = @action.to_s if @action
-        action.attributes = @attributes.as_json if @attributes.any?
+        action.attributes = @attributes.any? ? @attributes.as_json : Occi::Core::Attributes.new.as_json
         action
       end
 
