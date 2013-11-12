@@ -145,9 +145,49 @@ module Occi
         resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rb").read
         expect{ Occi::Parser.parse('text/plain', resource_string, false, Occi::Core::ActionInstance) }.to raise_error(Occi::Errors::ParserTypeError)
       end
-        
+    end
 
+    context '.locations' do
+      let(:expected){ ["http://example.com:8090/a/b/vm1", "http://example.com:8090/a/b/vm2"] }
+      it 'parses single location from headers' do
+        header = Hashie::Mash.new
+        header['X-OCCI-Location'] = 'http://example.com:8090/a/b/vm1'
+        s_expected = ["http://example.com:8090/a/b/vm1"]
+        location = Occi::Parser.locations("", "", header)
+        expect(location).to eql s_expected
+      end
 
+      it 'parses multiple locations from headers' do
+        header = Hashie::Mash.new
+        header['X-OCCI-Location'] = "http://example.com:8090/a/b/vm1,http://example.com:8090/a/b/vm2"
+        location = Occi::Parser.locations("", "", header)
+        expect(location).to eql expected
+      end
+
+      it 'parses locations from headers, skipping attributes' do
+        header = Hashie::Mash.new
+        header['X-OCCI-Location'] = "http://example.com:8090/a/b/vm1,http://example.com:8090/a/b/vm2"
+        header['X-OCCI-Attribute'] = "occi.core.title=\"test\""
+        location = Occi::Parser.locations("", "", header)
+        expect(location).to eql expected
+      end
+
+      it 'parses multiple locations from an URI list' do
+        locations_text = "http://example.com:8090/a/b/vm1\nhttp://example.com:8090/a/b/vm2"
+        location = Occi::Parser.locations("text/uri-list", locations_text, {})
+        expect(location).to eql expected
+      end      
+
+      it 'parses multiple locations from plain text' do
+        locations_text = "X-OCCI-Location: http://example.com:8090/a/b/vm1\nX-OCCI-Location: http://example.com:8090/a/b/vm2"
+        location = Occi::Parser.locations("text/plain", locations_text, {})
+        expect(location).to eql expected
+      end      
+
+      it 'copes with unmeaningful input' do
+        location = Occi::Parser.locations("nonexistent", "", {})
+        expect(location).to eql []
+      end
     end
 
   end
