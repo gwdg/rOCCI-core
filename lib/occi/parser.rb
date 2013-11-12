@@ -29,11 +29,12 @@ module Occi
       end
 
       def locations(media_type, body, header)
+        locations = []
+        locations << header['Location'] if header['Location'] && !header['Location'].blank?
         header = headers_to_arys(header)
 
         Occi::Log.debug "[#{self}] Parsing locations from request headers: #{header.inspect}"
-        locations = Occi::Parser::Text.locations(header)
-        locations << header['Location'] if header['Location'] && header['Location'].any?
+        locations << Occi::Parser::Text.locations(header)
 
         Occi::Log.debug "[#{self}] Parsing #{media_type} locations from body"
         case media_type
@@ -74,8 +75,9 @@ module Occi
 
         case media_type
         when 'text/uri-list'
-          nil
+          raise Occi::Errors::ParserTypeError, "Type 'text/uri-list' not supported by parse(). Call method #{self}.locations() to parse URI lists"
         when 'text/occi'
+          Occi::Log.warn "Input type text/occi was passed to the parser in request body. All text/occi content MUST be passed in headers. Request body was not processed. The unprocessed content follows\n#{body}" unless body.blank?
           nil
         when 'text/plain', nil
           collection = parse_body_plain(body, category, entity_type)
