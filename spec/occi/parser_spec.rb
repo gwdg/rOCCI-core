@@ -85,37 +85,64 @@ module Occi
 
         end
       end
+
+      it "parses an OVF file" do
+        media_type = 'application/ovf+xml'
+        body = File.read('spec/occi/parser/ovf_samples/test.ovf')
+        collection = Occi::Parser.parse(media_type, body)
+
+        collection.resources.each { |res| res.id="noid" } #Equalize auto-generated IDs
+
+        expected = Marshal.load(File.open("spec/occi/parser/ovf_samples/test.dump", "rb"))
+        expect(collection).to eql expected
+      end
+
+      it 'copes with faulty OVF' #do
+#        expect{ Occi::Parser.parse('application/ovf', "{This is not an OVF}")}.to raise_error(Occi::Errors::ParserInputError)
+#      end
+
+      it "parses an OVA container" do
+        media_type = 'application/ova'
+        body = File.read('spec/occi/parser/ova_samples/test.ova')
+        collection = Occi::Parser.parse(media_type, body)
+
+        collection.resources.each { |res| res.id="noid" } #Equalize auto-generated IDs
+
+        expected = Marshal.load(File.open("spec/occi/parser/ova_samples/test.dump", "rb"))
+        expect(collection).to eql expected
+      end
+
+      it 'copes with faulty OVA' do
+        expect{ Occi::Parser.parse('application/ova', "{This is not an OVA}")}.to raise_error(Occi::Errors::ParserInputError)
+      end
+
+  #    ZS 11 Oct 2013: XML format not yet properly specified
+  #    it "parses a XML file" do
+  #      media_type = 'application/xml'
+  #      body = File.read('spec/occi/parser/xml_samples/test.xml')
+  #      collection = Occi::Parser.parse(media_type, body)
+  #      
+  #    end
+
+      it 'copes with faulty XML' do
+        expect{ collection = Occi::Parser.parse('application/xml', "{This is not a XML}") }.to raise_error(Occi::Errors::ParserInputError)
+      end
+
+      it 'copes with non-existent MIME-type' do
+        expect{ collection = Occi::Parser.parse('application/notexist', 'X-OCCI-Location: http://example.com:8090/a/b/vm1"') }.to raise_error(Occi::Errors::ParserTypeError)
+      end
+
+      it 'copes with type text/uri-list' do
+        expect{ collection = Occi::Parser.parse('text/uri-list', 'http://example.com:8090/a/b/vm1"') }.to raise_error(Occi::Errors::ParserTypeError)
+      end
+
+      it 'skips type text/occi in body' do
+        collection = Occi::Parser.parse('text/occi', 'Category: TERM;scheme="http://a.a/a#";class=kind')
+        expected = Occi::Collection.new
+        expect(collection).to eql expected
+      end
+
     end
-
-    it "parses an OVF file" do
-      media_type = 'application/ovf+xml'
-      body = File.read('spec/occi/parser/ovf_samples/test.ovf')
-      collection = Occi::Parser.parse(media_type, body)
-
-      collection.resources.each { |res| res.id="noid" } #Equalize auto-generated IDs
-
-      expected = Marshal.load(File.open("spec/occi/parser/ovf_samples/test.dump", "rb"))
-      expect(collection).to eql expected
-    end
-
-    it "parses an OVA container" do
-      media_type = 'application/ova'
-      body = File.read('spec/occi/parser/ova_samples/test.ova')
-      collection = Occi::Parser.parse(media_type, body)
-
-      collection.resources.each { |res| res.id="noid" } #Equalize auto-generated IDs
-
-      expected = Marshal.load(File.open("spec/occi/parser/ova_samples/test.dump", "rb"))
-      expect(collection).to eql expected
-    end
-
-#    ZS 11 Oct 2013: XML format not yet properly specified
-#    it "parses a XML file" do
-#      media_type = 'application/xml'
-#      body = File.read('spec/occi/parser/xml_samples/test.xml')
-#      collection = Occi::Parser.parse(media_type, body)
-#      
-#    end
 
     context '.parse_headers' do
       it 'parses categories' do
@@ -187,6 +214,36 @@ module Occi
       it 'copes with unmeaningful input' do
         location = Occi::Parser.locations("nonexistent", "", {})
         expect(location).to eql []
+      end
+    end
+
+    context '.parse_body_plain' do
+      it 'parses categories' do
+        categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rb").read
+        expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_categories.dump", "rb"))
+        categories = Occi::Parser.parse('text/plain', categories_string, true)
+        expect(categories).to eql expected
+      end
+
+      it 'parses resources' do
+        resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rb").read
+        expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_network_rocci_server.resource.dump", "rb"))
+        resource = Occi::Parser.parse('text/plain', resource_string, false, Occi::Core::Resource)
+        expect(resource).to eql expected
+      end
+
+      it 'parses links' do
+        link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rb").read
+        link = Occi::Parser.parse('text/plain', link_string, false, Occi::Core::Link)
+        expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_resource_instance.dump", "rb"))
+        expected.links.each { |exp| exp.id = 'emptied' }
+        link.links.each { |lnk| lnk.id = 'emptied' }
+        expect(link).to eql expected
+      end
+
+      it 'copes with unknown entity type' do
+        expect{Occi::Parser.parse('text/plain', 'Category: TERM;scheme="http://a.a/a#";class=kind', false, Occi::Core::Kind)}.to raise_exception(Occi::Errors::ParserTypeError)
+        # This test works but the exception is actually raised in parse_headers(). Execution never gets to this branch in parse_body_plain()
       end
     end
 
