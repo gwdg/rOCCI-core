@@ -30,7 +30,7 @@ module Occi
 
       def locations(media_type, body, header)
         locations = []
-        locations << header['Location'] if header['Location'] && header['Location'].any?
+        locations << header['Location'] if header['Location'] && !header['Location'].blank?
         header = headers_to_arys(header)
 
         Occi::Log.debug "[#{self}] Parsing locations from request headers: #{header.inspect}"
