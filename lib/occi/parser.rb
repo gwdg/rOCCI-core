@@ -1,3 +1,5 @@
+require 'ruby-debug'
+
 Dir[File.join(File.dirname(__FILE__), 'parser', '*.rb')].each { |file| require file.gsub('.rb', '') }
 
 module Occi
@@ -29,11 +31,11 @@ module Occi
       end
 
       def locations(media_type, body, header)
+#        debugger
         header = headers_to_arys(header)
 
         Occi::Log.debug "[#{self}] Parsing locations from request headers: #{header.inspect}"
         locations = Occi::Parser::Text.locations(header)
-        locations << header['Location'] if header['Location'] && header['Location'].any?
 
         Occi::Log.debug "[#{self}] Parsing #{media_type} locations from body"
         case media_type
