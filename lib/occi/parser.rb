@@ -1,5 +1,3 @@
-require 'ruby-debug'
-
 Dir[File.join(File.dirname(__FILE__), 'parser', '*.rb')].each { |file| require file.gsub('.rb', '') }
 
 module Occi
@@ -31,7 +29,6 @@ module Occi
       end
 
       def locations(media_type, body, header)
-#        debugger
         header = headers_to_arys(header)
 
         Occi::Log.debug "[#{self}] Parsing locations from request headers: #{header.inspect}"
