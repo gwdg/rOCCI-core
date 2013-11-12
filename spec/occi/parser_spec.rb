@@ -176,12 +176,12 @@ module Occi
 
     context '.locations' do
       let(:expected){ ["http://example.com:8090/a/b/vm1", "http://example.com:8090/a/b/vm2"] }
+      let(:single_expected){ ["http://example.com:8090/a/b/vm1"] }
       it 'parses single location from headers' do
         header = Hashie::Mash.new
         header['X-OCCI-Location'] = 'http://example.com:8090/a/b/vm1'
-        s_expected = ["http://example.com:8090/a/b/vm1"]
         location = Occi::Parser.locations("", "", header)
-        expect(location).to eql s_expected
+        expect(location).to eql single_expected
       end
 
       it 'parses multiple locations from headers' do
@@ -214,6 +214,22 @@ module Occi
       it 'copes with unmeaningful input' do
         location = Occi::Parser.locations("nonexistent", "", {})
         expect(location).to eql []
+      end
+
+      it 'parses "Location" hashes from header, solo' do
+        header = Hashie::Mash.new
+        header['Location'] = "http://example.com:8090/a/b/vm1"
+        location = Occi::Parser.locations("", "", header)
+        expect(location).to eql single_expected
+      end
+
+      it 'parses "Location" hashes from header in combination with X-OCCI-Location strings' do
+        header = Hashie::Mash.new
+        header['Location'] = "http://example.com:8090/a/b/vm1"
+        header['X-OCCI-Location'] = "http://example.com:8090/a/b/vm2"
+        locations_text = "X-OCCI-Location: http://example.com:8090/a/b/vm1\nX-OCCI-Location: http://example.com:8090/a/b/vm2"
+        location = Occi::Parser.locations("", "", header)
+        expect(location).to eql expected
       end
     end
 
