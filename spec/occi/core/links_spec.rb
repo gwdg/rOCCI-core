@@ -28,6 +28,26 @@ module Occi
             expect(link2.id).to satisfy { |id| expected.include?(id) }
           end
         end
+
+        context 'with strings' do
+          it 'produces the right number of members, strings only' do
+            links = Occi::Core::Links.new ["target1","target2"]
+            expect(links.count).to eql 2
+          end
+
+          it 'populates target in the link' do
+            links = Occi::Core::Links.new ["target1"]
+            expect(links.first.target).to eql "target1"
+          end
+
+          it 'produces the right number of members, string/link combination' do
+            link2 = Occi::Core::Link.new
+            links = Occi::Core::Links.new ["target1",link2]
+            expect(links.count).to eql 2
+          end
+        end
+
+
       end
 
       context '<<' do
