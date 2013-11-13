@@ -21,7 +21,7 @@ module Occi
       @log_prefix = log_prefix.blank? ? '' : log_prefix.strip
 
       # subscribe to log messages and send to logger
-      @log_subscriber = ActiveSupport::Notifications.subscribe("log") do |name, start, finish, id, payload|
+      @log_subscriber = ActiveSupport::Notifications.subscribe("rOCCI-core.log") do |name, start, finish, id, payload|
         @logger.log(payload[:level], "#{@log_prefix} #{payload[:message]}") if @logger
       end
     end
@@ -42,28 +42,28 @@ module Occi
 
     # @see info
     def self.debug(message)
-      ActiveSupport::Notifications.instrument("log", :level => Logger::DEBUG, :message => message)
+      ActiveSupport::Notifications.instrument("rOCCI-core.log", :level => Logger::DEBUG, :message => message)
     end
 
     # Log an +INFO+ message
     # @param [String] message the message to log; does not need to be a String
     def self.info(message)
-      ActiveSupport::Notifications.instrument("log", :level => Logger::INFO, :message => message)
+      ActiveSupport::Notifications.instrument("rOCCI-core.log", :level => Logger::INFO, :message => message)
     end
 
     # @see info
     def self.warn(message)
-      ActiveSupport::Notifications.instrument("log", :level => Logger::WARN, :message => message)
+      ActiveSupport::Notifications.instrument("rOCCI-core.log", :level => Logger::WARN, :message => message)
     end
 
     # @see info
     def self.error(message)
-      ActiveSupport::Notifications.instrument("log", :level => Logger::ERROR, :message => message)
+      ActiveSupport::Notifications.instrument("rOCCI-core.log", :level => Logger::ERROR, :message => message)
     end
 
     # @see info
     def self.fatal(message)
-      ActiveSupport::Notifications.instrument("log", :level => Logger::FATAL, :message => message)
+      ActiveSupport::Notifications.instrument("rOCCI-core.log", :level => Logger::FATAL, :message => message)
     end
   end
 end
