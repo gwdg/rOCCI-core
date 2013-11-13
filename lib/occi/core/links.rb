@@ -13,7 +13,7 @@ module Occi
 
       def create(*args)
         link       = Occi::Core::Link.new(*args)
-        link.model = @model
+        link.model = @model if @model
         self << link
         link
       end
