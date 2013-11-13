@@ -4,7 +4,7 @@ module Occi
 
       def create(*args)
         resource       = Occi::Core::Resource.new(*args)
-        resource.model = @model
+        resource.model = @model if @model
         self << resource
         resource
       end
