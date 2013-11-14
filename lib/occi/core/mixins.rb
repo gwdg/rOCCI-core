@@ -11,7 +11,7 @@ module Occi
 
       def remove(mixin)
         mixin = convert mixin
-        @entity.attributes.remove mixin.attributes
+        @entity.attributes.remove mixin.attributes if @entity
         self.delete mixin
       end
 
