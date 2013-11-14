@@ -37,10 +37,62 @@ module Occi
         end
       end
 
-      context '#remove' do
+      context '<<' do
+        let!(:mixins){ Occi::Core::Mixins.new }
+
+        it 'adds a mixin to an empty set' do
+          mixins << Occi::Infrastructure::OsTpl.mixin
+          expect(mixins.include?(Occi::Infrastructure::OsTpl.mixin)).to eql true
+        end
+
+        it 'adds a mixin to an empty set' do
+          mixins << Occi::Infrastructure::OsTpl.mixin
+          mixins << Occi::Infrastructure::ResourceTpl.mixin
+          expect(mixins.include?(Occi::Infrastructure::ResourceTpl.mixin)).to eql true
+        end
+
+        it 'only adds the supplied mixin' do
+          mixins << Occi::Infrastructure::OsTpl.mixin
+          expect(mixins.include?(Occi::Infrastructure::ResourceTpl.mixin)).to eql false
+        end
       end
 
-      context '<<' do
+      context '#remove' do
+        let!(:mixins){ Occi::Core::Mixins.new }
+
+        it 'removes last mixin from the set' do
+          mixins << Occi::Infrastructure::OsTpl.mixin
+          mixins.remove(Occi::Infrastructure::OsTpl.mixin)
+          expect(mixins.include?(Occi::Infrastructure::OsTpl.mixin)).to eql false
+        end
+
+        it 'removes mixin from among multiple members' do
+          mixins << Occi::Infrastructure::OsTpl.mixin
+          mixins << Occi::Infrastructure::ResourceTpl.mixin
+          mixins.remove(Occi::Infrastructure::OsTpl.mixin)
+          expect(mixins.include?(Occi::Infrastructure::OsTpl.mixin)).to eql false
+        end
+
+        it 'leaves other unaffected' do
+          mixins << Occi::Infrastructure::OsTpl.mixin
+          mixins << Occi::Infrastructure::ResourceTpl.mixin
+          mixins.remove(Occi::Infrastructure::OsTpl.mixin)
+          expect(mixins.include?(Occi::Infrastructure::ResourceTpl.mixin)).to eql true
+        end
+
+        it 'removes attributes from the entity attribute' do
+          ent = Occi::Core::Entity.new
+          mixin = Occi::Core::Mixin.new
+          mixin.attributes['stringtype'] = { :type => 'string', :pattern => '[adefltuv]+', :default => 'defaultvalue', :mutable => true }
+          mixin.attributes['stringtype'] = 'flute'
+
+          mixins << mixin
+          mixins.entity = ent
+
+          mixins.remove(mixin)
+
+          expect(mixins.entity.attributes['_stringtype']).to eql nil
+        end
       end
 
       context '#convert' do
