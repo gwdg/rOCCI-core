@@ -55,6 +55,11 @@ module Occi
           mixins << Occi::Infrastructure::OsTpl.mixin
           expect(mixins.include?(Occi::Infrastructure::ResourceTpl.mixin)).to eql false
         end
+
+        it 'adds mixin from string' do
+          mixins << "http://schemas.ogf.org/occi/core#testmixin"
+          expect(mixins.first.term).to eql "testmixin"
+        end
       end
 
       context '#remove' do
