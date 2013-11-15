@@ -157,7 +157,7 @@ module Occi
         text
       end
 
-      # @return [Hash]
+      # @return [String] of attributes put in an array and then concatenated into a string
       def to_header
         attributes = []
         names.each_pair do |name, value|
