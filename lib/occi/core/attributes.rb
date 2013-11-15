@@ -7,10 +7,14 @@ module Occi
       include Occi::Helpers::Inspect
       include Occi::Helpers::Comparators::Attributes
 
-      def initialize(source_hash = nil, default = nil, &blk)
+      def initialize(source_hash = {}, default = nil, &blk)
+        raise ArgumentError, 'Source_hash is a mandatory argument!' unless source_hash
+        raise ArgumentError, 'Source_hash must be a hash-like structure!' unless source_hash.kind_of?(Hash)
+
         # All internal Hashie::Mash elements in source_hash have to be re-typed
         # to Occi::Core::Attributes, so we have to rebuild the object from scratch
-        source_hash = source_hash.to_hash unless source_hash.nil? || source_hash.kind_of?(Occi::Core::Attributes)
+        source_hash = source_hash.to_hash unless source_hash.kind_of?(Occi::Core::Attributes)
+
         super(source_hash, default, &blk)
       end
 
