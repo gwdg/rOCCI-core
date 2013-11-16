@@ -7,12 +7,14 @@ module Occi
       include Occi::Helpers::Inspect
       include Occi::Helpers::Comparators::Attributes
 
-      PROPERTY_KEYS = [:Type, :Required, :Mutable, :Default, :Description, :Pattern, :type, :required, :mutable, :default, :description, :pattern]
+      def initialize(source_hash = {}, default = nil, &blk)
+        raise ArgumentError, 'Source_hash is a mandatory argument!' unless source_hash
+        raise ArgumentError, 'Source_hash must be a hash-like structure!' unless source_hash.kind_of?(Hash)
 
-      def initialize(source_hash = nil, default = nil, &blk)
         # All internal Hashie::Mash elements in source_hash have to be re-typed
         # to Occi::Core::Attributes, so we have to rebuild the object from scratch
-        source_hash = source_hash.to_hash if source_hash.kind_of? Hashie::Mash
+        source_hash = source_hash.to_hash unless source_hash.kind_of?(Occi::Core::Attributes)
+
         super(source_hash, default, &blk)
       end
 
@@ -80,7 +82,7 @@ module Occi
         self.each_key do |key|
           next if self.key?(key[1..-1])
           if self[key].kind_of? Occi::Core::Attributes
-            self[key].names.each_pair { |k, v| hash["#{key}.#{k}"] = v unless v.blank? }
+            self[key].names.each_pair { |k, v| hash["#{key}.#{k}"] = v unless v.nil? }
           else
             hash[key] = self[key]
           end
@@ -89,27 +91,17 @@ module Occi
       end
 
       # @param [Hash] attributes
-      # @return [Occi::Core::Properties] parsed Properties
+      # @return [Occi::Core::Attributes] parsed attributes with properties
       def self.parse(hash)
         hash ||= {}
+        raise Occi::Errors::ParserInputError, 'Hash must be a hash-like structure!' unless hash.respond_to?(:each_pair)
+
         attributes = Occi::Core::Attributes.new
         hash.each_pair do |key, value|
-          if PROPERTY_KEYS.any? { |k| value.key?(k) and not value[k].kind_of? Hash }
-            value[:type] ||= value[:Type] ||= "string"
-            value[:required] ||= value[:Required] ||= false
-            value[:mutable] ||= value[:Mutable] ||= false
-            value[:default] = value[:Default] if value[:Default]
-            value[:description] = value[:Description] if value[:Description]
-            value[:pattern] ||= value[:Pattern] ||= ".*"
-            value.delete :Type
-            value.delete :Required
-            value.delete :Mutable
-            value.delete :Default
-            value.delete :Description
-            value.delete :Pattern
-            attributes[key] = Occi::Core::Properties.new value
+          if Occi::Core::Properties.contains_props?(value)
+            attributes[key] = Occi::Core::Properties.new(value)
           else
-            attributes[key] = self.parse attributes[key]
+            attributes[key] = self.parse(attributes[key])
           end
         end
 
@@ -117,7 +109,7 @@ module Occi
       end
 
       # @param [Hash] attributes key value pair of full attribute names with their corresponding values
-      # @return [Occi::Core::Properties]
+      # @return [Occi::Core::Attributes]
       def self.split(attributes)
         attribute = Attributes.new
         attributes.each do |name, value|

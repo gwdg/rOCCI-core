@@ -16,6 +16,8 @@ require 'zlib'
 require 'tempfile'
 require 'settingslogic'
 
+require 'occi/extensions/hashie'
+
 require 'occi/helpers/inspect'
 require 'occi/helpers/comparators'
 
@@ -23,11 +25,11 @@ require 'occi/errors'
 require 'occi/settings'
 require 'occi/log'
 require 'occi/version'
+require 'occi/core'
+require 'occi/infrastructure'
 require 'occi/collection'
 require 'occi/parser'
 require 'occi/model'
-require 'occi/core'
-require 'occi/infrastructure'
 
 module Occi
 
