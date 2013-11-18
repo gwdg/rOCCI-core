@@ -92,7 +92,7 @@ module Occi
 
       # @param [Hash] attributes
       # @return [Occi::Core::Attributes] parsed attributes with properties
-      def self.parse(hash)
+      def self.parse_properties(hash)
         hash ||= {}
         raise Occi::Errors::ParserInputError, 'Hash must be a hash-like structure!' unless hash.respond_to?(:each_pair)
 
@@ -102,7 +102,7 @@ module Occi
           if Occi::Core::Properties.contains_props?(value)
             attributes[key] = Occi::Core::Properties.new(value)
           else
-            attributes[key] = self.parse(attributes[key])
+            attributes[key] = self.parse_properties(attributes[key])
           end
         end
 
