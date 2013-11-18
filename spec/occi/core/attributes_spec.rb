@@ -164,20 +164,6 @@ module Occi
         end
       end
 
-      context '.parse' do
-        let(:attrs){ attrs = Occi::Core::Attributes.new 
-          attrs['stringtype'] = { :type => 'string', :pattern => '[adefltuv]+', :default => 'defaultvalue', :mutable => true }
-          attrs['booleantype'] = { :type => 'boolean', :default => true, :mutable => true}
-          attrs['booleantypefalse'] = { :type => 'boolean', :default => false, :mutable => true }
-          attrs['booleantypepattern'] = { :type => 'boolean', :default => true, :mutable => true, :pattern => true }
-          attrs }
-
-        it 'parses its own rendering' #do
-#          hash = attrs.to_header
-#
-#          expect(Occi::Core::Attributes.parse(hash)).to eql attrs
-#        end
-      end
 
       context 'rendering' do
         let(:attrs){ attrs = Occi::Core::Attributes.new 
@@ -199,6 +185,20 @@ module Occi
           attrs['properties'] = "prop"
           attrs }
         let(:empty){ Occi::Core::Attributes.new.convert }
+
+        context '.parse' do
+
+          it 'rejects unsuitable types' do
+            string = String.new("Teststring")
+            expect{ Occi::Core::Attributes.parse(hash) }.to raise_error(Occi::Errors::ParserInputError)
+          end
+
+          it 'parses a hashie Mash' #do
+#            hash = attrs.as_json
+#
+#            expect(Occi::Core::Attributes.parse(hash)).to eql attrs
+#          end
+        end
 
         context '#to_string' do
           it 'renders attributes correctly' do
@@ -280,7 +280,25 @@ module Occi
             expect(empty.as_json).to eql expected
           end
         end
+      end
 
+      context '.validate_and_assign' do
+        let(:attrs){ Occi::Core::Attributes.new }
+
+        it 'correctly accepts Occi::Core::Attributes'
+        it 'correctly accepts Occi::Core::Properties'
+        it 'correctly accepts Hash'
+        it 'correctly accepts Occi::Core::Entity'
+        it 'correctly accepts Occi::Core::Category'
+        it 'correctly accepts String'
+        it 'correctly accepts Numeric'
+        it 'correctly accepts FalseClass, TrueClass'
+        it 'correctly accepts NilClass'
+
+        it 'rejects unsupported types' do
+          type = Occi::Log.new(nil)
+          expect{ attrs['log'] = type }.to raise_error(Occi::Errors::AttributeTypeError)
+        end
       end
     end
   end

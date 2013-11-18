@@ -98,6 +98,7 @@ module Occi
 
         attributes = Occi::Core::Attributes.new
         hash.each_pair do |key, value|
+          Occi::Log.debug "QQQ key=#{key}, value=#{value}\n"
           if Occi::Core::Properties.contains_props?(value)
             attributes[key] = Occi::Core::Properties.new(value)
           else
