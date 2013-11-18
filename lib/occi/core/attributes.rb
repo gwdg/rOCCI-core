@@ -207,6 +207,9 @@ module Occi
         when Occi::Core::Entity
           match_type(value, self[property_key], 'string') if self[property_key]
           add_to_hashie(key, value)
+        when Occi::Core::Category
+          match_type(value, self[property_key], 'string') if self[property_key]
+          add_to_hashie(key, value)
         when String
           match_type(value, self[property_key], 'string') if self[property_key]
           add_to_hashie(key, value)
