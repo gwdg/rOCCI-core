@@ -184,7 +184,7 @@ module Occi
             when Occi::Core::Category
               hash[key] = value.to_s
             else
-              hash[key] = value.as_json if value
+              hash[key] = value.as_json unless value.nil?
           end
         end
 
