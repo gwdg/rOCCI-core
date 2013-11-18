@@ -155,7 +155,9 @@ module Occi
         names.each_pair do |name, value|
           # TODO: find a better way to skip properties
           next if name.include? '._'
-          attributes << "#{name}=#{value.to_s.inspect}"
+          prop = "#{name.gsub(/([^.]+?)$/,'_\1')}"
+          sep = (self[prop] && self[prop].type != "string") ? '' : '"'
+          attributes << "#{name}=#{sep}#{value.to_s}#{sep}"
         end
 
         attributes.join(',')
