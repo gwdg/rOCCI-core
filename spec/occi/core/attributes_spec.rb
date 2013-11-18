@@ -194,10 +194,10 @@ module Occi
           end
 
           it 'parses a hashie Mash' do
-            hash = Hashie::Mash.new
-            hash.nr!.type = 'number'
-            hash.nr!.default = 42
-            hash.nr!.mutable = true
+            hash = { :nr => {} }
+            hash[:nr][:type] = 'number'
+            hash[:nr][:default] = 42
+            hash[:nr][:mutable] = true
 
             expected = Occi::Core::Attributes.new
             expected['nr'] = { :type => 'number', :default => 42, :mutable => true }
