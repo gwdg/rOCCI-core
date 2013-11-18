@@ -131,6 +131,13 @@ module Occi
           resource =  Occi::Parser::Text.resource resource_string
           expect(resource).to eql expected
         end
+
+        it 'types parsed compute resource from rOCCI server as Occi::Infrastructure::Compute' do
+          resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rb").read
+          expected_class = Occi::Infrastructure::Compute
+          resource_class =  Occi::Parser::Text.resource(resource_string).resources.first.class
+          expect(resource_class).to eql expected_class
+        end
       end
 
       context '.categories' do
