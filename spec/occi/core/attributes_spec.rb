@@ -203,7 +203,10 @@ module Occi
             expected['nr'] = { :type => 'number', :default => 42, :mutable => true }
             expected.convert
 
-            expect(Occi::Core::Attributes.parse_properties(hash)).to eql expected
+            attrs = Occi::Core::Attributes.parse_properties(hash)
+            attrs.convert
+
+            expect(attrs).to eql expected
           end
         end
 
