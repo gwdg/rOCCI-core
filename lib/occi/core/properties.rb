@@ -13,6 +13,7 @@ module Occi
       # @param source_hash [Hash]
       def initialize(source_hash = {})
         raise ArgumentError, 'Source_hash must be initialized from a hash-like structure!' unless source_hash.kind_of?(Hash)
+        raise ArgumentError, 'Source_hash must not be a Hashie::Mash instance!' if source_hash.kind_of?(Hashie::Mash)
         source_hash = Occi::Core::Properties.normalize_props(source_hash)
 
         self.type = source_hash[:type] ||= 'string'
