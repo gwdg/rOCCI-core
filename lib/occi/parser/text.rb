@@ -36,7 +36,7 @@ module Occi
               category = category(line)
 
               if category.kind_of? Occi::Core::Kind
-                resource = Occi::Core::Kind.get_class(category.scheme, category.term).new
+                resource = Occi::Core::Entity.new(category.type_identifier)
                 resource.kind = category
               end
               resource.mixins << category if category.kind_of? Occi::Core::Mixin
