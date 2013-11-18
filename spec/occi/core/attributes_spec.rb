@@ -186,20 +186,23 @@ module Occi
           attrs['booleantype'] = { :type => 'boolean', :default => true, :mutable => true}
           attrs['booleantypefalse'] = { :type => 'boolean', :default => false, :mutable => true }
           attrs['booleantypepattern'] = { :type => 'boolean', :default => true, :mutable => true, :pattern => true }
+          attrs.nest!.nested = { :type => 'number', :default => 42, :mutable => true, :pattern => '^[0-9]+' }
           attrs.convert
           attrs['numbertype'] = 42
           attrs['stringtype'] = 'flute'
           attrs['booleantype'] = true
           attrs['booleantypefalse'] = false
           attrs['booleantypepattern'] = true
+          attrs.nest!.nested = 11
+          attrs['category'] = Occi::Core::Category.new
           attrs }
         let(:empty){ Occi::Core::Attributes.new.convert }
 
         context '#to_string' do
-          it 'renders attributes correctly' #do
-#            expected = ";numbertype=42;stringtype=\"flute\";booleantype=true;booleantypefalse=false;booleantypepattern=true"
-#            expect(attrs.to_string).to eql expected
-#          end
+          it 'renders attributes correctly' do
+            expected = ";numbertype=42;stringtype=\"flute\";booleantype=true;booleantypefalse=false;booleantypepattern=true;nest.nested=11;category=\"http://schemas.ogf.org/occi/core#category\""
+            expect(attrs.to_string).to eql expected
+          end
 
           it 'copes with empty attributes' do
             expected = ""
@@ -209,7 +212,7 @@ module Occi
 
         context '#to_string_short' do
           it 'renders attributes correctly' do
-            expected = ";attributes=\"numbertype stringtype booleantype booleantypefalse booleantypepattern\""
+            expected = ";attributes=\"numbertype stringtype booleantype booleantypefalse booleantypepattern nest.nested category\""
             expect(attrs.to_string_short).to eql expected
           end
 
@@ -221,7 +224,7 @@ module Occi
 
         context '#to_text' do
           it 'renders attributes correctly' do
-            expected = "\nX-OCCI-Attribute: numbertype=42\nX-OCCI-Attribute: stringtype=\"flute\"\nX-OCCI-Attribute: booleantype=true\nX-OCCI-Attribute: booleantypefalse=false\nX-OCCI-Attribute: booleantypepattern=true"
+            expected = "\nX-OCCI-Attribute: numbertype=42\nX-OCCI-Attribute: stringtype=\"flute\"\nX-OCCI-Attribute: booleantype=true\nX-OCCI-Attribute: booleantypefalse=false\nX-OCCI-Attribute: booleantypepattern=true\nX-OCCI-Attribute: nest.nested=11\nX-OCCI-Attribute: category={\n  \"scheme\": \"http://schemas.ogf.org/occi/core#\",\n  \"term\": \"category\",\n  \"attributes\": {\n  }\n}"
             expect(attrs.to_text).to eql expected
           end
 
@@ -232,13 +235,10 @@ module Occi
         end
 
         context '#to_header' do
-          it 'renders attributes correctly' #do
-#            fil = open("/tmp/debug.out","wb")
-#            Logger = Occi::Log.new(fil)
-#            Logger.level=Occi::Log::DEBUG
-#            expected = "numbertype=42,stringtype=\"flute\",booleantype=true,booleantypefalse=false,booleantypepattern=true"
-#            expect(attrs.to_header).to eql expected
-#          end
+          it 'renders attributes correctly' do
+            expected = "numbertype=42,stringtype=\"flute\",booleantype=true,booleantypefalse=false,booleantypepattern=true,nest.nested=11,category=\"http://schemas.ogf.org/occi/core#category\""
+            expect(attrs.to_header).to eql expected
+          end
 
           it 'copes with empty attributes' do
             expected = ""
@@ -247,10 +247,10 @@ module Occi
         end
 
         context '#to_json' do
-          it 'renders attributes correctly' #do
-#            expected = '{"numbertype":42,"stringtype":"flute","booleantype":true,"booleantypepattern":true,"booleantypefalse":false}'
-#            expect(attrs.to_json).to eql expected
-#          end
+          it 'renders attributes correctly' do
+            expected = '{"numbertype":42,"stringtype":"flute","booleantype":true,"booleantypefalse":false,"booleantypepattern":true,"nest":{"nested":11},"category":"http://schemas.ogf.org/occi/core#category"}'
+            expect(attrs.to_json).to eql expected
+          end
 
           it 'copes with empty attributes' do
             expected = "{}"
@@ -259,16 +259,18 @@ module Occi
         end
 
         context '#as_json' do
-          it 'renders attributes correctly' #do
-#            expected = Hashie::Mash.new
-#            expected["booleantype"] = true
-#            expected["booleantypepattern"] = true
-#            expected["numbertype"] = 42
-#            expected["stringtype"] = "flute"
-#            expected["booleantypefalse"] = false
-#
-#            expect(attrs.as_json).to eql expected
-#          end
+          it 'renders attributes correctly' do
+            expected = Hashie::Mash.new
+            expected["booleantype"] = true
+            expected["booleantypepattern"] = true
+            expected["numbertype"] = 42
+            expected["stringtype"] = "flute"
+            expected["booleantypefalse"] = false
+            expected.nest!.nested = 11
+            expected["category"] = "http://schemas.ogf.org/occi/core#category"
+
+            expect(attrs.as_json).to eql expected
+          end
 
           it 'copes with empty attributes' do
             expected = Hashie::Mash.new
