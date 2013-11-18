@@ -186,18 +186,25 @@ module Occi
           attrs }
         let(:empty){ Occi::Core::Attributes.new.convert }
 
-        context '.parse' do
+        context '.parse_properties' do
 
           it 'rejects unsuitable types' do
             string = String.new("Teststring")
-            expect{ Occi::Core::Attributes.parse(hash) }.to raise_error(Occi::Errors::ParserInputError)
+            expect{ Occi::Core::Attributes.parse_properties(string) }.to raise_error(Occi::Errors::ParserInputError)
           end
 
-          it 'parses a hashie Mash' #do
-#            hash = attrs.as_json
-#
-#            expect(Occi::Core::Attributes.parse(hash)).to eql attrs
-#          end
+          it 'parses a hashie Mash' do
+            hash = Hashie::Mash.new
+            hash.nr!.type = 'number'
+            hash.nr!.default = 42
+            hash.nr!.mutable = true
+
+            expected = Occi::Core::Attributes.new
+            expected['nr'] = { :type => 'number', :default => 42, :mutable => true }
+            expected.convert
+
+            expect(Occi::Core::Attributes.parse_properties(hash)).to eql expected
+          end
         end
 
         context '#to_string' do
@@ -285,15 +292,74 @@ module Occi
       context '.validate_and_assign' do
         let(:attrs){ Occi::Core::Attributes.new }
 
-        it 'correctly accepts Occi::Core::Attributes'
-        it 'correctly accepts Occi::Core::Properties'
-        it 'correctly accepts Hash'
-        it 'correctly accepts Occi::Core::Entity'
-        it 'correctly accepts Occi::Core::Category'
-        it 'correctly accepts String'
-        it 'correctly accepts Numeric'
-        it 'correctly accepts FalseClass, TrueClass'
-        it 'correctly accepts NilClass'
+        it 'correctly accepts Occi::Core::Attributes' do
+          inattrs = Occi::Core::Attributes.new
+          inattrs['numbertype'] = { :type => 'number', :default => 42, :mutable => true, :pattern => '^[0-9]+' }
+          inattrs.convert
+          inattrs['numbertype'] = 13
+
+          attrs['numbertype'] = inattrs['numbertype']
+          expect(attrs).to eql inattrs
+        end
+  
+        it 'correctly accepts Occi::Core::Properties' do
+          attrs['properties'] = Occi::Core::Properties.new
+
+          expected = Occi::Core::Attributes.new
+          expected['properties'] = { :type => 'string', :pattern => '.*', :mutable => false, :required => false }
+          expected.convert
+
+          expect(attrs).to eql expected
+        end
+          
+        it 'correctly accepts Hash' do
+          attrs['hash'] = { :type => 'string', :pattern => '.*', :mutable => false, :required => false }
+
+          expected = Occi::Core::Attributes.new
+          expected['hash'] = { :type => 'string', :pattern => '.*', :mutable => false, :required => false }
+          expected.convert
+
+          expect(attrs).to eql expected
+        end
+
+        it 'correctly accepts Occi::Core::Entity' do
+          entity = Occi::Core::Entity.new
+          attrs['entity'] = entity
+
+          expect(attrs['entity']).to eql entity
+        end
+
+        it 'correctly accepts Occi::Core::Category' do
+          category = Occi::Core::Category.new
+          attrs['category'] = category
+
+          expect(attrs['category']).to eql category
+        end
+
+        it 'correctly accepts String' do
+          attrs['string'] = "teststring"
+          expect(attrs['string']).to eql "teststring"
+        end
+
+        it 'correctly accepts Numeric' do
+          attrs['numeric'] = 16
+          expect(attrs['numeric']).to eql 16
+        end
+
+        it 'correctly accepts TrueClass' do
+          attrs['tr'] = true
+          expect(attrs['tr']).to eql true
+        end
+
+        it 'correctly accepts FalseClass' do
+          attrs['fal'] = false
+          expect(attrs['fal']).to eql false
+        end
+
+        it 'correctly responds to NilClass' do
+          attrs['nil'] = nil
+          expect(attrs['nil']).to eql nil
+        end
 
         it 'rejects unsupported types' do
           type = Occi::Log.new(nil)
