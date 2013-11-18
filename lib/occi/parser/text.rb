@@ -32,16 +32,20 @@ module Occi
           block = Proc.new { |line|
             line.strip!
             case line
-              when /^Category:/
-                category = category(line)
-                resource.kind = category if category.kind_of? Occi::Core::Kind
-                resource.mixins << category if category.kind_of? Occi::Core::Mixin
-              when /^X-OCCI-Attribute:/
-                resource.attributes.merge! attribute(line)
-              when /^Link:/
-                link = link_string(line, resource)
-                resource.links << link
-                links << link
+            when /^Category:/
+              category = category(line)
+
+              if category.kind_of? Occi::Core::Kind
+                resource = Occi::Core::Kind.get_class(category.scheme, category.term).new
+                resource.kind = category
+              end
+              resource.mixins << category if category.kind_of? Occi::Core::Mixin
+            when /^X-OCCI-Attribute:/
+              resource.attributes.merge! attribute(line)
+            when /^Link:/
+              link = link_string(line, resource)
+              resource.links << link
+              links << link
             end
           }
           lines.respond_to?(:each) ? lines.each(&block) : lines.each_line(&block)
@@ -63,12 +67,12 @@ module Occi
           block = Proc.new { |line|
             line.strip!
             case line
-              when /^Category:/
-                category = category(line)
-                link.kind = category if category.kind_of? Occi::Core::Kind
-                link.mixins << category if category.kind_of? Occi::Core::Mixin
-              when /^X-OCCI-Attribute:/
-                link.attributes.merge! attribute(line)
+            when /^Category:/
+              category = category(line)
+              link.kind = category if category.kind_of? Occi::Core::Kind
+              link.mixins << category if category.kind_of? Occi::Core::Mixin
+            when /^X-OCCI-Attribute:/
+              link.attributes.merge! attribute(line)
             end
           }
           lines.respond_to?(:each) ? lines.each(&block) : lines.each_line(&block)
@@ -123,17 +127,17 @@ module Occi
           location = match[:location]
 
           case match[:class]
-            when 'kind'
-              Occi::Log.debug "[#{self}] class #{match[:class]} identified as kind"
-              Occi::Core::Kind.new scheme, term, title, attributes, related, actions, location
-            when 'mixin'
-              Occi::Log.debug "[#{self}] class #{match[:class]} identified as mixin"
-              Occi::Core::Mixin.new scheme, term, title, attributes, related, actions, location
-            when 'action'
-              Occi::Log.debug "[#{self}] class #{match[:class]} identified as action"
-              Occi::Core::Action.new scheme, term, title, attributes
-            else
-              raise Occi::Errors::ParserInputError, "Category with class #{match[:class]} not recognized in string: #{string}"
+          when 'kind'
+            Occi::Log.debug "[#{self}] class #{match[:class]} identified as kind"
+            Occi::Core::Kind.new scheme, term, title, attributes, related, actions, location
+          when 'mixin'
+            Occi::Log.debug "[#{self}] class #{match[:class]} identified as mixin"
+            Occi::Core::Mixin.new scheme, term, title, attributes, related, actions, location
+          when 'action'
+            Occi::Log.debug "[#{self}] class #{match[:class]} identified as action"
+            Occi::Core::Action.new scheme, term, title, attributes
+          else
+            raise Occi::Errors::ParserInputError, "Category with class #{match[:class]} not recognized in string: #{string}"
           end
         end
 
