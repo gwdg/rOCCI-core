@@ -149,6 +149,134 @@ module Occi
           end
         end
       end
+
+      context '#converted?' do
+        let(:attrs){ attrs = Occi::Core::Attributes.new
+          attrs['numbertype'] = { :type => 'number', :default => 42, :mutable => true, :pattern => '^[0-9]+' }
+          attrs }
+
+        it 'correctly reports uncoverted' do
+          expect(attrs.converted?).to eql false
+        end
+
+        it 'correctly reports coverted' do
+          expect(attrs.convert.converted?).to eql true
+        end
+      end
+
+      context '.parse' do
+        let(:attrs){ attrs = Occi::Core::Attributes.new 
+          attrs['stringtype'] = { :type => 'string', :pattern => '[adefltuv]+', :default => 'defaultvalue', :mutable => true }
+          attrs['booleantype'] = { :type => 'boolean', :default => true, :mutable => true}
+          attrs['booleantypefalse'] = { :type => 'boolean', :default => false, :mutable => true }
+          attrs['booleantypepattern'] = { :type => 'boolean', :default => true, :mutable => true, :pattern => true }
+          attrs }
+
+        it 'parses its own rendering' #do
+#          hash = attrs.to_header
+#
+#          expect(Occi::Core::Attributes.parse(hash)).to eql attrs
+#        end
+      end
+
+      context 'rendering' do
+        let(:attrs){ attrs = Occi::Core::Attributes.new 
+          attrs['numbertype'] = { :type => 'number', :default => 42, :mutable => true, :pattern => '^[0-9]+' }
+          attrs['stringtype'] = { :type => 'string', :pattern => '[adefltuv]+', :default => 'defaultvalue', :mutable => true }
+          attrs['booleantype'] = { :type => 'boolean', :default => true, :mutable => true}
+          attrs['booleantypefalse'] = { :type => 'boolean', :default => false, :mutable => true }
+          attrs['booleantypepattern'] = { :type => 'boolean', :default => true, :mutable => true, :pattern => true }
+          attrs.convert
+          attrs['numbertype'] = 42
+          attrs['stringtype'] = 'flute'
+          attrs['booleantype'] = true
+          attrs['booleantypefalse'] = false
+          attrs['booleantypepattern'] = true
+          attrs }
+        let(:empty){ Occi::Core::Attributes.new.convert }
+
+        context '#to_string' do
+          it 'renders attributes correctly' #do
+#            expected = ";numbertype=42;stringtype=\"flute\";booleantype=true;booleantypefalse=false;booleantypepattern=true"
+#            expect(attrs.to_string).to eql expected
+#          end
+
+          it 'copes with empty attributes' do
+            expected = ""
+            expect(empty.to_string).to eql expected
+          end
+        end
+
+        context '#to_string_short' do
+          it 'renders attributes correctly' do
+            expected = ";attributes=\"numbertype stringtype booleantype booleantypefalse booleantypepattern\""
+            expect(attrs.to_string_short).to eql expected
+          end
+
+          it 'copes with empty attributes' do
+            expected = ""
+            expect(empty.to_string_short).to eql expected
+          end
+        end
+
+        context '#to_text' do
+          it 'renders attributes correctly' do
+            expected = "\nX-OCCI-Attribute: numbertype=42\nX-OCCI-Attribute: stringtype=\"flute\"\nX-OCCI-Attribute: booleantype=true\nX-OCCI-Attribute: booleantypefalse=false\nX-OCCI-Attribute: booleantypepattern=true"
+            expect(attrs.to_text).to eql expected
+          end
+
+          it 'copes with empty attributes' do
+            expected = ""
+            expect(empty.to_text).to eql expected
+          end
+        end
+
+        context '#to_header' do
+          it 'renders attributes correctly' #do
+#            fil = open("/tmp/debug.out","wb")
+#            Logger = Occi::Log.new(fil)
+#            Logger.level=Occi::Log::DEBUG
+#            expected = "numbertype=42,stringtype=\"flute\",booleantype=true,booleantypefalse=false,booleantypepattern=true"
+#            expect(attrs.to_header).to eql expected
+#          end
+
+          it 'copes with empty attributes' do
+            expected = ""
+            expect(empty.to_header).to eql expected
+          end
+        end
+
+        context '#to_json' do
+          it 'renders attributes correctly' #do
+#            expected = '{"numbertype":42,"stringtype":"flute","booleantype":true,"booleantypepattern":true,"booleantypefalse":false}'
+#            expect(attrs.to_json).to eql expected
+#          end
+
+          it 'copes with empty attributes' do
+            expected = "{}"
+            expect(empty.to_json).to eql expected
+          end
+        end
+
+        context '#as_json' do
+          it 'renders attributes correctly' #do
+#            expected = Hashie::Mash.new
+#            expected["booleantype"] = true
+#            expected["booleantypepattern"] = true
+#            expected["numbertype"] = 42
+#            expected["stringtype"] = "flute"
+#            expected["booleantypefalse"] = false
+#
+#            expect(attrs.as_json).to eql expected
+#          end
+
+          it 'copes with empty attributes' do
+            expected = Hashie::Mash.new
+            expect(empty.as_json).to eql expected
+          end
+        end
+
+      end
     end
   end
 end
