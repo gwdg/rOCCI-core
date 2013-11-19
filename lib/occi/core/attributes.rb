@@ -48,10 +48,10 @@ module Occi
         attributes.keys.each do |key|
           if self.keys.include? key
             case self[key]
-              when Occi::Core::Attributes
-                self[key].remove attributes[key]
-              else
-                self.delete(key)
+            when Occi::Core::Attributes
+              self[key].remove attributes[key]
+            else
+              self.delete(key)
             end
           end
         end
@@ -62,10 +62,10 @@ module Occi
         attributes.each_pair do |key, value|
           next if attributes.key?(key[1..-1])
           case value
-            when Occi::Core::Attributes
-              value.convert!
-            else
-              attributes[key] = nil
+          when Occi::Core::Attributes
+            value.convert!
+          else
+            attributes[key] = nil
           end
         end
         attributes.converted = true
@@ -145,12 +145,12 @@ module Occi
           # TODO: find a better way to skip properties
           next if name.include? '._'
           case value
-            when Occi::Core::Entity
-              text << "\nX-OCCI-Attribute: #{name}=\"#{value.location}\""
-            when Occi::Core::Category
-              text << "\nX-OCCI-Attribute: #{name}=\"#{value.type_identifier}\""
-            else
-              text << "\nX-OCCI-Attribute: #{name}=#{value.inspect}"
+          when Occi::Core::Entity
+            text << "\nX-OCCI-Attribute: #{name}=\"#{value.location}\""
+          when Occi::Core::Category
+            text << "\nX-OCCI-Attribute: #{name}=\"#{value.type_identifier}\""
+          else
+            text << "\nX-OCCI-Attribute: #{name}=#{value.inspect}"
           end
         end
 
@@ -163,9 +163,14 @@ module Occi
         names.each_pair do |name, value|
           # TODO: find a better way to skip properties
           next if name.include? '._'
-          prop = "#{name.gsub(/([^.]+?)$/,'_\1')}"
-          sep = (self[prop] && self[prop].type != "string") ? '' : '"'
-          attributes << "#{name}=#{sep}#{value.to_s}#{sep}"
+          case value
+          when Occi::Core::Entity
+            attributes << "#{name}=\"#{value.location}\""
+          when Occi::Core::Category
+            attributes << "#{name}=\"#{value.type_identifier}\""
+          else
+            attributes << "#{name}=#{value.inspect}"
+          end
         end
 
         attributes.join(',')
@@ -185,14 +190,14 @@ module Occi
           next if key.start_with? '_'
 
           case value
-            when Occi::Core::Attributes
-              hash[key] = value.as_json if value && value.as_json.size > 0
-            when Occi::Core::Entity
-              hash[key] = value.to_s unless value.blank?
-            when Occi::Core::Category
-              hash[key] = value.to_s
-            else
-              hash[key] = value.as_json unless value.nil?
+          when Occi::Core::Attributes
+            hash[key] = value.as_json if value && value.as_json.size > 0
+          when Occi::Core::Entity
+            hash[key] = value.to_s unless value.blank?
+          when Occi::Core::Category
+            hash[key] = value.to_s
+          else
+            hash[key] = value.as_json unless value.nil?
           end
         end
 
