@@ -28,7 +28,7 @@ module Occi
           when Occi::Core::Attributes
             @attributes = attributes
           else
-            @attributes = Occi::Core::Attributes.parse attributes
+            @attributes = Occi::Core::Attributes.parse_properties attributes
         end
       end
 

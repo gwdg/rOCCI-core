@@ -5,7 +5,7 @@ module Occi
 
       context "render->parse tests" do
         let(:collection){ Occi::Collection.new }
-        let(:resource){ resource = collection.resources.create }
+        let(:resource){ collection.resources.create }
         let(:link){ link = resource.links.create
             link.id = UUIDTools::UUID.random_create.to_s
             link.target = 'http://example.com/resource/aee5acf5-71de-40b0-bd1c-2284658bfd0e'

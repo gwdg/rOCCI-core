@@ -92,16 +92,17 @@ module Occi
 
       # @param [Hash] attributes
       # @return [Occi::Core::Attributes] parsed attributes with properties
-      def self.parse(hash)
+      def self.parse_properties(hash)
         hash ||= {}
         raise Occi::Errors::ParserInputError, 'Hash must be a hash-like structure!' unless hash.respond_to?(:each_pair)
 
         attributes = Occi::Core::Attributes.new
         hash.each_pair do |key, value|
+          Occi::Log.debug "QQQ key=#{key}, value=#{value}\n"
           if Occi::Core::Properties.contains_props?(value)
             attributes[key] = Occi::Core::Properties.new(value)
           else
-            attributes[key] = self.parse(attributes[key])
+            attributes[key] = self.parse_properties(attributes[key])
           end
         end
 
@@ -143,19 +144,28 @@ module Occi
         names.each_pair do |name, value|
           # TODO: find a better way to skip properties
           next if name.include? '._'
-          text << "\nX-OCCI-Attribute: #{name}=#{value.inspect}"
+          case value
+            when Occi::Core::Entity
+              text << "\nX-OCCI-Attribute: #{name}=\"#{value.location}\""
+            when Occi::Core::Category
+              text << "\nX-OCCI-Attribute: #{name}=\"#{value.type_identifier}\""
+            else
+              text << "\nX-OCCI-Attribute: #{name}=#{value.inspect}"
+          end
         end
 
         text
       end
 
-      # @return [Hash]
+      # @return [String] of attributes put in an array and then concatenated into a string
       def to_header
         attributes = []
         names.each_pair do |name, value|
           # TODO: find a better way to skip properties
           next if name.include? '._'
-          attributes << "#{name}=#{value.to_s.inspect}"
+          prop = "#{name.gsub(/([^.]+?)$/,'_\1')}"
+          sep = (self[prop] && self[prop].type != "string") ? '' : '"'
+          attributes << "#{name}=#{sep}#{value.to_s}#{sep}"
         end
 
         attributes.join(',')
@@ -182,7 +192,7 @@ module Occi
             when Occi::Core::Category
               hash[key] = value.to_s
             else
-              hash[key] = value.as_json if value
+              hash[key] = value.as_json unless value.nil?
           end
         end
 
@@ -203,6 +213,9 @@ module Occi
           add_to_hashie(key, properties.clone)
           add_to_hashie(property_key, properties.clone)
         when Occi::Core::Entity
+          match_type(value, self[property_key], 'string') if self[property_key]
+          add_to_hashie(key, value)
+        when Occi::Core::Category
           match_type(value, self[property_key], 'string') if self[property_key]
           add_to_hashie(key, value)
         when String
