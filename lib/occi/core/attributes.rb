@@ -144,7 +144,14 @@ module Occi
         names.each_pair do |name, value|
           # TODO: find a better way to skip properties
           next if name.include? '._'
-          text << "\nX-OCCI-Attribute: #{name}=#{value.inspect}"
+          case value
+            when Occi::Core::Entity
+              text << "\nX-OCCI-Attribute: #{name}=\"#{value.location}\""
+            when Occi::Core::Category
+              text << "\nX-OCCI-Attribute: #{name}=\"#{value.type_identifier}\""
+            else
+              text << "\nX-OCCI-Attribute: #{name}=#{value.inspect}"
+          end
         end
 
         text
