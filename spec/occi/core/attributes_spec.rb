@@ -295,7 +295,7 @@ module Occi
         end
       end
 
-      context '.check' do
+      context '.check!' do
         let(:attrs){ attrs = Occi::Core::Attributes.new }
 
         let(:defs){
@@ -392,6 +392,31 @@ module Occi
             it 'checks boolean pattern' do  # Possibly an overkill
               attrs['booleantypepattern'] = false
               expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributeTypeError)
+            end
+          end
+        end
+
+        context 'Calling through #check' do
+          before(:each){ Occi::Settings['compatibility']=false
+                         Occi::Settings['verify_attribute_pattern']=true }
+          after(:each) { Occi::Settings.reload! }
+
+          context 'setting defaults' do
+            it 'sets numeric default' do
+              as = attrs.check defs, true
+              expect(as['numbertype']).to eq 42
+            end
+            it 'sets string default' do
+              as = attrs.check defs, true
+              expect(as['stringtype']).to eq 'defaultvalue'
+            end
+            it 'sets boolean default if true' do
+              as = attrs.check defs, true
+              expect(as['booleantype']).to eq true
+            end
+            it 'sets boolean default if false' do
+              as = attrs.check defs, true
+              expect(as['booleantypefalse']).to eq false
             end
           end
         end

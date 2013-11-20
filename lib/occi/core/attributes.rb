@@ -205,7 +205,7 @@ module Occi
       # @param [true,false] set_defaults
       # @return [Occi::Core::Attributes] attributes with their defaults set
       def check(definitions, set_defaults = false)
-        attributes = Occi::Core::Attributes.new(@attributes)
+        attributes = Occi::Core::Attributes.new(self)
         attributes.check!(definitions, set_defaults)
         attributes
       end
