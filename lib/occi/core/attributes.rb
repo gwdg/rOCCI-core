@@ -7,6 +7,8 @@ module Occi
       include Occi::Helpers::Inspect
       include Occi::Helpers::Comparators::Attributes
 
+      BOOLEAN_CLASSES = [TrueClass, FalseClass]
+
       def initialize(source_hash = {}, default = nil, &blk)
         raise ArgumentError, 'Source_hash is a mandatory argument!' unless source_hash
         raise ArgumentError, 'Source_hash must be a hash-like structure!' unless source_hash.kind_of?(Hash)
@@ -197,6 +199,65 @@ module Occi
         end
 
         hash
+      end
+
+      # @param [Occi::Core::Attributes] definitions
+      # @param [true,false] set_defaults
+      # @return [Occi::Core::Attributes] attributes with their defaults set
+      def check(definitions, set_defaults = false)
+        attributes = Occi::Core::Attributes.new(@attributes)
+        attributes.check!(definitions, set_defaults)
+        attributes
+      end
+
+      # @param [Occi::Core::Attributes] definitions
+      # @param [true,false] set_defaults
+      # Assigns default values to attributes
+      def check!(definitions, set_defaults = false)
+        definitions.each_key do |key|
+          next if definitions.key?(key[1..-1])
+
+          if definitions[key].kind_of? Occi::Core::Attributes
+            self[key] = self[key].check!(definitions[key], set_defaults)
+          else
+            properties = definitions[key]
+
+            value = self[key]
+            value = properties.default if value.kind_of? Occi::Core::Properties
+            value = properties.default if value.nil? && (set_defaults || properties.required?)
+
+            unless BOOLEAN_CLASSES.include? value.class
+              raise Occi::Errors::AttributeMissingError, "required attribute #{key} not found" if value.blank? && properties.required?
+              next if value.blank?
+            end
+
+            case properties.type
+              when 'number'
+                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless value.kind_of?(Numeric)
+              when 'boolean'
+                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless !!value == value
+              when 'string'
+                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless value.kind_of?(String)
+              else
+                raise Occi::Errors::AttributePropertyTypeError, "property type #{properties.type} is not one of the allowed types number, boolean or string"
+            end
+
+            # TODO: DRY with Occi::Core::Attributes
+            if properties.pattern
+              if Occi::Settings.verify_attribute_pattern && !Occi::Settings.compatibility
+                message = "attribute #{key} with value #{value} does not match pattern #{properties.pattern}"
+                raise Occi::Errors::AttributeTypeError, message unless value.to_s.match "^#{properties.pattern}$"
+              else
+                Occi::Log.warn "[#{self}] Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
+              end
+            end
+
+            self[key] = value
+          end
+        end
+
+        # remove empty attributes
+        self.delete_if { |_, v| v.blank? && !BOOLEAN_CLASSES.include?(v.class) }
       end
 
       private

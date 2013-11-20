@@ -10,8 +10,6 @@ module Occi
 
       class_attribute :kind, :mixins, :attributes, :actions
 
-      BOOLEAN_CLASSES = [TrueClass, FalseClass]
-
       self.mixins = Occi::Core::Mixins.new
 
       self.attributes = Occi::Core::Attributes.new
@@ -173,61 +171,7 @@ module Occi
           definitions.merge!(mixin.attributes) if mixin.attributes
         end if @mixins
 
-        @attributes = Entity.check(@attributes, definitions, set_defaults)
-      end
-
-      # @param [Occi::Core::Attributes] attributes
-      # @param [Occi::Core::Attributes] definitions
-      # @param [true,false] set_defaults
-      # @return [Occi::Core::Attributes] attributes with their defaults set
-      def self.check(attributes, definitions, set_defaults = false)
-        attributes = Occi::Core::Attributes.new(attributes)
-
-        definitions.each_key do |key|
-          next if definitions.key?(key[1..-1])
-
-          if definitions[key].kind_of? Occi::Core::Attributes
-            attributes[key] = Entity.check(attributes[key], definitions[key], set_defaults)
-          else
-            properties = definitions[key]
-
-            value = attributes[key]
-            value = properties.default if value.kind_of? Occi::Core::Properties
-            value = properties.default if value.nil? && (set_defaults || properties.required?)
-
-            unless BOOLEAN_CLASSES.include? value.class
-              raise Occi::Errors::AttributeMissingError, "required attribute #{key} not found" if value.blank? && properties.required?
-              next if value.blank?
-            end
-
-            case properties.type
-              when 'number'
-                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless value.kind_of?(Numeric)
-              when 'boolean'
-                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless !!value == value
-              when 'string'
-                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{value} from class #{value.class.name} does not match attribute property type #{properties.type}" unless value.kind_of?(String)
-              else
-                raise Occi::Errors::AttributePropertyTypeError, "property type #{properties.type} is not one of the allowed types number, boolean or string"
-            end
-
-            # TODO: DRY with Occi::Core::Attributes
-            if properties.pattern
-              if Occi::Settings.verify_attribute_pattern && !Occi::Settings.compatibility
-                message = "attribute #{key} with value #{value} does not match pattern #{properties.pattern}"
-                raise Occi::Errors::AttributeTypeError, message unless value.to_s.match "^#{properties.pattern}$"
-              else
-                Occi::Log.warn "[#{self}] Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
-              end
-            end
-
-            attributes[key] = value
-          end
-        end
-
-        # remove empty attributes
-        attributes.delete_if { |_, v| v.blank? && !BOOLEAN_CLASSES.include?(v.class) }
-        attributes
+        @attributes.check!(definitions, set_defaults)
       end
 
       # @param [Hash] options
