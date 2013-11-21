@@ -26,6 +26,13 @@ module Occi
         @type = type
       end
 
+      def check_value_for_type(value)
+        raise Occi::Errors::AttributePropertyTypeError,
+          "property type #{definitions[key].type} is not one of the allowed types number, boolean or string" unless SupportedTypes.key?(@type)
+        raise Occi::Errors::AttributeTypeError,
+          "Attribute value #{value} is class #{value.class.name}. It does not match attribute property type #{@type}" unless SupportedTypes[@type].any? { |klasse| value.kind_of?(klasse) }
+      end
+
       # @param source_hash [Hash]
       def initialize(source_hash = {})
         raise ArgumentError, 'Source_hash must be initialized from a hash-like structure!' unless source_hash.kind_of?(Hash)
