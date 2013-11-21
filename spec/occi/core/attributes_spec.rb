@@ -17,6 +17,10 @@ module Occi
         it 'rejects keys starting with underscores' do
           expect{ attributes['_test']={} }.to raise_error(Occi::Errors::AttributeNameInvalidError)
         end
+
+        it 'accepts keys with underscores in other positions' do
+          expect{ attributes['t_est']={} }.to_not raise_error(Occi::Errors::AttributeNameInvalidError)
+        end
       end
 
       context '#remove' do
@@ -322,16 +326,24 @@ module Occi
           defs['nonmandatory'] = {         :type => 'string',
                                            :mutable => true,
                                            :required => false }
+          defs['strange'] = { :type => 'float',
+                              :mutable => true }
           defs }
 
-        context 'unsupported types' do
+        context 'unsupported types and attributes' do
           before(:each){ Occi::Settings['compatibility']=false 
                          Occi::Settings['verify_attribute_pattern']=true }
           after(:each) { Occi::Settings.reload! }
-          it 'refuses unsupported type' #do
-#            attrs['otherstring'] = { :type => 'string', :pattern => '[adefltuv]+', :default => 'defaultvalue', :mutable => true }
-#            expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributePropertyTypeError)
-#          end
+          it 'refuses undefined attribute' do
+            attrs['otherstring'] = { :type => 'string', :pattern => '[adefltuv]+', :default => 'defaultvalue', :mutable => true }
+            expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributeNotDefinedError)
+          end
+
+          it 'refuses unsupported type' do
+            defs['unsupported'] = { :type => 'float', :mutable => true }
+            attrs['unsupported'] = 3.14
+            expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributePropertyTypeError)
+          end
         end
 
         context 'undefined attributes' do
