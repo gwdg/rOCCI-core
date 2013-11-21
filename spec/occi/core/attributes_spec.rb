@@ -346,11 +346,6 @@ module Occi
           end
         end
 
-        context 'undefined attributes' do
-          it 'initializes required attribute to default from definitions if not set'
-          it 'raises exception for missing required attribute with no default'
-        end
-
         context 'nonmandatory attributes' do
           it 'removes nil attribute' do
             attrs['nonmandatory'] = nil
