@@ -25,7 +25,7 @@ module Occi
 
         self.type = source_hash[:type] ||= 'string'
         raise Occi::Errors::AttributePropertyTypeError,
-          "Type \"#{type}\" unsupported in properties. Supported types are:#{Properties.supported_type_names}." unless SUPPORTED_TYPES.key?(self.type)
+          "Type \"#{type}\" unsupported in properties. Supported types are: #{Properties.supported_type_names}." unless SUPPORTED_TYPES.key?(self.type)
         self.required = source_hash[:required] = source_hash[:required].nil? ? false : source_hash[:required]
         self.mutable = source_hash[:mutable] = source_hash[:mutable].nil? ? false : source_hash[:mutable]
         self.pattern = source_hash[:pattern] ||= '.*'
@@ -36,7 +36,7 @@ module Occi
       # @param type [String] Requested attribute type
       def type=(type)
         raise Occi::Errors::AttributePropertyTypeError,
-          "Type \"#{type}\" unsupported in properties. Supported types are:#{Properties.supported_type_names}." unless SUPPORTED_TYPES.key?(type)
+          "Type \"#{type}\" unsupported in properties. Supported types are: #{Properties.supported_type_names}." unless SUPPORTED_TYPES.key?(type)
         @type = type
       end
 
@@ -102,9 +102,7 @@ module Occi
       private
 
       def self.supported_type_names()
-        names = ""
-        SUPPORTED_TYPES.each_key { |key| names = "#{names}#{names.blank? ? "" : ","} \"#{key}\"" }
-        names
+        SUPPORTED_TYPES.keys.join(', ')
       end
     end
   end
