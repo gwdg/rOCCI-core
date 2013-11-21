@@ -39,6 +39,8 @@ module Occi
         source_hash = Occi::Core::Properties.normalize_props(source_hash)
 
         self.type = source_hash[:type] ||= 'string'
+        raise Occi::Errors::AttributePropertyTypeError,
+          "Type \"#{type}\" unsupported in properties. Supported types are:#{SupportedTypeNames}." unless SupportedTypes.key?(self.type)
         self.required = source_hash[:required] = source_hash[:required].nil? ? false : source_hash[:required]
         self.mutable = source_hash[:mutable] = source_hash[:mutable].nil? ? false : source_hash[:mutable]
         self.pattern = source_hash[:pattern] ||= '.*'
