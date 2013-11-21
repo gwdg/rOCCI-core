@@ -285,6 +285,20 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
             end
           end
         end
+
+        context 'exceptions' do
+          it 'raisees exception for missing model' do
+            ent = Occi::Core::Entity.new(kind, [], defs)
+            expect{ ent.check(true) }.to raise_exception # XXX: Needs error type
+          end
+
+          it 'raises exception for inexistent kind' do
+            ent = Occi::Core::Entity.new(kind, [], defs)
+            mod = Occi::Model.new
+            ent.model = mod
+            expect{ ent.check(true) }.to raise_exception # XXX: Needs error type
+          end
+        end
       end
 
       context '#attribute_properties' do
