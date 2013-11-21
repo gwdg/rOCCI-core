@@ -152,10 +152,15 @@ module Occi
           expect(properties.empty?).to be false
         end
 
-        it 'Returns true for empty props' #do
-#          empty = Occi::Core::Properties.new
-#          expect(empty.empty?).to be true
-#        end
+        it 'Returns true for empty props' do
+          empty = Occi::Core::Properties.new
+          empty.mutable = nil
+          empty.pattern = nil
+          empty.required = nil
+          empty.instance_eval { @type=nil }
+
+          expect(empty.empty?).to be true
+        end
       end
     end
   end
