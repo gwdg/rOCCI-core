@@ -17,19 +17,6 @@ module Occi
       SUPPORTED_TYPES["number"]  =  [ Numeric ]
       SUPPORTED_TYPES["boolean"] =  [ TrueClass, FalseClass ]
 
-      def type=(type)
-        raise Occi::Errors::AttributePropertyTypeError,
-          "Type \"#{type}\" unsupported in properties. Supported types are:#{Properties.supported_type_names}." unless SUPPORTED_TYPES.key?(type)
-        @type = type
-      end
-
-      def check_value_for_type(value)
-        raise Occi::Errors::AttributePropertyTypeError,
-          "property type #{definitions[key].type} is not one of the allowed types: #{Properties.supported_type_names}" unless SUPPORTED_TYPES.key?(@type)
-        raise Occi::Errors::AttributeTypeError,
-          "Attribute value #{value} is class #{value.class.name}. It does not match attribute property type #{@type}" unless SUPPORTED_TYPES[@type].any? { |klasse| value.kind_of?(klasse) }
-      end
-
       # @param source_hash [Hash]
       def initialize(source_hash = {})
         raise ArgumentError, 'Source_hash must be initialized from a hash-like structure!' unless source_hash.kind_of?(Hash)
@@ -44,6 +31,21 @@ module Occi
         self.pattern = source_hash[:pattern] ||= '.*'
         self.description = source_hash[:description]
         self.default = source_hash[:default]
+      end
+
+      # @param type [String] Requested attribute type
+      def type=(type)
+        raise Occi::Errors::AttributePropertyTypeError,
+          "Type \"#{type}\" unsupported in properties. Supported types are:#{Properties.supported_type_names}." unless SUPPORTED_TYPES.key?(type)
+        @type = type
+      end
+
+      # @param value [Object] Object whose class will be checked against definition
+      def check_value_for_type(value)
+        raise Occi::Errors::AttributePropertyTypeError,
+          "property type #{definitions[key].type} is not one of the allowed types: #{Properties.supported_type_names}" unless SUPPORTED_TYPES.key?(@type)
+        raise Occi::Errors::AttributeTypeError,
+          "Attribute value #{value} is class #{value.class.name}. It does not match attribute property type #{@type}" unless SUPPORTED_TYPES[@type].any? { |klasse| value.kind_of?(klasse) }
       end
 
       def to_hash
