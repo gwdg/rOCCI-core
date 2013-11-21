@@ -176,8 +176,6 @@ module Occi
         end if @mixins
  
         @attributes.check!(definitions, set_defaults)
-
-        raise 'no model has been assigned to this entity' unless @model
       end
 
       # @param [Hash] options
@@ -236,7 +234,7 @@ module Occi
 
       # @return [Bool] Indicating whether this entity is "empty", i.e. required attributes are blank
       def empty?
-        kind.nil? || kind.empty? || attributes['occi.core.id'].blank?
+        kind.blank? || attributes['occi.core.id'].blank?
       end
 
     end
