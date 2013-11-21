@@ -324,10 +324,33 @@ module Occi
           before(:each){ Occi::Settings['compatibility']=false 
                          Occi::Settings['verify_attribute_pattern']=true }
           after(:each) { Occi::Settings.reload! }
-          it 'refuses unsupported type' do
-            defs['othertype'] =   { :type => 'other',
+          it 'refuses unsupported type' #do
+#            attrs['otherstring'] = { :type => 'string', :pattern => '[adefltuv]+', :default => 'defaultvalue', :mutable => true }
+#            expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributePropertyTypeError)
+#          end
+        end
+
+        context 'undefined attributes' do
+          it 'initializes required attribute to default from definitions if not set'
+          it 'raises exception for missing required attribute with no default'
+        end
+
+        context 'attributes set to nil' do
+          it 'removes nil attribute' do
+            attrs['stringtype'] = nil
+            attrs.check!(defs, true)
+            expect(attrs.key?('stringtype')).to eql false
+          end
+        end
+
+        context 'unsupported attributes' do
+          before(:each){ Occi::Settings['compatibility']=false
+                         Occi::Settings['verify_attribute_pattern']=true }
+          after(:each) { Occi::Settings.reload! }
+          it 'refuses attribute not mentioned in defs' do
+            attrs['otherstring'] =   { :type => 'string',
                                    :default => 'defaultvalue' }
-            expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributePropertyTypeError)
+            expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributeNotDefinedError)
           end
         end
 
@@ -338,6 +361,9 @@ module Occi
 
           context 'setting defaults' do
             it 'sets numeric default' do
+              fil = open('/tmp/debug.out',"wb")
+              log = Occi::Log.new '/tmp/debug.out'
+              log.level = Occi::Log::DEBUG
               attrs.check! defs, true
               expect(attrs['numbertype']).to eq 42
             end
@@ -396,7 +422,7 @@ module Occi
           end
         end
 
-        context 'Calling through #check' do
+        context 'calling through #check' do
           before(:each){ Occi::Settings['compatibility']=false
                          Occi::Settings['verify_attribute_pattern']=true }
           after(:each) { Occi::Settings.reload! }
@@ -418,6 +444,17 @@ module Occi
               as = attrs.check defs, true
               expect(as['booleantypefalse']).to eq false
             end
+          end
+        end
+
+        context 'converted definitions' do
+          it 'succeeds for unconverted definitions' do
+            expect{attrs.check! defs, true}.to_not raise_exception
+          end
+
+          it 'throws exception for converted definitions' do
+            defs.convert!
+            expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributeDefinitionsConvrertedError)
           end
         end
       end
