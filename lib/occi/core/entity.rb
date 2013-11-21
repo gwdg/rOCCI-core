@@ -236,7 +236,7 @@ module Occi
 
       # @return [Bool] Indicating whether this entity is "empty", i.e. required attributes are blank
       def empty?
-        kind.empty? || attributes['occi.core.id'].blank?
+        kind.nil? || kind.empty? || attributes['occi.core.id'].blank?
       end
 
     end
