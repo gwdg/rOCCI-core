@@ -7,6 +7,8 @@ module Occi
       include Occi::Helpers::Inspect
       include Occi::Helpers::Comparators::Attributes
 
+      BOOLEAN_CLASSES = [TrueClass, FalseClass]
+
       def initialize(source_hash = {}, default = nil, &blk)
         raise ArgumentError, 'Source_hash is a mandatory argument!' unless source_hash
         raise ArgumentError, 'Source_hash must be a hash-like structure!' unless source_hash.kind_of?(Hash)
@@ -60,7 +62,7 @@ module Occi
 
       def convert(attributes=Occi::Core::Attributes.new(self))
         attributes.each_pair do |key, value|
-          next if attributes.key?(key[1..-1])
+          next if key =~ /^_/
           case value
           when Occi::Core::Attributes
             value.convert!
@@ -80,7 +82,7 @@ module Occi
       def names
         hash = {}
         self.each_key do |key|
-          next if self.key?(key[1..-1])
+          next if key =~ /^_/
           if self[key].kind_of? Occi::Core::Attributes
             self[key].names.each_pair { |k, v| hash["#{key}.#{k}"] = v unless v.nil? }
           else
@@ -98,7 +100,6 @@ module Occi
 
         attributes = Occi::Core::Attributes.new
         hash.each_pair do |key, value|
-          Occi::Log.debug "QQQ key=#{key}, value=#{value}\n"
           if Occi::Core::Properties.contains_props?(value)
             attributes[key] = Occi::Core::Properties.new(value)
           else
@@ -185,7 +186,7 @@ module Occi
       def as_json(options={})
         hash = Hashie::Mash.new
         self.each_pair do |key, value|
-          next if self.key?(key[1..-1])
+          next if key =~ /^_/
           # TODO: find a better way to skip properties
           next if key.start_with? '_'
 
@@ -204,9 +205,36 @@ module Occi
         hash
       end
 
+      # @param [Occi::Core::Attributes] definitions
+      # @param [true,false] set_defaults
+      # @return [Occi::Core::Attributes] attributes with their defaults set
+      def check(definitions, set_defaults = false)
+        attributes = Occi::Core::Attributes.new(self)
+        attributes.check!(definitions, set_defaults)
+        attributes
+      end
+
+      # @param [Occi::Core::Attributes] definitions
+      # @param [true,false] set_defaults
+      # Assigns default values to attributes
+      def check!(definitions, set_defaults = false)
+        raise Occi::Errors::AttributeDefinitionsConvrertedError, "definition attributes must not be converted" if definitions.converted?
+
+        # Start with checking for missing attributes
+        add_missing_attributes(self, definitions, set_defaults)
+
+        # Then check all attributes against definitions
+        check_wrt_definitions(self, definitions, set_defaults)
+
+        # Delete remaining empty attributes
+        delete_empty(self, definitions)
+
+      end
+
       private
 
       def validate_and_assign(key, value, property_key)
+        raise Occi::Errors::AttributeNameInvalidError, "Attribute names (as in \"#{key}\") must not begin with underscores" if key =~ /^_/
         case value
         when Occi::Core::Attributes
           add_to_hashie(key, value)
@@ -258,7 +286,80 @@ module Occi
         end
       end
 
-    end
+      def add_missing_attributes(attributes, definitions, set_defaults)
+        definitions.each_key do |key|
+          next if key =~ /^_/
 
+          if definitions[key].kind_of? Occi::Core::Attributes
+            add_missing_attributes(attributes[key], definitions[key], set_defaults)
+
+          elsif !attributes.key?(key) or attributes[key].nil?
+
+            if definitions[key].default.nil?
+              raise Occi::Errors::AttributeMissingError, "Required attribute #{key} not specified" if definitions[key].required
+            else
+              attributes[key] = definitions[key].default if definitions[key].required or set_defaults
+            end
+
+          end
+        end
+      end
+
+      def check_wrt_definitions(attributes, definitions, set_defaults)
+
+        attributes.each_key do |key|
+          next if key =~ /^_/
+
+          if attributes[key].kind_of? Occi::Core::Attributes
+            check_wrt_definitions(attributes[key], definitions[key], set_defaults)
+
+          else
+            
+            #Raise exception for attributes not defined at all
+            raise Occi::Errors::AttributeNotDefinedError, "Attribute #{key} not found in definitions" unless definitions.key?(key)
+            
+            #Set defaults if values not set, missing attributes have already been added and set to default in add_missing_attributes()
+            attributes[key] = definitions[key].default if attributes[key].nil? and set_defaults and !definitions[key].default.nil?
+
+            next if attributes[key].nil? # I will be removed in the next step
+
+            #Check value types
+            case definitions[key].type
+              when 'number'
+                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{attributes[key]} from class #{attributes[key].class.name} does not match attribute property type #{definitions[key].type}" unless attributes[key].kind_of?(Numeric)
+              when 'boolean'
+                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{attributes[key]} from class #{attributes[key].class.name} does not match attribute property type #{definitions[key].type}" unless !!attributes[key] == attributes[key]
+              when 'string'
+                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{attributes[key]} from class #{attributes[key].class.name} does not match attribute property type #{definitions[key].type}" unless attributes[key].kind_of?(String)
+              else
+                raise Occi::Errors::AttributePropertyTypeError, "property type #{definitions[key].type} is not one of the allowed types number, boolean or string"
+            end
+
+            # Check patterns
+            if definitions[key].pattern
+              if Occi::Settings.verify_attribute_pattern && !Occi::Settings.compatibility
+                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{attributes[key]} does not match pattern #{definitions[key].pattern}" unless attributes[key].to_s.match "^#{definitions[key].pattern}$"
+              else
+                Occi::Log.warn "[#{key}] Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
+              end
+            end
+          end
+        end
+      end
+
+      def delete_empty(attributes, definitions)
+
+        attributes.each_key do |key|
+          next if key =~ /^_/
+
+          if attributes[key].kind_of? Occi::Core::Attributes
+            delete_empty(attributes[key], definitions[key])
+
+          else
+            attributes.delete(key) if attributes[key].nil?
+          end
+        end
+      end
+    end
   end
 end

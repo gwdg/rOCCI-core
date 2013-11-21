@@ -47,11 +47,15 @@ module Occi
       end
 
       context '#kind' do
-        it 'accepts kind through assignment' #do
-#          entity.kind = 'http://example.com/testnamespace#test'
-#          debugger
-#          expect(entity).to be_kind_of 'Com::Example::Testnamespace::Test'.constantize
-#        end
+        it 'accepts kind from string' do
+          entity.kind = 'http://example.com/testnamespace#test'
+          expect(entity.kind).to eql Com::Example::Testnamespace::Test
+        end
+
+        it 'accepts kind from class' do
+          entity.kind = Com::Example::Testnamespace::Test
+          expect(entity.kind).to eql Com::Example::Testnamespace::Test
+        end
       end
 
       context '#mixins' do
@@ -171,38 +175,102 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
       end
 
       context '#check' do
-                context 'unsupported types' do
-          it 'refuses unsupported type' do
-          end
+        let(:defs){
+          defs = Occi::Core::Attributes.new
+          defs['occi.core.id'] = { :type=> 'string',
+                                   :required => true }
+          defs['numbertype'] =   { :type => 'number',
+                                           :default => 42,
+                                           :mutable => true,
+                                           :pattern => '^[0-9]+'  }
+          defs['stringtype'] =   { :type => 'string',
+                                           :pattern => '[adefltuv]+',
+                                           :default => 'defaultvalue',
+                                           :mutable => true }
+          defs['booleantype'] =  { :type => 'boolean',
+                                           :default => true,
+                                           :mutable => true}
+          defs['booleantypefalse'] =  { :type => 'boolean',
+                                           :default => false,
+                                           :mutable => true }
+          defs['booleantypepattern'] =  { :type => 'boolean',
+                                           :default => true,
+                                           :mutable => true,
+                                           :pattern => true }
+          defs }
+        let(:kind){ Occi::Core::Kind.new 'http://schemas.ogf.org/occi/core#', 'testkind', 'Test Kind', defs }
+        let(:model){ model = Occi::Model.new
+          model.register(kind)
+          model }
+        let(:entity){ entity = Occi::Core::Entity.new(kind, [], defs)
+          entity.model = model
+          entity }
+          
+        
+        before(:each){ Occi::Settings['compatibility']=false 
+                       Occi::Settings['verify_attribute_pattern']=true }
+        after(:each) { Occi::Settings.reload! }
+        context 'unsupported types' do
+          it 'refuses unsupported type' #do
+#            entity.attributes['othertype'] = { :type => 'other',
+#                                               :default => 'defaultvalue' }
+#            expect{entity.check}.to raise_exception(Occi::Errors::AttributePropertyTypeError)
+#          end
         end
         context 'defaults' do
           context 'setting defaults' do
-            it 'sets numeric default' #do
-#            end
-            it 'sets string default' #do
-#            end
-            it 'sets boolean default if true' #do
-#            end
-            it 'sets boolean default if false' #do
-#            end
-            it 'can be checked twice in a row' #do
-#            end
+            it 'sets numeric default' do
+              entity.check(true)
+              expect(entity.attributes['numbertype']).to eq 42
+            end
+            it 'sets string default' do
+              entity.check(true)
+              expect(entity.attributes['stringtype']).to eq 'defaultvalue'
+            end
+            it 'sets boolean default if true' do
+              entity.check(true)
+              expect(entity.attributes['booleantype']).to eq true
+            end
+            it 'sets boolean default if false' do
+              entity.check(true)
+              expect(entity.attributes['booleantypefalse']).to eq false
+            end
+            it 'can be checked twice in a row' do
+              entity.check(true)
+              expect{ entity.check(true) }.to_not raise_exception
+            end
+            it 'skips numeric default' do
+              entity.attributes['numbertype'] = 12
+              entity.check(true)
+              expect(entity.attributes['numbertype']).to eq 12
+            end
+            it 'skips string default' do
+              entity.attributes['stringtype'] = 'fault'
+              entity.check(true)
+              expect(entity.attributes['stringtype']).to eq 'fault'
+            end
+            it 'skips boolean default if true' do
+              entity.attributes['booleantype'] = false
+              entity.check(true)
+              expect(entity.attributes['booleantype']).to eq false
+            end
+            it 'skips boolean default if false' do
+              entity.attributes['booleantypefalse'] = true
+              entity.check(true)
+              expect(entity.attributes['booleantypefalse']).to eq true
+            end
           end
-          context 'skipping defaults if already set' do
-            it 'skips numeric default' #do
-#            end
-            it 'skips string default' #do
-#            end
-            it 'skips boolean default if true' #do
-#            end
-            it 'skips boolean default if false' #do
-#            end
-          end
+
           context 'patterns' do
-            it 'checks string pattern' #do
-#            end
-            it 'checks numeric pattern' #do
-#            end
+            it 'checks string pattern' do
+              expect{ entity.attributes['stringtype'] = 'bflmpsvz' }.to raise_exception(Occi::Errors::AttributeTypeError)
+            end
+            it 'checks numeric pattern' do
+              expect{ entity.attributes['numbertype'] = -32 }.to raise_exception(Occi::Errors::AttributeTypeError)
+            end
+            it 'checks boolean pattern' do
+              expect{ entity.attributes['booleantypepattern'] = false }.to raise_exception(Occi::Errors::AttributeTypeError)
+            end
           end
           context 'mixins' do
             it 'checks mixins' #do
@@ -211,114 +279,12 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
         end
       end
 
-      context '.check' do
-        let(:attrs){ attrs = Occi::Core::Attributes.new }
-
-        let(:defs){
-          defs = Occi::Core::Attributes.new
-          defs['numbertype'] =   { :type => 'number',
-                                           :default => 42,
-                                           :mutable => true,
-                                           :pattern => '^[0-9]+'  }
-          defs['stringtype'] =   { :type => 'string',
-                                           :pattern => '[adefltuv]+',
-                                           :default => 'defaultvalue', 
-                                           :mutable => true }
-          defs['booleantype'] =  { :type => 'boolean',
-                                           :default => true, 
-                                           :mutable => true}
-          defs['booleantypefalse'] =  { :type => 'boolean', #Regression test
-                                           :default => false, 
-                                           :mutable => true }
-          defs['booleantypepattern'] =  { :type => 'boolean',
-                                           :default => true, 
-                                           :mutable => true,
-                                           :pattern => true }
-          defs }
-
-        context 'unsupported types' do
-          before(:each){ Occi::Settings['compatibility']=false 
-                         Occi::Settings['verify_attribute_pattern']=true }
-          after(:each) { Occi::Settings.reload! }
-          it 'refuses unsupported type' do
-            defs['othertype'] =   { :type => 'other',
-                                   :default => 'defaultvalue' }
-            expect{attributes = Occi::Core::Entity.check attrs, defs, true}.to raise_exception(Occi::Errors::AttributePropertyTypeError)
-          end
-        end
-
-        context 'defaults' do
-          before(:each){ Occi::Settings['compatibility']=false 
-                         Occi::Settings['verify_attribute_pattern']=true }
-          after(:each) { Occi::Settings.reload! }
-
-          context 'setting defaults' do
-            it 'sets numeric default' do
-              attributes = Occi::Core::Entity.check attrs, defs, true
-              expect(attributes['numbertype']).to eq 42
-            end
-            it 'sets string default' do
-              attributes = Occi::Core::Entity.check attrs, defs, true
-              expect(attributes['stringtype']).to eq 'defaultvalue'
-            end
-            it 'sets boolean default if true' do
-              attributes = Occi::Core::Entity.check attrs, defs, true
-              expect(attributes['booleantype']).to eq true
-            end
-            it 'sets boolean default if false' do
-              attributes = Occi::Core::Entity.check attrs, defs, true
-              expect(attributes['booleantypefalse']).to eq false
-            end
-            it 'can be checked twice in a row' do
-              attributes = Occi::Core::Entity.check attrs, defs, true
-              expect{ bttributes = Occi::Core::Entity.check attributes, defs, true }.to_not raise_exception
-            end
-          end
-          context 'skipping defaults if already set' do
-            it 'skips numeric default' do
-              attrs['numbertype'] = 12
-              attributes = Occi::Core::Entity.check attrs, defs, true
-              expect(attributes['numbertype']).to eq 12
-            end
-            it 'skips string default' do
-              attrs['stringtype'] = 'fault'
-              attributes = Occi::Core::Entity.check attrs, defs, true
-              expect(attributes['stringtype']).to eq 'fault'
-            end
-            it 'skips boolean default if true' do
-              attrs['booleantype'] = false
-              attributes = Occi::Core::Entity.check attrs, defs, true
-              expect(attributes['booleantype']).to eq false
-            end
-            it 'skips boolean default if false' do
-              attrs['booleantype'] = true
-              attributes = Occi::Core::Entity.check attrs, defs, true
-              expect(attributes['booleantype']).to eq true
-            end
-          end
-          context 'patterns' do
-            it 'checks string pattern' do
-              attrs['stringtype'] = 'bflmpsvz'
-              expect{attributes = Occi::Core::Entity.check attrs, defs, true}.to raise_exception(Occi::Errors::AttributeTypeError)
-            end
-            it 'checks numeric pattern' do
-              attrs['numbertype'] = -32
-              expect{attributes = Occi::Core::Entity.check attrs, defs, true}.to raise_exception(Occi::Errors::AttributeTypeError)
-            end
-            it 'checks boolean pattern' do  # Possibly an overkill
-              attrs['booleantypepattern'] = false
-              expect{attributes = Occi::Core::Entity.check attrs, defs, true}.to raise_exception(Occi::Errors::AttributeTypeError)
-            end
-          end
-        end
-      end
-
-      context '#attribute_properties' do
-        it 'gets attribute properties' #do
-          # TODO: Awaiting routines to compare attribute objects
-          #expect(entity.attribute_properties).to eql expected
-        #end
-      end
+      context '#attribute_properties' #do
+#        it 'gets attribute properties' do
+#          expected = Occi::Core::Attributes.new
+#          expect(entity.attribute_properties).to eql expected
+#        end
+#      end
 
       context '#empty?' do
 

@@ -3,18 +3,23 @@ module Occi
     describe Attributes do
 
       context '#[]=' do
+        let(:attributes){ Occi::Core::Attributes.new }
         it 'stores properties using hashes in hash notation'  do
-          attributes=Occi::Core::Attributes.new
           attributes['test']={}
-          
           expect(attributes['test']).to be_kind_of Occi::Core::Properties
         end
 
         it 'stores properties using hashes in dot notation'  do
-          attributes=Occi::Core::Attributes.new
           attributes.test={}
-
           expect(attributes.test).to be_kind_of Occi::Core::Properties
+        end
+
+        it 'rejects keys starting with underscores' do
+          expect{ attributes['_test']={} }.to raise_error(Occi::Errors::AttributeNameInvalidError)
+        end
+
+        it 'accepts keys with underscores in other positions' do
+          expect{ attributes['t_est']={} }.to_not raise_error(Occi::Errors::AttributeNameInvalidError)
         end
       end
 
@@ -294,6 +299,230 @@ module Occi
           end
         end
       end
+
+      context '.check!' do
+        let(:attrs){ attrs = Occi::Core::Attributes.new }
+
+        let(:defs){
+          defs = Occi::Core::Attributes.new
+          defs['numbertype'] =           { :type => 'number',
+                                           :default => 42,
+                                           :mutable => true,
+                                           :pattern => '^[0-9]+'  }
+          defs['stringtype'] =           { :type => 'string',
+                                           :pattern => '[adefltuv]+',
+                                           :default => 'defaultvalue', 
+                                           :mutable => true }
+          defs['booleantype'] =          { :type => 'boolean',
+                                           :default => true, 
+                                           :mutable => true}
+          defs['booleantypefalse'] =     { :type => 'boolean', #Regression test
+                                           :default => false, 
+                                           :mutable => true }
+          defs['booleantypepattern'] =   { :type => 'boolean',
+                                           :default => true, 
+                                           :mutable => true,
+                                           :pattern => true }
+          defs['nonmandatory'] = {         :type => 'string',
+                                           :mutable => true,
+                                           :required => false }
+          defs['strange'] = { :type => 'float',
+                              :mutable => true }
+          defs }
+
+        context 'unsupported types and attributes' do
+          before(:each){ Occi::Settings['compatibility']=false 
+                         Occi::Settings['verify_attribute_pattern']=true }
+          after(:each) { Occi::Settings.reload! }
+          it 'refuses undefined attribute' do
+            attrs['otherstring'] = { :type => 'string', :pattern => '[adefltuv]+', :default => 'defaultvalue', :mutable => true }
+            expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributeNotDefinedError)
+          end
+
+          it 'refuses unsupported type' do
+            defs['unsupported'] = { :type => 'float', :mutable => true }
+            attrs['unsupported'] = 3.14
+            expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributePropertyTypeError)
+          end
+        end
+
+        context 'undefined attributes' do
+          it 'initializes required attribute to default from definitions if not set'
+          it 'raises exception for missing required attribute with no default'
+        end
+
+        context 'nonmandatory attributes' do
+          it 'removes nil attribute' do
+            attrs['nonmandatory'] = nil
+            attrs.check!(defs, true)
+            expect(attrs.key?('nonmandatory')).to eql false
+          end
+
+          it 'raises error for unknown attribute with non-nil value' do
+            attrs['undefined'] = "undefined"
+            expect{ attrs.check!(defs, true) }.to raise_error(Occi::Errors::AttributeNotDefinedError)
+          end
+        end
+
+        context 'mandatory attributes' do
+          it 'no value and no default, set_defaults true' do
+            defs['nodefault'] = { :type => 'string', :mutable => true, :required => true }
+            expect{ attrs.check!(defs, true) }.to raise_error(Occi::Errors::AttributeMissingError)
+          end
+
+          it 'no value and no default, set_defaults false' do
+            defs['nodefault'] = { :type => 'string', :mutable => true, :required => true }
+            expect{ attrs.check!(defs, false) }.to raise_error(Occi::Errors::AttributeMissingError)
+          end
+
+          it 'nil value and no default, set_defaults true' do
+            defs['nodefault'] = { :type => 'string', :mutable => true, :required => true }
+            attrs['nodefault'] = nil
+            expect{ attrs.check!(defs, true) }.to raise_error(Occi::Errors::AttributeMissingError)
+          end
+
+          it 'nil value and no default, set_defaults false' do
+            defs['nodefault'] = { :type => 'string', :mutable => true, :required => true }
+            attrs['nodefault'] = nil
+            expect{ attrs.check!(defs, false) }.to raise_error(Occi::Errors::AttributeMissingError)
+          end
+
+        end
+
+        context 'unsupported attributes' do
+          before(:each){ Occi::Settings['compatibility']=false
+                         Occi::Settings['verify_attribute_pattern']=true }
+          after(:each) { Occi::Settings.reload! }
+          it 'refuses attribute not mentioned in defs' do
+            attrs['otherstring'] =   { :type => 'string',
+                                   :default => 'defaultvalue' }
+            expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributeNotDefinedError)
+          end
+        end
+
+        context 'defaults' do
+          before(:each){ Occi::Settings['compatibility']=false 
+                         Occi::Settings['verify_attribute_pattern']=true }
+          after(:each) { Occi::Settings.reload! }
+
+          context 'setting defaults' do
+            it 'sets numeric default' do
+              attrs.check! defs, true
+              expect(attrs['numbertype']).to eq 42
+            end
+            it 'sets string default' do
+              attrs.check! defs, true
+              expect(attrs['stringtype']).to eq 'defaultvalue'
+            end
+            it 'sets boolean default if true' do
+              attrs.check! defs, true
+              expect(attrs['booleantype']).to eq true
+            end
+            it 'sets boolean default if false' do
+              attrs.check! defs, true
+              expect(attrs['booleantypefalse']).to eq false
+            end
+            it 'can be checked twice in a row' do
+              attrs.check! defs, true
+              expect{ attrs.check! defs, true }.to_not raise_exception
+            end
+          end
+
+          context 'skipping defaults if already set' do
+            it 'skips numeric default' do
+              attrs['numbertype'] = 12
+              attrs.check! defs, true
+              expect(attrs['numbertype']).to eq 12
+            end
+            it 'skips string default' do
+              attrs['stringtype'] = 'fault'
+              attrs.check! defs, true
+              expect(attrs['stringtype']).to eq 'fault'
+            end
+            it 'skips boolean default if true' do
+              attrs['booleantype'] = false
+              attrs.check! defs, true
+              expect(attrs['booleantype']).to eq false
+            end
+            it 'skips boolean default if false' do
+              attrs['booleantypefalse'] = true
+              attrs.check! defs, true
+              expect(attrs['booleantypefalse']).to eq true
+            end
+          end
+
+          context 'skipping defaults if set_defaults is false' do
+            it 'skips numeric default' do
+              attrs.check! defs, false
+              expect(attrs['numbertype']).to_not eq 42
+            end
+            it 'skips string default' do
+              attrs.check! defs, false
+              expect(attrs['stringtype']).to_not eq 'defaultvalue'
+            end
+            it 'skips boolean default if true' do
+              attrs.check! defs, false
+              expect(attrs['booleantype']).to_not eq true
+            end
+            it 'skips boolean default if false' do
+              attrs.check! defs, false
+              expect(attrs['booleantypefalse']).to_not eq false
+            end
+          end
+
+          context 'patterns' do
+            it 'checks string pattern' do
+              attrs['stringtype'] = 'bflmpsvz'
+              expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributeTypeError)
+            end
+            it 'checks numeric pattern' do
+              attrs['numbertype'] = -32
+              expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributeTypeError)
+            end
+            it 'checks boolean pattern' do  # Possibly an overkill
+              attrs['booleantypepattern'] = false
+              expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributeTypeError)
+            end
+          end
+        end
+
+        context 'calling through #check' do
+          before(:each){ Occi::Settings['compatibility']=false
+                         Occi::Settings['verify_attribute_pattern']=true }
+          after(:each) { Occi::Settings.reload! }
+
+          context 'setting defaults' do
+            it 'sets numeric default' do
+              as = attrs.check defs, true
+              expect(as['numbertype']).to eq 42
+            end
+            it 'sets string default' do
+              as = attrs.check defs, true
+              expect(as['stringtype']).to eq 'defaultvalue'
+            end
+            it 'sets boolean default if true' do
+              as = attrs.check defs, true
+              expect(as['booleantype']).to eq true
+            end
+            it 'sets boolean default if false' do
+              as = attrs.check defs, true
+              expect(as['booleantypefalse']).to eq false
+            end
+          end
+        end
+
+        context 'converted definitions' do
+          it 'succeeds for unconverted definitions' do
+            expect{attrs.check! defs, true}.to_not raise_exception
+          end
+
+          it 'throws exception for converted definitions' do
+            defs.convert!
+            expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributeDefinitionsConvrertedError)
+          end
+        end
+      end
+
 
       context '.validate_and_assign' do
         let(:attrs){ Occi::Core::Attributes.new }
