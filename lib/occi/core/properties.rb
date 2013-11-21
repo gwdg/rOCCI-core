@@ -16,19 +16,18 @@ module Occi
       SupportedTypes["string"]  =  [ String ]
       SupportedTypes["number"]  =  [ Numeric ]
       SupportedTypes["boolean"] =  [ TrueClass, FalseClass ]
+      SupportedTypeNames = ""
+      SupportedTypes.each_key { |key| SupportedTypeNames="#{SupportedTypeNames}#{SupportedTypeNames.blank? ? "" : ","} \"#{key}\"" }
 
       def type=(type)
-        unless SupportedTypes.key?(type)
-          suptypes=""
-          SupportedTypes.each_key { |key| suptypes="#{suptypes} \"#{key}\"" }
-          raise Occi::Errors::AttributePropertyTypeError, "Type \"#{type}\" unsupported in properties. Supported types are:#{suptypes}."
-        end
+        raise Occi::Errors::AttributePropertyTypeError,
+          "Type \"#{type}\" unsupported in properties. Supported types are:#{SupportedTypeNames}." unless SupportedTypes.key?(type)
         @type = type
       end
 
       def check_value_for_type(value)
         raise Occi::Errors::AttributePropertyTypeError,
-          "property type #{definitions[key].type} is not one of the allowed types number, boolean or string" unless SupportedTypes.key?(@type)
+          "property type #{definitions[key].type} is not one of the allowed types: #{SupportedTypeNames}" unless SupportedTypes.key?(@type)
         raise Occi::Errors::AttributeTypeError,
           "Attribute value #{value} is class #{value.class.name}. It does not match attribute property type #{@type}" unless SupportedTypes[@type].any? { |klasse| value.kind_of?(klasse) }
       end
