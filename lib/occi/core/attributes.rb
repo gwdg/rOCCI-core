@@ -62,7 +62,7 @@ module Occi
 
       def convert(attributes=Occi::Core::Attributes.new(self))
         attributes.each_pair do |key, value|
-          next if attributes.key?(key[1..-1])
+          next if key =~ /^_/
           case value
             when Occi::Core::Attributes
               value.convert!
@@ -82,7 +82,7 @@ module Occi
       def names
         hash = {}
         self.each_key do |key|
-          next if self.key?(key[1..-1])
+          next if key =~ /^_/
           if self[key].kind_of? Occi::Core::Attributes
             self[key].names.each_pair { |k, v| hash["#{key}.#{k}"] = v unless v.nil? }
           else
@@ -181,7 +181,7 @@ module Occi
       def as_json(options={})
         hash = Hashie::Mash.new
         self.each_pair do |key, value|
-          next if self.key?(key[1..-1])
+          next if key =~ /^_/
           # TODO: find a better way to skip properties
           next if key.start_with? '_'
 
@@ -229,7 +229,7 @@ module Occi
       private
 
       def validate_and_assign(key, value, property_key)
-        raise Occi::Errors::AttributeNameInvalidError, "Attribute names (as in #{key}) must not begin with underscores" if key =~ /^_/
+        raise Occi::Errors::AttributeNameInvalidError, "Attribute names (as in \"#{key}\") must not begin with underscores" if key =~ /^_/
         case value
         when Occi::Core::Attributes
           add_to_hashie(key, value)
@@ -283,7 +283,7 @@ module Occi
 
       def add_missing_attributes(attributes, definitions, set_defaults)
         definitions.each_key do |key|
-          next if definitions.key?(key[1..-1])
+          next if key =~ /^_/
 
           if definitions[key].kind_of? Occi::Core::Attributes
             add_missing_attributes(attributes[key], definitions[key], set_defaults)
@@ -303,7 +303,7 @@ module Occi
       def check_wrt_definitions(attributes, definitions, set_defaults)
 
         attributes.each_key do |key|
-          next if attributes.key?(key[1..-1]) #Cargo cult!
+          next if key =~ /^_/
 
           if attributes[key].kind_of? Occi::Core::Attributes
             check_wrt_definitions(attributes[key], definitions[key], set_defaults)
@@ -345,7 +345,7 @@ module Occi
       def delete_empty(attributes, definitions)
 
         attributes.each_key do |key|
-          next if attributes.key?(key[1..-1])
+          next if key =~ /^_/
 
           if attributes[key].kind_of? Occi::Core::Attributes
             delete_empty(attributes[key], definitions[key])
