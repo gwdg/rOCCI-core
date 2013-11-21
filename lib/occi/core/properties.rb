@@ -6,9 +6,25 @@ module Occi
       include Occi::Helpers::Comparators::Properties
 
       PROPERTY_KEYS = [:type, :required, :mutable, :default, :description, :pattern]
-      attr_accessor :type, :required, :mutable, :default, :description, :pattern
+      attr_accessor :required, :mutable, :default, :description, :pattern
+      attr_reader :type
       alias_method :required?, :required
       alias_method :mutable?, :mutable
+
+      # Types supported in properties, and their mapping to Ruby Classes
+      SupportedTypes = Hash.new
+      SupportedTypes["string"]  =  [ String ]
+      SupportedTypes["number"]  =  [ Numeric ]
+      SupportedTypes["boolean"] =  [ TrueClass, FalseClass ]
+
+      def type=(type)
+        unless SupportedTypes.key?(type)
+          suptypes=""
+          SupportedTypes.each_key { |key| suptypes="#{suptypes} \"#{key}\"" }
+          raise Occi::Errors::AttributePropertyTypeError, "Type \"#{type}\" unsupported in properties. Supported types are:#{suptypes}."
+        end
+        @type = type
+      end
 
       # @param source_hash [Hash]
       def initialize(source_hash = {})
@@ -74,7 +90,6 @@ module Occi
 
         true
       end
-
     end
   end
 end
