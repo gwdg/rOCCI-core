@@ -300,24 +300,27 @@ module Occi
 
         let(:defs){
           defs = Occi::Core::Attributes.new
-          defs['numbertype'] =   { :type => 'number',
+          defs['numbertype'] =           { :type => 'number',
                                            :default => 42,
                                            :mutable => true,
                                            :pattern => '^[0-9]+'  }
-          defs['stringtype'] =   { :type => 'string',
+          defs['stringtype'] =           { :type => 'string',
                                            :pattern => '[adefltuv]+',
                                            :default => 'defaultvalue', 
                                            :mutable => true }
-          defs['booleantype'] =  { :type => 'boolean',
+          defs['booleantype'] =          { :type => 'boolean',
                                            :default => true, 
                                            :mutable => true}
-          defs['booleantypefalse'] =  { :type => 'boolean', #Regression test
+          defs['booleantypefalse'] =     { :type => 'boolean', #Regression test
                                            :default => false, 
                                            :mutable => true }
-          defs['booleantypepattern'] =  { :type => 'boolean',
+          defs['booleantypepattern'] =   { :type => 'boolean',
                                            :default => true, 
                                            :mutable => true,
                                            :pattern => true }
+          defs['nonmandatory'] = {         :type => 'string',
+                                           :mutable => true,
+                                           :required => false }
           defs }
 
         context 'unsupported types' do
@@ -335,12 +338,42 @@ module Occi
           it 'raises exception for missing required attribute with no default'
         end
 
-        context 'attributes set to nil' do
+        context 'nonmandatory attributes' do
           it 'removes nil attribute' do
-            attrs['stringtype'] = nil
+            attrs['nonmandatory'] = nil
             attrs.check!(defs, true)
-            expect(attrs.key?('stringtype')).to eql false
+            expect(attrs.key?('nonmandatory')).to eql false
           end
+
+          it 'raises error for unknown attribute with non-nil value' do
+            attrs['undefined'] = "undefined"
+            expect{ attrs.check!(defs, true) }.to raise_error(Occi::Errors::AttributeNotDefinedError)
+          end
+        end
+
+        context 'mandatory attributes' do
+          it 'no value and no default, set_defaults true' do
+            defs['nodefault'] = { :type => 'string', :mutable => true, :required => true }
+            expect{ attrs.check!(defs, true) }.to raise_error(Occi::Errors::AttributeMissingError)
+          end
+
+          it 'no value and no default, set_defaults false' do
+            defs['nodefault'] = { :type => 'string', :mutable => true, :required => true }
+            expect{ attrs.check!(defs, false) }.to raise_error(Occi::Errors::AttributeMissingError)
+          end
+
+          it 'nil value and no default, set_defaults true' do
+            defs['nodefault'] = { :type => 'string', :mutable => true, :required => true }
+            attrs['nodefault'] = nil
+            expect{ attrs.check!(defs, true) }.to raise_error(Occi::Errors::AttributeMissingError)
+          end
+
+          it 'nil value and no default, set_defaults false' do
+            defs['nodefault'] = { :type => 'string', :mutable => true, :required => true }
+            attrs['nodefault'] = nil
+            expect{ attrs.check!(defs, false) }.to raise_error(Occi::Errors::AttributeMissingError)
+          end
+
         end
 
         context 'unsupported attributes' do
@@ -361,9 +394,6 @@ module Occi
 
           context 'setting defaults' do
             it 'sets numeric default' do
-              fil = open('/tmp/debug.out',"wb")
-              log = Occi::Log.new '/tmp/debug.out'
-              log.level = Occi::Log::DEBUG
               attrs.check! defs, true
               expect(attrs['numbertype']).to eq 42
             end
@@ -384,6 +414,7 @@ module Occi
               expect{ attrs.check! defs, true }.to_not raise_exception
             end
           end
+
           context 'skipping defaults if already set' do
             it 'skips numeric default' do
               attrs['numbertype'] = 12
@@ -406,6 +437,26 @@ module Occi
               expect(attrs['booleantypefalse']).to eq true
             end
           end
+
+          context 'skipping defaults if set_defaults is false' do
+            it 'skips numeric default' do
+              attrs.check! defs, false
+              expect(attrs['numbertype']).to_not eq 42
+            end
+            it 'skips string default' do
+              attrs.check! defs, false
+              expect(attrs['stringtype']).to_not eq 'defaultvalue'
+            end
+            it 'skips boolean default if true' do
+              attrs.check! defs, false
+              expect(attrs['booleantype']).to_not eq true
+            end
+            it 'skips boolean default if false' do
+              attrs.check! defs, false
+              expect(attrs['booleantypefalse']).to_not eq false
+            end
+          end
+
           context 'patterns' do
             it 'checks string pattern' do
               attrs['stringtype'] = 'bflmpsvz'
