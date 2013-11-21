@@ -41,6 +41,7 @@ module Occi
           super(key, Occi::Core::Attributes.new) unless self[key].kind_of? Occi::Core::Attributes
           self[key][string] = value
         else
+          raise Occi::Errors::AttributeNameInvalidError, "Attribute names (as in #{key}) must not begin with underscores" if key =~ /^_/
           property_key = "_#{key.to_s}"
           validate_and_assign(key, value, property_key)
         end

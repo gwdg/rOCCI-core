@@ -3,18 +3,19 @@ module Occi
     describe Attributes do
 
       context '#[]=' do
+        let(:attributes){ Occi::Core::Attributes.new }
         it 'stores properties using hashes in hash notation'  do
-          attributes=Occi::Core::Attributes.new
           attributes['test']={}
-          
           expect(attributes['test']).to be_kind_of Occi::Core::Properties
         end
 
         it 'stores properties using hashes in dot notation'  do
-          attributes=Occi::Core::Attributes.new
           attributes.test={}
-
           expect(attributes.test).to be_kind_of Occi::Core::Properties
+        end
+
+        it 'rejects keys starting with underscores' do
+          expect{ attributes['_test']={} }.to raise_error(Occi::Errors::AttributeNameInvalidError)
         end
       end
 
