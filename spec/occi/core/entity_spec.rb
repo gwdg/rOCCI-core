@@ -289,14 +289,14 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
         context 'exceptions' do
           it 'raisees exception for missing model' do
             ent = Occi::Core::Entity.new(kind, [], defs)
-            expect{ ent.check(true) }.to raise_exception # XXX: Needs error type
+            expect{ ent.check(true) }.to raise_exception ArgumentError
           end
 
           it 'raises exception for inexistent kind' do
             ent = Occi::Core::Entity.new(kind, [], defs)
             mod = Occi::Model.new
             ent.model = mod
-            expect{ ent.check(true) }.to raise_exception # XXX: Needs error type
+            expect{ ent.check(true) }.to raise_exception Occi::Errors::KindNotDefinedError
           end
         end
       end
