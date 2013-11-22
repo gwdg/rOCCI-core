@@ -10,20 +10,18 @@ module Occi
           defs = Occi::Core::Attributes.new
           defs['occi.core.id'] = { :type=> 'string', :required => true }
           defs['stringtype'] =   { :type => 'string', :pattern => '[adefltuv]+',
-                                           :default => 'defaultvalue', :mutable => true, :required => true }
+                                           :default => 'defaultforlink', :mutable => true, :required => true }
           defs }
         let(:kind){ Occi::Core::Kind.new 'http://schemas.ogf.org/occi/core#', 'testkind', 'Test Kind', defs }
         let(:model){ model = Occi::Model.new
           model.register(kind)
           model }
 
-        let(:link){ link = Occi::Core::Link.new(kind, [], defs)
-          link.model = model
-          link }
-
-        it 'sets default' do
-          link.check
-          expect(link.attributes['stringtype']).to eql 'defaultvalue'
+        it 'sets default for required attribute' do
+          lnk = Occi::Core::Link.new(kind, [], defs)
+          lnk.model = model
+          lnk.check
+          expect(lnk.attributes['stringtype']).to eql 'defaultforlink'
         end
 
         it 'raises error if no relationship is set' do
