@@ -42,11 +42,11 @@ module Occi
                                        location = '/storage/'
 
       def size
-        @attributes.occi_.storage_.size
+        @attributes.occi_.storage_['size']
       end
 
       def size=(size)
-        @attributes.occi!.storage!.size = size
+        @attributes.occi!.storage!['size'] = size
       end
 
       def state
