@@ -324,16 +324,7 @@ module Occi
             next if attributes[key].nil? # I will be removed in the next step
 
             #Check value types
-            case definitions[key].type
-              when 'number'
-                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{attributes[key]} from class #{attributes[key].class.name} does not match attribute property type #{definitions[key].type}" unless attributes[key].kind_of?(Numeric)
-              when 'boolean'
-                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{attributes[key]} from class #{attributes[key].class.name} does not match attribute property type #{definitions[key].type}" unless !!attributes[key] == attributes[key]
-              when 'string'
-                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{attributes[key]} from class #{attributes[key].class.name} does not match attribute property type #{definitions[key].type}" unless attributes[key].kind_of?(String)
-              else
-                raise Occi::Errors::AttributePropertyTypeError, "property type #{definitions[key].type} is not one of the allowed types number, boolean or string"
-            end
+            definitions[key].check_value_for_type(attributes[key])
 
             # Check patterns
             if definitions[key].pattern

@@ -6,9 +6,16 @@ module Occi
       include Occi::Helpers::Comparators::Properties
 
       PROPERTY_KEYS = [:type, :required, :mutable, :default, :description, :pattern]
-      attr_accessor :type, :required, :mutable, :default, :description, :pattern
+      attr_accessor :required, :mutable, :default, :description, :pattern
+      attr_reader :type
       alias_method :required?, :required
       alias_method :mutable?, :mutable
+
+      # Types supported in properties, and their mapping to Ruby Classes
+      SUPPORTED_TYPES = Hash.new
+      SUPPORTED_TYPES["string"]  =  [ String ]
+      SUPPORTED_TYPES["number"]  =  [ Numeric ]
+      SUPPORTED_TYPES["boolean"] =  [ TrueClass, FalseClass ]
 
       # @param source_hash [Hash]
       def initialize(source_hash = {})
@@ -17,11 +24,28 @@ module Occi
         source_hash = Occi::Core::Properties.normalize_props(source_hash)
 
         self.type = source_hash[:type] ||= 'string'
+        raise Occi::Errors::AttributePropertyTypeError,
+          "Type \"#{type}\" unsupported in properties. Supported types are: #{Properties.supported_type_names}." unless SUPPORTED_TYPES.key?(self.type)
         self.required = source_hash[:required] = source_hash[:required].nil? ? false : source_hash[:required]
         self.mutable = source_hash[:mutable] = source_hash[:mutable].nil? ? false : source_hash[:mutable]
         self.pattern = source_hash[:pattern] ||= '.*'
         self.description = source_hash[:description]
         self.default = source_hash[:default]
+      end
+
+      # @param type [String] Requested attribute type
+      def type=(type)
+        raise Occi::Errors::AttributePropertyTypeError,
+          "Type \"#{type}\" unsupported in properties. Supported types are: #{Properties.supported_type_names}." unless SUPPORTED_TYPES.key?(type)
+        @type = type
+      end
+
+      # @param value [Object] Object whose class will be checked against definition
+      def check_value_for_type(value)
+        raise Occi::Errors::AttributePropertyTypeError,
+          "property type #{definitions[key].type} is not one of the allowed types: #{Properties.supported_type_names}" unless SUPPORTED_TYPES.key?(@type)
+        raise Occi::Errors::AttributeTypeError,
+          "Attribute value #{value} is class #{value.class.name}. It does not match attribute property type #{@type}" unless SUPPORTED_TYPES[@type].any? { |klasse| value.kind_of?(klasse) }
       end
 
       def to_hash
@@ -75,6 +99,11 @@ module Occi
         true
       end
 
+      private
+
+      def self.supported_type_names()
+        SUPPORTED_TYPES.keys.join(', ')
+      end
     end
   end
 end

@@ -326,8 +326,6 @@ module Occi
           defs['nonmandatory'] = {         :type => 'string',
                                            :mutable => true,
                                            :required => false }
-          defs['strange'] = { :type => 'float',
-                              :mutable => true }
           defs }
 
         context 'unsupported types and attributes' do
@@ -340,15 +338,8 @@ module Occi
           end
 
           it 'refuses unsupported type' do
-            defs['unsupported'] = { :type => 'float', :mutable => true }
-            attrs['unsupported'] = 3.14
-            expect{attrs.check! defs, true}.to raise_exception(Occi::Errors::AttributePropertyTypeError)
+            expect{ defs['unsupported'] = { :type => 'float', :mutable => true } }.to raise_exception(Occi::Errors::AttributePropertyTypeError)
           end
-        end
-
-        context 'undefined attributes' do
-          it 'initializes required attribute to default from definitions if not set'
-          it 'raises exception for missing required attribute with no default'
         end
 
         context 'nonmandatory attributes' do

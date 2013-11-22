@@ -201,9 +201,19 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
         let(:kind){ Occi::Core::Kind.new 'http://schemas.ogf.org/occi/core#', 'testkind', 'Test Kind', defs }
         let(:model){ model = Occi::Model.new
           model.register(kind)
+          model.register(defmixin)
           model }
+        let(:defmixin){ defmixin = Occi::Core::Mixin.new 'http://schemas.ogf.org/occi/core#', 'testmixin'
+          defmixin.attributes['mixinstring'] =  { :type => 'string',
+                                               :pattern => '.*',
+                                               :default => 'mixdefault',
+                                               :mutable => true }
+          defmixin }
+        let(:mixin){ Occi::Core::Mixin.new 'http://schemas.ogf.org/occi/core#', 'testmixin' }
+
         let(:entity){ entity = Occi::Core::Entity.new(kind, [], defs)
           entity.model = model
+          entity.mixins << mixin
           entity }
           
         
@@ -211,11 +221,9 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
                        Occi::Settings['verify_attribute_pattern']=true }
         after(:each) { Occi::Settings.reload! }
         context 'unsupported types' do
-          it 'refuses unsupported type' #do
-#            entity.attributes['othertype'] = { :type => 'other',
-#                                               :default => 'defaultvalue' }
-#            expect{entity.check}.to raise_exception(Occi::Errors::AttributePropertyTypeError)
-#          end
+          it 'refuses unsupported type' do
+            expect{ entity.attributes['othertype'] = { :type => 'other', :default => 'defaultvalue' } }.to raise_exception(Occi::Errors::AttributePropertyTypeError)
+          end
         end
         context 'defaults' do
           context 'setting defaults' do
@@ -226,6 +234,10 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
             it 'sets string default' do
               entity.check(true)
               expect(entity.attributes['stringtype']).to eq 'defaultvalue'
+            end
+            it 'sets mixin string default' do
+              entity.check(true)
+              expect(entity.attributes['mixinstring']).to eq 'mixdefault'
             end
             it 'sets boolean default if true' do
               entity.check(true)
@@ -272,19 +284,29 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
               expect{ entity.attributes['booleantypepattern'] = false }.to raise_exception(Occi::Errors::AttributeTypeError)
             end
           end
-          context 'mixins' do
-            it 'checks mixins' #do
-#            end
+        end
+
+        context 'exceptions' do
+          it 'raisees exception for missing model' do
+            ent = Occi::Core::Entity.new(kind, [], defs)
+            expect{ ent.check(true) }.to raise_exception ArgumentError
+          end
+
+          it 'raises exception for inexistent kind' do
+            ent = Occi::Core::Entity.new(kind, [], defs)
+            mod = Occi::Model.new
+            ent.model = mod
+            expect{ ent.check(true) }.to raise_exception Occi::Errors::KindNotDefinedError
           end
         end
       end
 
-      context '#attribute_properties' #do
-#        it 'gets attribute properties' do
-#          expected = Occi::Core::Attributes.new
-#          expect(entity.attribute_properties).to eql expected
-#        end
-#      end
+      context '#attribute_properties' do
+        it 'gets attribute properties' do
+          properties = entity.attribute_properties
+          expect(properties.occi.core.count).to eql 4
+        end
+      end
 
       context '#empty?' do
 
@@ -292,7 +314,12 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
           expect(entity.empty?).to be_false
         end
 
-        it 'returns true for an instance without a kind'
+        it 'returns true for an instance without a kind' do
+          ent = entity.clone
+          ent.kind = nil
+
+          expect(ent.empty?).to be_true
+        end
 
         it 'returns true for an instance without an identifier' do
           ent = entity.clone

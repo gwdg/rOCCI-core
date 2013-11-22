@@ -159,18 +159,22 @@ module Occi
       # check attributes against their definitions and set defaults
       # @param [true,false] set default values for all empty attributes
       def check(set_defaults = false)
-        raise 'no model has been assigned to this entity' unless @model
 
+        raise ArgumentError, 'No model has been assigned to this entity' unless @model # XXX: Needs error type
+ 
+        kind = @model.get_by_id(@kind.to_s)
+        raise Occi::Errors::KindNotDefinedError, "Kind not found for entity #{self.to_s}!" unless kind # XXX: Needs error type
+ 
         definitions = Occi::Core::Attributes.new
-        definitions.merge! @model.get_by_id(@kind.to_s).attributes
-
-        @mixins.each do |mixin_id|
-          mixin = @model.get_by_id(mixin_id)
+        definitions.merge! kind.attributes
+ 
+        @mixins.each do |mxn|
+          mixin = @model.get_by_id(mxn.to_s)
           next if mixin.nil?
-
+ 
           definitions.merge!(mixin.attributes) if mixin.attributes
         end if @mixins
-
+ 
         @attributes.check!(definitions, set_defaults)
       end
 
@@ -230,7 +234,7 @@ module Occi
 
       # @return [Bool] Indicating whether this entity is "empty", i.e. required attributes are blank
       def empty?
-        kind.empty? || attributes['occi.core.id'].blank?
+        kind.blank? || attributes['occi.core.id'].blank?
       end
 
     end
