@@ -1,18 +1,32 @@
 module Occi
   module Core
     describe Resource do
-
-      it "links another resource succesfully" do
-        resource = Occi::Core::Resource.new
-        target = Occi::Core::Resource.new
-        # create a random ID as the resource must already exist and therefore must have an ID assigned
-        target.id = UUIDTools::UUID.random_create.to_s
+      let(:resource){ resource = Occi::Core::Resource.new 
         resource.link target
-        resource.links.should have(1).link
-        resource.links.first.should be_kind_of Occi::Core::Link
-        resource.links.first.target.should be target
+        resource.attributes.occi!.core!.summary = "Resource Summary"
+        resource }
+      let(:target){ target = Occi::Core::Resource.new }
+      
+      context '#link' do
+        it "creates the appropriate No. of links" do
+          expect(resource.links).to have(1).link
+        end
+
+        it "has the correct kind" do
+          expect(resource.links.first).to be_kind_of Occi::Core::Link
+        end
+
+        it 'sets the right target' do
+          expect(resource.links.first.target).to eql target
+        end
       end
 
+      context '#summary' do
+        it 'gets the summary attribute corectly' do
+          expected = "Resource Summary"
+          expect(resource.summary).to eql expected
+        end
+      end
     end
   end
 end
