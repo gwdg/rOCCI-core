@@ -26,7 +26,7 @@ module Occi
 
         case attributes
           when Occi::Core::Attributes
-            @attributes = attributes
+            @attributes = Occi::Core::Attributes.new(attributes)
           else
             @attributes = Occi::Core::Attributes.parse_properties attributes
         end
