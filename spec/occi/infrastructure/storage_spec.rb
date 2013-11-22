@@ -7,7 +7,7 @@ module Occi
         context '#size' do
           it 'Can be set and read as attribute' do
             storage.size = 16777216
-            expect(storage.attributes.occi.storage.size).to eql 16777216
+            expect(storage.attributes.occi.storage['size']).to eql 16777216
           end
 
           it 'Can be set and read through getter' do
