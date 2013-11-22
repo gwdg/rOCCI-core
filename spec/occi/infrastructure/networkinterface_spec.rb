@@ -1,6 +1,6 @@
 module Occi
   module Infrastructure
-    describe Network do
+    describe Networkinterface do
 
       context 'setters/getters' do
         let(:networkinterface){ Occi::Infrastructure::Networkinterface.new }
