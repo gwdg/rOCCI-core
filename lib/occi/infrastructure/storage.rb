@@ -28,7 +28,8 @@ module Occi
 
       self.attributes = Occi::Core::Attributes.new(Occi::Core::Resource.attributes)
       self.attributes['occi.storage.size'] = {:type => 'number',
-                                              :mutable => true}
+                                              :mutable => true,
+                                              :pattern => '\d+' }
       self.attributes['occi.storage.state'] = {:pattern => 'online|offline|backup|snapshot|resize|degraded',
                                                :default => 'offline'}
 
@@ -41,11 +42,11 @@ module Occi
                                        location = '/storage/'
 
       def size
-        @attributes.occi_.storage_.size
+        @attributes.occi_.storage_['size']
       end
 
       def size=(size)
-        @attributes.occi!.storage!.size = size
+        @attributes.occi!.storage!['size'] = size
       end
 
       def state

@@ -15,10 +15,11 @@ module Occi
       self.attributes = Occi::Core::Attributes.new(Occi::Core::Resource.attributes)
       self.attributes['occi.network.vlan'] = {:type => 'number',
                                               :mutable => true,
-                                              :pattern => 'x86|x64'}
-      self.attributes['occi.network.label'] = {:type => 'number',
+                                              :pattern => '\d+'}
+      self.attributes['occi.network.label'] = {:type => 'string',
                                                :mutable => true}
-      self.attributes['occi.network.state'] ={:pattern => 'active|inactive|error',
+      self.attributes['occi.network.state'] ={:type => 'string',
+                                              :pattern => 'active|inactive|error',
                                               :default => 'inactive'}
 
       self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/infrastructure#',
@@ -43,7 +44,7 @@ module Occi
       end
 
       def vlan
-        @attributes.occi_.nework_.vlan
+        @attributes.occi_.network_.vlan
       end
 
       def vlan=(vlan)
@@ -51,7 +52,7 @@ module Occi
       end
 
       def label
-        @attributes.occi_.nework_.label
+        @attributes.occi_.network_.label
       end
 
       def label=(label)
@@ -59,7 +60,7 @@ module Occi
       end
 
       def state
-        @attributes.occi_.nework_.state
+        @attributes.occi_.network_.state
       end
 
       def state=(state)

@@ -55,9 +55,9 @@ module Occi
         @source = source
       end
 
-      # @param [Occi::Model] model
+      # Runs check on attributes
       def check
-        raise "rel must be provided" unless @rel
+        raise ArgumentError, "Cannot run check on #{self.to_s} without relation (@rel attribute) set" unless @rel
         super
       end
 
