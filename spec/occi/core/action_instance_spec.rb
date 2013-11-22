@@ -139,10 +139,30 @@ X-OCCI-Attribute: org.opennebula.network.id=1|
       end
 
       context '#to_json' do
-        it 'renders default to JSON'
-        it 'renders to JSON w/ an attribute'
-        it 'renders to JSON w/ attributes'
-        it 'renders to JSON w/ a nil attribute'
+        let(:actioninstance){ Occi::Core::ActionInstance.new }
+        it 'renders default to JSON' do
+          expected = '{"action":"http://schemas.ogf.org/occi/core#action_instance","attributes":{}}'
+          expect(actioninstance.to_json).to eql expected
+        end
+
+        it 'renders to JSON w/ an attribute' do
+          actioninstance.attributes.testattr = 'test'
+          expected = '{"action":"http://schemas.ogf.org/occi/core#action_instance","attributes":{"testattr":"test"}}'
+          expect(actioninstance.to_json).to eql expected
+        end
+
+        it 'renders to JSON w/ multiple attributes' do
+          actioninstance.attributes.testattr = 'test'
+          actioninstance.attributes.anotherattr = 42
+          expected = '{"action":"http://schemas.ogf.org/occi/core#action_instance","attributes":{"testattr":"test","anotherattr":42}}'
+          expect(actioninstance.to_json).to eql expected
+        end
+
+        it 'renders to JSON w/ a nil attribute' do
+          actioninstance.attributes.testattr = nil
+          expected = '{"action":"http://schemas.ogf.org/occi/core#action_instance","attributes":{}}'
+          expect(actioninstance.to_json).to eql expected
+        end
       end
 
       context '#as_json' do
