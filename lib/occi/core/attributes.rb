@@ -228,7 +228,6 @@ module Occi
 
         # Delete remaining empty attributes
         delete_empty(self, definitions)
-
       end
 
       private
@@ -306,15 +305,12 @@ module Occi
       end
 
       def check_wrt_definitions(attributes, definitions, set_defaults)
-
         attributes.each_key do |key|
           next if key =~ /^_/
 
           if attributes[key].kind_of? Occi::Core::Attributes
             check_wrt_definitions(attributes[key], definitions[key], set_defaults)
-
           else
-            
             #Raise exception for attributes not defined at all
             raise Occi::Errors::AttributeNotDefinedError, "Attribute #{key} not found in definitions" unless definitions.key?(key)
             
@@ -339,7 +335,6 @@ module Occi
       end
 
       def delete_empty(attributes, definitions)
-
         attributes.each_key do |key|
           next if key =~ /^_/
 
