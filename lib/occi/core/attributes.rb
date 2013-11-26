@@ -227,7 +227,7 @@ module Occi
         check_wrt_definitions(self, definitions, set_defaults)
 
         # Delete remaining empty attributes
-        delete_empty(self, definitions)
+        delete_empty(self)
       end
 
       private
@@ -291,13 +291,12 @@ module Occi
 
           if definitions[key].kind_of? Occi::Core::Attributes
             add_missing_attributes(attributes[key], definitions[key], set_defaults)
-
-          elsif !attributes.key?(key) or attributes[key].nil?
+          elsif attributes[key].nil?
 
             if definitions[key].default.nil?
               raise Occi::Errors::AttributeMissingError, "Required attribute #{key} not specified" if definitions[key].required
             else
-              attributes[key] = definitions[key].default if definitions[key].required or set_defaults
+              attributes[key] = definitions[key].default if definitions[key].required || set_defaults
             end
 
           end
@@ -308,15 +307,12 @@ module Occi
         attributes.each_key do |key|
           next if key =~ /^_/
 
+          #Raise exception for attributes not defined at all
+          raise Occi::Errors::AttributeNotDefinedError, "Attribute #{key} not found in definitions" unless definitions.key?(key)
+
           if attributes[key].kind_of? Occi::Core::Attributes
             check_wrt_definitions(attributes[key], definitions[key], set_defaults)
           else
-            #Raise exception for attributes not defined at all
-            raise Occi::Errors::AttributeNotDefinedError, "Attribute #{key} not found in definitions" unless definitions.key?(key)
-            
-            #Set defaults if values not set, missing attributes have already been added and set to default in add_missing_attributes()
-            attributes[key] = definitions[key].default if attributes[key].nil? and set_defaults and !definitions[key].default.nil?
-
             next if attributes[key].nil? # I will be removed in the next step
 
             #Check value types
@@ -334,13 +330,10 @@ module Occi
         end
       end
 
-      def delete_empty(attributes, definitions)
+      def delete_empty(attributes)
         attributes.each_key do |key|
-          next if key =~ /^_/
-
           if attributes[key].kind_of? Occi::Core::Attributes
-            delete_empty(attributes[key], definitions[key])
-
+            delete_empty(attributes[key])
           else
             attributes.delete(key) if attributes[key].nil?
           end
