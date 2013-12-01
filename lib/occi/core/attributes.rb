@@ -7,8 +7,6 @@ module Occi
       include Occi::Helpers::Inspect
       include Occi::Helpers::Comparators::Attributes
 
-      BOOLEAN_CLASSES = [TrueClass, FalseClass]
-
       def initialize(source_hash = {}, default = nil, &blk)
         raise ArgumentError, 'Source_hash is a mandatory argument!' unless source_hash
         raise ArgumentError, 'Source_hash must be a hash-like structure!' unless source_hash.kind_of?(Hash)
@@ -28,7 +26,8 @@ module Occi
         if key.to_s.include? '.'
           key, string = key.to_s.split('.', 2)
           attributes = super(key)
-          raise Occi::Errors::AttributeMissingError, "Attribute with key #{key} not found" unless attributes
+          raise Occi::Errors::AttributeMissingError,
+                "Attribute with key #{key} not found" unless attributes
           attributes[string]
         else
           super(key)
@@ -96,7 +95,8 @@ module Occi
       # @return [Occi::Core::Attributes] parsed attributes with properties
       def self.parse_properties(hash)
         hash ||= {}
-        raise Occi::Errors::ParserInputError, 'Hash must be a hash-like structure!' unless hash.respond_to?(:each_pair)
+        raise Occi::Errors::ParserInputError,
+              'Hash must be a hash-like structure!' unless hash.respond_to?(:each_pair)
 
         attributes = Occi::Core::Attributes.new
         hash.each_pair do |key, value|
@@ -218,7 +218,8 @@ module Occi
       # @param [true,false] set_defaults
       # Assigns default values to attributes
       def check!(definitions, set_defaults = false)
-        raise Occi::Errors::AttributeDefinitionsConvrertedError, "definition attributes must not be converted" if definitions.converted?
+        raise Occi::Errors::AttributeDefinitionsConvrertedError,
+              "Definition attributes must not be converted" if definitions.converted?
 
         # Start with checking for missing attributes
         add_missing_attributes(self, definitions, set_defaults)
@@ -233,7 +234,8 @@ module Occi
       private
 
       def validate_and_assign(key, value, property_key)
-        raise Occi::Errors::AttributeNameInvalidError, "Attribute names (as in \"#{key}\") must not begin with underscores" if key =~ /^_/
+        raise Occi::Errors::AttributeNameInvalidError,
+              "Attribute names (as in \"#{key}\") must not begin with underscores" if key =~ /^_/
         case value
         when Occi::Core::Attributes
           add_to_hashie(key, value)
@@ -262,7 +264,8 @@ module Occi
         when NilClass
           add_to_hashie(key, value)
         else
-          raise Occi::Errors::AttributeTypeError, "value #{value} of type #{value.class} not supported as attribute"
+          raise Occi::Errors::AttributeTypeError,
+                "Value #{value} of type #{value.class} not supported as attribute"
         end
       end
 
@@ -271,7 +274,9 @@ module Occi
       end
 
       def match_type(value, property, expected_type)
-        raise Occi::Errors::AttributeTypeError, "value #{value} derived from #{value.class} assigned but attribute of type #{property.type} required" unless property.type == expected_type
+        raise Occi::Errors::AttributeTypeError,
+              "Value #{value} derived from #{value.class} assigned " \
+              "but attribute of type #{property.type} required" unless property.type == expected_type
         match_pattern(property.pattern, value)
       end
 
@@ -279,9 +284,11 @@ module Occi
         return if pattern.blank?
 
         if Occi::Settings.verify_attribute_pattern && !Occi::Settings.compatibility
-          raise Occi::Errors::AttributeTypeError, "value #{value.to_s} does not match pattern #{pattern}" unless value.to_s.match "^#{pattern}$"
+          raise Occi::Errors::AttributeTypeError,
+                "Value #{value.to_s} does not match pattern #{pattern}" unless value.to_s.match "^#{pattern}$"
         else
-          Occi::Log.warn "[#{self.class}] Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
+          Occi::Log.warn "[#{self.class}] Skipping pattern checks on attributes, turn off " \
+                         "the compatibility mode and enable the attribute pattern check in settings!"
         end
       end
 
@@ -294,7 +301,8 @@ module Occi
           elsif attributes[key].nil?
 
             if definitions[key].default.nil?
-              raise Occi::Errors::AttributeMissingError, "Required attribute #{key} not specified" if definitions[key].required
+              raise Occi::Errors::AttributeMissingError,
+                    "Required attribute #{key} not specified" if definitions[key].required
             else
               attributes[key] = definitions[key].default if definitions[key].required || set_defaults
             end
@@ -308,7 +316,8 @@ module Occi
           next if key =~ /^_/
 
           #Raise exception for attributes not defined at all
-          raise Occi::Errors::AttributeNotDefinedError, "Attribute #{key} not found in definitions" unless definitions.key?(key)
+          raise Occi::Errors::AttributeNotDefinedError,
+                "Attribute #{key} not found in definitions" unless definitions.key?(key)
 
           if attributes[key].kind_of? Occi::Core::Attributes
             check_wrt_definitions(attributes[key], definitions[key], set_defaults)
@@ -316,14 +325,17 @@ module Occi
             next if attributes[key].nil? # I will be removed in the next step
 
             #Check value types
-            definitions[key].check_value_for_type(attributes[key])
+            definitions[key].check_value_for_type(attributes[key], key)
 
             # Check patterns
             if definitions[key].pattern
               if Occi::Settings.verify_attribute_pattern && !Occi::Settings.compatibility
-                raise Occi::Errors::AttributeTypeError, "attribute #{key} with value #{attributes[key]} does not match pattern #{definitions[key].pattern}" unless attributes[key].to_s.match "^#{definitions[key].pattern}$"
+                raise Occi::Errors::AttributeTypeError,
+                      "Attribute #{key} with value #{attributes[key]} does not " \
+                      "match pattern #{definitions[key].pattern}" unless attributes[key].to_s.match "^#{definitions[key].pattern}$"
               else
-                Occi::Log.warn "[#{key}] Skipping pattern checks on attributes, turn off the compatibility mode and enable the attribute pattern check in settings!"
+                Occi::Log.warn "[#{key}] Skipping pattern checks on attributes, turn off " \
+                               "the compatibility mode and enable the attribute pattern check in settings!"
               end
             end
           end
