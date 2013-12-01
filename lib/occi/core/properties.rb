@@ -25,7 +25,8 @@ module Occi
 
         self.type = source_hash[:type] ||= 'string'
         raise Occi::Errors::AttributePropertyTypeError,
-          "Type \"#{type}\" unsupported in properties. Supported types are: #{Properties.supported_type_names}." unless SUPPORTED_TYPES.key?(self.type)
+              "Type \"#{self.type}\" unsupported in properties. " \
+              "Supported types are: #{Properties.supported_type_names}." unless SUPPORTED_TYPES.key?(self.type)
         self.required = source_hash[:required] = source_hash[:required].nil? ? false : source_hash[:required]
         self.mutable = source_hash[:mutable] = source_hash[:mutable].nil? ? false : source_hash[:mutable]
         self.pattern = source_hash[:pattern] ||= '.*'
@@ -36,16 +37,19 @@ module Occi
       # @param type [String] Requested attribute type
       def type=(type)
         raise Occi::Errors::AttributePropertyTypeError,
-          "Type \"#{type}\" unsupported in properties. Supported types are: #{Properties.supported_type_names}." unless SUPPORTED_TYPES.key?(type)
+              "Type \"#{type}\" unsupported in properties. Supported " \
+              "types are: #{Properties.supported_type_names}." unless SUPPORTED_TYPES.key?(type)
         @type = type
       end
 
       # @param value [Object] Object whose class will be checked against definition
-      def check_value_for_type(value)
+      def check_value_for_type(value, key_name = nil)
         raise Occi::Errors::AttributePropertyTypeError,
-          "property type #{definitions[key].type} is not one of the allowed types: #{Properties.supported_type_names}" unless SUPPORTED_TYPES.key?(@type)
+              "Property type #{@type} for #{key_name.inspect} is not one of the allowed " \
+              "types: #{Properties.supported_type_names}" unless SUPPORTED_TYPES.key?(@type)
         raise Occi::Errors::AttributeTypeError,
-          "Attribute value #{value} is class #{value.class.name}. It does not match attribute property type #{@type}" unless SUPPORTED_TYPES[@type].any? { |klasse| value.kind_of?(klasse) }
+              "Attribute value #{value} for #{key_name.inspect} is class #{value.class.name}. " \
+              "It does not match attribute property type #{@type}" unless SUPPORTED_TYPES[@type].any? { |klasse| value.kind_of?(klasse) }
       end
 
       def to_hash
