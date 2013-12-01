@@ -334,7 +334,7 @@ module Occi
                       "Attribute #{key} with value #{attributes[key]} does not " \
                       "match pattern #{definitions[key].pattern}" unless attributes[key].to_s.match "^#{definitions[key].pattern}$"
               else
-                Occi::Log.warn "[#{key}] Skipping pattern checks on attributes, turn off " \
+                Occi::Log.warn "[#{self.class}] [#{key}] Skipping pattern checks on attributes, turn off " \
                                "the compatibility mode and enable the attribute pattern check in settings!"
               end
             end
