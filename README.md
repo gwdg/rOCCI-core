@@ -89,7 +89,9 @@ ruby -v
 
 Usage
 -----
-#### Logging
+Detailed documentation is available in our [Wiki](https://github.com/gwdg/rOCCI-core/wiki).
+
+### Logging
 
 The OCCI gem includes its own logging mechanism using a message queue. By default, no one is listening to that queue.
 A new OCCI Logger can be initialized by specifying the log destination (either a filename or an IO object like
@@ -104,7 +106,7 @@ You can always, even if there is no logger defined, log output using the class m
 
     Occi::Log.info("Test message")
 
-#### Registering categories in the OCCI Model
+### Registering categories in the OCCI Model
 
 Before the parser may be used, the available categories have to be registered in the OCCI Model.
 
@@ -116,7 +118,7 @@ For categories already specified by the OCCI WG a method exists in the OCCI Mode
 Further categories can either be registered from files which include OCCI collections in JSON format or or from parsed
  JSON objects (e.g. from the query interface of an OCCI service endpoint).
 
-#### Parsing OCCI messages
+### Parsing OCCI messages
 
 The OCCI gem includes a Parser to easily parse OCCI messages. With a given media type (e.g. json,
 xml or plain text) the parser analyses the content of the message body and, if supplied,
@@ -130,7 +132,7 @@ OCCI messages can be parsed to an OCCI collection for example like
     body = %Q|Category: compute; scheme="http://schemas.ogf.org/occi/infrastructure#"; class="kind"|
     collection=Occi::Parser.parse(media_type, body)
 
-#### Parsing OVF / OVA files
+### Parsing OVF / OVA files
 
 Parsing of OVF/OVA files is partly supported and will be improved in future versions.
 
@@ -160,6 +162,12 @@ The occi-core gem includes all OCCI Core classes necessary to handly arbitrary O
 
 Changelog
 ---------
+
+### Version 4.2
+* Internal changes and bug fixes
+* Extended test coverage
+* Added custom exceptions and error classes
+* Improved text/plain and text/occi rendering
 
 ### Version 4.1
 * Dropped support for Rubies 1.8.x
