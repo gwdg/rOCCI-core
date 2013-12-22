@@ -293,6 +293,8 @@ module Occi
       end
 
       def add_missing_attributes(attributes, definitions, set_defaults)
+        attributes ||= Occi::Core::Attributes.new
+
         definitions.each_key do |key|
           next if key =~ /^_/
 
