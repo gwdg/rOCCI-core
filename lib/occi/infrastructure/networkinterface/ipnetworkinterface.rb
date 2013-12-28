@@ -16,10 +16,10 @@ module Occi
         self.mixin = Occi::Core::Mixin.new scheme='http://schemas.ogf.org/occi/infrastructure/networkinterface#',
                                            term='ipnetworkinterface',
                                            title='IP network interface mixin',
-                                           attributes=self.attributes,
+                                           attributes=Occi::Core::Attributes.new(self.attributes),
                                            dependencies=Occi::Core::Dependencies.new,
                                            actions=Occi::Core::Actions.new,
-                                           location='/mixins/ipnetworkinterface/',
+                                           location='/mixin/ipnetworkinterface/',
                                            applies=Occi::Core::Kinds.new << Occi::Infrastructure::Network.kind
 
       end
