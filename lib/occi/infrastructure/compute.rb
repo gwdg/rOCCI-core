@@ -46,9 +46,9 @@ module Occi
       self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/infrastructure#',
                                        term='compute',
                                        title = 'compute resource',
-                                       attributes=self.attributes,
+                                       attributes=Occi::Core::Attributes.new(self.attributes),
                                        parent=Occi::Core::Resource.kind,
-                                       actions = self.actions,
+                                       actions = Occi::Core::Actions.new(self.actions),
                                        location = '/compute/'
 
       require 'occi/infrastructure/resource_tpl'

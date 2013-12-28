@@ -245,17 +245,10 @@ module Occi
         end
       end
 
-      context 'for inexistent directory' do
+      context 'for nonexistent directory' do
         it 'fails gracefully' do
           model = Occi::Model.new
           expect{ model.register_files('this/directory/does/not/exist') }.to raise_exception(ArgumentError)
-        end
-      end
-
-      context 'for invalid input' do
-        it 'fails gracefully' do
-          model = Occi::Model.new
-          expect{ model.register_files('spec/occi') }.to raise_exception(ArgumentError)
         end
       end
     end

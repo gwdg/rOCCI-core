@@ -36,9 +36,9 @@ module Occi
       self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/infrastructure#',
                                        term='storage',
                                        title = 'storage resource',
-                                       attributes = self.attributes,
+                                       attributes = Occi::Core::Attributes.new(self.attributes),
                                        parent=Occi::Core::Resource.kind,
-                                       actions = self.actions,
+                                       actions = Occi::Core::Actions.new(self.actions),
                                        location = '/storage/'
 
       def size
