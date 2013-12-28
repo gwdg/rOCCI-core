@@ -9,10 +9,10 @@ module Occi
       self.mixin = Occi::Core::Mixin.new scheme='http://schemas.ogf.org/occi/infrastructure#',
                                          term='resource_tpl',
                                          title='resource template',
-                                         attributes=self.attributes,
+                                         attributes=Occi::Core::Attributes.new(self.attributes),
                                          related=Occi::Core::Categories.new << Occi::Infrastructure::Compute.kind,
                                          actions=Occi::Core::Actions.new,
-                                         location='/mixins/resource_tpl/'
+                                         location='/mixin/resource_tpl/'
     end
 
   end

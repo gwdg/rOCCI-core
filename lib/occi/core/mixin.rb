@@ -23,7 +23,7 @@ module Occi
         @depends = Occi::Core::Dependencies.new depends
         @actions = Occi::Core::Actions.new actions
         @entities = Occi::Core::Entities.new
-        location.blank? ? @location = "/mixins/#{term}/" : @location = location
+        @location = location.blank? ? "/mixin/#{term}/" : location
         @applies = Occi::Core::Kinds.new applies
       end
 
@@ -32,7 +32,7 @@ module Occi
       # @param kind [Occi::Core::Mixin, String] Mixin or Type Identifier of a Mixin where relation should be checked.
       # @return [true,false]
       def related_to?(mixin)
-        self.depends.any? { |dependency| dependency.to_s == mixin.to_s } or self.to_s == mixin.to_s
+        self.to_s == mixin.to_s || self.related.include?(mixin.to_s)
       end
 
       def location
@@ -40,16 +40,16 @@ module Occi
       end
 
       def related
-        self.depends + self.applies
+        self.depends.to_a.concat(self.applies.to_a).uniq
       end
 
       # @param [Hash] options
       # @return [Hashie::Mash] json representation
       def as_json(options={})
         mixin = Hashie::Mash.new
-        mixin.dependencies = self.depends.join(' ').split(' ') if self.depends.any?
-        mixin.applies = self.applies.join(' ').split(' ') if self.applies.any?
-        mixin.related = self.related.join(' ').split(' ') if self.related.any?
+        mixin.depends = self.depends.to_a.collect { |m| m.type_identifier } if self.depends.any?
+        mixin.applies = self.applies.to_a.collect { |m| m.type_identifier } if self.applies.any?
+        mixin.related = self.related.to_a.collect { |m| m.type_identifier } if self.related.any?
         mixin.actions = self.actions if self.actions.any?
         mixin.location = self.location if self.location
         mixin.merge! super

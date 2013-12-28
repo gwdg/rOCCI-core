@@ -22,10 +22,10 @@ module Occi
       self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/infrastructure#',
                                        term='networkinterface',
                                        title = 'networkinterface link',
-                                       attributes = self.attributes,
+                                       attributes = Occi::Core::Attributes.new(self.attributes),
                                        parent = Occi::Core::Link.kind,
-                                       actions = self.actions,
-                                       location = '/networkinterface/'
+                                       actions = Occi::Core::Actions.new(self.actions),
+                                       location = '/link/networkinterface/'
 
       require 'occi/infrastructure/networkinterface/ipnetworkinterface'
       self.mixins = Occi::Core::Mixins.new << Occi::Infrastructure::Networkinterface::Ipnetworkinterface.mixin
