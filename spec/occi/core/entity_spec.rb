@@ -145,7 +145,7 @@ X-OCCI-Attribute: occi.core.id="baf1"|
 Category: mymixin;scheme="http://example.com/mynamespace#";class="mixin"
 X-OCCI-Attribute: occi.core.id="baf1"
 X-OCCI-Attribute: occi.core.title="TestTitle"
-Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity/action#testaction|
+Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entity/action#testaction"|
           expect(entity.to_text).to eq(expected)
         end
       end
@@ -168,7 +168,7 @@ Link: </TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity
           expected = Hashie::Mash.new
           expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind",mymixin;scheme="http://example.com/mynamespace#";class="mixin"'
           expected['X-OCCI-Attribute'] = 'occi.core.id="baf1",occi.core.title="TestTitle"'
-          expected['Link'] = '</TestLoc/1?action=testaction>;rel=http://schemas.ogf.org/occi/core/entity/action#testaction'
+          expected['Link'] = '</TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entity/action#testaction"'
 
           expect(entity.to_header).to eql(expected)
         end

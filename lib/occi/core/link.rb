@@ -77,7 +77,7 @@ module Occi
         string << ";rel=#{@rel.to_s.inspect}"
         string << ";self=#{self.location.inspect}" if self.location
 
-        categories = [@kind] + @mixins.join(',').split(',')
+        categories = [@kind.type_identifier].concat(@mixins.to_a.collect { |m| m.type_identifier })
         string << ";category=#{categories.join(' ').inspect}"
 
         string << @attributes.to_string

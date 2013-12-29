@@ -65,7 +65,7 @@ module Occi
       # @return [Hash] hash containing the HTTP headers of the text/occi rendering
       def to_header
         header = super
-        header['Links'] = @links.collect {|link| link.to_string }.join(',') if @links.any?
+        header['Link'] = @links.collect {|link| link.to_string }.join(',') if @links.any?
         header
       end
 
