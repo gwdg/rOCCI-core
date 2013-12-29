@@ -201,7 +201,7 @@ module Occi
 
         text << @attributes.to_text
 
-        @actions.each { |action| text << "\nLink: <#{self.location}?action=#{action.term}>;rel=#{action.to_s}" }
+        @actions.each { |action| text << "\nLink: <#{self.location}?action=#{action.term}>;rel=#{action.to_s.inspect}" }
 
         text
       end
@@ -221,7 +221,7 @@ module Occi
         header['X-OCCI-Attribute'] = attributes unless attributes.blank?
 
         links = []
-        @actions.each { |action| links << "<#{self.location}?action=#{action.term}>;rel=#{action.to_s}" }
+        @actions.each { |action| links << "<#{self.location}?action=#{action.term}>;rel=#{action.to_s.inspect}" }
         header['Link'] = links.join(',') if links.any?
 
         header
