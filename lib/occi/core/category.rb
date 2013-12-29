@@ -14,9 +14,8 @@ module Occi
       def initialize(scheme='http://schemas.ogf.org/occi/core#',
           term='category',
           title=nil,
-          attributes=Occi::Core::Attributes.new)
-        raise ArgumentError, 'scheme and term cannot be nil' unless scheme && term
-        raise ArgumentError, 'scheme and term cannot be empty' if scheme.empty? || term.empty?
+          attributes=nil)
+        raise ArgumentError, 'Scheme and term cannot be empty' if scheme.blank? || term.blank?
         attributes ||= Occi::Core::Attributes.new
 
         scheme << '#' unless scheme.end_with? '#'

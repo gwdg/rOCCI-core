@@ -95,6 +95,8 @@ module Occi
         context '#to_hash' do
           it 'makes a correct rendering' do
             expected = Hash.new
+
+            expected["default"] = "defaultvalue"
             expected["description"] = "Required string value"
             expected["mutable"] = true
             expected["pattern"] = "[adefltuv]+"
@@ -108,6 +110,8 @@ module Occi
         context '#as_json' do
           it 'makes a correct rendering' do
             expected = Hash.new
+
+            expected["default"] = "defaultvalue"
             expected["description"] = "Required string value"
             expected["mutable"] = true
             expected["pattern"] = "[adefltuv]+"
@@ -132,7 +136,7 @@ module Occi
 
         context '#to_json' do
           it 'makes a correct rendering' do
-            expected = '{"type":"string","required":true,"mutable":true,"pattern":"[adefltuv]+","description":"Required string value"}'
+            expected = '{"default":"defaultvalue","type":"string","required":true,"mutable":true,"pattern":"[adefltuv]+","description":"Required string value"}'
             expect(properties.to_json).to eql expected
           end
         end
