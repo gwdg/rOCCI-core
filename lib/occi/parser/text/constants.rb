@@ -20,6 +20,8 @@ module Occi
         REGEXP_TYPE_IDENTIFIER = /#{REGEXP_SCHEME}#{REGEXP_TERM}/
         REGEXP_TYPE_IDENTIFIER_STRICT = /#{REGEXP_SCHEME}#{REGEXP_TERM_STRICT}/
         REGEXP_CLASS = /\b(?<!\|)action(?!\|)\b|\b(?<!\|)mixin(?!\|)\b|\b(?<!\|)kind(?!\|)\b/
+        REGEXP_TYPE_IDENTIFIER_LIST = /#{REGEXP_TYPE_IDENTIFIER}(\s+#{REGEXP_TYPE_IDENTIFIER})*/
+        REGEXP_TYPE_IDENTIFIER_LIST_STRICT = /#{REGEXP_TYPE_IDENTIFIER_STRICT}(\s+#{REGEXP_TYPE_IDENTIFIER_STRICT})*/
 
         REGEXP_ATTR_COMPONENT = /#{REGEXP_LOALPHA}(#{REGEXP_LOALPHA}|#{REGEXP_DIGIT}|-|_)*/
         REGEXP_ATTRIBUTE_NAME = /#{REGEXP_ATTR_COMPONENT}(\.#{REGEXP_ATTR_COMPONENT})*/
@@ -44,7 +46,7 @@ module Occi
             ";\\s*scheme=\"(?<scheme>#{REGEXP_SCHEME})#{REGEXP_TERM}?\"" << # scheme (mandatory)
             ";\\s*class=\"?(?<class>#{REGEXP_CLASS})\"?" << # class (mandatory)
             "(;\\s*title=\"(?<title>#{REGEXP_QUOTED_STRING})\")?" << # title (optional)
-            "(;\\s*rel=\"(?<rel>#{REGEXP_TYPE_IDENTIFIER})\")?"<< # rel (optional)
+            "(;\\s*rel=\"(?<rel>#{REGEXP_TYPE_IDENTIFIER_LIST})\")?"<< # rel (optional)
             "(;\\s*location=\"(?<location>#{URI::URI_REF})\")?" << # location (optional)
             "(;\\s*attributes=\"(?<attributes>#{REGEXP_ATTRIBUTE_LIST})\")?" << # attributes (optional)
             "(;\\s*actions=\"(?<actions>#{REGEXP_ACTION_LIST})\")?" << # actions (optional)
@@ -53,7 +55,7 @@ module Occi
             ";\\s*scheme=\"(?<scheme>#{REGEXP_SCHEME})\"" << # scheme (mandatory)
             ";\\s*class=\"(?<class>#{REGEXP_CLASS})\"" << # class (mandatory)
             "(;\\s*title=\"(?<title>#{REGEXP_QUOTED_STRING})\")?" << # title (optional)
-            "(;\\s*rel=\"(?<rel>#{REGEXP_TYPE_IDENTIFIER_STRICT})\")?"<< # rel (optional)
+            "(;\\s*rel=\"(?<rel>#{REGEXP_TYPE_IDENTIFIER_LIST_STRICT})\")?"<< # rel (optional)
             "(;\\s*location=\"(?<location>#{URI::URI_REF})\")?" << # location (optional)
             "(;\\s*attributes=\"(?<attributes>#{REGEXP_ATTRIBUTE_LIST})\")?" << # attributes (optional)
             "(;\\s*actions=\"(?<actions>#{REGEXP_ACTION_LIST_STRICT})\")?" << # actions (optional)
