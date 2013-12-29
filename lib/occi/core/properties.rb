@@ -12,7 +12,7 @@ module Occi
       alias_method :mutable?, :mutable
 
       # Types supported in properties, and their mapping to Ruby Classes
-      SUPPORTED_TYPES = Hash.new
+      SUPPORTED_TYPES = {}
       SUPPORTED_TYPES["string"]  =  [ String ]
       SUPPORTED_TYPES["number"]  =  [ Numeric ]
       SUPPORTED_TYPES["boolean"] =  [ TrueClass, FalseClass ]
@@ -23,13 +23,10 @@ module Occi
         raise ArgumentError, 'Source_hash must not be a Hashie::Mash instance!' if source_hash.kind_of?(Hashie::Mash)
         source_hash = Occi::Core::Properties.normalize_props(source_hash)
 
-        self.type = source_hash[:type] ||= 'string'
-        raise Occi::Errors::AttributePropertyTypeError,
-              "Type \"#{self.type}\" unsupported in properties. " \
-              "Supported types are: #{Properties.supported_type_names}." unless SUPPORTED_TYPES.key?(self.type)
-        self.required = source_hash[:required] = source_hash[:required].nil? ? false : source_hash[:required]
-        self.mutable = source_hash[:mutable] = source_hash[:mutable].nil? ? false : source_hash[:mutable]
-        self.pattern = source_hash[:pattern] ||= '.*'
+        self.type = source_hash[:type] || 'string'
+        self.required = source_hash[:required].nil? ? false : source_hash[:required]
+        self.mutable = source_hash[:mutable].nil? ? false : source_hash[:mutable]
+        self.pattern = source_hash[:pattern] || '.*'
         self.description = source_hash[:description]
         self.default = source_hash[:default]
       end
@@ -44,16 +41,13 @@ module Occi
 
       # @param value [Object] Object whose class will be checked against definition
       def check_value_for_type(value, key_name = nil)
-        raise Occi::Errors::AttributePropertyTypeError,
-              "Property type #{@type} for #{key_name.inspect} is not one of the allowed " \
-              "types: #{Properties.supported_type_names}" unless SUPPORTED_TYPES.key?(@type)
         raise Occi::Errors::AttributeTypeError,
               "Attribute value #{value} for #{key_name.inspect} is class #{value.class.name}. " \
               "It does not match attribute property type #{@type}" unless SUPPORTED_TYPES[@type].any? { |klasse| value.kind_of?(klasse) }
       end
 
       def to_hash
-        as_json.to_hash
+        as_json
       end
 
       def to_json(*a)
@@ -61,13 +55,14 @@ module Occi
       end
 
       def as_json(options={})
-        hash = Hashie::Mash.new
-        hash.default = self.default if self.default
-        hash.type = self.type if self.type
-        hash.required = self.required unless self.required.nil?
-        hash.mutable = self.mutable unless self.mutable.nil?
-        hash.pattern = self.pattern if self.pattern
-        hash.description = self.description if self.description
+        hash = {}
+
+        hash["default"] = self.default if self.default
+        hash["type"] = self.type if self.type
+        hash["required"] = self.required unless self.required.nil?
+        hash["mutable"] = self.mutable unless self.mutable.nil?
+        hash["pattern"] = self.pattern if self.pattern
+        hash["description"] = self.description if self.description
 
         hash
       end

@@ -98,9 +98,10 @@ module Occi
         raise Occi::Errors::ParserInputError,
               'Hash must be a hash-like structure!' unless hash.respond_to?(:each_pair)
 
-        attributes = Occi::Core::Attributes.new
+        attributes ||= Occi::Core::Attributes.new
         hash.each_pair do |key, value|
           if Occi::Core::Properties.contains_props?(value)
+            value = value.to_hash if value.kind_of?(Hashie::Mash)
             attributes[key] = Occi::Core::Properties.new(value)
           else
             attributes[key] = self.parse_properties(attributes[key])
