@@ -106,7 +106,7 @@ module Occi
           term = match[:term].downcase
           scheme = match[:scheme]
           title = match[:title]
-          related = match[:rel].to_s.split
+          related = match[:rel].to_s.split(/\s+/)
 
           attributes = Occi::Core::Attributes.new
           if match[:attributes]
