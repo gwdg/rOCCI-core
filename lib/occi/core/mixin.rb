@@ -32,7 +32,7 @@ module Occi
       # @param kind [Occi::Core::Mixin, String] Mixin or Type Identifier of a Mixin where relation should be checked.
       # @return [true,false]
       def related_to?(mixin)
-        self.to_s == mixin.to_s || self.related.include?(mixin.to_s)
+        self.to_s == mixin.to_s || self.related.any? { |m| m.type_identifier == mixin.to_s }
       end
 
       def location
@@ -40,7 +40,7 @@ module Occi
       end
 
       def related
-        self.depends.to_a.concat(self.applies.to_a).uniq
+        self.depends.to_a
       end
 
       # @param [Hash] options
