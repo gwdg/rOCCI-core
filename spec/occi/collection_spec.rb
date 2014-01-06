@@ -855,7 +855,7 @@ module Occi
 
       it 'renders text correctly, links only' do
         collection.links << Occi::Core::Link.new
-        expected = "Link: <>;rel=\"http://schemas.ogf.org/occi/core#link\";self=\"/link/#{collection.links.first.id}\";category=\"http://schemas.ogf.org/occi/core#link\";occi.core.id=\"#{collection.links.first.id}\""
+        expected = "Category: link;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\"\nX-OCCI-Attribute: occi.core.id=\"#{collection.links.first.id}\""
         expect(collection.to_text).to eql(expected)
       end
 
@@ -925,7 +925,8 @@ module Occi
       it 'renders text correctly, links only' do
         collection.links << Occi::Core::Link.new
         expected=Hashie::Mash.new
-        expected["Link"] = "<>;rel=\"http://schemas.ogf.org/occi/core#link\";self=\"/link/#{collection.links.first.id}\";category=\"http://schemas.ogf.org/occi/core#link\";occi.core.id=\"#{collection.links.first.id}\""
+        expected["Category"] = "link;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\""
+        expected["X-OCCI-Attribute"] = "occi.core.id=\"#{collection.links.first.id}\""
         expect(collection.to_header).to eql(expected)
       end
 
