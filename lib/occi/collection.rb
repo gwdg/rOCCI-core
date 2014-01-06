@@ -153,9 +153,10 @@ module Occi
       collection.mixins = @mixins.collect { |mixin| mixin.as_json } if @mixins.any?
       collection.actions = @actions.collect { |action_category| action_category.as_json } if @actions.any?
       collection.resources = @resources.collect { |resource| resource.as_json } if @resources.any?
+
       # if there is only one resource and the links inside the resource have no location,
       # then these links must be rendered as separate links inside the collection
-      if !collection.resources.nil? && collection.resources.size == 1
+      if collection.resources && collection.resources.size == 1
         if collection.resources.first.links.blank? && @links.empty?
           lnks = @resources.first.links
         else
@@ -165,6 +166,7 @@ module Occi
         lnks = @links
       end
       collection.links = lnks.collect { |link| link.as_json } if lnks.to_a.any?
+
       collection.action = @action.as_json if @action
       collection
     end
@@ -172,22 +174,40 @@ module Occi
     # @return [String] text representation
     def to_text
       text = ""
-      text << self.categories.collect { |category| category.to_text }.join("\n")
-      text << "\n" if self.categories.any?
-      raise "Only one resource allowed for rendering to text/plain" if self.resources.size > 1
-      text << self.resources.collect { |resource| resource.to_text }.join("\n")
-      text << self.links.collect { |link| link.to_text_link }.join("\n")
-      text << self.action.to_text if self.action
+
+      if standalone_links?
+        raise "Only one standalone link allowed for rendering to text/plain" if self.links.size > 1
+        text << self.links.first.to_text
+      elsif standalone_action_instance?
+        text << self.action.to_text
+      else
+        text << self.categories.collect { |category| category.to_text }.join("\n")
+        text << "\n" if self.categories.any?
+        raise "Only one resource allowed for rendering to text/plain" if self.resources.size > 1
+        text << self.resources.first.to_text if self.resources.any?
+        text << self.links.collect { |link| link.to_text_link }.join("\n")
+        text << self.action.to_text if self.action
+      end
+
       text
     end
 
     def to_header
       header = Hashie::Mash.new
-      header['Category'] = self.categories.collect { |category| category.to_string_short }.join(',') if self.categories.any?
-      raise "Only one resource allowed for rendering to text/occi" if self.resources.size > 1
-      header = self.class.header_merge(header, self.resources.first.to_header) if self.resources.any?
-      header['Link'] = self.links.collect { |link| link.to_string }.join(',') if self.links.any?
-      header = self.class.header_merge(header, self.action.to_header) if self.action
+
+      if standalone_links?
+        raise "Only one standalone link allowed for rendering to text/occi" if self.links.size > 1
+        header = self.links.first.to_header
+      elsif standalone_action_instance?
+        header = self.action.to_header
+      else
+        header['Category'] = self.categories.collect { |category| category.to_string_short }.join(',') if self.categories.any?
+        raise "Only one resource allowed for rendering to text/occi" if self.resources.size > 1
+        header = self.class.header_merge(header, self.resources.first.to_header) if self.resources.any?
+        header['Link'] = self.links.collect { |link| link.to_string }.join(',') if self.links.any?
+        header = self.class.header_merge(header, self.action.to_header) if self.action
+      end
+
       header
     end
 
@@ -202,6 +222,14 @@ module Occi
         end
       end
       target
+    end
+
+    def standalone_links?
+      !self.links.blank? && self.categories.blank? && self.resources.blank? && self.action.blank?
+    end
+
+    def standalone_action_instance?
+      !self.action.blank? && self.categories.blank? && self.entities.blank?
     end
 
   end
