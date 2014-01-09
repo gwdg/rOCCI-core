@@ -160,10 +160,11 @@ module Occi
       # @param [true,false] set default values for all empty attributes
       def check(set_defaults = false)
 
-        raise ArgumentError, 'No model has been assigned to this entity' unless @model # XXX: Needs error type
+        raise ArgumentError, 'No model has been assigned to this entity' unless @model
  
         kind = @model.get_by_id(@kind.to_s)
-        raise Occi::Errors::KindNotDefinedError, "Kind not found for entity #{self.to_s}!" unless kind # XXX: Needs error type
+        raise Occi::Errors::KindNotDefinedError,
+              "Kind not found for entity #{self.class.name}[#{self.to_s.inspect}]!" unless kind
  
         definitions = Occi::Core::Attributes.new
         definitions.merge! kind.attributes

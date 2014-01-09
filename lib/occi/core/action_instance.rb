@@ -14,7 +14,7 @@ module Occi
       self.action = Occi::Core::Action.new scheme='http://schemas.ogf.org/occi/core#',
                                            term='action_instance',
                                            title='action',
-                                           attributes=self.attributes
+                                           attributes=Occi::Core::Attributes.new(self.attributes)
 
       def initialize(action = self.action, attributes=self.attributes)
         raise ArgumentError, 'action cannot be nil' unless action
@@ -73,6 +73,12 @@ module Occi
       # @return [Bool] Indicating whether this action instance is "empty", i.e. required attributes are blank
       def empty?
         action.nil? || action.empty?
+      end
+
+      # @return [Bool] Result of the validation process
+      def check
+        # TODO: impl check for ActionInstance attributes
+        true
       end
 
     end

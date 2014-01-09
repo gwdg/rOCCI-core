@@ -18,14 +18,14 @@ module Occi
       @resources = Occi::Core::Resources.new
       @links = Occi::Core::Links.new
 
-      self.model = model if model
-
       @kinds.merge collection.kinds.to_a.collect { |kind| Occi::Core::Kind.new(kind.scheme, kind.term, kind.title, kind.attributes, kind.related, kind.actions, kind.location) }
       @mixins.merge collection.mixins.to_a.collect { |mixin| Occi::Core::Mixin.new(mixin.scheme, mixin.term, mixin.title, mixin.attributes, mixin.depends, mixin.actions, mixin.location, mixin.applies) }
       @actions.merge collection.actions.to_a.collect { |action| Occi::Core::Action.new(action.scheme, action.term, action.title, action.attributes) }
       @resources.merge collection.resources.to_a.collect { |resource| Occi::Core::Resource.new(resource.kind, resource.mixins, resource.attributes, resource.actions, resource.links, resource.location) }
       @links.merge collection.links.to_a.collect { |link| Occi::Core::Link.new(link.kind, link.mixins, link.attributes, link.actions, link.rel, link.target, link.source, link.location) }
       @action = Occi::Core::ActionInstance.new(collection.action) if collection.action
+
+      self.model = model if model
     end
 
     def <<(object)
@@ -34,6 +34,8 @@ module Occi
       self.actions << object if object.kind_of? Occi::Core::Action
       self.resources << object if object.kind_of? Occi::Core::Resource
       self.links << object if object.kind_of? Occi::Core::Link
+
+      self.action = object if object.kind_of? Occi::Core::ActionInstance
 
       self
     end
@@ -52,18 +54,18 @@ module Occi
     # @return [Occi::Core::Model]
     def model=(model)
       @model = model
+
       @kinds.model = model
       @mixins.model = model
       @actions.model = model
       @resources.model = model
       @links.model = model
+
+      @action.model = model if @action
     end
 
     def check
-      @resources.check
-      @links.check
-      # TODO: check action instance format, should check be applicable?
-      #@action.check
+      @resources.check && @links.check && (@action ? @action.check : true)
     end
 
     # @param [Occi::Collection] other_collection
@@ -104,11 +106,13 @@ module Occi
       collection.actions.replace other_collection.actions.select { |action| get_by_id(action.type_identifier) }
       collection.resources.replace other_collection.resources.select { |resource| get_by_id(resource.id) }
       collection.links.replace other_collection.links.select { |link| get_by_id(link.id) }
+
       if collection.action == other_collection.action
         collection.action = other_collection.action
       else
         collection.action = nil
       end
+
       collection
     end
 
@@ -148,6 +152,8 @@ module Occi
 
     # @return [Hashie::Mash] json representation
     def as_json(options = {})
+      return @action.as_json if standalone_action_instance?
+
       collection = Hashie::Mash.new
       collection.kinds = @kinds.collect { |kind| kind.as_json } if @kinds.any?
       collection.mixins = @mixins.collect { |mixin| mixin.as_json } if @mixins.any?
@@ -167,7 +173,6 @@ module Occi
       end
       collection.links = lnks.collect { |link| link.as_json } if lnks.to_a.any?
 
-      collection.action = @action.as_json if @action
       collection
     end
 
