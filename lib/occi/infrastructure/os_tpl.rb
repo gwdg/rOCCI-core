@@ -10,9 +10,10 @@ module Occi
                                          term='os_tpl',
                                          title='operating system template',
                                          attributes=Occi::Core::Attributes.new(self.attributes),
-                                         related=Occi::Core::Categories.new << Occi::Infrastructure::Compute.kind,
+                                         dependencies=Occi::Core::Dependencies.new,
                                          actions=Occi::Core::Actions.new,
-                                         location='/mixin/os_tpl/'
+                                         location='/mixin/os_tpl/',
+                                         applies=Occi::Core::Kinds.new << Occi::Infrastructure::Compute.kind
     end
 
   end

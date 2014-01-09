@@ -10,9 +10,10 @@ module Occi
                                          term='resource_tpl',
                                          title='resource template',
                                          attributes=Occi::Core::Attributes.new(self.attributes),
-                                         related=Occi::Core::Categories.new << Occi::Infrastructure::Compute.kind,
+                                         dependencies=Occi::Core::Dependencies.new,
                                          actions=Occi::Core::Actions.new,
-                                         location='/mixin/resource_tpl/'
+                                         location='/mixin/resource_tpl/',
+                                         applies=Occi::Core::Kinds.new << Occi::Infrastructure::Compute.kind
     end
 
   end
