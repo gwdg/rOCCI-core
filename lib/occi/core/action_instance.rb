@@ -18,7 +18,6 @@ module Occi
 
       def initialize(action = self.action, attributes=self.attributes)
         raise ArgumentError, 'action cannot be nil' unless action
-        raise ArgumentError, 'attributes cannot be nil' unless attributes
 
         if action.kind_of? String
           scheme, term = action.split '#'
@@ -29,7 +28,7 @@ module Occi
         if attributes.kind_of? Occi::Core::Attributes
           @attributes = attributes.convert
         else
-          @attributes = Occi::Core::Attributes.new(attributes)
+          @attributes = Occi::Core::Attributes.new(attributes || {})
         end
       end
 
