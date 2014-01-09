@@ -4,12 +4,14 @@ module Occi
 
       attr_accessor :entities, :depends, :actions, :location, :applies
 
-      # @param [String ] scheme
+      # @param [String] scheme
       # @param [String] term
       # @param [String] title
       # @param [Occi::Core::Attributes,Hash,NilClass] attributes
-      # @param [Occi::Core::Categories,Hash,NilClass] related
+      # @param [Occi::Core::Categories,Hash,NilClass] depends
       # @param [Occi::Core::Actions,Hash,NilClass] actions
+      # @param [String] location
+      # @param [Occi::Core::Kinds, NilClass] applies
       def initialize(scheme='http://schemas.ogf.org/occi/core#',
           term='mixin',
           title=nil,
