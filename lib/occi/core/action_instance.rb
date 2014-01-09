@@ -19,15 +19,18 @@ module Occi
       def initialize(action = self.action, attributes=self.attributes)
         raise ArgumentError, 'action cannot be nil' unless action
         raise ArgumentError, 'attributes cannot be nil' unless attributes
-        raise ArgumentError, 'attributes must respond to #convert' unless attributes.respond_to? :convert
 
         if action.kind_of? String
           scheme, term = action.split '#'
           action = Occi::Core::Action.new(scheme, term)
         end
-
         @action = action
-        @attributes = Occi::Core::Attributes.new(attributes)
+
+        if attributes.kind_of? Occi::Core::Attributes
+          @attributes = attributes.convert
+        else
+          @attributes = Occi::Core::Attributes.new(attributes)
+        end
       end
 
       # @param [Hash] options

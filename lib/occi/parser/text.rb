@@ -101,7 +101,7 @@ module Occi
           # match string to regular expression
           match = regexp.match string
 
-          raise Occi::Errors::ParserInputError, "could not match #{string}" unless match
+          raise Occi::Errors::ParserInputError, "Could not match #{string}" unless match
 
           term = match[:term].downcase
           scheme = match[:scheme]
@@ -148,7 +148,7 @@ module Occi
           # match string to regular expression
           match = regexp.match string
 
-          raise Occi::Errors::ParserInputError, "could not match #{string}" unless match
+          raise Occi::Errors::ParserInputError, "Could not match #{string}" unless match
 
           value = match[:string] if match[:string]
 
@@ -167,7 +167,7 @@ module Occi
           # match string to regular expression
           match = regexp.match string
 
-          raise Occi::Errors::ParserInputError, "could not match #{string}" unless match
+          raise Occi::Errors::ParserInputError, "Could not match #{string}" unless match
 
           target = match[:uri]
           rel = match[:rel]
@@ -201,9 +201,36 @@ module Occi
           # match string to regular expression
           match = regexp.match string
 
-          raise Occi::Errors::ParserInputError, "could not match #{string}" unless match
+          raise Occi::Errors::ParserInputError, "Could not match #{string}" unless match
 
           match[:location]
+        end
+
+        def action(lines)
+          Occi::Log.debug "[#{self}] Parsing through Occi::Parser::Text.action"
+          collection = Occi::Collection.new
+          action_instance = nil
+
+          block = Proc.new { |line|
+            line.strip!
+
+            case line
+            when /^Category:/
+              action_instance = Occi::Core::ActionInstance.new
+              action_instance.action = category(line)
+            when /^X-OCCI-Attribute:/
+              raise Occi::Errors::ParserInputError,
+                    "Line #{line.inspect} arrived out of order!" unless action_instance
+              action_instance.attributes.merge! attribute(line)
+            end
+          }
+          lines.respond_to?(:each) ? lines.each(&block) : lines.each_line(&block)
+
+          unless action_instance.blank?
+            collection << action_instance
+          end
+
+          collection
         end
 
       end

@@ -23,7 +23,7 @@ module Occi
       @actions.merge collection.actions.to_a.collect { |action| Occi::Core::Action.new(action.scheme, action.term, action.title, action.attributes) }
       @resources.merge collection.resources.to_a.collect { |resource| Occi::Core::Resource.new(resource.kind, resource.mixins, resource.attributes, resource.actions, resource.links, resource.location) }
       @links.merge collection.links.to_a.collect { |link| Occi::Core::Link.new(link.kind, link.mixins, link.attributes, link.actions, link.rel, link.target, link.source, link.location) }
-      @action = Occi::Core::ActionInstance.new(collection.action) if collection.action
+      @action = Occi::Core::ActionInstance.new(collection.action.action, collection.action.attributes) if collection.action
 
       self.model = model if model
     end
