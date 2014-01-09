@@ -3,6 +3,7 @@ language: ruby
 rvm:
   - 1.9.3
   - 2.0.0
+  - 2.1.0
   - ruby-head
   - jruby-19mode
   - jruby-head
@@ -21,17 +22,30 @@ matrix:
       jdk: openjdk7
     - rvm: 1.9.3
       jdk: oraclejdk7
+    - rvm: 1.9.3
+      jdk: openjdk6
     - rvm: 2.0.0
       jdk: openjdk7
     - rvm: 2.0.0
       jdk: oraclejdk7
+    - rvm: 2.0.0
+      jdk: openjdk6
+    - rvm: 2.1.0
+      jdk: openjdk7
+    - rvm: 2.1.0
+      jdk: oraclejdk7
+    - rvm: 2.1.0
+      jdk: openjdk6
     - rvm: ruby-head
       jdk: openjdk7
     - rvm: ruby-head
       jdk: oraclejdk7
+    - rvm: ruby-head
+      jdk: openjdk6
 
 branches:
   only:
     - master
     - 4.0.x
     - 4.1.x
+    - 4.2.x
