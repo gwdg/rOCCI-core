@@ -170,7 +170,7 @@ module Occi
 
       it 'fails gracefully for unknown entity type' do
         resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rb").read
-        expect{ Occi::Parser.parse('text/plain', resource_string, false, Occi::Core::ActionInstance) }.to raise_error(Occi::Errors::ParserTypeError)
+        expect{ Occi::Parser.parse('text/plain', resource_string, false, Occi::Core::Action) }.to raise_error(Occi::Errors::ParserTypeError)
       end
     end
 

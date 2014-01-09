@@ -22,7 +22,7 @@ module Occi
         collection = parse_headers(header, category, entity_type)
 
         Occi::Log.debug "[#{self}] Parsing #{media_type} from body"
-        coll_body = parse_body(media_type, body, category, entity_type)
+        coll_body = parse_body(media_type, body || '', category, entity_type)
         collection.merge! coll_body if coll_body && !coll_body.empty?
 
         collection
@@ -62,6 +62,9 @@ module Occi
           elsif entity_type == Occi::Core::Link
             Occi::Log.debug "[#{self}] Parsing a link from headers"
             collection = Occi::Parser::Text.link(header)
+          elsif entity_type == Occi::Core::ActionInstance
+            Occi::Log.debug "[#{self}] Parsing an action instance from headers"
+            collection = Occi::Parser::Text.action(header)
           else
             raise Occi::Errors::ParserTypeError, "Entity type '#{entity_type}' not supported"
           end
@@ -98,12 +101,14 @@ module Occi
 
       def parse_body_plain(body, category, entity_type)
         if category
-          collection = Occi::Parser::Text.categories body.split "\n"
+          collection = Occi::Parser::Text.categories body.split("\n")
         else
           if entity_type == Occi::Core::Resource
-            collection = Occi::Parser::Text.resource body.split "\n"
+            collection = Occi::Parser::Text.resource body.split("\n")
           elsif entity_type == Occi::Core::Link
-            collection = Occi::Parser::Text.link body.split "\n"
+            collection = Occi::Parser::Text.link body.split("\n")
+          elsif entity_type == Occi::Core::ActionInstance
+            collection = Occi::Parser::Text.action body.split("\n")
           else
             raise Occi::Errors::ParserTypeError, "Entity type #{entity_type} not supported"
           end

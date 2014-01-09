@@ -11,6 +11,8 @@ module Occi
           Occi::Log.error "[#{self}] Failed to parse JSON input: #{perr.message}"
           raise Occi::Errors::ParserInputError, perr.message
         end
+
+        hash = { :action => hash } if hash && hash.action
         collection = Occi::Collection.new(hash)
 
         if collection.resources.size == 1 && collection.links.size > 0

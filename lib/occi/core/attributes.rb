@@ -288,7 +288,7 @@ module Occi
           raise Occi::Errors::AttributeTypeError,
                 "Value #{value.to_s} does not match pattern #{pattern}" unless value.to_s.match "^#{pattern}$"
         else
-          Occi::Log.warn "[#{self.class}] Skipping pattern checks on attributes, turn off " \
+          Occi::Log.debug "[#{self.class}] Skipping pattern checks on attributes, turn off " \
                          "the compatibility mode and enable the attribute pattern check in settings!"
         end
       end
@@ -337,7 +337,7 @@ module Occi
                       "Attribute #{key} with value #{attributes[key]} does not " \
                       "match pattern #{definitions[key].pattern}" unless attributes[key].to_s.match "^#{definitions[key].pattern}$"
               else
-                Occi::Log.warn "[#{self.class}] [#{key}] Skipping pattern checks on attributes, turn off " \
+                Occi::Log.debug "[#{self.class}] [#{key}] Skipping pattern checks on attributes, turn off " \
                                "the compatibility mode and enable the attribute pattern check in settings!"
               end
             end

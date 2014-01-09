@@ -14,7 +14,7 @@ module Occi
 
     # register Occi Core categories enitity, resource and link
     def register_core
-      Occi::Log.info "[#{self.class}] Registering OCCI Core categories enitity, resource and link"
+      Occi::Log.debug "[#{self.class}] Registering OCCI Core categories enitity, resource and link"
       register Occi::Core::Entity.kind
       register Occi::Core::Resource.kind
       register Occi::Core::Link.kind
@@ -22,7 +22,7 @@ module Occi
 
     # register Occi Infrastructure categories
     def register_infrastructure
-      Occi::Log.info "[#{self.class}] Registering OCCI Infrastructure categories"
+      Occi::Log.debug "[#{self.class}] Registering OCCI Infrastructure categories"
       Occi::Infrastructure.categories.each { |category| register category }
     end
 
@@ -32,7 +32,7 @@ module Occi
     #  recursively searched for files with the extension .json .
     # @param [Sting] scheme_base_url base location for provider specific extensions of the OCCI model
     def register_files(path, scheme_base_url='http://localhost')
-      Occi::Log.info "[#{self.class}] Initializing OCCI Model from #{path}"
+      Occi::Log.debug "[#{self.class}] Initializing OCCI Model from #{path}"
       raise ArgumentError, "Directory \"#{path}\" does not exist" unless File.directory?(path)
       Dir.glob(path + '/**/*.json').each do |file|
         collection = Occi::Collection.new(JSON.parse(File.read(file)))

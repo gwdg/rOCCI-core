@@ -40,28 +40,28 @@ module Occi
           expect { Occi::Core::ActionInstance.new nil }.to raise_error(ArgumentError)
         end
 
-        it 'fails without attributes' do
-          expect { Occi::Core::ActionInstance.new action, nil }.to raise_error(ArgumentError)
+        it 'does not fail without attributes' do
+          expect { Occi::Core::ActionInstance.new action, nil }.not_to raise_error(ArgumentError)
         end
 
-        it 'with an Occi::Core::Action instance' do
+        it 'does not fail with an Occi::Core::Action instance' do
           expect { Occi::Core::ActionInstance.new action }.not_to raise_error
         end
 
-        it 'with a valid action type identifier' do
+        it 'does not fail with a valid action type identifier' do
           expect { Occi::Core::ActionInstance.new action_string }.not_to raise_error
         end
 
-        it 'with an invalid action type identifier' do
+        it 'fails with an invalid action type identifier' do
           expect { Occi::Core::ActionInstance.new action_string_invalid }.to raise_error(ArgumentError)
         end
 
-        it 'with an Occi::Core::Attributes instance' do
+        it 'does not fail with an Occi::Core::Attributes instance' do
           expect { Occi::Core::ActionInstance.new action, attributes }.not_to raise_error
         end
 
-        it 'with un-convertable attribute values' do
-          expect { Occi::Core::ActionInstance.new action, attributes_unconvertable}.to raise_error(ArgumentError)
+        it 'does not fail with un-convertable attribute values' do
+          expect { Occi::Core::ActionInstance.new action, attributes_unconvertable}.not_to raise_error(ArgumentError)
         end
       end
 
@@ -93,7 +93,7 @@ module Occi
         it 'renders to text w/ an attribute' do
           expected = %Q|Category: action;scheme="http://schemas.ogf.org/occi/core#";class="action"
 X-OCCI-Attribute: occi.core.title="test"|
-          expect(Occi::Core::ActionInstance.new(action, attributes_one).to_text).to eq(expected)
+          expect(Occi::Core::ActionInstance.new(action, attributes_one.to_hash).to_text).to eq(expected)
         end
 
         it 'renders to text w/ attributes' do
@@ -101,12 +101,12 @@ X-OCCI-Attribute: occi.core.title="test"|
 X-OCCI-Attribute: occi.core.title="test"
 X-OCCI-Attribute: occi.core.id="1"
 X-OCCI-Attribute: org.opennebula.network.id=1|
-          expect(Occi::Core::ActionInstance.new(action, attributes_multi).to_text).to eq(expected)
+          expect(Occi::Core::ActionInstance.new(action, attributes_multi.to_hash).to_text).to eq(expected)
         end
 
         it 'renders to text w/ a nil attribute' do
           expected = "Category: action;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\""
-          expect(Occi::Core::ActionInstance.new(action, attributes_wnil).to_text).to eq(expected)
+          expect(Occi::Core::ActionInstance.new(action, attributes_wnil.to_hash).to_text).to eq(expected)
         end
       end
 
@@ -121,7 +121,7 @@ X-OCCI-Attribute: org.opennebula.network.id=1|
             "Category" => "action;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\"",
             "X-OCCI-Attribute" => "occi.core.title=\"test\""
           }
-          expect(Occi::Core::ActionInstance.new(action, attributes_one).to_header).to eq(expected)
+          expect(Occi::Core::ActionInstance.new(action, attributes_one.to_hash).to_header).to eq(expected)
         end
 
         it 'renders to hash w/ attributes' do
@@ -129,12 +129,12 @@ X-OCCI-Attribute: org.opennebula.network.id=1|
             "Category" => "action;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\"",
             "X-OCCI-Attribute" => "occi.core.title=\"test\",occi.core.id=\"1\",org.opennebula.network.id=1"
           }
-          expect(Occi::Core::ActionInstance.new(action, attributes_multi).to_header).to eq(expected)
+          expect(Occi::Core::ActionInstance.new(action, attributes_multi.to_hash).to_header).to eq(expected)
         end
 
         it 'renders to hash w/ a nil attribute' do
           expected = {"Category" => "action;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\""}
-          expect(Occi::Core::ActionInstance.new(action, attributes_wnil).to_header).to eq(expected)
+          expect(Occi::Core::ActionInstance.new(action, attributes_wnil.to_hash).to_header).to eq(expected)
         end
       end
 
@@ -176,7 +176,7 @@ X-OCCI-Attribute: org.opennebula.network.id=1|
           expected.action = "http://schemas.ogf.org/occi/core#action"
           expected.attributes = {"occi" => {"core" => {"title" => "test"}}}
 
-          expect(Occi::Core::ActionInstance.new(action, attributes_one).as_json).to eq(expected)
+          expect(Occi::Core::ActionInstance.new(action, attributes_one.to_hash).as_json).to eq(expected)
         end
 
         it 'renders to Hashie::Mash w/ attributes' do
@@ -187,7 +187,7 @@ X-OCCI-Attribute: org.opennebula.network.id=1|
             "org" => {"opennebula" => {"network" => {"id" => 1}}}
           }
 
-          expect(Occi::Core::ActionInstance.new(action, attributes_multi).as_json).to eq(expected)
+          expect(Occi::Core::ActionInstance.new(action, attributes_multi.to_hash).as_json).to eq(expected)
         end
       end
 
