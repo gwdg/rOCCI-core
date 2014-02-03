@@ -29,6 +29,15 @@ module Occi
           expect(category).to eql expected
         end
 
+        it 'parses a string describing an OCCI Category incl. attributes with properties' do
+          category_string = 'Category: restart;scheme="http://schemas.ogf.org/occi/infrastructure/compute/action#";class="action";title="Restart Compute instance";attributes="method{required} test{immutable}"'
+          category = Occi::Parser::Text.category category_string
+
+          expect(category.attributes['method'].required).to be_true
+          expect(category.attributes['method'].mutable).to be_true
+          expect(category.attributes['test'].required).to be_false
+          expect(category.attributes['test'].mutable).to be_false
+        end
 
         it 'parses attributes correctly' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_attributes.text", "rb").read
@@ -110,6 +119,7 @@ module Occi
           Occi::Parser::Text.const_set('REGEXP_CATEGORY', regexp_category)
         end
       end
+
       context '.resource' do
         it 'parses network resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rb").read
@@ -239,6 +249,7 @@ module Occi
 
       context 'compatibility' do
         after(:each) { Occi::Settings.reload! }
+
         context 'terms' do
           it 'parses uppercase term, compatibility on' do
             Occi::Settings['compatibility']=true
@@ -269,6 +280,7 @@ module Occi
           end
 
         end
+
         context 'schemes' do
           it 'parses a Category, compatibility on' do
             Occi::Settings['compatibility']=true
