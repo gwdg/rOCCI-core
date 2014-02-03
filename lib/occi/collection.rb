@@ -64,8 +64,20 @@ module Occi
       @action.model = model if @action
     end
 
-    def check
-      @resources.check && @links.check && (@action ? @action.check : true)
+    # @param incl_categories [Boolean] check every category against the model
+    # @return [Boolean] result
+    def check(incl_categories = false)
+      @resources.check
+      @links.check
+      @action.check if @action
+
+      if incl_categories
+        @kinds.check
+        @mixins.check
+        @actions.check
+      end
+
+      true
     end
 
     # @param [Occi::Collection] other_collection
@@ -118,11 +130,12 @@ module Occi
 
     # Returns the category corresponding to a given id
     #
-    # @param [String] id
+    # @param id [String] identifier
+    # @param cats_only [Boolean] look only for categories
     # @return [Occi::Core::Category]
-    def get_by_id(id)
+    def get_by_id(id, cats_only = false)
       object = self.categories.select { |category| category.type_identifier == id }
-      object = self.entities.select { |entity| entity.id == id } if object.empty?
+      object = self.entities.select { |entity| entity.id == id } if !cats_only && object.empty?
       object.first
     end
 

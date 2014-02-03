@@ -13,7 +13,10 @@ module Occi
       end
 
       def <<(category)
-        super convert category
+        category = convert(category)
+        category.model = @model if @model && !category.kind_of?(String)
+
+        super(category)
       end
 
       def join(separator)
@@ -32,7 +35,8 @@ module Occi
       # @return [Occi::Model]
       def model=(model)
         @model = model
-        collect! { |category| model.get_by_id category.to_s or category }
+        each { |category| category.model = model }
+        collect! { |category| model.get_by_id(category.to_s) || category }
       end
 
       # @param [Hash] options
@@ -41,10 +45,18 @@ module Occi
         self.to_a.as_json
       end
 
+      def check
+        each { |category| category.check }
+      end
+
       private
 
       def convert(category)
-        (@model.get_by_id category if @model if category.kind_of? String) or category
+        if category.kind_of?(String) && @model
+          @model.get_by_id(category) || category
+        else
+          category
+        end
       end
 
     end
