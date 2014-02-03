@@ -115,8 +115,8 @@ module Occi
               properties = Occi::Core::Properties.new
 
               if property_string
-                properties.required = true if property_string.include? 'required'
-                properties.mutable = false if property_string.include? 'immutable'
+                properties.required = property_string.include?('{required}')
+                properties.mutable = !property_string.include?('{immutable}')
               end
 
               name = attribute[/#{REGEXP_ATTRIBUTE_DEF}/, 1]
