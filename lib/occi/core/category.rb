@@ -84,6 +84,17 @@ module Occi
         term.blank? || scheme.blank?
       end
 
+      # Checks this category against the model
+      # @param check_attributes [Boolean] attribute definitions must match
+      # @param check_title [Boolean] titles must match
+      def check(check_attributes = false, check_title = false)
+        raise ArgumentError, 'No model has been assigned to this category' unless @model
+
+        cat = @model.get_by_id(type_identifier, true)
+        raise Occi::Errors::CategoryNotDefinedError,
+              "Category #{self.class.name}[#{type_identifier.inspect}] not found in the model!" unless cat
+      end
+
       # @param term [String] Term to check.
       # @return [Bool] Indicating whether term consists exclusively of valid characters.
       def self.valid_term?(term)

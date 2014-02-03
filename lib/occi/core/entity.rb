@@ -162,7 +162,7 @@ module Occi
 
         raise ArgumentError, 'No model has been assigned to this entity' unless @model
  
-        kind = @model.get_by_id(@kind.to_s)
+        kind = @model.get_by_id(@kind.to_s, true)
         raise Occi::Errors::KindNotDefinedError,
               "Kind not found for entity #{self.class.name}[#{self.to_s.inspect}]!" unless kind
  
