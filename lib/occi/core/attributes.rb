@@ -137,7 +137,7 @@ module Occi
 
       # @return [String]
       def to_string_short
-        any? ? ";attributes=#{names.keys.join(' ').inspect}" : ""
+        any? ? ";attributes=#{names.keys.collect { |key| name_w_props(key) }.join(' ').inspect}" : ""
       end
 
       # @return [String]
@@ -354,6 +354,25 @@ module Occi
           end
         end
       end
+
+      def name_w_props(attribute_name)
+        return attribute_name if attribute_name.blank?
+
+        parts = attribute_name.split('.')
+        parts[parts.length - 1] = "_#{parts.last}"
+        property_name = parts.join('.')
+
+        return attribute_name unless self[property_name]
+
+        if !self[property_name].mutable
+          "#{attribute_name}{immutable}"
+        elsif self[property_name].required
+          "#{attribute_name}{required}"
+        else
+          attribute_name
+        end
+      end
+
     end
   end
 end

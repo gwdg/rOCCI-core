@@ -230,14 +230,27 @@ module Occi
         end
 
         context '#to_string_short' do
+          let(:attrs_with_req_immut) {
+            attrs = Occi::Core::Attributes.new
+            attrs['immut_attr'] = { :mutable => false, :required => false }
+            attrs['req_attr'] = { :mutable => true, :required => true }
+            attrs['immut_req_attr'] = { :mutable => false, :required => true }
+            attrs
+          }
+
           it 'renders attributes correctly' do
-            expected = ";attributes=\"numbertype stringtype booleantype booleantypefalse booleantypepattern nest.nested properties category entity\""
+            expected = ";attributes=\"numbertype stringtype booleantype booleantypefalse booleantypepattern nest.nested properties{immutable} category entity\""
             expect(attrs.to_string_short).to eql expected
           end
 
           it 'copes with empty attributes' do
             expected = ""
             expect(empty.to_string_short).to eql expected
+          end
+
+          it 'renders attributes with properties correctly' do
+            expected = ";attributes=\"immut_attr{immutable} req_attr{required} immut_req_attr{immutable}\""
+            expect(attrs_with_req_immut.to_string_short).to eql expected
           end
         end
 
