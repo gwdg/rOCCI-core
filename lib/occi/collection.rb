@@ -118,11 +118,12 @@ module Occi
 
     # Returns the category corresponding to a given id
     #
-    # @param [String] id
+    # @param id [String] identifier
+    # @param cats_only [Boolean] look only for categories
     # @return [Occi::Core::Category]
-    def get_by_id(id)
+    def get_by_id(id, cats_only = false)
       object = self.categories.select { |category| category.type_identifier == id }
-      object = self.entities.select { |entity| entity.id == id } if object.empty?
+      object = self.entities.select { |entity| entity.id == id } if !cats_only && object.empty?
       object.first
     end
 
