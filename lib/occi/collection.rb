@@ -64,8 +64,20 @@ module Occi
       @action.model = model if @action
     end
 
-    def check
-      @resources.check && @links.check && (@action ? @action.check : true)
+    # @param incl_categories [Boolean] check every category against the model
+    # @return [Boolean] result
+    def check(incl_categories = false)
+      @resources.check
+      @links.check
+      @action.check if @action
+
+      if incl_categories
+        @kinds.check
+        @mixins.check
+        @actions.check
+      end
+
+      true
     end
 
     # @param [Occi::Collection] other_collection

@@ -159,7 +159,6 @@ module Occi
       # check attributes against their definitions and set defaults
       # @param [true,false] set default values for all empty attributes
       def check(set_defaults = false)
-
         raise ArgumentError, 'No model has been assigned to this entity' unless @model
  
         kind = @model.get_by_id(@kind.to_s, true)
