@@ -23,7 +23,7 @@ module Occi
       suspend = Occi::Core::Action.new scheme='http://schemas.ogf.org/occi/infrastructure/compute/action#',
                                        term='suspend',
                                        title='suspend compute instance'
-      suspend.attributes['metod'] = {:mutable => true,
+      suspend.attributes['method'] = {:mutable => true,
                                      :pattern => 'hibernate|suspend',
                                      :default => 'suspend'}
 

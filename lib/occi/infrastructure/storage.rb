@@ -22,7 +22,8 @@ module Occi
                                       term='resize',
                                       title='resize storage'
       resize.attributes['size'] = {:type => 'number',
-                                   :mutable => true}
+                                   :mutable => true,
+                                   :required => true}
 
       self.actions = Occi::Core::Actions.new << online << offline << backup << snapshot << resize
 
