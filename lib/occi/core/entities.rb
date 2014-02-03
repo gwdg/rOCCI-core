@@ -18,7 +18,7 @@ module Occi
 
       def model=(model)
         @model = model
-        each { |entity| entity.model=model }
+        each { |entity| entity.model = model }
       end
 
       def check

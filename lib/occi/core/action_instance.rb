@@ -72,15 +72,24 @@ module Occi
         header
       end
 
-      # @return [Bool] Indicating whether this action instance is "empty", i.e. required attributes are blank
+      # @return [Boolean] Indicating whether this action instance is "empty", i.e. required attributes are blank
       def empty?
         action.nil? || action.empty?
       end
 
-      # @return [Bool] Result of the validation process
-      def check
-        # TODO: impl check for ActionInstance attributes
-        true
+      # @param [Boolean] set default values for all empty attributes
+      # @return [Boolean] Result of the validation process
+      def check(set_defaults = false)
+        raise ArgumentError, 'No model has been assigned to this action instance' unless @model
+
+        action = @model.get_by_id(@action.type_identifier, true)
+        raise Occi::Errors::CategoryNotDefinedError,
+              "Action not found for action instance #{self.class.name}[#{self.to_s.inspect}]!" unless action
+
+        definitions = Occi::Core::Attributes.new
+        definitions.merge! action.attributes
+
+        @attributes.check!(definitions, set_defaults)
       end
 
     end
