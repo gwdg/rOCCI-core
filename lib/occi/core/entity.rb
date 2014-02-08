@@ -170,7 +170,8 @@ module Occi
  
         @mixins.each do |mxn|
           mixin = @model.get_by_id(mxn.to_s)
-          next if mixin.nil?
+          raise Occi::Errors::CategoryNotDefinedError,
+                "Mixin #{mxn.to_s.inspect} not declared in the model!" unless mixin && mixin.kind_of?(Occi::Core::Mixin)
  
           definitions.merge!(mixin.attributes) if mixin.attributes
         end if @mixins

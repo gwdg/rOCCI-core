@@ -210,6 +210,7 @@ Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entit
                                                :mutable => true }
           defmixin }
         let(:mixin){ Occi::Core::Mixin.new 'http://schemas.ogf.org/occi/core#', 'testmixin' }
+        let(:undefmixin){ Occi::Core::Mixin.new 'http://schemas.ogf.org/occi/core#', 'fake_mixin' }
 
         let(:entity){ entity = Occi::Core::Entity.new(kind, [], defs)
           entity.model = model
@@ -220,11 +221,13 @@ Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entit
         before(:each){ Occi::Settings['compatibility']=false 
                        Occi::Settings['verify_attribute_pattern']=true }
         after(:each) { Occi::Settings.reload! }
+
         context 'unsupported types' do
           it 'refuses unsupported type' do
             expect{ entity.attributes['othertype'] = { :type => 'other', :default => 'defaultvalue' } }.to raise_exception(Occi::Errors::AttributePropertyTypeError)
           end
         end
+
         context 'defaults' do
           context 'setting defaults' do
             it 'sets numeric default' do
@@ -292,11 +295,18 @@ Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entit
             expect{ ent.check(true) }.to raise_exception ArgumentError
           end
 
-          it 'raises exception for inexistent kind' do
+          it 'raises exception for nonexistent kind' do
             ent = Occi::Core::Entity.new(kind, [], defs)
             mod = Occi::Model.new
             ent.model = mod
             expect{ ent.check(true) }.to raise_exception Occi::Errors::KindNotDefinedError
+          end
+
+          it 'raises expection for nonexistent mixins' do
+            ent = Occi::Core::Entity.new(kind, [], defs)
+            ent.model = model
+            ent.mixins << undefmixin
+            expect{ ent.check }.to raise_exception Occi::Errors::CategoryNotDefinedError
           end
         end
       end
