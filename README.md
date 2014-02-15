@@ -14,14 +14,10 @@ Requirements
 * RubyGems have to be installed
 * Rake has to be installed (e.g., `gem install rake`)
 
-### Dependencies
-* `libxslt1-dev` or `libxslt-devel`
-* `libxml2-dev`or `libxml2-devel`
-
 ### Examples
 #### For distros based on Debian:
 ~~~
-apt-get install ruby rubygems ruby-dev libxslt1-dev libxml2-dev
+apt-get install ruby rubygems ruby-dev
 ~~~
 ~~~
 ruby -v
@@ -31,7 +27,7 @@ ruby -v
 
 #### For distros based on RHEL:
 ~~~
-yum install libxml2-devel libxslt-devel ruby-devel openssl-devel gcc gcc-c++ ruby rubygems
+yum install ruby-devel openssl-devel gcc gcc-c++ ruby rubygems
 ~~~
 ~~~
 ruby -v
@@ -131,30 +127,6 @@ OCCI messages can be parsed to an OCCI collection for example like
     media_type = 'text/plain'
     body = %Q|Category: compute; scheme="http://schemas.ogf.org/occi/infrastructure#"; class="kind"|
     collection=Occi::Parser.parse(media_type, body)
-
-### Parsing OVF / OVA files
-
-Parsing of OVF/OVA files is partly supported and will be improved in future versions.
-
-The example in [DMTF DSP 2021](http://www.dmtf.org/sites/default/files/standards/documents/DSP2021_1.0.0.tar) is
-bundled with rOCCI and can be parsed to an OCCI collection with
-
-    require 'open-uri'
-    ova=open 'https://raw.github.com/gwdg/rOCCI/master/spec/occi/test.ova'
-    collection=Occi::Parser.ova(ova.read)
-
-Currently only the following entries of OVF files are parsed
-
-* File in References
-* Disk in the DiskSection
-* Network in the NetworkSection
-* In the VirutalSystemSection:
-    * Info
-    * in the VirtualHardwareSection the items regarding
-        * Processor
-        * Memory
-        * Ethernet Adapter
-        * Parallel port
 
 ### Using the OCCI model
 

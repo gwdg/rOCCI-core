@@ -10,7 +10,6 @@ require 'active_support/notifications'
 
 require 'logger'
 require 'uuidtools'
-require 'nokogiri'
 require 'rubygems/package'
 require 'zlib'
 require 'tempfile'
