@@ -86,12 +86,6 @@ module Occi
           collection = parse_body_plain(body, category, entity_type)
         when 'application/occi+json', 'application/json'
           collection = Occi::Parser::Json.collection body
-        when 'application/occi+xml', 'application/xml'
-          collection = Occi::Parser::Xml.collection body
-        when 'application/ovf', 'application/ovf+xml'
-          collection = Occi::Parser::Ovf.collection body
-        when 'application/ova'
-          collection = Occi::Parser::Ova.collection body
         else
           raise Occi::Errors::ParserTypeError, "Content type #{media_type} not supported"
         end
