@@ -86,48 +86,6 @@ module Occi
         end
       end
 
-      it "parses an OVF file" do
-        media_type = 'application/ovf+xml'
-        body = File.read('spec/occi/parser/ovf_samples/test.ovf')
-        collection = Occi::Parser.parse(media_type, body)
-
-        collection.resources.each { |res| res.id="noid" } #Equalize auto-generated IDs
-
-        expected = Marshal.load(File.open("spec/occi/parser/ovf_samples/test.dump", "rb"))
-        expect(collection).to eql expected
-      end
-
-      it 'copes with faulty OVF' #do
-#        expect{ Occi::Parser.parse('application/ovf', "{This is not an OVF}")}.to raise_error(Occi::Errors::ParserInputError)
-#      end
-
-      it "parses an OVA container" do
-        media_type = 'application/ova'
-        body = File.read('spec/occi/parser/ova_samples/test.ova')
-        collection = Occi::Parser.parse(media_type, body)
-
-        collection.resources.each { |res| res.id="noid" } #Equalize auto-generated IDs
-
-        expected = Marshal.load(File.open("spec/occi/parser/ova_samples/test.dump", "rb"))
-        expect(collection).to eql expected
-      end
-
-      it 'copes with faulty OVA' do
-        expect{ Occi::Parser.parse('application/ova', "{This is not an OVA}")}.to raise_error(Occi::Errors::ParserInputError)
-      end
-
-  #    ZS 11 Oct 2013: XML format not yet properly specified
-  #    it "parses a XML file" do
-  #      media_type = 'application/xml'
-  #      body = File.read('spec/occi/parser/xml_samples/test.xml')
-  #      collection = Occi::Parser.parse(media_type, body)
-  #      
-  #    end
-
-      it 'copes with faulty XML' do
-        expect{ collection = Occi::Parser.parse('application/xml', "{This is not a XML}") }.to raise_error(Occi::Errors::ParserInputError)
-      end
-
       it 'copes with non-existent MIME-type' do
         expect{ collection = Occi::Parser.parse('application/notexist', 'X-OCCI-Location: http://example.com:8090/a/b/vm1"') }.to raise_error(Occi::Errors::ParserTypeError)
       end
