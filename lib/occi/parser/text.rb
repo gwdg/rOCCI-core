@@ -44,8 +44,15 @@ module Occi
               resource.attributes.merge! attribute(line)
             when /^Link:/
               link = link_string(line, resource)
-              resource.links << link
-              links << link
+
+              if link.kind_of? Occi::Core::Link
+                resource.links << link
+                links << link
+              elsif link.kind_of? Occi::Core::Action
+                resource.actions << link
+              else
+                raise Occi::Errors::ParserInputError, "Could not recognize resource link! #{link.inspect}"
+              end
             end
           }
           lines.respond_to?(:each) ? lines.each(&block) : lines.each_line(&block)
@@ -169,8 +176,22 @@ module Occi
 
           raise Occi::Errors::ParserInputError, "Could not match #{string}" unless match
 
+          if match[:uri].include?('?action=')
+            link_string_action match
+          else
+            link_string_link match, source
+          end
+        end
+
+        def link_string_action(match)
+          scheme, term = match[:rel].split('#')
+          Occi::Core::Action.new scheme, term
+        end
+
+        def link_string_link(match, source)
           target = match[:uri]
           rel = match[:rel]
+
           if match[:category].blank?
             kind = Occi::Core::Link.kind
           else
@@ -183,7 +204,7 @@ module Occi
 
           # create an array of the list of attributes
           attributes = []
-          regexp=Regexp.new '(\\s*'+REGEXP_ATTRIBUTE_REPR.to_s+')'
+          regexp = Regexp.new '(\\s*'+REGEXP_ATTRIBUTE_REPR.to_s+')'
           attr_line = match[:attributes].sub(/^\s*;\s*/, ' ')
           attributes = attr_line.scan(regexp).collect {|matches| matches.first}
 
@@ -191,6 +212,7 @@ module Occi
           attributes = attributes.inject(Hashie::Mash.new) { |hsh, attribute|
             hsh.merge!(Occi::Parser::Text.attribute("X-OCCI-Attribute: #{attribute}"))
           }
+
           Occi::Core::Link.new kind, mixins, attributes, actions, rel, target, source, location
         end
 
