@@ -15,6 +15,7 @@ module Occi
         link       = Occi::Core::Link.new(*args)
         link.model = @model if @model
         self << link
+
         link
       end
 
@@ -22,10 +23,12 @@ module Occi
 
       def convert(link)
         if link.kind_of? String
-          target      = link
-          link        = Occi::Core::Link.new
-          link.target = target
+          link_location = link
+          link = Occi::Core::Link.new
+          link.id = link_location.split('/').last
+          link.location = link_location
         end
+
         link
       end
 
