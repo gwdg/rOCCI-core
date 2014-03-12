@@ -1,6 +1,7 @@
 require 'rubygems'
 
 require 'set'
+require 'uri'
 require 'hashie/mash'
 
 require 'active_support/core_ext'
