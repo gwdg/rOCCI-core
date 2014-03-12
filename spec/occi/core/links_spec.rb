@@ -35,9 +35,11 @@ module Occi
             expect(links.count).to eql 2
           end
 
-          it 'populates target in the link' do
-            links = Occi::Core::Links.new ["target1"]
-            expect(links.first.target).to eql "target1"
+          it 'populates Links with correctly initialized links' do
+            links = Occi::Core::Links.new ["/link/9c3b83bd-2456-45e9-8ce5-91a7d5c7bb85"]
+
+            expect(links.first.id).to eql "9c3b83bd-2456-45e9-8ce5-91a7d5c7bb85"
+            expect(links.first.location).to eql "/link/9c3b83bd-2456-45e9-8ce5-91a7d5c7bb85"
           end
 
           it 'produces the right number of members, string/link combination' do
