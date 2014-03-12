@@ -174,6 +174,15 @@ Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entit
         end
       end
 
+      context '#as_json' do
+        it 'renders element as JSON' do
+          entity.actions << testaction
+
+          expected = Hashie::Mash.new JSON.parse('{"kind":"http://schemas.ogf.org/occi/core#entity","actions":["http://schemas.ogf.org/occi/core/entity/action#testaction"],"attributes":{"occi":{"core":{"id":"baf1"}}},"id":"baf1"}')
+          expect(entity.as_json).to eql expected
+        end
+      end
+
       context '#check' do
         let(:defs){
           defs = Occi::Core::Attributes.new

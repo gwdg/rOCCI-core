@@ -185,9 +185,13 @@ module Occi
         entity = Hashie::Mash.new
         entity.kind = @kind.to_s if @kind
         entity.mixins = @mixins.join(' ').split(' ') if @mixins.any?
-        entity.actions = @actions.as_json if @actions.any?
+
+        action_strings = @actions.collect { |action| action.to_s if action.to_s }.compact
+        entity.actions = action_strings unless action_strings.empty?
+
         entity.attributes = @attributes.as_json if @attributes.as_json.any?
         entity.id = id.to_s if id
+
         entity
       end
 

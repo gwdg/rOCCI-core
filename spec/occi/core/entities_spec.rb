@@ -85,7 +85,7 @@ module Occi
           entities << entity2
           expected = []
           hash=Hashie::Mash.new JSON.parse('{"kind":"http://schemas.ogf.org/occi/core#entity","attributes":{"occi":{"core":{"id":"e1testid"}}},"id":"e1testid"}')
-          hash2= Hashie::Mash.new JSON.parse('{"kind":"http://example.org/test/schema#entity2","actions":[{"scheme":"http://schemas.ogf.org/occi/core/entity/action#","term":"testaction","title":"testaction action","attributes":{}}],"attributes":{"occi":{"core":{"id":"e2testid"}}},"id":"e2testid"}')
+          hash2= Hashie::Mash.new JSON.parse('{"kind":"http://example.org/test/schema#entity2","actions":["http://schemas.ogf.org/occi/core/entity/action#testaction"],"attributes":{"occi":{"core":{"id":"e2testid"}}},"id":"e2testid"}')
           expected << hash
           expected << hash2
           expect(entities.as_json).to eql expected
