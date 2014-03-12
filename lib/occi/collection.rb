@@ -134,6 +134,7 @@ module Occi
     # @param cats_only [Boolean] look only for categories
     # @return [Occi::Core::Category]
     def get_by_id(id, cats_only = false)
+      raise "Cannot do a look-up with a blank id!" if id.blank?
       object = self.categories.select { |category| category.type_identifier == id }
       object = self.entities.select { |entity| entity.id == id } if !cats_only && object.empty?
       object.first
@@ -141,10 +142,11 @@ module Occi
 
     # Returns the category corresponding to a given location
     #
-    # @param [URI] location
+    # @param [String] location
     # @return [Occi::Core::Category]
     def get_by_location(location)
-      self.categories.select { |category| category.location == location }.first
+      raise "Cannot do a look-up with a blank location!" if location.blank?
+      self.categories.select { |category| category.location == instance2cat(location) }.first
     end
 
     # @return [true,false] true if collection is empty, false otherwise
@@ -154,9 +156,10 @@ module Occi
 
     # Returns a collection with all categories related to the specified category
     #
-    # @param [Occi::Core::Category] category
+    # @param [Occi::Core::Category, String] category
     # @return [Occi::Core::Collection]
     def get_related_to(category)
+      raise "Cannot do a look-up with a blank category!" if category.blank?
       collection = self.class.new
       collection.kinds = @kinds.get_related_to(category)
       collection.mixins = @mixins.get_related_to(category)
@@ -194,14 +197,14 @@ module Occi
       text = ""
 
       if standalone_links?
-        raise "Only one standalone link allowed for rendering to text/plain" if self.links.size > 1
+        raise "Only one standalone link allowed for rendering to text/plain!" if self.links.size > 1
         text << self.links.first.to_text
       elsif standalone_action_instance?
         text << self.action.to_text
       else
         text << self.categories.collect { |category| category.to_text }.join("\n")
         text << "\n" if self.categories.any?
-        raise "Only one resource allowed for rendering to text/plain" if self.resources.size > 1
+        raise "Only one resource allowed for rendering to text/plain!" if self.resources.size > 1
         text << self.resources.first.to_text if self.resources.any?
         text << self.links.collect { |link| link.to_text_link }.join("\n")
         text << self.action.to_text if self.action
@@ -214,13 +217,13 @@ module Occi
       header = Hashie::Mash.new
 
       if standalone_links?
-        raise "Only one standalone link allowed for rendering to text/occi" if self.links.size > 1
+        raise "Only one standalone link allowed for rendering to text/occi!" if self.links.size > 1
         header = self.links.first.to_header
       elsif standalone_action_instance?
         header = self.action.to_header
       else
         header['Category'] = self.categories.collect { |category| category.to_string_short }.join(',') if self.categories.any?
-        raise "Only one resource allowed for rendering to text/occi" if self.resources.size > 1
+        raise "Only one resource allowed for rendering to text/occi!" if self.resources.size > 1
         header = self.class.header_merge(header, self.resources.first.to_header) if self.resources.any?
         header['Link'] = self.links.collect { |link| link.to_string }.join(',') if self.links.any?
         header = self.class.header_merge(header, self.action.to_header) if self.action
@@ -248,6 +251,13 @@ module Occi
 
     def standalone_action_instance?
       !self.action.blank? && self.categories.blank? && self.entities.blank?
+    end
+
+    def instance2cat(location)
+      return location if location.start_with?('/') && location.end_with?('/')
+      cat_relative_uri = "#{File.dirname(URI.parse(location).path)}/"
+      raise "Supplied location is invalid! #{cat_relative_uri.inspect}" unless cat_relative_uri =~ /\/.+\//
+      cat_relative_uri
     end
 
   end

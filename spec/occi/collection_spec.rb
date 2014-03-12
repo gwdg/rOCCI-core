@@ -71,14 +71,22 @@ module Occi
       }
       it 'gets Entity as a related kind' do
         expect(collection.get_related_to(Occi::Core::Entity.kind)).to eql collection
+        expect(collection.get_related_to(Occi::Core::Entity.kind.type_identifier)).to eql collection
       end
 
       it 'gets Resource as a related kind' do
         expect(collection.get_related_to(Occi::Core::Resource.kind).kinds.first).to eql Occi::Core::Resource.kind
+        expect(collection.get_related_to(Occi::Core::Resource.kind.type_identifier).kinds.first).to eql Occi::Core::Resource.kind
       end
 
       it 'gets Link as a related kind' do
         expect(collection.get_related_to(Occi::Core::Link.kind).kinds.first).to eql Occi::Core::Link.kind
+        expect(collection.get_related_to(Occi::Core::Link.kind.type_identifier).kinds.first).to eql Occi::Core::Link.kind
+      end
+
+      it 'fails loudly when no category is given' do
+        expect { collection.get_related_to("") } .to raise_error RuntimeError
+        expect { collection.get_related_to(nil) } .to raise_error RuntimeError
       end
     end
 
@@ -716,6 +724,11 @@ module Occi
           expect(collection.get_by_id("ID.notexist")).to eql nil
         end
 
+        it 'fails loudly when no id is given' do
+          expect { collection.get_by_id("") } .to raise_error RuntimeError
+          expect { collection.get_by_id(nil) } .to raise_error RuntimeError
+        end
+
       end
 
       context '#get_by_location' do
@@ -723,8 +736,17 @@ module Occi
           expect(collection.get_by_location("/mixin/my_mixin/")).to eql collection.mixins.first
         end
 
+        it 'finds category by instance location' do
+          expect(collection.get_by_location("/compute/1")).to eql collection.kinds.first
+        end
+
         it 'fails gracefully' do
           expect(collection.get_by_location("/notexist/")).to eql nil
+        end
+
+        it 'fails loudly when no location is given' do
+          expect { collection.get_by_location("") } .to raise_error RuntimeError
+          expect { collection.get_by_location(nil) } .to raise_error RuntimeError
         end
       end
     end
