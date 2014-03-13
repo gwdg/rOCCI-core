@@ -40,7 +40,9 @@ module Occi
       # set location attribute of kind
       # @param [String] location
       def location=(location)
-        @location = location ? URI.parse(location).path : nil
+        location = URI.parse(location).path if location
+        raise "Mixin locations must end with a slash!" unless location.blank? || location =~ /^\/\S+\/$/
+        @location = location
       end
 
       def location

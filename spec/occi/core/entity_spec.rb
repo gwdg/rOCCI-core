@@ -114,6 +114,16 @@ module Occi
             entity.location = nil
             expect(entity.location).to eq '/entity/baf1'
           end
+
+          it 'will not duplicate slashes' do
+            entity.id = '//baf1'
+            expect(entity.location).to eq '/entity/baf1'
+          end
+
+          it 'will not duplicate kind location' do
+            entity.id = '/entity/baf1'
+            expect(entity.location).to eq '/entity/baf1'
+          end
         end
 
         context '#title' do
