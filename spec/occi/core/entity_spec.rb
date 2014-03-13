@@ -104,6 +104,16 @@ module Occi
             entity.id = UUIDTools::UUID.random_create.to_s
             expect(entity.location).to eq '/entity/' + entity.id
           end
+
+          it 'gets normalized to a relative path' do
+            entity.location = 'http://example.org/entity/12'
+            expect(entity.location).to eq '/entity/12'
+          end
+
+          it 'can be set to nil and default to /kind/id' do
+            entity.location = nil
+            expect(entity.location).to eq '/entity/baf1'
+          end
         end
 
         context '#title' do

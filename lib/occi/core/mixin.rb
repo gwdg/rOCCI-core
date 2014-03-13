@@ -2,7 +2,7 @@ module Occi
   module Core
     class Mixin < Occi::Core::Category
 
-      attr_accessor :entities, :depends, :actions, :location, :applies
+      attr_accessor :entities, :depends, :actions, :applies
 
       # @param [String] scheme
       # @param [String] term
@@ -25,7 +25,7 @@ module Occi
         @depends = Occi::Core::Dependencies.new depends
         @actions = Occi::Core::Actions.new actions
         @entities = Occi::Core::Entities.new
-        @location = location.blank? ? "/mixin/#{term}/" : location
+        @location = location.blank? ? "/mixin/#{term}/" : URI.parse(location).path
         @applies = Occi::Core::Kinds.new applies
       end
 
@@ -37,8 +37,14 @@ module Occi
         self.to_s == mixin.to_s || self.related.any? { |m| m.type_identifier == mixin.to_s }
       end
 
+      # set location attribute of kind
+      # @param [String] location
+      def location=(location)
+        @location = location ? URI.parse(location).path : nil
+      end
+
       def location
-        @location.clone
+        @location ? @location.clone : nil
       end
 
       def related

@@ -86,6 +86,20 @@ module Occi
 
       end
 
+      describe '#location' do
+        let(:kind) { Occi::Core::Kind.new }
+
+        it 'gets normalized to a relative path' do
+          kind.location = 'http://example.org/kind/'
+          expect(kind.location).to eq '/kind/'
+        end
+
+        it 'can be set to nil' do
+          kind.location = nil
+          expect(kind.location).to be_nil
+        end
+      end
+
       describe '#related_to?' do
         let(:base){ Occi::Core::Kind.new 'http://occi.test.case/core/kind', 'base' }
         let(:related){ Occi::Core::Kind.new 'http://occi.test.case/core/kind/base', 'related', 'title', Occi::Core::Attributes.new, base }

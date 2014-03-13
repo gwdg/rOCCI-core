@@ -5,7 +5,7 @@ module Occi
       include Occi::Helpers::Inspect
       include Occi::Helpers::Comparators::Entity
 
-      attr_accessor :mixins, :attributes, :actions, :id, :model, :location
+      attr_accessor :mixins, :attributes, :actions, :id, :model
       attr_reader :kind
 
       class_attribute :kind, :mixins, :attributes, :actions
@@ -76,7 +76,7 @@ module Occi
         @attributes['occi.core.id'] ||= UUIDTools::UUID.random_create.to_s
 
         @actions = Occi::Core::Actions.new actions
-        @location = location
+        @location = location ? URI.parse(location).path : nil
       end
 
       # @param [Occi::Core::Kind,String] kind
@@ -147,12 +147,12 @@ module Occi
       # set location attribute of entity
       # @param [String] location
       def location=(location)
-        @location = location
+        @location = location ? URI.parse(location).path : nil
       end
 
       # @return [String] location of the entity
       def location
-        return @location if @location
+        return @location.clone if @location
         "#{kind.location}#{id.gsub('urn:uuid:', '')}" if id
       end
 
