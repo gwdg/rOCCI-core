@@ -98,6 +98,19 @@ module Occi
           kind.location = nil
           expect(kind.location).to be_nil
         end
+
+        it 'raises an error when location does not start and end with a slash' do
+          expect { kind.location = '/no_slash' }.to raise_error
+          expect { kind.location = 'no_slash/' }.to raise_error
+        end
+
+        it 'raises an error when location contains spaces' do
+          expect { kind.location = '/sla shes/' }.to raise_error
+        end
+
+        it 'can be set to an empty string' do
+          expect { kind.location = '' }.not_to raise_error
+        end
       end
 
       describe '#related_to?' do

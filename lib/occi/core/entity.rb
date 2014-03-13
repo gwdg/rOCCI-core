@@ -153,7 +153,18 @@ module Occi
       # @return [String] location of the entity
       def location
         return @location.clone if @location
-        "#{kind.location}#{id.gsub('urn:uuid:', '')}" if id
+        return if id.blank? || kind.location.blank?
+
+        # guess the location from kind and ID
+        # check for kind locations already included in IDs
+        tmp_id = id.gsub('urn:uuid:', '')
+        @location = if tmp_id.start_with?(kind.location)
+          # ID by itself is enough
+          tmp_id
+        else
+          # concat kind location and ID, remove duplicated slashes
+          "#{kind.location}#{tmp_id}".gsub(/\/+/, '/')
+        end
       end
 
       # check attributes against their definitions and set defaults
