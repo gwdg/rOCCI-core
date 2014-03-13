@@ -5,7 +5,7 @@ module Occi
       include Occi::Helpers::Inspect
       include Occi::Helpers::Comparators::Entity
 
-      attr_accessor :mixins, :attributes, :actions, :id, :model, :location
+      attr_accessor :mixins, :attributes, :actions, :id, :model
       attr_reader :kind
 
       class_attribute :kind, :mixins, :attributes, :actions
@@ -76,7 +76,7 @@ module Occi
         @attributes['occi.core.id'] ||= UUIDTools::UUID.random_create.to_s
 
         @actions = Occi::Core::Actions.new actions
-        @location = location
+        @location = location ? URI.parse(location).path : nil
       end
 
       # @param [Occi::Core::Kind,String] kind
@@ -147,13 +147,24 @@ module Occi
       # set location attribute of entity
       # @param [String] location
       def location=(location)
-        @location = location
+        @location = location ? URI.parse(location).path : nil
       end
 
       # @return [String] location of the entity
       def location
-        return @location if @location
-        "#{kind.location}#{id.gsub('urn:uuid:', '')}" if id
+        return @location.clone if @location
+        return if id.blank? || kind.location.blank?
+
+        # guess the location from kind and ID
+        # check for kind locations already included in IDs
+        tmp_id = id.gsub('urn:uuid:', '')
+        @location = if tmp_id.start_with?(kind.location)
+          # ID by itself is enough
+          tmp_id
+        else
+          # concat kind location and ID, remove duplicated slashes
+          "#{kind.location}#{tmp_id}".gsub(/\/+/, '/')
+        end
       end
 
       # check attributes against their definitions and set defaults
@@ -197,11 +208,11 @@ module Occi
 
       # @return [String] text representation
       def to_text
-        text = "Category: #{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\""
+        text = "Category: #{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\";location=#{self.kind.location.inspect}"
         @mixins.each do |mixin|
           scheme, term = mixin.to_s.split('#')
           scheme << '#'
-          text << "\nCategory: #{term};scheme=#{scheme.inspect};class=\"mixin\""
+          text << "\nCategory: #{term};scheme=#{scheme.inspect};class=\"mixin\";location=#{mixin.location.inspect}"
         end
 
         text << @attributes.to_text
@@ -214,12 +225,12 @@ module Occi
       # @return [Hash] hash containing the HTTP headers of the text/occi rendering
       def to_header
         header = Hashie::Mash.new
-        header['Category'] = "#{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\""
+        header['Category'] = "#{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\";location=#{self.kind.location.inspect}"
 
         @mixins.each do |mixin|
           scheme, term = mixin.to_s.split('#')
           scheme << '#'
-          header['Category'] << ",#{term};scheme=#{scheme.inspect};class=\"mixin\""
+          header['Category'] << ",#{term};scheme=#{scheme.inspect};class=\"mixin\";location=#{mixin.location.inspect}"
         end
 
         attributes = @attributes.to_header

@@ -2,7 +2,7 @@ module Occi
   module Core
     class Kind < Occi::Core::Category
 
-      attr_accessor :entities, :parent, :actions, :location
+      attr_accessor :entities, :parent, :actions
 
       # @param scheme [String ] The categorisation scheme.
       # @param term [String] Unique identifier of the Kind instance within the categorisation scheme.
@@ -21,7 +21,7 @@ module Occi
         @parent = [parent].flatten.first
         @actions = Occi::Core::Actions.new(actions)
         @entities = Occi::Core::Entities.new
-        location.blank? ? @location = "/#{term}/" : @location = location
+        @location = location.blank? ? "/#{term}/" : URI.parse(location).path
       end
 
       # @param scheme [String] The categorisation scheme.
@@ -96,8 +96,16 @@ module Occi
         self.class.get_class self.scheme, self.term, self.parent
       end
 
+      # set location attribute of kind
+      # @param [String] location
+      def location=(location)
+        location = URI.parse(location).path if location
+        raise "Kind locations must end with a slash!" unless location.blank? || location =~ /^\/\S+\/$/
+        @location = location
+      end
+
       def location
-        @location.clone
+        @location ? @location.clone : nil
       end
 
       def related

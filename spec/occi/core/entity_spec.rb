@@ -104,6 +104,26 @@ module Occi
             entity.id = UUIDTools::UUID.random_create.to_s
             expect(entity.location).to eq '/entity/' + entity.id
           end
+
+          it 'gets normalized to a relative path' do
+            entity.location = 'http://example.org/entity/12'
+            expect(entity.location).to eq '/entity/12'
+          end
+
+          it 'can be set to nil and default to /kind/id' do
+            entity.location = nil
+            expect(entity.location).to eq '/entity/baf1'
+          end
+
+          it 'will not duplicate slashes' do
+            entity.id = '//baf1'
+            expect(entity.location).to eq '/entity/baf1'
+          end
+
+          it 'will not duplicate kind location' do
+            entity.id = '/entity/baf1'
+            expect(entity.location).to eq '/entity/baf1'
+          end
         end
 
         context '#title' do
@@ -130,7 +150,7 @@ module Occi
 
       context '#to_text' do
         it 'renders fresh instance in text correctly' do
-          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"
+          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/"
 X-OCCI-Attribute: occi.core.id="baf1"|
           expect(entity.to_text).to eq(expected)
         end
@@ -141,8 +161,8 @@ X-OCCI-Attribute: occi.core.id="baf1"|
           entity.location = '/TestLoc/1'
           entity.mixins <<  'http://example.com/mynamespace#mymixin'
 
-          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"
-Category: mymixin;scheme="http://example.com/mynamespace#";class="mixin"
+          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/"
+Category: mymixin;scheme="http://example.com/mynamespace#";class="mixin";location="/mixin/mymixin/"
 X-OCCI-Attribute: occi.core.id="baf1"
 X-OCCI-Attribute: occi.core.title="TestTitle"
 Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entity/action#testaction"|
@@ -153,7 +173,7 @@ Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entit
       context '#to_header' do
         it 'renders fresh instance in HTTP Header correctly' do
           expected = Hashie::Mash.new
-          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"'
+          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/"'
           expected['X-OCCI-Attribute'] = 'occi.core.id="baf1"'
 
           expect(entity.to_header).to eql(expected)
@@ -166,7 +186,7 @@ Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entit
           entity.mixins <<  'http://example.com/mynamespace#mymixin'
 
           expected = Hashie::Mash.new
-          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind",mymixin;scheme="http://example.com/mynamespace#";class="mixin"'
+          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/",mymixin;scheme="http://example.com/mynamespace#";class="mixin";location="/mixin/mymixin/"'
           expected['X-OCCI-Attribute'] = 'occi.core.id="baf1",occi.core.title="TestTitle"'
           expected['Link'] = '</TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entity/action#testaction"'
 
