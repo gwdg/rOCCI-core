@@ -108,7 +108,7 @@ module Occi
           # match string to regular expression
           match = regexp.match string
 
-          raise Occi::Errors::ParserInputError, "Could not match #{string}" unless match
+          raise Occi::Errors::ParserInputError, "Could not match #{string.inspect}" unless match
 
           term = match[:term].downcase
           scheme = match[:scheme]
@@ -135,16 +135,16 @@ module Occi
 
           case match[:class]
           when 'kind'
-            Occi::Log.debug "[#{self}] class #{match[:class]} identified as kind"
+            Occi::Log.debug "[#{self}] class #{match[:class].inspect} identified as kind"
             Occi::Core::Kind.new scheme, term, title, attributes, related, actions, location
           when 'mixin'
-            Occi::Log.debug "[#{self}] class #{match[:class]} identified as mixin"
+            Occi::Log.debug "[#{self}] class #{match[:class].inspect} identified as mixin"
             Occi::Core::Mixin.new scheme, term, title, attributes, related, actions, location
           when 'action'
-            Occi::Log.debug "[#{self}] class #{match[:class]} identified as action"
+            Occi::Log.debug "[#{self}] class #{match[:class].inspect} identified as action"
             Occi::Core::Action.new scheme, term, title, attributes
           else
-            raise Occi::Errors::ParserInputError, "Category with class #{match[:class]} not recognized in string: #{string}"
+            raise Occi::Errors::ParserInputError, "Category with class #{match[:class].inspect} not recognized in string: #{string}"
           end
         end
 
@@ -155,7 +155,7 @@ module Occi
           # match string to regular expression
           match = regexp.match string
 
-          raise Occi::Errors::ParserInputError, "Could not match #{string}" unless match
+          raise Occi::Errors::ParserInputError, "Could not match #{string.inspect}" unless match
 
           value = match[:string] if match[:string]
 
@@ -174,7 +174,7 @@ module Occi
           # match string to regular expression
           match = regexp.match string
 
-          raise Occi::Errors::ParserInputError, "Could not match #{string}" unless match
+          raise Occi::Errors::ParserInputError, "Could not match #{string.inspect}" unless match
 
           if match[:uri].include?('?action=')
             link_string_action match
@@ -223,7 +223,7 @@ module Occi
           # match string to regular expression
           match = regexp.match string
 
-          raise Occi::Errors::ParserInputError, "Could not match #{string}" unless match
+          raise Occi::Errors::ParserInputError, "Could not match #{string.inspect}" unless match
 
           match[:location]
         end
