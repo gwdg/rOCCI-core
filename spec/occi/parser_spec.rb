@@ -39,25 +39,32 @@ module Occi
 
         context 'resources from OCCI messages with text/occi MIME type' do
           let(:rendered_collection){ collection.to_header }
+          let(:real_world_example_model) {
+            {"category"=>["entity;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/entity/\",resource;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/resource/\",link;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/link/\",compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/compute/\",storage;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/storage/\",network;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/network/\",networkinterface;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/networkinterface/\",storagelink;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/storagelink/\",console;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute#\";class=\"kind\";location=\"/console/\",resource_tpl;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"mixin\";location=\"/mixin/resource_tpl/\",os_tpl;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"mixin\";location=\"/mixin/os_tpl/\",ipnetwork;scheme=\"http://schemas.ogf.org/occi/infrastructure/network#\";class=\"mixin\";location=\"/mixin/ipnetwork/\",ipnetworkinterface;scheme=\"http://schemas.ogf.org/occi/infrastructure/networkinterface#\";class=\"mixin\";location=\"/mixin/ipnetworkinterface/\",networkinterface;scheme=\"http://opennebula.org/occi/infrastructure#\";class=\"mixin\";location=\"/mixin/networkinterface/\",compute;scheme=\"http://opennebula.org/occi/infrastructure#\";class=\"mixin\";location=\"/mixin/compute/\",storage;scheme=\"http://opennebula.org/occi/infrastructure#\";class=\"mixin\";location=\"/mixin/storage/\",public_key;scheme=\"http://schemas.openstack.org/instance/credentials#\";class=\"mixin\";location=\"/mixin/public_key/\",user_data;scheme=\"http://schemas.openstack.org/compute/instance#\";class=\"mixin\";location=\"/mixin/user_data/\",network;scheme=\"http://opennebula.org/occi/infrastructure#\";class=\"mixin\";location=\"/mixin/network/\",storagelink;scheme=\"http://opennebula.org/occi/infrastructure#\";class=\"mixin\";location=\"/mixin/storagelink/\",uuid_monitoring_20;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_monitoring_20/\",uuid_egi_sl6goldenimage_cesnet_50;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_egi_sl6goldenimage_cesnet_50/\",uuid_generic_vm_54;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_generic_vm_54/\",uuid_octave_55;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_octave_55/\",uuid_r_56;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_r_56/\",uuid_egi_compss_cesnet_57;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_egi_compss_cesnet_57/\",uuid_esa_sl64_cesnet_58;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_esa_sl64_cesnet_58/\",uuid_generic_www_60;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_generic_www_60/\",uuid_egi_compss_62;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_egi_compss_62/\",uuid_egi_test_compss_69;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_egi_test_compss_69/\",uuid_genericcloud_debian_7_0_x86_64_0001_cloud_dukan_71;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_genericcloud_debian_7_0_x86_64_0001_cloud_dukan_71/\",uuid_genericcloud_ubuntu_12_04_lts_x86_64_0001_cloud_dukan_72;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_genericcloud_ubuntu_12_04_lts_x86_64_0001_cloud_dukan_72/\",uuid_genericcloud_scilinux_6_5_x86_64_0001_cloud_dukan_73;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_genericcloud_scilinux_6_5_x86_64_0001_cloud_dukan_73/\",uuid_egi_compss_debian_7_0_x86_64_0001_cloud_dukan_74;scheme=\"http://occi.localhost/occi/infrastructure/os_tpl#\";class=\"mixin\";location=\"/mixin/uuid_egi_compss_debian_7_0_x86_64_0001_cloud_dukan_74/\",extra_large;scheme=\"http://sitespecific.cesnet.cz/occi/infrastructure/resource_tpl#\";class=\"mixin\";location=\"/mixin/extra_large/\",medium;scheme=\"http://sitespecific.cesnet.cz/occi/infrastructure/resource_tpl#\";class=\"mixin\";location=\"/mixin/medium/\",small;scheme=\"http://sitespecific.cesnet.cz/occi/infrastructure/resource_tpl#\";class=\"mixin\";location=\"/mixin/small/\",large;scheme=\"http://sitespecific.cesnet.cz/occi/infrastructure/resource_tpl#\";class=\"mixin\";location=\"/mixin/large/\""]}
+          }
 
           it 'parses self-generated collection with resources' do
-            expect(Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rendered_collection).to_header).to eql collection.to_header
+            expect(Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rendered_collection).to_header).to eql rendered_collection
           end
 
           it 'parses self-generated collection with added attributes' do
             resource.id = UUIDTools::UUID.random_create.to_s
             resource.title = 'title'
-            expect(Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rendered_collection).to_header).to eql collection.to_header
+            expect(Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rendered_collection).to_header).to eql rendered_collection
           end
 
           it 'parses self-generated collection with added mixin' do
             resource.mixins << Occi::Core::Mixin.new
-            expect(Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rendered_collection).to_header).to eql collection.to_header
+            expect(Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rendered_collection).to_header).to eql rendered_collection
           end
 
           it 'parses self-generated collection with added link' do
             collection << link
-            expect(Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rendered_collection).to_header).to eql collection.to_header
+            expect(Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rendered_collection).to_header).to eql rendered_collection
+          end
+
+          it 'parses a real-world example of the OCCI model' do
+            expect(Occi::Parser.parse('text/occi', '', true, Occi::Core::Resource, real_world_example_model).to_header.to_hash).to eql({ 'Category' => real_world_example_model['category'].first })
           end
         end
 
@@ -161,13 +168,13 @@ module Occi
         locations_text = "http://example.com:8090/a/b/vm1\nhttp://example.com:8090/a/b/vm2"
         location = Occi::Parser.locations("text/uri-list", locations_text, {})
         expect(location).to eql expected
-      end      
+      end
 
       it 'parses multiple locations from plain text' do
         locations_text = "X-OCCI-Location: http://example.com:8090/a/b/vm1\nX-OCCI-Location: http://example.com:8090/a/b/vm2"
         location = Occi::Parser.locations("text/plain", locations_text, {})
         expect(location).to eql expected
-      end      
+      end
 
       it 'copes with unmeaningful input' do
         location = Occi::Parser.locations("nonexistent", "", {})

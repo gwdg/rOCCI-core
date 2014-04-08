@@ -171,22 +171,22 @@ module Occi
       # @param [true,false] set default values for all empty attributes
       def check(set_defaults = false)
         raise ArgumentError, 'No model has been assigned to this entity' unless @model
- 
+
         kind = @model.get_by_id(@kind.to_s, true)
         raise Occi::Errors::KindNotDefinedError,
               "Kind not found for entity #{self.class.name}[#{self.to_s.inspect}]!" unless kind
- 
+
         definitions = Occi::Core::Attributes.new
         definitions.merge! kind.attributes
- 
+
         @mixins.each do |mxn|
           mixin = @model.get_by_id(mxn.to_s)
           raise Occi::Errors::CategoryNotDefinedError,
                 "Mixin #{mxn.to_s.inspect} not declared in the model!" unless mixin && mixin.kind_of?(Occi::Core::Mixin)
- 
+
           definitions.merge!(mixin.attributes) if mixin.attributes
         end if @mixins
- 
+
         @attributes.check!(definitions, set_defaults)
       end
 
@@ -208,11 +208,11 @@ module Occi
 
       # @return [String] text representation
       def to_text
-        text = "Category: #{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\";location=#{self.kind.location.inspect}"
+        text = "Category: #{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\";location=#{self.kind.location.inspect};title=#{self.kind.title.inspect}"
         @mixins.each do |mixin|
           scheme, term = mixin.to_s.split('#')
           scheme << '#'
-          text << "\nCategory: #{term};scheme=#{scheme.inspect};class=\"mixin\";location=#{mixin.location.inspect}"
+          text << "\nCategory: #{term};scheme=#{scheme.inspect};class=\"mixin\";location=#{mixin.location.inspect};title=#{mixin.title ? mixin.title.inspect : ''.inspect}"
         end
 
         text << @attributes.to_text
@@ -225,12 +225,12 @@ module Occi
       # @return [Hash] hash containing the HTTP headers of the text/occi rendering
       def to_header
         header = Hashie::Mash.new
-        header['Category'] = "#{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\";location=#{self.kind.location.inspect}"
+        header['Category'] = "#{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\";location=#{self.kind.location.inspect};title=#{self.kind.title.inspect}"
 
         @mixins.each do |mixin|
           scheme, term = mixin.to_s.split('#')
           scheme << '#'
-          header['Category'] << ",#{term};scheme=#{scheme.inspect};class=\"mixin\";location=#{mixin.location.inspect}"
+          header['Category'] << ",#{term};scheme=#{scheme.inspect};class=\"mixin\";location=#{mixin.location.inspect};title=#{mixin.title ? mixin.title.inspect : ''.inspect}"
         end
 
         attributes = @attributes.to_header
