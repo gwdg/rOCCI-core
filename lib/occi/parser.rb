@@ -119,7 +119,13 @@ module Occi
 
         header.delete_if { |k, v| v.blank? || !OCCI_HEADERS.include?(k) }
 
-        header.map { |k, v| v.to_s.split(',').collect { |w| "#{k}: #{w}" } }.flatten
+        header = header.map do |k, v|
+          # sometimes header values arrive as single-value arrays!
+          v = v.first if v.kind_of?(Array)
+          v.to_s.split(',').collect { |w| "#{k}: #{w}".strip }
+        end
+
+        header.flatten
       end
 
     end
