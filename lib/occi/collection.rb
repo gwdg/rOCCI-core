@@ -65,11 +65,12 @@ module Occi
     end
 
     # @param incl_categories [Boolean] check every category against the model
+    # @param set_default_attrs [Boolean] set default attribute values for all entities
     # @return [Boolean] result
-    def check(incl_categories = false)
-      @resources.check
-      @links.check
-      @action.check if @action
+    def check(incl_categories = false, set_default_attrs = false)
+      @resources.check(set_default_attrs)
+      @links.check(set_default_attrs)
+      @action.check(set_default_attrs) if @action
 
       if incl_categories
         @kinds.check
