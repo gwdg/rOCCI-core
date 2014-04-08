@@ -21,8 +21,8 @@ module Occi
         each { |entity| entity.model = model }
       end
 
-      def check
-        each { |entity| entity.check }
+      def check(set_defaults = false)
+        each { |entity| entity.check(set_defaults) }
       end
 
       def create(*args)

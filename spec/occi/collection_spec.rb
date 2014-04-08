@@ -3,7 +3,7 @@ module Occi
 
     context 'initialization' do
       let(:collection){ collection = Occi::Collection.new }
-      
+
       context 'with base objects' do
         before(:each) {
           collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
@@ -39,14 +39,14 @@ module Occi
         end
       end
     end
-      
+
     context '#model' do
       let(:collection){ collection = Occi::Collection.new }
       it 'registers a model' do
         expect(collection.model).to be_kind_of Occi::Model
       end
     end
-      
+
     context '#resources' do
       let(:collection){ collection = Occi::Collection.new }
       it 'can create a new OCCI Resource' do
@@ -57,10 +57,22 @@ module Occi
 
     context '#check' do
       let(:collection){ collection = Occi::Collection.new }
+
       it 'checks against model without failure' do
         collection.resources.create 'http://schemas.ogf.org/occi/core#resource'
         expect{ collection.check }.to_not raise_error
       end
+
+      it 'does not raise an error for unknown categories by default' do
+        collection.kinds << Occi::Core::Kind.new('http://example.org/test/stuff#', 'here')
+        expect { collection.check }.to_not raise_error
+      end
+
+      it 'raises an error for unknown categories when requested' do
+        collection.kinds << Occi::Core::Kind.new('http://example.org/test/stuff#', 'here')
+        expect { collection.check(true) }.to raise_error
+      end
+
     end
 
     context '#get_related_to' do
@@ -218,7 +230,7 @@ module Occi
           it 'kept the correct number of mixins' do
             expect(coll2.mixins.count).to eql 1
           end
-        
+
           it 'kept the correct number of actions' do
             expect(coll2.actions.count).to eql 1
           end
@@ -247,7 +259,7 @@ module Occi
     end
 
     context '#merge!' do
-      let(:collection){ collection = Occi::Collection.new 
+      let(:collection){ collection = Occi::Collection.new
         collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
         collection.mixins << "http://example.com/occi/tags#my_mixin"
         collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
@@ -327,7 +339,7 @@ module Occi
           it 'kept the correct number of mixins' do
             expect(coll2.mixins.count).to eql 1
           end
-        
+
           it 'kept the correct number of actions' do
             expect(coll2.actions.count).to eql 1
           end
@@ -500,7 +512,7 @@ module Occi
           it 'kept the correct number of mixins' do
             expect(coll2.mixins.count).to eql 2
           end
-        
+
           it 'kept the correct number of actions' do
             expect(coll2.actions.count).to eql 2
           end
@@ -528,7 +540,7 @@ module Occi
     end
     context '#intersect!' do
       let(:collection){
-        collection = Occi::Collection.new 
+        collection = Occi::Collection.new
         collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
         collection.kinds << "http://schemas.ogf.org/occi/infrastructure#network"
         collection.mixins << "http://example.com/occi/tags#my_mixin"
@@ -634,7 +646,7 @@ module Occi
           it 'kept the correct number of mixins' do
             expect(coll2.mixins.count).to eql 2
           end
-        
+
           it 'kept the correct number of actions' do
             expect(coll2.actions.count).to eql 2
           end
@@ -652,7 +664,7 @@ module Occi
       context 'collections with no intersection' do
         let(:action){ Occi::Core::Action.new scheme='http://schemas.ogf.org/occi/core/entity/action#', term='testaction', title='testaction action' }
         let(:uniq1) {
-          uniq1 = Occi::Collection.new 
+          uniq1 = Occi::Collection.new
           uniq1.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
           uniq1.mixins << "http://example.com/occi/tags#my_mixin"
           uniq1.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
@@ -686,14 +698,14 @@ module Occi
 
         it 'works with first collection empty' do
           empty = Occi::Collection.new
-   
+
           uniq1.intersect!(empty)
           expect(empty.empty?).to eql true
         end
 
         it 'works with second collection empty' do
           empty = Occi::Collection.new
-   
+
           empty.intersect!(uniq2)
           expect(empty.empty?).to eql true
         end
@@ -701,7 +713,7 @@ module Occi
     end
 
     context '#get_by_...' do
-      let(:collection){ collection = Occi::Collection.new 
+      let(:collection){ collection = Occi::Collection.new
         collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
         collection.mixins << "http://example.com/occi/tags#my_mixin"
         collection.actions << "http://schemas.ogf.org/occi/infrastructure/compute/action#start"
@@ -798,15 +810,15 @@ module Occi
         collection.resources << Occi::Core::Resource.new
         collection.links << Occi::Core::Link.new
         expected = "{\"actions\":[{\"scheme\":\"http://schemas.ogf.org/occi/infrastructure/compute/action#\",\"term\":\"start\",\"attributes\":{}}],\"kinds\":[{\"parent\":\"http://schemas.ogf.org/occi/core#resource\",\"related\":[\"http://schemas.ogf.org/occi/core#resource\"],\"actions\":[\"http://schemas.ogf.org/occi/infrastructure/compute/action#start\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#stop\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#restart\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#suspend\"],\"location\":\"/compute/\",\"scheme\":\"http://schemas.ogf.org/occi/infrastructure#\",\"term\":\"compute\",\"title\":\"compute resource\",\"attributes\":{\"occi\":{\"core\":{\"id\":{\"type\":\"string\",\"required\":false,\"mutable\":false,\"pattern\":\"[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\"},\"title\":{\"type\":\"string\",\"required\":false,\"mutable\":true,\"pattern\":\".*\"},\"summary\":{\"type\":\"string\",\"required\":false,\"mutable\":true,\"pattern\":\".*\"}},\"compute\":{\"architecture\":{\"type\":\"string\",\"required\":false,\"mutable\":true,\"pattern\":\"x86|x64\"},\"cores\":{\"type\":\"number\",\"required\":false,\"mutable\":true,\"pattern\":\".*\"},\"hostname\":{\"type\":\"string\",\"required\":false,\"mutable\":true,\"pattern\":\"(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\\\-]*[a-zA-Z0-9])\\\\.)*\"},\"memory\":{\"type\":\"number\",\"required\":false,\"mutable\":true,\"pattern\":\".*\"},\"speed\":{\"type\":\"number\",\"required\":false,\"mutable\":true,\"pattern\":\".*\"},\"state\":{\"default\":\"inactive\",\"type\":\"string\",\"required\":false,\"mutable\":false,\"pattern\":\"inactive|active|suspended|error\"}}}}}],\"links\":[{\"kind\":\"http://schemas.ogf.org/occi/core#link\",\"attributes\":{\"occi\":{\"core\":{\"id\":\"#{collection.links.first.id}\"}}},\"id\":\"#{collection.links.first.id}\",\"rel\":\"http://schemas.ogf.org/occi/core#link\"}],\"mixins\":[{\"location\":\"/mixin/my_mixin/\",\"scheme\":\"http://example.com/occi/tags#\",\"term\":\"my_mixin\",\"attributes\":{}}],\"resources\":[{\"kind\":\"http://schemas.ogf.org/occi/core#resource\",\"attributes\":{\"occi\":{\"core\":{\"id\":\"#{collection.resources.first.id}\"}}},\"id\":\"#{collection.resources.first.id}\"}]}"
-        
+
         hash=Hashie::Mash.new(JSON.parse(expected))
-        expect(collection.as_json).to eql(hash) 
+        expect(collection.as_json).to eql(hash)
       end
 
       it 'renders JSON for an empty collection' do
         collection = Occi::Collection.new
         hash=Hashie::Mash.new
-        expect(collection.as_json).to eql(hash) 
+        expect(collection.as_json).to eql(hash)
       end
 
       it 'renders JSON for a collection with no resources' do
@@ -817,9 +829,9 @@ module Occi
         collection.action = Occi::Core::ActionInstance.new
         collection.links << Occi::Core::Link.new
         expected = "{\"actions\":[{\"scheme\":\"http://schemas.ogf.org/occi/infrastructure/compute/action#\",\"term\":\"start\",\"attributes\":{}}],\"kinds\":[{\"parent\":\"http://schemas.ogf.org/occi/core#resource\",\"related\":[\"http://schemas.ogf.org/occi/core#resource\"],\"actions\":[\"http://schemas.ogf.org/occi/infrastructure/compute/action#start\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#stop\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#restart\",\"http://schemas.ogf.org/occi/infrastructure/compute/action#suspend\"],\"location\":\"/compute/\",\"scheme\":\"http://schemas.ogf.org/occi/infrastructure#\",\"term\":\"compute\",\"title\":\"compute resource\",\"attributes\":{\"occi\":{\"core\":{\"id\":{\"type\":\"string\",\"required\":false,\"mutable\":false,\"pattern\":\"[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\"},\"title\":{\"type\":\"string\",\"required\":false,\"mutable\":true,\"pattern\":\".*\"},\"summary\":{\"type\":\"string\",\"required\":false,\"mutable\":true,\"pattern\":\".*\"}},\"compute\":{\"architecture\":{\"type\":\"string\",\"required\":false,\"mutable\":true,\"pattern\":\"x86|x64\"},\"cores\":{\"type\":\"number\",\"required\":false,\"mutable\":true,\"pattern\":\".*\"},\"hostname\":{\"type\":\"string\",\"required\":false,\"mutable\":true,\"pattern\":\"(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\\\-]*[a-zA-Z0-9])\\\\.)*\"},\"memory\":{\"type\":\"number\",\"required\":false,\"mutable\":true,\"pattern\":\".*\"},\"speed\":{\"type\":\"number\",\"required\":false,\"mutable\":true,\"pattern\":\".*\"},\"state\":{\"default\":\"inactive\",\"type\":\"string\",\"required\":false,\"mutable\":false,\"pattern\":\"inactive|active|suspended|error\"}}}}}],\"links\":[{\"kind\":\"http://schemas.ogf.org/occi/core#link\",\"attributes\":{\"occi\":{\"core\":{\"id\":\"#{collection.links.first.id}\"}}},\"id\":\"#{collection.links.first.id}\",\"rel\":\"http://schemas.ogf.org/occi/core#link\"}],\"mixins\":[{\"location\":\"/mixin/my_mixin/\",\"scheme\":\"http://example.com/occi/tags#\",\"term\":\"my_mixin\",\"attributes\":{}}]}"
-        
+
         hash=Hashie::Mash.new(JSON.parse(expected))
-        expect(collection.as_json).to eql(hash) 
+        expect(collection.as_json).to eql(hash)
       end
     end
 
@@ -974,7 +986,7 @@ module Occi
         expected['c'] = 'c'
         expect(mash1).to eql expected
       end
-     
+
       it 'merges two mashes correctly with custom separator' do
         Occi::Collection.header_merge(mash1, second, ' : ')
 
@@ -984,7 +996,7 @@ module Occi
         expected['c'] = 'c'
         expect(mash1).to eql expected
       end
- 
+
     end
 
   end
