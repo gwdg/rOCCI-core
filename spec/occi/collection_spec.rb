@@ -845,7 +845,7 @@ module Occi
         collection.resources << Occi::Core::Resource.new
         collection.links << Occi::Core::Link.new
 
-        expected = "Category: compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";title=\"compute resource\";rel=\"http://schemas.ogf.org/occi/core#resource\";location=\"/compute/\";attributes=\"occi.core.id{immutable} occi.core.title occi.core.summary occi.compute.architecture occi.compute.cores occi.compute.hostname occi.compute.memory occi.compute.speed occi.compute.state{immutable}\";actions=\"http://schemas.ogf.org/occi/infrastructure/compute/action#start http://schemas.ogf.org/occi/infrastructure/compute/action#stop http://schemas.ogf.org/occi/infrastructure/compute/action#restart http://schemas.ogf.org/occi/infrastructure/compute/action#suspend\"\nCategory: my_mixin;scheme=\"http://example.com/occi/tags#\";class=\"mixin\";location=\"/mixin/my_mixin/\"\nCategory: start;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\"\nCategory: resource;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/resource/\"\nX-OCCI-Attribute: occi.core.id=\"#{collection.resources.first.id}\"Link: <>;rel=\"http://schemas.ogf.org/occi/core#link\";self=\"/link/#{collection.links.first.id}\";category=\"http://schemas.ogf.org/occi/core#link\";occi.core.id=\"#{collection.links.first.id}\"Category: action_instance;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\""
+        expected = "Category: compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";title=\"compute resource\";rel=\"http://schemas.ogf.org/occi/core#resource\";location=\"/compute/\";attributes=\"occi.core.id{immutable} occi.core.title occi.core.summary occi.compute.architecture occi.compute.cores occi.compute.hostname occi.compute.memory occi.compute.speed occi.compute.state{immutable}\";actions=\"http://schemas.ogf.org/occi/infrastructure/compute/action#start http://schemas.ogf.org/occi/infrastructure/compute/action#stop http://schemas.ogf.org/occi/infrastructure/compute/action#restart http://schemas.ogf.org/occi/infrastructure/compute/action#suspend\"\nCategory: my_mixin;scheme=\"http://example.com/occi/tags#\";class=\"mixin\";location=\"/mixin/my_mixin/\"\nCategory: start;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\"\nCategory: resource;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/resource/\";title=\"resource\"\nX-OCCI-Attribute: occi.core.id=\"#{collection.resources.first.id}\"Link: <>;rel=\"http://schemas.ogf.org/occi/core#link\";self=\"/link/#{collection.links.first.id}\";category=\"http://schemas.ogf.org/occi/core#link\";occi.core.id=\"#{collection.links.first.id}\"Category: action_instance;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\""
         expect(collection.to_text).to eql(expected)
       end
 
@@ -883,13 +883,13 @@ module Occi
 
       it 'renders text correctly, resources only' do
         collection.resources << Occi::Core::Resource.new
-        expected = "Category: resource;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/resource/\"\nX-OCCI-Attribute: occi.core.id=\"#{collection.resources.first.id}\""
+        expected = "Category: resource;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/resource/\";title=\"resource\"\nX-OCCI-Attribute: occi.core.id=\"#{collection.resources.first.id}\""
         expect(collection.to_text).to eql(expected)
       end
 
       it 'renders text correctly, links only' do
         collection.links << Occi::Core::Link.new
-        expected = "Category: link;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/link/\"\nX-OCCI-Attribute: occi.core.id=\"#{collection.links.first.id}\""
+        expected = "Category: link;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/link/\";title=\"link\"\nX-OCCI-Attribute: occi.core.id=\"#{collection.links.first.id}\""
         expect(collection.to_text).to eql(expected)
       end
 
@@ -906,7 +906,7 @@ module Occi
         collection.links << Occi::Core::Link.new
 
         expected=Hashie::Mash.new
-        expected["Category"] = "compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\",my_mixin;scheme=\"http://example.com/occi/tags#\";class=\"mixin\",start;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\",resource;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/resource/\",action_instance;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\""
+        expected["Category"] = "compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";title=\"compute resource\";rel=\"http://schemas.ogf.org/occi/core#resource\";location=\"/compute/\";attributes=\"occi.core.id{immutable} occi.core.title occi.core.summary occi.compute.architecture occi.compute.cores occi.compute.hostname occi.compute.memory occi.compute.speed occi.compute.state{immutable}\";actions=\"http://schemas.ogf.org/occi/infrastructure/compute/action#start http://schemas.ogf.org/occi/infrastructure/compute/action#stop http://schemas.ogf.org/occi/infrastructure/compute/action#restart http://schemas.ogf.org/occi/infrastructure/compute/action#suspend\",my_mixin;scheme=\"http://example.com/occi/tags#\";class=\"mixin\";location=\"/mixin/my_mixin/\",start;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\",resource;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/resource/\";title=\"resource\",action_instance;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"action\""
         expected["Link"] = "<>;rel=\"http://schemas.ogf.org/occi/core#link\";self=\"/link/#{collection.links.first.id}\";category=\"http://schemas.ogf.org/occi/core#link\";occi.core.id=\"#{collection.links.first.id}\""
         expected["X-OCCI-Attribute"] = "occi.core.id=\"#{collection.resources.first.id}\""
         expect(collection.to_header).to eql(expected)
@@ -920,14 +920,14 @@ module Occi
       it 'renders text correctly, kinds only' do
         collection.kinds << "http://schemas.ogf.org/occi/infrastructure#compute"
         expected=Hashie::Mash.new
-        expected["Category"] = "compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\""
+        expected["Category"] = "compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";title=\"compute resource\";rel=\"http://schemas.ogf.org/occi/core#resource\";location=\"/compute/\";attributes=\"occi.core.id{immutable} occi.core.title occi.core.summary occi.compute.architecture occi.compute.cores occi.compute.hostname occi.compute.memory occi.compute.speed occi.compute.state{immutable}\";actions=\"http://schemas.ogf.org/occi/infrastructure/compute/action#start http://schemas.ogf.org/occi/infrastructure/compute/action#stop http://schemas.ogf.org/occi/infrastructure/compute/action#restart http://schemas.ogf.org/occi/infrastructure/compute/action#suspend\""
         expect(collection.to_header).to eql(expected)
       end
 
       it 'renders text correctly, mixins only' do
         collection.mixins << "http://example.com/occi/tags#my_mixin"
         expected=Hashie::Mash.new
-        expected["Category"] = "my_mixin;scheme=\"http://example.com/occi/tags#\";class=\"mixin\""
+        expected["Category"] = "my_mixin;scheme=\"http://example.com/occi/tags#\";class=\"mixin\";location=\"/mixin/my_mixin/\""
         expect(collection.to_header).to eql(expected)
       end
 
@@ -951,7 +951,7 @@ module Occi
       it 'renders text correctly, resources only' do
         collection.resources << Occi::Core::Resource.new
         expected=Hashie::Mash.new
-        expected["Category"] = "resource;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/resource/\""
+        expected["Category"] = "resource;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/resource/\";title=\"resource\""
         expected["X-OCCI-Attribute"] = "occi.core.id=\"#{collection.resources.first.id}\""
         expect(collection.to_header).to eql(expected)
       end
@@ -959,7 +959,7 @@ module Occi
       it 'renders text correctly, links only' do
         collection.links << Occi::Core::Link.new
         expected=Hashie::Mash.new
-        expected["Category"] = "link;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/link/\""
+        expected["Category"] = "link;scheme=\"http://schemas.ogf.org/occi/core#\";class=\"kind\";location=\"/link/\";title=\"link\""
         expected["X-OCCI-Attribute"] = "occi.core.id=\"#{collection.links.first.id}\""
         expect(collection.to_header).to eql(expected)
       end

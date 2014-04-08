@@ -59,7 +59,7 @@ module Occi
       end
 
       context '#mixins' do
-        let(:mixin){ 'http://example.com/mynamespace#mymixin' }   
+        let(:mixin){ 'http://example.com/mynamespace#mymixin' }
 
         it "converts mixin type identifiers to objects if a mixin is added to the entities mixins" do
           entity.mixins << mixin
@@ -91,9 +91,9 @@ module Occi
             Occi::Settings['verify_attribute_pattern']=true
             expect{ entity.id = 'id with spaces' }.to raise_error Occi::Errors::AttributeTypeError
           end
-          
+
         end
-        
+
         context '#location' do
           it 'can be set and read' do
             entity.location = 'TestLoc'
@@ -150,7 +150,7 @@ module Occi
 
       context '#to_text' do
         it 'renders fresh instance in text correctly' do
-          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/"
+          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/";title="entity"
 X-OCCI-Attribute: occi.core.id="baf1"|
           expect(entity.to_text).to eq(expected)
         end
@@ -161,8 +161,8 @@ X-OCCI-Attribute: occi.core.id="baf1"|
           entity.location = '/TestLoc/1'
           entity.mixins <<  'http://example.com/mynamespace#mymixin'
 
-          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/"
-Category: mymixin;scheme="http://example.com/mynamespace#";class="mixin";location="/mixin/mymixin/"
+          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/";title="entity"
+Category: mymixin;scheme="http://example.com/mynamespace#";class="mixin";location="/mixin/mymixin/";title=""
 X-OCCI-Attribute: occi.core.id="baf1"
 X-OCCI-Attribute: occi.core.title="TestTitle"
 Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entity/action#testaction"|
@@ -173,7 +173,7 @@ Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entit
       context '#to_header' do
         it 'renders fresh instance in HTTP Header correctly' do
           expected = Hashie::Mash.new
-          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/"'
+          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/";title="entity"'
           expected['X-OCCI-Attribute'] = 'occi.core.id="baf1"'
 
           expect(entity.to_header).to eql(expected)
@@ -186,7 +186,7 @@ Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entit
           entity.mixins <<  'http://example.com/mynamespace#mymixin'
 
           expected = Hashie::Mash.new
-          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/",mymixin;scheme="http://example.com/mynamespace#";class="mixin";location="/mixin/mymixin/"'
+          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/";title="entity",mymixin;scheme="http://example.com/mynamespace#";class="mixin";location="/mixin/mymixin/";title=""'
           expected['X-OCCI-Attribute'] = 'occi.core.id="baf1",occi.core.title="TestTitle"'
           expected['Link'] = '</TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entity/action#testaction"'
 
@@ -245,9 +245,9 @@ Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entit
           entity.model = model
           entity.mixins << mixin
           entity }
-          
-        
-        before(:each){ Occi::Settings['compatibility']=false 
+
+
+        before(:each){ Occi::Settings['compatibility']=false
                        Occi::Settings['verify_attribute_pattern']=true }
         after(:each) { Occi::Settings.reload! }
 
