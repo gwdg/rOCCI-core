@@ -17,7 +17,7 @@ module Occi
         end
 
         it 'sets the right target' do
-          expect(resource.links.first.target).to eql target
+          expect(resource.links.first.target).to eql target.to_s
         end
       end
 

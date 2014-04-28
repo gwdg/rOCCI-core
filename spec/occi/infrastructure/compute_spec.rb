@@ -27,12 +27,12 @@ module Occi
 
           it "has the correct link as target" do
             compute.storagelink target
-            expect(compute.links.first.target).to be target
+            expect(compute.links.first.target).to eq target.to_s
           end
 
           it "has target with correct ID" do
             compute.storagelink target
-            expect(compute.links.first.target.id).to eq target.id
+            expect(compute.links.first.target.split('/').last).to eq target.id
           end
         end
 
@@ -55,7 +55,7 @@ module Occi
           it 'shows correctly in collections' do
             compute.storagelink target
             compute.model=modl
-            expect(compute.storagelinks[0].target.id).to eq target.id
+            expect(compute.storagelinks[0].target.split('/').last).to eq target.id
           end
         end
       end
@@ -80,7 +80,7 @@ module Occi
 
           it "has the correct interface as target" do
             compute.networkinterface target
-            expect(compute.links.first.target).to be target
+            expect(compute.links.first.target).to eq target.to_s
           end
         end
 
@@ -103,7 +103,7 @@ module Occi
           it 'shows correctly in collections' do
             compute.networkinterface target
             compute.model=modl
-            expect(compute.networkinterfaces[0].target.id).to eq target.id
+            expect(compute.networkinterfaces[0].target.split('/').last).to eq target.id
           end
         end
       end
