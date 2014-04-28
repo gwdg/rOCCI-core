@@ -11,7 +11,7 @@ module Occi
       self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/core#',
                                        term='link',
                                        title='link',
-                                       attributes=self.attributes,
+                                       attributes=Occi::Core::Attributes.new(self.attributes),
                                        parent=Occi::Core::Entity.kind
 
       # @param [String] kind
@@ -38,8 +38,8 @@ module Occi
       # set target attribute of link
       # @param [String] target
       def target=(target)
-        self.attributes['occi.core.target'] = target
-        @target = target
+        self.attributes['occi.core.target'] = target.to_s
+        @target = target.to_s
       end
 
       # @return [String] source attribute of the link
@@ -51,13 +51,13 @@ module Occi
       # set source attribute of link
       # @param [String] source
       def source=(source)
-        self.attributes['occi.core.source'] = source
-        @source = source
+        self.attributes['occi.core.source'] = source.to_s
+        @source = source.to_s
       end
 
       # Runs check on attributes
-      def check
-        raise ArgumentError, "Cannot run check on #{self.to_s} without relation (@rel attribute) set" unless @rel
+      def check(set_defaults = false)
+        raise ArgumentError, "Cannot run check on #{self.to_s.inspect} kind #{self.kind.to_s.inspect} without relation (the rel attribute) set!" unless @rel
         super
       end
 
