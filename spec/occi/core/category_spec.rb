@@ -190,21 +190,21 @@ module Occi
       context '#empty?' do
 
         it 'returns false for a new instance with defaults' do
-          expect(category.empty?).to be_false
+          expect(category.empty?).to be false
         end
 
         it 'returns true for an instance without a term' do
           cat = category.clone
           cat.term = nil
 
-          expect(cat.empty?).to be_true
+          expect(cat.empty?).to be true
         end
 
         it 'returns true for an instance without a scheme' do
           cat = category.clone
           cat.scheme = nil
 
-          expect(cat.empty?).to be_true
+          expect(cat.empty?).to be true
         end
 
       end

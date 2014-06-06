@@ -350,21 +350,21 @@ Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entit
       context '#empty?' do
 
         it 'returns false for a new instance with defaults' do
-          expect(entity.empty?).to be_false
+          expect(entity.empty?).to be false
         end
 
         it 'returns true for an instance without a kind' do
           ent = entity.clone
           ent.kind = nil
 
-          expect(ent.empty?).to be_true
+          expect(ent.empty?).to be true
         end
 
         it 'returns true for an instance without an identifier' do
           ent = entity.clone
           ent.id = nil
 
-          expect(ent.empty?).to be_true
+          expect(ent.empty?).to be true
         end
 
       end

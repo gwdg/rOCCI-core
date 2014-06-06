@@ -19,7 +19,7 @@ module Occi
         end
 
         it 'accepts keys with underscores in other positions' do
-          expect{ attributes['t_est']={} }.to_not raise_error(Occi::Errors::AttributeNameInvalidError)
+          expect{ attributes['t_est']={} }.to_not raise_error
         end
       end
 
