@@ -33,10 +33,10 @@ module Occi
           category_string = 'Category: restart;scheme="http://schemas.ogf.org/occi/infrastructure/compute/action#";class="action";title="Restart Compute instance";attributes="method{required} test{immutable}"'
           category = Occi::Parser::Text.category category_string
 
-          expect(category.attributes['method'].required).to be_true
-          expect(category.attributes['method'].mutable).to be_true
-          expect(category.attributes['test'].required).to be_false
-          expect(category.attributes['test'].mutable).to be_false
+          expect(category.attributes['method'].required).to be true
+          expect(category.attributes['method'].mutable).to be true
+          expect(category.attributes['test'].required).to be false
+          expect(category.attributes['test'].mutable).to be false
         end
 
         it 'parses attributes correctly' do

@@ -41,7 +41,7 @@ module Occi
         end
 
         it 'does not fail without attributes' do
-          expect { Occi::Core::ActionInstance.new action, nil }.not_to raise_error(ArgumentError)
+          expect { Occi::Core::ActionInstance.new action, nil }.not_to raise_error
         end
 
         it 'does not fail with an Occi::Core::Action instance' do
@@ -61,7 +61,7 @@ module Occi
         end
 
         it 'does not fail with un-convertable attribute values' do
-          expect { Occi::Core::ActionInstance.new action, attributes_unconvertable}.not_to raise_error(ArgumentError)
+          expect { Occi::Core::ActionInstance.new action, attributes_unconvertable}.not_to raise_error
         end
       end
 
@@ -292,14 +292,14 @@ X-OCCI-Attribute: org.opennebula.network.id=1|
       context '#empty?' do
 
         it 'returns false for a new instance with defaults' do
-          expect(ai.empty?).to be_false
+          expect(ai.empty?).to be false
         end
 
         it 'returns true for an instance without an action' do
           ai_changed = ai.clone
           ai_changed.action = nil
 
-          expect(ai_changed.empty?).to be_true
+          expect(ai_changed.empty?).to be true
         end
 
         it 'returns true for an instance with an empty action' do
@@ -307,7 +307,7 @@ X-OCCI-Attribute: org.opennebula.network.id=1|
           ai_changed.action = Occi::Core::Action.new
           ai_changed.action.term = nil
 
-          expect(ai_changed.empty?).to be_true
+          expect(ai_changed.empty?).to be true
         end
 
       end

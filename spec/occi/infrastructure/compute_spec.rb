@@ -17,7 +17,7 @@ module Occi
         context '#storagelink' do
           it "creates a single storagelink" do
             compute.storagelink target
-            expect(compute.links).to have(1).link
+            expect(compute.links.count).to eq 1
           end
 
           it "creates a storagelink to a storage resource" do
@@ -70,7 +70,7 @@ module Occi
         context '#networkinterface' do
           it "creates a single networkinterface" do
             compute.networkinterface target
-            expect(compute.links).to have(1).link
+            expect(compute.links.count).to eq 1
           end
 
           it "creates a networkinterface to a storage resource" do

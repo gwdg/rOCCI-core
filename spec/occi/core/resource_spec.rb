@@ -9,7 +9,7 @@ module Occi
       
       context '#link' do
         it "creates the appropriate No. of links" do
-          expect(resource.links).to have(1).link
+          expect(resource.links.count).to eq 1
         end
 
         it "has the correct kind" do
