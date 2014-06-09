@@ -135,7 +135,7 @@ module Occi
           v.to_s.split(',').collect { |w| "#{k}: #{w}".strip }
         end
 
-        header.flatten
+        header.flatten.sort
       end
 
     end
