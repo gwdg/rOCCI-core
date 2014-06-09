@@ -110,6 +110,20 @@ module Occi
     end
 
     context '.parse_headers' do
+      let(:resource_in_headers) do
+        resource = {}
+        resource['Category'] = "network;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\",network;scheme=\"http://opennebula.org/occi/infrastructure#\";class=\"mixin\",ipnetwork;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"mixin\""
+        resource['X-OCCI-Attribute'] = "occi.core.id=\"e4bd81c4-adda-5626-840d-39bb7959db97\",occi.core.title=\"monitoring\",occi.network.address=\"192.168.254.0\",occi.network.allocation=\"dynamic\",occi.network.state=\"active\",org.opennebula.network.id=\"6\",org.opennebula.network.bridge=\"xenbr0\",org.opennebula.network.vlan=\"NO\""
+        resource
+      end
+
+      let(:rack_resource_in_headers) do
+        resource = {}
+        resource['HTTP_CATEGORY'] = resource_in_headers['Category']
+        resource['HTTP_X_OCCI_ATTRIBUTE'] = resource_in_headers['X-OCCI-Attribute']
+        resource
+      end
+
       it 'parses categories' do
         categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rb").read
         expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_categories.dump", "rb"))
@@ -117,10 +131,15 @@ module Occi
         expect(categories).to eql expected
       end
 
-      it 'parses resources' do
-        resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rb").read
+      it 'parses resources from headers' do
         expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_network_rocci_server.resource.dump", "rb"))
-        resource = Occi::Parser.parse('text/plain', resource_string, false, Occi::Core::Resource)
+        resource = Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, resource_in_headers)
+        expect(resource).to eql expected
+      end
+
+      it 'parses resources from rack-compliant headers' do
+        expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_network_rocci_server.resource.dump", "rb"))
+        resource = Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rack_resource_in_headers)
         expect(resource).to eql expected
       end
 

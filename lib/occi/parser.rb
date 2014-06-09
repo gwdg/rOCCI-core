@@ -114,9 +114,19 @@ module Occi
       def headers_to_arys(header)
         # remove the HTTP_ prefix if present and capitalize keys
         header = Hash[header.map { |k, v| [k.gsub('HTTP_', '').capitalize, v] }]
-        header['X-OCCI-Location'] = header['X-occi-location'] if header['X-occi-location']
-        header['X-OCCI-Attribute'] = header['X-occi-attribute'] if header['X-occi-attribute']
 
+        # normalize different header-passing mechanisms and representations
+        if header['X-OCCI-Location'].blank?
+          header['X-OCCI-Location'] = header['X_occi_location'] unless header['X_occi_location'].blank?
+          header['X-OCCI-Location'] = header['X-occi-location'] unless header['X-occi-location'].blank?
+        end
+
+        if header['X-OCCI-Attribute'].blank?
+          header['X-OCCI-Attribute'] = header['X_occi_attribute'] unless header['X_occi_attribute'].blank?
+          header['X-OCCI-Attribute'] = header['X-occi-attribute'] unless header['X-occi-attribute'].blank?
+        end
+
+        # clean-up
         header.delete_if { |k, v| v.blank? || !OCCI_HEADERS.include?(k) }
 
         header = header.map do |k, v|
