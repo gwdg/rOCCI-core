@@ -90,7 +90,7 @@ module Occi
           it 'matches a clone' do
             expect(attrs==clone).to eql true
           end
-    
+
           it 'matches a new instance with the same content' do
             expect(attrs==newattrs).to eql true
           end
@@ -112,7 +112,7 @@ module Occi
           it 'matches a clone' do
             expect(attrs.eql?(clone)).to eql true
           end
-    
+
           it 'matches a new instance with the same content' do
             expect(attrs.eql?(newattrs)).to eql true
           end
@@ -171,7 +171,7 @@ module Occi
 
 
       context 'rendering' do
-        let(:attrs){ attrs = Occi::Core::Attributes.new 
+        let(:attrs){ attrs = Occi::Core::Attributes.new
           attrs['numbertype'] = { :type => 'number', :default => 42, :mutable => true, :pattern => '^[0-9]+' }
           attrs['stringtype'] = { :type => 'string', :pattern => '[adefltuv]+', :default => 'defaultvalue', :mutable => true }
           attrs['booleantype'] = { :type => 'boolean', :default => true, :mutable => true}
@@ -227,6 +227,12 @@ module Occi
             expected = ""
             expect(empty.to_string).to eql expected
           end
+
+          it 'copes with attribute values containing commas' do
+            attrs['stringtype'] = "flute,magic"
+            expected = ";numbertype=42;stringtype=\"flute,magic\";booleantype=true;booleantypefalse=false;booleantypepattern=true;nest.nested=11;properties=\"prop\";category=\"http://schemas.ogf.org/occi/core#category\";entity=\"/entity/testid\""
+            expect(attrs.to_string).to eql expected
+          end
         end
 
         context '#to_string_short' do
@@ -278,6 +284,17 @@ module Occi
           end
         end
 
+        context '#to_array' do
+          it 'renders attributes correctly' do
+            expected = ["numbertype=42","stringtype=\"flute\"","booleantype=true","booleantypefalse=false","booleantypepattern=true","nest.nested=11","properties=\"prop\"","category=\"http://schemas.ogf.org/occi/core#category\"","entity=\"/entity/testid\""]
+            expect(attrs.to_array).to eql expected
+          end
+
+          it 'copes with empty attributes' do
+            expect(empty.to_array).to be_empty
+          end
+        end
+
         context '#to_json' do
           it 'renders attributes correctly' do
             expected = '{"numbertype":42,"stringtype":"flute","booleantype":true,"booleantypefalse":false,"booleantypepattern":true,"nest":{"nested":11},"properties":"prop","category":"http://schemas.ogf.org/occi/core#category","entity":"/entity/testid"}'
@@ -301,7 +318,7 @@ module Occi
             expected.nest!.nested = 11
             expected["category"] = "http://schemas.ogf.org/occi/core#category"
             expected["properties"] = "prop"
-            expected["entity"] = "/entity/testid"            
+            expected["entity"] = "/entity/testid"
 
             expect(attrs.as_json).to eql expected
           end
@@ -324,16 +341,16 @@ module Occi
                                            :pattern => '^[0-9]+'  }
           defs['stringtype'] =           { :type => 'string',
                                            :pattern => '[adefltuv]+',
-                                           :default => 'defaultvalue', 
+                                           :default => 'defaultvalue',
                                            :mutable => true }
           defs['booleantype'] =          { :type => 'boolean',
-                                           :default => true, 
+                                           :default => true,
                                            :mutable => true}
           defs['booleantypefalse'] =     { :type => 'boolean', #Regression test
-                                           :default => false, 
+                                           :default => false,
                                            :mutable => true }
           defs['booleantypepattern'] =   { :type => 'boolean',
-                                           :default => true, 
+                                           :default => true,
                                            :mutable => true,
                                            :pattern => true }
           defs['nonmandatory'] = {         :type => 'string',
@@ -342,7 +359,7 @@ module Occi
           defs }
 
         context 'unsupported types and attributes' do
-          before(:each){ Occi::Settings['compatibility']=false 
+          before(:each){ Occi::Settings['compatibility']=false
                          Occi::Settings['verify_attribute_pattern']=true }
           after(:each) { Occi::Settings.reload! }
           it 'refuses undefined attribute' do
@@ -405,7 +422,7 @@ module Occi
         end
 
         context 'defaults' do
-          before(:each){ Occi::Settings['compatibility']=false 
+          before(:each){ Occi::Settings['compatibility']=false
                          Occi::Settings['verify_attribute_pattern']=true }
           after(:each) { Occi::Settings.reload! }
 
@@ -540,7 +557,7 @@ module Occi
           attrs['numbertype'] = inattrs['numbertype']
           expect(attrs).to eql inattrs
         end
-  
+
         it 'correctly accepts Occi::Core::Properties' do
           attrs['properties'] = Occi::Core::Properties.new
 
@@ -550,7 +567,7 @@ module Occi
 
           expect(attrs).to eql expected
         end
-          
+
         it 'correctly accepts Hash' do
           attrs['hash'] = { :type => 'string', :pattern => '.*', :mutable => false, :required => false }
 
