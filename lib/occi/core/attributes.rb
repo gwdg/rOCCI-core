@@ -130,7 +130,7 @@ module Occi
       # @return [String]
       def to_string
         attributes = ';'
-        attributes << to_header.gsub(',', ';')
+        attributes << to_array.join(';')
 
         attributes == ';' ? '' : attributes
       end
@@ -159,9 +159,10 @@ module Occi
         text
       end
 
-      # @return [String] of attributes put in an array and then concatenated into a string
-      def to_header
+      # @return [Array] of attributes put in an array
+      def to_array
         attributes = []
+
         names.each_pair do |name, value|
           # TODO: find a better way to skip properties
           next if name.include? '._'
@@ -175,7 +176,12 @@ module Occi
           end
         end
 
-        attributes.join(',')
+        attributes
+      end
+
+      # @return [String] of attributes put in an array and then concatenated into a string
+      def to_header
+        to_array.join(',')
       end
 
       def to_json(*a)
