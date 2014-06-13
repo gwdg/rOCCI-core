@@ -1,0 +1,97 @@
+--- !ruby/object:Occi::Core::Kind
+scheme: !binary |-
+  aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2luZnJhc3RydWN0dXJlIw==
+term: !binary |-
+  Y29tcHV0ZQ==
+title: !binary |-
+  Q29tcHV0ZSBSZXNvdXJjZQ==
+attributes: !ruby/hash:Occi::Core::Attributes
+  !binary "b2NjaQ==": !ruby/hash:Occi::Core::Attributes
+    !binary "Y29tcHV0ZQ==": !ruby/hash:Occi::Core::Attributes
+      !binary "YXJjaGl0ZWN0dXJl": !ruby/object:Occi::Core::Properties
+        type: string
+        required: false
+        mutable: false
+        pattern: .*
+        description: 
+        default: 
+      !binary "c3RhdGU=": !ruby/object:Occi::Core::Properties
+        type: string
+        required: false
+        mutable: false
+        pattern: .*
+        description: 
+        default: 
+      !binary "c3BlZWQ=": !ruby/object:Occi::Core::Properties
+        type: string
+        required: false
+        mutable: false
+        pattern: .*
+        description: 
+        default: 
+      !binary "bWVtb3J5": !ruby/object:Occi::Core::Properties
+        type: string
+        required: false
+        mutable: false
+        pattern: .*
+        description: 
+        default: 
+      !binary "Y29yZXM=": !ruby/object:Occi::Core::Properties
+        type: string
+        required: false
+        mutable: false
+        pattern: .*
+        description: 
+        default: 
+      !binary "aG9zdG5hbWU=": !ruby/object:Occi::Core::Properties
+        type: string
+        required: false
+        mutable: false
+        pattern: .*
+        description: 
+        default: 
+parent: !binary |-
+  aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2NvcmUjcmVzb3VyY2U=
+actions: !ruby/object:Occi::Core::Actions
+  hash:
+    ? !ruby/object:Occi::Core::Action
+      scheme: !binary |-
+        aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2luZnJhc3RydWN0dXJlL2Nv
+        bXB1dGUvYWN0aW9uIw==
+      term: !binary |-
+        c3RhcnQ=
+      title: 
+      attributes: !ruby/hash:Occi::Core::Attributes {}
+    : true
+    ? !ruby/object:Occi::Core::Action
+      scheme: !binary |-
+        aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2luZnJhc3RydWN0dXJlL2Nv
+        bXB1dGUvYWN0aW9uIw==
+      term: !binary |-
+        c3RvcA==
+      title: 
+      attributes: !ruby/hash:Occi::Core::Attributes {}
+    : true
+    ? !ruby/object:Occi::Core::Action
+      scheme: !binary |-
+        aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2luZnJhc3RydWN0dXJlL2Nv
+        bXB1dGUvYWN0aW9uIw==
+      term: !binary |-
+        cmVzdGFydA==
+      title: 
+      attributes: !ruby/hash:Occi::Core::Attributes {}
+    : true
+    ? !ruby/object:Occi::Core::Action
+      scheme: !binary |-
+        aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2luZnJhc3RydWN0dXJlL2Nv
+        bXB1dGUvYWN0aW9uIw==
+      term: !binary |-
+        c3VzcGVuZA==
+      title: 
+      attributes: !ruby/hash:Occi::Core::Attributes {}
+    : true
+entities: !ruby/object:Occi::Core::Entities
+  hash: {}
+location: !binary |-
+  aHR0cHM6Ly9lZ2ktY2xvdWQuemFtLmtmYS1qdWVsaWNoLmRlOjg3ODcvY29t
+  cHV0ZS8=

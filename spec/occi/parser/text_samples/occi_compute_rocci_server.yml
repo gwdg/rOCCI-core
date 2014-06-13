@@ -1,0 +1,13 @@
+--- !ruby/object:Occi::Core::Kind
+scheme: !binary |-
+  aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2luZnJhc3RydWN0dXJlIw==
+term: !binary |-
+  Y29tcHV0ZQ==
+title: 
+attributes: !ruby/hash:Occi::Core::Attributes {}
+parent: 
+actions: !ruby/object:Occi::Core::Actions
+  hash: {}
+entities: !ruby/object:Occi::Core::Entities
+  hash: {}
+location: /compute/
