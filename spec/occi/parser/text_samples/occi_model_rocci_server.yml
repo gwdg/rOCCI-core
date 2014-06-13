@@ -1,0 +1,31 @@
+--- !ruby/object:Occi::Core::Kind
+scheme: !binary |-
+  aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2NvcmUj
+term: !binary |-
+  ZW50aXR5
+title: !binary |-
+  RW50aXR5
+attributes: !ruby/hash:Occi::Core::Attributes
+  !binary "b2NjaQ==": !ruby/hash:Occi::Core::Attributes
+    !binary "Y29yZQ==": !ruby/hash:Occi::Core::Attributes
+      !binary "aWQ=": !ruby/object:Occi::Core::Properties
+        type: string
+        required: false
+        mutable: false
+        pattern: .*
+        description: 
+        default: 
+      !binary "dGl0bGU=": !ruby/object:Occi::Core::Properties
+        type: string
+        required: false
+        mutable: false
+        pattern: .*
+        description: 
+        default: 
+parent: 
+actions: !ruby/object:Occi::Core::Actions
+  hash: {}
+entities: !ruby/object:Occi::Core::Entities
+  hash: {}
+location: !binary |-
+  L2VudGl0eS8=

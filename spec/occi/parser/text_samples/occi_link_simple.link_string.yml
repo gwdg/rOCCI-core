@@ -1,0 +1,308 @@
+--- &10765900 !ruby/object:Occi::Infrastructure::Storagelink
+kind: !ruby/object:Occi::Core::Kind
+  scheme: http://schemas.ogf.org/occi/infrastructure#
+  term: storagelink
+  title: storage link
+  attributes: !ruby/hash:Occi::Core::Attributes
+    occi: !ruby/hash:Occi::Core::Attributes
+      core: !ruby/hash:Occi::Core::Attributes
+        id: &10765500 !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: false
+          pattern: ! '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
+          description: 
+          default: 
+        _id: &10765280 !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: false
+          pattern: ! '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
+          description: 
+          default: 
+        title: &10765220 !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+        _title: &10765120 !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+        target: &10765060 !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+        _target: &10764960 !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+        source: &10764860 !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+        _source: &10764740 !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+      storagelink: !ruby/hash:Occi::Core::Attributes
+        deviceid: !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+        _deviceid: !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+        mountpoint: !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+        _mountpoint: !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+        state: !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: false
+          pattern: active|inactive|error
+          description: 
+          default: inactive
+        _state: !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: false
+          pattern: active|inactive|error
+          description: 
+          default: inactive
+  parent: !ruby/object:Occi::Core::Kind
+    scheme: http://schemas.ogf.org/occi/core#
+    term: link
+    title: link
+    attributes: !ruby/hash:Occi::Core::Attributes
+      occi: !ruby/hash:Occi::Core::Attributes
+        core: !ruby/hash:Occi::Core::Attributes
+          id: *10765500
+          _id: *10765280
+          title: *10765220
+          _title: *10765120
+          target: *10765060
+          _target: *10764960
+          source: *10764860
+          _source: *10764740
+    parent: &10763260 !ruby/object:Occi::Core::Kind
+      scheme: http://schemas.ogf.org/occi/core#
+      term: entity
+      title: entity
+      attributes: !ruby/hash:Occi::Core::Attributes
+        occi: !ruby/hash:Occi::Core::Attributes
+          core: !ruby/hash:Occi::Core::Attributes
+            id: *10765500
+            _id: *10765280
+            title: *10765220
+            _title: *10765120
+      parent: 
+      actions: !ruby/object:Occi::Core::Actions
+        hash: {}
+      entities: !ruby/object:Occi::Core::Entities
+        hash: {}
+      location: /entity/
+    actions: !ruby/object:Occi::Core::Actions
+      hash: {}
+    entities: !ruby/object:Occi::Core::Entities
+      hash: {}
+    location: /link/
+  actions: !ruby/object:Occi::Core::Actions
+    hash:
+      ? !ruby/object:Occi::Core::Action
+        scheme: http://schemas.ogf.org/occi/infrastructure/storagelink/action#
+        term: online
+        title: activate storagelink
+        attributes: !ruby/hash:Occi::Core::Attributes {}
+      : true
+      ? !ruby/object:Occi::Core::Action
+        scheme: http://schemas.ogf.org/occi/infrastructure/storagelink/action#
+        term: offline
+        title: deactivate storagelink
+        attributes: !ruby/hash:Occi::Core::Attributes {}
+      : true
+  entities: !ruby/object:Occi::Core::Entities
+    hash: {}
+  location: /storagelink/
+mixins: !ruby/object:Occi::Core::Mixins
+  hash: {}
+  entity: *10765900
+attributes: !ruby/hash:Occi::Core::Attributes
+  occi: !ruby/hash:Occi::Core::Attributes
+    core: !ruby/hash:Occi::Core::Attributes
+      id: b2f7f1de-c60c-5b08-879c-81f52429c4ef
+      title: monitoring
+    storagelink: !ruby/hash:Occi::Core::Attributes
+      deviceid: xvda
+      state: inactive
+  org: !ruby/hash:Occi::Core::Attributes
+    opennebula: !ruby/hash:Occi::Core::Attributes
+      storagelink: !ruby/hash:Occi::Core::Attributes
+        bus: ide
+        driver: ! 'tap2:tapdisk:aio:'
+actions: !ruby/object:Occi::Core::Actions
+  hash: {}
+location: !binary |-
+  L3N0b3JhZ2VsaW5rL2IyZjdmMWRlLWM2MGMtNWIwOC04NzljLTgxZjUyNDI5
+  YzRlZg==
+rel: !ruby/object:Occi::Core::Kind
+  scheme: http://schemas.ogf.org/occi/infrastructure#
+  term: storage
+  title: storage resource
+  attributes: !ruby/hash:Occi::Core::Attributes
+    occi: !ruby/hash:Occi::Core::Attributes
+      core: !ruby/hash:Occi::Core::Attributes
+        id: *10765500
+        _id: *10765280
+        title: *10765220
+        _title: *10765120
+        summary: &10760980 !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+        _summary: &10760880 !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+      storage: !ruby/hash:Occi::Core::Attributes
+        size: !ruby/object:Occi::Core::Properties
+          type: number
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+        _size: !ruby/object:Occi::Core::Properties
+          type: number
+          required: false
+          mutable: true
+          pattern: .*
+          description: 
+          default: 
+        state: !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: false
+          pattern: online|offline|backup|snapshot|resize|degraded
+          description: 
+          default: offline
+        _state: !ruby/object:Occi::Core::Properties
+          type: string
+          required: false
+          mutable: false
+          pattern: online|offline|backup|snapshot|resize|degraded
+          description: 
+          default: offline
+  parent: !ruby/object:Occi::Core::Kind
+    scheme: http://schemas.ogf.org/occi/core#
+    term: resource
+    title: resource
+    attributes: !ruby/hash:Occi::Core::Attributes
+      occi: !ruby/hash:Occi::Core::Attributes
+        core: !ruby/hash:Occi::Core::Attributes
+          id: *10765500
+          _id: *10765280
+          title: *10765220
+          _title: *10765120
+          summary: *10760980
+          _summary: *10760880
+    parent: *10763260
+    actions: !ruby/object:Occi::Core::Actions
+      hash: {}
+    entities: !ruby/object:Occi::Core::Entities
+      hash: {}
+    location: /resource/
+  actions: !ruby/object:Occi::Core::Actions
+    hash:
+      ? !ruby/object:Occi::Core::Action
+        scheme: http://schemas.ogf.org/occi/infrastructure/storage/action#
+        term: online
+        title: activate storage
+        attributes: !ruby/hash:Occi::Core::Attributes {}
+      : true
+      ? !ruby/object:Occi::Core::Action
+        scheme: http://schemas.ogf.org/occi/infrastructure/storage/action#
+        term: offline
+        title: deactivate storage
+        attributes: !ruby/hash:Occi::Core::Attributes {}
+      : true
+      ? !ruby/object:Occi::Core::Action
+        scheme: http://schemas.ogf.org/occi/infrastructure/storage/action#
+        term: backup
+        title: backup storage
+        attributes: !ruby/hash:Occi::Core::Attributes {}
+      : true
+      ? !ruby/object:Occi::Core::Action
+        scheme: http://schemas.ogf.org/occi/infrastructure/storage/action#
+        term: snapshot
+        title: snapshot storage
+        attributes: !ruby/hash:Occi::Core::Attributes {}
+      : true
+      ? !ruby/object:Occi::Core::Action
+        scheme: http://schemas.ogf.org/occi/infrastructure/storage/action#
+        term: resize
+        title: resize storage
+        attributes: !ruby/hash:Occi::Core::Attributes
+          size: !ruby/object:Occi::Core::Properties
+            type: number
+            required: false
+            mutable: true
+            pattern: .*
+            description: 
+            default: 
+          _size: !ruby/object:Occi::Core::Properties
+            type: number
+            required: false
+            mutable: true
+            pattern: .*
+            description: 
+            default: 
+      : true
+  entities: !ruby/object:Occi::Core::Entities
+    hash: {}
+  location: /storage/
+source: 
+target: !binary |-
+  L3N0b3JhZ2UvZTYwYWEyYjgtMGM4Ni01OTczLWI5M2UtMzBjNWM0NmQ2ZWFj
+id: b2f7f1de-c60c-5b08-879c-81f52429c4ef
