@@ -85,9 +85,10 @@ module Occi
         
         it 'parses compute resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rb").read
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.dump", "rb"))
+          expected = ToPlain.new.accept(YAML::parse_file("spec/occi/parser/text_samples/occi_compute_rocci_server.yml"))
           collection =  Occi::Parser::Text.category resource_string
-          expect(collection).to eql expected
+          yamled = ToPlain.new.accept(YAML::parse(YAML::dump(collection)))
+          expect(yamled).to eql expected
         end
         
         it 'parses model from rOCCI server' do
@@ -124,9 +125,10 @@ module Occi
       context '.resource' do
         it 'parses network resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rb").read
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_network_rocci_server.resource.dump", "rb"))
-          resource =  Occi::Parser::Text.resource resource_string
-          expect(resource).to eql expected
+          expected = ToPlain.new.accept(YAML::parse_file("spec/occi/parser/text_samples/occi_network_rocci_server.yml"))
+          resource = Occi::Parser::Text.resource resource_string
+          yamled = ToPlain.new.accept(YAML::parse(YAML::dump(resource)))
+          expect(yamled).to eql expected
         end
 
         it 'parses storage resource from rOCCI server' do
