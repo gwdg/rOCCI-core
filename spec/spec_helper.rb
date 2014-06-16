@@ -11,7 +11,7 @@ end
 require 'occi-core'
 require 'json_spec'
 
-Dir["#{Dir.pwd}/spec/helpers/*.rb"].each {|file| require file }
+Dir["#{File.dirname(__FILE__)}/helpers/*.rb"].each {|file| require file }
 
 # simplify the usage of VCR; this will allow us to use
 #
