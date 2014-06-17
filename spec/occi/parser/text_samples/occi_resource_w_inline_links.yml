@@ -93,5 +93,4 @@ actions: !ruby/object:Occi::Core::Actions
 entities: !ruby/object:Occi::Core::Entities
   hash: {}
 location: !binary |-
-  aHR0cHM6Ly9lZ2ktY2xvdWQuemFtLmtmYS1qdWVsaWNoLmRlOjg3ODcvY29t
-  cHV0ZS8=
+  L2NvbXB1dGUv

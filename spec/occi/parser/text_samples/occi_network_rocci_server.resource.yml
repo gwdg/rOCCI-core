@@ -1,63 +1,77 @@
 --- !ruby/object:Occi::Collection
 kinds: !ruby/object:Occi::Core::Kinds
   hash: {}
-  model: &11343240 !ruby/object:Occi::Model
+  model: &31075580 !ruby/object:Occi::Model
     kinds: !ruby/object:Occi::Core::Kinds
       hash:
-        ? &11343160 !ruby/object:Occi::Core::Kind
+        ? &17903940 !ruby/object:Occi::Core::Kind
           scheme: http://schemas.ogf.org/occi/core#
           term: entity
           title: entity
           attributes: !ruby/hash:Occi::Core::Attributes
             occi: !ruby/hash:Occi::Core::Attributes
               core: !ruby/hash:Occi::Core::Attributes
-                id: &11342820 !ruby/object:Occi::Core::Properties
+                id: &19165420 !ruby/object:Occi::Core::Properties
                   type: string
                   required: false
                   mutable: false
                   pattern: ! '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
                   description: 
                   default: 
-                _id: &11342600 !ruby/object:Occi::Core::Properties
+                _id: &19164600 !ruby/object:Occi::Core::Properties
                   type: string
                   required: false
                   mutable: false
                   pattern: ! '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
                   description: 
                   default: 
-                title: &11342540 !ruby/object:Occi::Core::Properties
+                title: &17904640 !ruby/object:Occi::Core::Properties
                   type: string
                   required: false
                   mutable: true
                   pattern: .*
                   description: 
                   default: 
-                _title: &11342440 !ruby/object:Occi::Core::Properties
+                _title: &17904360 !ruby/object:Occi::Core::Properties
                   type: string
                   required: false
                   mutable: true
                   pattern: .*
                   description: 
                   default: 
+            string_attribute: !ruby/object:Occi::Core::Properties
+              type: string
+              required: false
+              mutable: true
+              pattern: ! '[adefltuv]+'
+              description: 
+              default: defaultvalue
+            _string_attribute: !ruby/object:Occi::Core::Properties
+              type: string
+              required: false
+              mutable: true
+              pattern: ! '[adefltuv]+'
+              description: 
+              default: defaultvalue
           parent: 
           actions: !ruby/object:Occi::Core::Actions
             hash: {}
           entities: !ruby/object:Occi::Core::Entities
             hash: {}
           location: /entity/
-          model: *11343240
+          model: *31075580
         : true
-        ? !ruby/object:Occi::Core::Kind
+        ? &19215240 !ruby/object:Occi::Core::Kind
           scheme: http://schemas.ogf.org/occi/core#
           term: resource
           title: resource
           attributes: !ruby/hash:Occi::Core::Attributes
             occi: !ruby/hash:Occi::Core::Attributes
               core: !ruby/hash:Occi::Core::Attributes
-                id: *11342820
-                _id: *11342600
-                title: *11342540
-                _title: *11342440
+                id: *19165420
+                _id: *19164600
+                title: *17904640
+                _title: *17904360
                 summary: !ruby/object:Occi::Core::Properties
                   type: string
                   required: false
@@ -65,68 +79,212 @@ kinds: !ruby/object:Occi::Core::Kinds
                   pattern: .*
                   description: 
                   default: 
-                _summary: &11341760 !ruby/object:Occi::Core::Properties
+                _summary: &19216300 !ruby/object:Occi::Core::Properties
                   type: string
                   required: false
                   mutable: true
                   pattern: .*
                   description: 
                   default: 
-          parent: *11343160
+          parent: *17903940
           actions: !ruby/object:Occi::Core::Actions
             hash: {}
           entities: !ruby/object:Occi::Core::Entities
-            hash: {}
-          location: /resource/
-          model: *11343240
+            hash:
+              ? &31764840 !ruby/object:Occi::Core::Resource
+                kind: *19215240
+                mixins: !ruby/object:Occi::Core::Mixins
+                  hash: {}
+                  model: &31662760 !ruby/object:Occi::Model
+                    kinds: !ruby/object:Occi::Core::Kinds
+                      hash:
+                        *17903940: true
+                        *19215240: true
+                        ? &19089380 !ruby/object:Occi::Core::Kind
+                          scheme: http://schemas.ogf.org/occi/core#
+                          term: link
+                          title: link
+                          attributes: !ruby/hash:Occi::Core::Attributes
+                            occi: !ruby/hash:Occi::Core::Attributes
+                              core: !ruby/hash:Occi::Core::Attributes
+                                id: !ruby/object:Occi::Core::Properties
+                                  type: string
+                                  required: true
+                                  mutable: false
+                                  pattern: .*
+                                  description: 
+                                  default: 
+                                _id: !ruby/object:Occi::Core::Properties
+                                  type: string
+                                  required: true
+                                  mutable: false
+                                  pattern: .*
+                                  description: 
+                                  default: 
+                                title: *17904640
+                                _title: *17904360
+                                target: !ruby/object:Occi::Core::Properties
+                                  type: string
+                                  required: false
+                                  mutable: true
+                                  pattern: .*
+                                  description: 
+                                  default: 
+                                _target: !ruby/object:Occi::Core::Properties
+                                  type: string
+                                  required: false
+                                  mutable: true
+                                  pattern: .*
+                                  description: 
+                                  default: 
+                                source: !ruby/object:Occi::Core::Properties
+                                  type: string
+                                  required: false
+                                  mutable: true
+                                  pattern: .*
+                                  description: 
+                                  default: 
+                                _source: !ruby/object:Occi::Core::Properties
+                                  type: string
+                                  required: false
+                                  mutable: true
+                                  pattern: .*
+                                  description: 
+                                  default: 
+                            stringtype: !ruby/object:Occi::Core::Properties
+                              type: string
+                              required: true
+                              mutable: true
+                              pattern: ! '[adefltuv]+'
+                              description: 
+                              default: defaultforlink
+                            _stringtype: !ruby/object:Occi::Core::Properties
+                              type: string
+                              required: true
+                              mutable: true
+                              pattern: ! '[adefltuv]+'
+                              description: 
+                              default: defaultforlink
+                            stringtypeoptional: !ruby/object:Occi::Core::Properties
+                              type: string
+                              required: false
+                              mutable: true
+                              pattern: ! '[adefltuv]+'
+                              description: 
+                              default: defaultforlink
+                            _stringtypeoptional: !ruby/object:Occi::Core::Properties
+                              type: string
+                              required: false
+                              mutable: true
+                              pattern: ! '[adefltuv]+'
+                              description: 
+                              default: defaultforlink
+                          parent: *17903940
+                          actions: !ruby/object:Occi::Core::Actions
+                            hash: {}
+                          entities: !ruby/object:Occi::Core::Entities
+                            hash:
+                              ? &31795440 !ruby/object:Occi::Core::Link
+                                kind: *19089380
+                                mixins: !ruby/object:Occi::Core::Mixins
+                                  hash: {}
+                                  model: *31662760
+                                  entity: *31795440
+                                attributes: !ruby/hash:Occi::Core::Attributes
+                                  occi: !ruby/hash:Occi::Core::Attributes
+                                    core: !ruby/hash:Occi::Core::Attributes
+                                      id: 3dbfbd1e-5fcd-4ad2-98a3-fd167838431d
+                                actions: !ruby/object:Occi::Core::Actions
+                                  hash: {}
+                                  model: *31662760
+                                location: 
+                                rel: *19089380
+                                target: 
+                                model: *31662760
+                                id: 3dbfbd1e-5fcd-4ad2-98a3-fd167838431d
+                              : true
+                              ? &32009700 !ruby/object:Occi::Core::Link
+                                kind: *19089380
+                                mixins: !ruby/object:Occi::Core::Mixins
+                                  hash: {}
+                                  model: &31882760 !ruby/object:Occi::Model
+                                    kinds: !ruby/object:Occi::Core::Kinds
+                                      hash:
+                                        *17903940: true
+                                        *19215240: true
+                                        *19089380: true
+                                    mixins: !ruby/object:Occi::Core::Mixins
+                                      hash: {}
+                                    actions: !ruby/object:Occi::Core::Actions
+                                      hash: {}
+                                    resources: !ruby/object:Occi::Core::Resources
+                                      hash: {}
+                                    links: !ruby/object:Occi::Core::Links
+                                      hash: {}
+                                  entity: *32009700
+                                attributes: !ruby/hash:Occi::Core::Attributes
+                                  occi: !ruby/hash:Occi::Core::Attributes
+                                    core: !ruby/hash:Occi::Core::Attributes
+                                      id: 35e6f510-4617-465d-9f92-e1079b78f420
+                                actions: !ruby/object:Occi::Core::Actions
+                                  hash: {}
+                                  model: *31882760
+                                location: 
+                                rel: *19089380
+                                target: 
+                                model: *31882760
+                                id: 35e6f510-4617-465d-9f92-e1079b78f420
+                              : true
+                          location: /link/
+                          model: *31075580
+                        : true
+                    mixins: !ruby/object:Occi::Core::Mixins
+                      hash: {}
+                    actions: !ruby/object:Occi::Core::Actions
+                      hash: {}
+                    resources: !ruby/object:Occi::Core::Resources
+                      hash: {}
+                    links: !ruby/object:Occi::Core::Links
+                      hash: {}
+                  entity: *31764840
+                attributes: !ruby/hash:Occi::Core::Attributes
+                  occi: !ruby/hash:Occi::Core::Attributes
+                    core: !ruby/hash:Occi::Core::Attributes
+                      id: 556ed1b1-183d-4ece-8649-a2d1a0825cde
+                actions: !ruby/object:Occi::Core::Actions
+                  hash: {}
+                  model: *31662760
+                location: 
+                links: !ruby/object:Occi::Core::Links
+                  hash: {}
+                  model: *31662760
+                model: *31662760
+                id: 556ed1b1-183d-4ece-8649-a2d1a0825cde
+              : true
+              ? &32004180 !ruby/object:Occi::Core::Resource
+                kind: *19215240
+                mixins: !ruby/object:Occi::Core::Mixins
+                  hash: {}
+                  model: *31882760
+                  entity: *32004180
+                attributes: !ruby/hash:Occi::Core::Attributes
+                  occi: !ruby/hash:Occi::Core::Attributes
+                    core: !ruby/hash:Occi::Core::Attributes
+                      id: d51cc509-e1b7-4796-98a4-ccae05964ea8
+                actions: !ruby/object:Occi::Core::Actions
+                  hash: {}
+                  model: *31882760
+                location: 
+                links: !ruby/object:Occi::Core::Links
+                  hash: {}
+                  model: *31882760
+                model: *31882760
+                id: d51cc509-e1b7-4796-98a4-ccae05964ea8
+              : true
+          location: /new_location/
+          model: *31075580
         : true
-        ? !ruby/object:Occi::Core::Kind
-          scheme: http://schemas.ogf.org/occi/core#
-          term: link
-          title: link
-          attributes: !ruby/hash:Occi::Core::Attributes
-            occi: !ruby/hash:Occi::Core::Attributes
-              core: !ruby/hash:Occi::Core::Attributes
-                id: *11342820
-                _id: *11342600
-                title: *11342540
-                _title: *11342440
-                target: !ruby/object:Occi::Core::Properties
-                  type: string
-                  required: false
-                  mutable: true
-                  pattern: .*
-                  description: 
-                  default: 
-                _target: !ruby/object:Occi::Core::Properties
-                  type: string
-                  required: false
-                  mutable: true
-                  pattern: .*
-                  description: 
-                  default: 
-                source: !ruby/object:Occi::Core::Properties
-                  type: string
-                  required: false
-                  mutable: true
-                  pattern: .*
-                  description: 
-                  default: 
-                _source: !ruby/object:Occi::Core::Properties
-                  type: string
-                  required: false
-                  mutable: true
-                  pattern: .*
-                  description: 
-                  default: 
-          parent: *11343160
-          actions: !ruby/object:Occi::Core::Actions
-            hash: {}
-          entities: !ruby/object:Occi::Core::Entities
-            hash: {}
-          location: /link/
-          model: *11343240
-        : true
+        *19089380: true
     mixins: !ruby/object:Occi::Core::Mixins
       hash: {}
     actions: !ruby/object:Occi::Core::Actions
@@ -137,18 +295,16 @@ kinds: !ruby/object:Occi::Core::Kinds
       hash: {}
 mixins: !ruby/object:Occi::Core::Mixins
   hash: {}
-  model: *11343240
+  model: *31075580
 actions: !ruby/object:Occi::Core::Actions
   hash: {}
-  model: *11343240
+  model: *31075580
 resources: !ruby/object:Occi::Core::Resources
   hash:
-    ? &11340400 !ruby/object:Occi::Core::Resource
+    ? &30917980 !ruby/object:Occi::Infrastructure::Network
       kind: !ruby/object:Occi::Core::Kind
-        scheme: !binary |-
-          aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2luZnJhc3RydWN0dXJlIw==
-        term: !binary |-
-          bmV0d29yaw==
+        scheme: http://schemas.ogf.org/occi/infrastructure#
+        term: network
         title: 
         attributes: !ruby/hash:Occi::Core::Attributes {}
         parent: 
@@ -156,15 +312,13 @@ resources: !ruby/object:Occi::Core::Resources
           hash: {}
         entities: !ruby/object:Occi::Core::Entities
           hash:
-            *11340400: true
+            *30917980: true
         location: /network/
       mixins: !ruby/object:Occi::Core::Mixins
         hash:
           ? !ruby/object:Occi::Core::Mixin
-            scheme: !binary |-
-              aHR0cDovL29wZW5uZWJ1bGEub3JnL29jY2kvaW5mcmFzdHJ1Y3R1cmUj
-            term: !binary |-
-              bmV0d29yaw==
+            scheme: http://opennebula.org/occi/infrastructure#
+            term: network
             title: 
             attributes: !ruby/hash:Occi::Core::Attributes {}
             depends: !ruby/object:Occi::Core::Dependencies
@@ -173,16 +327,15 @@ resources: !ruby/object:Occi::Core::Resources
               hash: {}
             entities: !ruby/object:Occi::Core::Entities
               hash:
-                *11340400: true
-            location: /mixins/network/
+                *30917980: true
+            location: /mixin/network/
             applies: !ruby/object:Occi::Core::Kinds
               hash: {}
+            model: *31075580
           : true
           ? !ruby/object:Occi::Core::Mixin
-            scheme: !binary |-
-              aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2luZnJhc3RydWN0dXJlIw==
-            term: !binary |-
-              aXBuZXR3b3Jr
+            scheme: http://schemas.ogf.org/occi/infrastructure#
+            term: ipnetwork
             title: 
             attributes: !ruby/hash:Occi::Core::Attributes {}
             depends: !ruby/object:Occi::Core::Dependencies
@@ -191,53 +344,67 @@ resources: !ruby/object:Occi::Core::Resources
               hash: {}
             entities: !ruby/object:Occi::Core::Entities
               hash:
-                *11340400: true
-            location: /mixins/ipnetwork/
+                *30917980: true
+            location: /mixin/ipnetwork/
             applies: !ruby/object:Occi::Core::Kinds
               hash: {}
+            model: *31075580
           : true
-        model: *11343240
-        entity: *11340400
+        model: *31075580
+        entity: *30917980
       attributes: !ruby/hash:Occi::Core::Attributes
         occi: !ruby/hash:Occi::Core::Attributes
           core: !ruby/hash:Occi::Core::Attributes
-            id: !binary |-
-              ZTRiZDgxYzQtYWRkYS01NjI2LTg0MGQtMzliYjc5NTlkYjk3
-            _id: *11342600
-            title: !binary |-
-              bW9uaXRvcmluZw==
-            _title: *11342440
+            id: e4bd81c4-adda-5626-840d-39bb7959db97
+            _id: *19164600
+            title: monitoring
+            _title: *17904360
             summary: 
-            _summary: *11341760
-          !binary "bmV0d29yaw==": !ruby/hash:Occi::Core::Attributes
-            !binary "YWRkcmVzcw==": !binary |-
-              MTkyLjE2OC4yNTQuMA==
-            !binary "YWxsb2NhdGlvbg==": !binary |-
-              ZHluYW1pYw==
-            !binary "c3RhdGU=": !binary |-
-              YWN0aXZl
-        !binary "b3Jn": !ruby/hash:Occi::Core::Attributes
-          !binary "b3Blbm5lYnVsYQ==": !ruby/hash:Occi::Core::Attributes
-            !binary "bmV0d29yaw==": !ruby/hash:Occi::Core::Attributes
-              !binary "aWQ=": !binary |-
-                Ng==
-              !binary "YnJpZGdl": !binary |-
-                eGVuYnIw
-              !binary "dmxhbg==": !binary |-
-                Tk8=
+            _summary: *19216300
+          network: !ruby/hash:Occi::Core::Attributes
+            vlan: 
+            _vlan: !ruby/object:Occi::Core::Properties
+              type: number
+              required: false
+              mutable: true
+              pattern: \d+
+              description: 
+              default: 
+            label: 
+            _label: !ruby/object:Occi::Core::Properties
+              type: string
+              required: false
+              mutable: true
+              pattern: .*
+              description: 
+              default: 
+            state: active
+            _state: !ruby/object:Occi::Core::Properties
+              type: string
+              required: false
+              mutable: false
+              pattern: active|inactive|error
+              description: 
+              default: inactive
+            address: 192.168.254.0
+            allocation: dynamic
+        org: !ruby/hash:Occi::Core::Attributes
+          opennebula: !ruby/hash:Occi::Core::Attributes
+            network: !ruby/hash:Occi::Core::Attributes
+              id: '6'
+              bridge: xenbr0
+              vlan: 'NO'
       actions: !ruby/object:Occi::Core::Actions
         hash: {}
-        model: *11343240
+        model: *31075580
       location: 
       links: !ruby/object:Occi::Core::Links
         hash: {}
-        model: *11343240
-      model: *11343240
-      id: !binary |-
-        ZTRiZDgxYzQtYWRkYS01NjI2LTg0MGQtMzliYjc5NTlkYjk3
+        model: *31075580
+      model: *31075580
     : true
-  model: *11343240
+  model: *31075580
 links: !ruby/object:Occi::Core::Links
   hash: {}
-  model: *11343240
-model: *11343240
+  model: *31075580
+model: *31075580
