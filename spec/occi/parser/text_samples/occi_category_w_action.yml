@@ -1,0 +1,12 @@
+--- !ruby/object:Occi::Core::Action
+scheme: http://schemas.ogf.org/occi/infrastructure/compute/action#
+term: restart
+title: Restart Compute instance
+attributes: !ruby/hash:Occi::Core::Attributes
+  method: !ruby/object:Occi::Core::Properties
+    type: string
+    required: false
+    mutable: false
+    pattern: .*
+    description: 
+    default: 
