@@ -30,7 +30,7 @@ class YAMLHash < Hashie::Mash
         stack.pop
       end
 
-      stack.push(line.lstrip.chomp)
+      stack.push(line.lstrip.chomp.gsub(/[\*\&]\d+/, "").gsub(/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/, ""))
       self[stack] = nil
     end
   end
