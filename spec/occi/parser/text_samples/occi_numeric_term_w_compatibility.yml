@@ -1,6 +1,6 @@
 --- !ruby/object:Occi::Core::Kind
-scheme: http://schemas.ogf.org/occi/infrastructure#
-term: compute
+scheme: http://a.a/a#
+term: 1term
 title: 
 attributes: !ruby/hash:Occi::Core::Attributes {}
 parent: 
@@ -8,4 +8,4 @@ actions: !ruby/object:Occi::Core::Actions
   hash: {}
 entities: !ruby/object:Occi::Core::Entities
   hash: {}
-location: /compute/
+location: /1term/
