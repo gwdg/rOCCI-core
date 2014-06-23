@@ -1,96 +1,79 @@
 --- !ruby/object:Occi::Core::Kind
-scheme: !binary |-
-  aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2luZnJhc3RydWN0dXJlIw==
-term: !binary |-
-  Y29tcHV0ZQ==
-title: !binary |-
-  Q29tcHV0ZSBSZXNvdXJjZQ==
+scheme: http://schemas.ogf.org/occi/infrastructure#
+term: compute
+title: Compute Resource
 attributes: !ruby/hash:Occi::Core::Attributes
-  !binary "b2NjaQ==": !ruby/hash:Occi::Core::Attributes
-    !binary "Y29tcHV0ZQ==": !ruby/hash:Occi::Core::Attributes
-      !binary "YXJjaGl0ZWN0dXJl": !ruby/object:Occi::Core::Properties
+  occi: !ruby/hash:Occi::Core::Attributes
+    compute: !ruby/hash:Occi::Core::Attributes
+      architecture: !ruby/object:Occi::Core::Properties
         type: string
         required: false
         mutable: false
         pattern: .*
         description: 
         default: 
-      !binary "c3RhdGU=": !ruby/object:Occi::Core::Properties
+      state: !ruby/object:Occi::Core::Properties
         type: string
         required: false
         mutable: false
         pattern: .*
         description: 
         default: 
-      !binary "c3BlZWQ=": !ruby/object:Occi::Core::Properties
+      speed: !ruby/object:Occi::Core::Properties
         type: string
         required: false
         mutable: false
         pattern: .*
         description: 
         default: 
-      !binary "bWVtb3J5": !ruby/object:Occi::Core::Properties
+      memory: !ruby/object:Occi::Core::Properties
         type: string
         required: false
         mutable: false
         pattern: .*
         description: 
         default: 
-      !binary "Y29yZXM=": !ruby/object:Occi::Core::Properties
+      cores: !ruby/object:Occi::Core::Properties
         type: string
         required: false
         mutable: false
         pattern: .*
         description: 
         default: 
-      !binary "aG9zdG5hbWU=": !ruby/object:Occi::Core::Properties
+      hostname: !ruby/object:Occi::Core::Properties
         type: string
         required: false
         mutable: false
         pattern: .*
         description: 
         default: 
-parent: !binary |-
-  aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2NvcmUjcmVzb3VyY2U=
+parent: http://schemas.ogf.org/occi/core#resource
 actions: !ruby/object:Occi::Core::Actions
   hash:
     ? !ruby/object:Occi::Core::Action
-      scheme: !binary |-
-        aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2luZnJhc3RydWN0dXJlL2Nv
-        bXB1dGUvYWN0aW9uIw==
-      term: !binary |-
-        c3RhcnQ=
+      scheme: http://schemas.ogf.org/occi/infrastructure/compute/action#
+      term: start
       title: 
       attributes: !ruby/hash:Occi::Core::Attributes {}
     : true
     ? !ruby/object:Occi::Core::Action
-      scheme: !binary |-
-        aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2luZnJhc3RydWN0dXJlL2Nv
-        bXB1dGUvYWN0aW9uIw==
-      term: !binary |-
-        c3RvcA==
+      scheme: http://schemas.ogf.org/occi/infrastructure/compute/action#
+      term: stop
       title: 
       attributes: !ruby/hash:Occi::Core::Attributes {}
     : true
     ? !ruby/object:Occi::Core::Action
-      scheme: !binary |-
-        aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2luZnJhc3RydWN0dXJlL2Nv
-        bXB1dGUvYWN0aW9uIw==
-      term: !binary |-
-        cmVzdGFydA==
+      scheme: http://schemas.ogf.org/occi/infrastructure/compute/action#
+      term: restart
       title: 
       attributes: !ruby/hash:Occi::Core::Attributes {}
     : true
     ? !ruby/object:Occi::Core::Action
-      scheme: !binary |-
-        aHR0cDovL3NjaGVtYXMub2dmLm9yZy9vY2NpL2luZnJhc3RydWN0dXJlL2Nv
-        bXB1dGUvYWN0aW9uIw==
-      term: !binary |-
-        c3VzcGVuZA==
+      scheme: http://schemas.ogf.org/occi/infrastructure/compute/action#
+      term: suspend
       title: 
       attributes: !ruby/hash:Occi::Core::Attributes {}
     : true
 entities: !ruby/object:Occi::Core::Entities
   hash: {}
-location: !binary |-
-  L2NvbXB1dGUv
+location: /compute/
