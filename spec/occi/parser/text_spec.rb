@@ -51,7 +51,7 @@ module Occi
         end
 
         it 'parses inline links correctly' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.text", "rb").read
+          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.text", "rt").read
           collection = Occi::Parser::Text.category resource_string
           yamled.load(YAML::dump(collection))
           expected.load_file("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.yml")
@@ -59,7 +59,7 @@ module Occi
         end
 
         it 'parses inline Links and Mixins correctly' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.text", "rb").read
+          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.text", "rt").read
           collection = Occi::Parser::Text.category resource_string
           yamled.load(YAML::dump(collection))
           expected.load_file("spec/occi/parser/text_samples/occi_resource_w_inline_links.yml")
@@ -99,7 +99,7 @@ module Occi
         end
         
         it 'parses model from rOCCI server' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_model_rocci_server.text", "rb").read
+          resource_string = File.open("spec/occi/parser/text_samples/occi_model_rocci_server.text", "rt").read
           collection =  Occi::Parser::Text.category resource_string
           yamled.load(YAML::dump(collection))
           expected.load_file("spec/occi/parser/text_samples/occi_model_rocci_server.yml")
@@ -159,7 +159,7 @@ module Occi
         end
 
         it 'types parsed compute resource from rOCCI server as Occi::Infrastructure::Compute' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rb").read
+          resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rt").read
           expected_class = Occi::Infrastructure::Compute
           resource_class =  Occi::Parser::Text.resource(resource_string).resources.first.class
           expect(resource_class).to eql expected_class
@@ -171,7 +171,7 @@ module Occi
         let(:expected) { YAMLHash.new }
 
         it 'parses strings describing OCCI Categories' do
-          categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rb").read
+          categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
           categories = Occi::Parser::Text.categories categories_string
           yamled.load(YAML::dump(categories))
           expected.load_file("spec/occi/parser/text_samples/occi_categories.yml")
@@ -179,7 +179,7 @@ module Occi
         end
 
         it 'parses strings describing OCCI Categories, skipping unparseable additions' do
-          categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rb").read
+          categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
           categories_string["\n"] = "\n\n&*$this won't parse\n"
           categories = Occi::Parser::Text.categories categories_string
           yamled.load(YAML::dump(categories))
@@ -200,7 +200,7 @@ module Occi
         let(:expected){ YAMLHash.new }
 
         it 'parses link resource instance' do
-          link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rb").read
+          link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rt").read
           link = Occi::Parser::Text.link link_string
           yamled.load(YAML::dump(link))
           expected.load_file("spec/occi/parser/text_samples/occi_link_resource_instance.yml")
