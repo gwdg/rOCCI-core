@@ -30,7 +30,7 @@ class YAMLHash < Hashie::Mash
         stack.pop
       end
 
-      stack.push(line.lstrip.chomp.gsub(/[\*\&]\d+/, "Ptr-Emptied").gsub(/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/, "ID-Emptied"))
+      stack.push(line.lstrip.chomp.gsub(/\s*$/, "").gsub(/[\*\&]\d+/, "Ptr-Emptied").gsub(/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/, "ID-Emptied"))
       self[stack] = nil
     end
   end
