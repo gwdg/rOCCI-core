@@ -3,6 +3,7 @@
 module Occi
   module Parser
     describe Text do
+      before(:each) { YAML::ENGINE.yamler = 'psych' }
 
       context '.category' do
         let(:yamled){ YAMLHash.new }
