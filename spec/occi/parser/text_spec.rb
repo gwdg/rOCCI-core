@@ -12,7 +12,7 @@ module Occi
         it 'parses a string describing an OCCI Category' do
           category_string = 'Category: a_a1-_;scheme="http://a.a/a#";class="kind";title="aA1!\"§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
           category = Occi::Parser::Text.category category_string
-          yamled.load(YAML::dump(category))
+          yamled.load(YAML::dump(category, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_category.yml")
           expect(yamled).to eql expected
         end
@@ -20,7 +20,7 @@ module Occi
         it 'parses a string describing an OCCI Category with unquoted class value' do
           category_string = 'Category: a_a1-_;scheme="http://a.a/a#";class=kind'
           category = Occi::Parser::Text.category category_string
-          yamled.load(YAML::dump(category))
+          yamled.load(YAML::dump(category, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_category_unquoted.yml")
           expect(yamled).to eql expected
         end
@@ -28,7 +28,7 @@ module Occi
         it 'parses a string describing an OCCI Category with uppercase term' do
           category_string = 'Category: TERM;scheme="http://a.a/a#";class=kind'
           category = Occi::Parser::Text.category category_string
-          yamled.load(YAML::dump(category))
+          yamled.load(YAML::dump(category, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_category_uppercase.yml")
           expect(yamled).to eql expected
         end
@@ -46,7 +46,7 @@ module Occi
         it 'parses attributes correctly' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_attributes.text", "rt").read
           collection = Occi::Parser::Text.category resource_string
-          yamled.load(YAML::dump(collection))
+          yamled.load(YAML::dump(collection, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_resource_w_attributes.yml")
           expect(yamled).to eql expected
         end
@@ -54,7 +54,7 @@ module Occi
         it 'parses inline links correctly' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.text", "rt").read
           collection = Occi::Parser::Text.category resource_string
-          yamled.load(YAML::dump(collection))
+          yamled.load(YAML::dump(collection, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.yml")
           expect(yamled).to eql expected
         end
@@ -62,7 +62,7 @@ module Occi
         it 'parses inline Links and Mixins correctly' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.text", "rt").read
           collection = Occi::Parser::Text.category resource_string
-          yamled.load(YAML::dump(collection))
+          yamled.load(YAML::dump(collection, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_resource_w_inline_links.yml")
           expect(yamled).to eql expected
         end
@@ -70,7 +70,7 @@ module Occi
         it 'parses action correctly' do
           category_string = 'Category: restart;scheme="http://schemas.ogf.org/occi/infrastructure/compute/action#";class="action";title="Restart Compute instance";attributes="method"'
           category = Occi::Parser::Text.category category_string
-          yamled.load(YAML::dump(category))
+          yamled.load(YAML::dump(category, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_category_w_action.yml")
           expect(yamled).to eql expected
         end
@@ -78,7 +78,7 @@ module Occi
         it 'parses network resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rt").read
           collection =  Occi::Parser::Text.category resource_string
-          yamled.load(YAML::dump(collection))
+          yamled.load(YAML::dump(collection, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_network_rocci_server.yml")
           expect(yamled).to eql expected
         end
@@ -86,7 +86,7 @@ module Occi
         it 'parses storage resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.text", "rt").read
           collection =  Occi::Parser::Text.category resource_string
-          yamled.load(YAML::dump(collection))
+          yamled.load(YAML::dump(collection, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_storage_rocci_server.yml")
           expect(yamled).to eql expected
         end
@@ -94,7 +94,7 @@ module Occi
         it 'parses compute resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rt").read
           collection =  Occi::Parser::Text.category resource_string
-          yamled.load(YAML::dump(collection))
+          yamled.load(YAML::dump(collection, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_compute_rocci_server.yml")
           expect(yamled).to eql expected
         end
@@ -102,7 +102,7 @@ module Occi
         it 'parses model from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_model_rocci_server.text", "rt").read
           collection =  Occi::Parser::Text.category resource_string
-          yamled.load(YAML::dump(collection))
+          yamled.load(YAML::dump(collection, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_model_rocci_server.yml")
           expect(yamled).to eql expected
         end
@@ -138,7 +138,7 @@ module Occi
         it 'parses network resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rt").read
           resource = Occi::Parser::Text.resource resource_string
-          yamled.load(YAML::dump(resource))
+          yamled.load(YAML::dump(resource, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_network_rocci_server.resource.yml")
           expect(yamled).to eql expected
         end
@@ -146,7 +146,7 @@ module Occi
         it 'parses storage resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.text", "rt").read
           resource =  Occi::Parser::Text.resource resource_string
-          yamled.load(YAML::dump(resource))
+          yamled.load(YAML::dump(resource, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_storage_rocci_server.resource.yml")
           expect(yamled).to eql expected
         end
@@ -154,7 +154,7 @@ module Occi
         it 'parses compute resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rt").read
           resource =  Occi::Parser::Text.resource resource_string
-          yamled.load(YAML::dump(resource))
+          yamled.load(YAML::dump(resource, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_compute_rocci_server.resource.yml")
           expect(yamled).to eql expected
         end
@@ -174,7 +174,7 @@ module Occi
         it 'parses strings describing OCCI Categories' do
           categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
           categories = Occi::Parser::Text.categories categories_string
-          yamled.load(YAML::dump(categories))
+          yamled.load(YAML::dump(categories, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_categories.yml")
           expect(yamled).to eql expected
         end
@@ -183,7 +183,7 @@ module Occi
           categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
           categories_string["\n"] = "\n\n&*$this won't parse\n"
           categories = Occi::Parser::Text.categories categories_string
-          yamled.load(YAML::dump(categories))
+          yamled.load(YAML::dump(categories, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_categories.yml")
           expect(yamled).to eql expected
         end
@@ -203,7 +203,7 @@ module Occi
         it 'parses link resource instance' do
           link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rt").read
           link = Occi::Parser::Text.link link_string
-          yamled.load(YAML::dump(link))
+          yamled.load(YAML::dump(link, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_link_resource_instance.yml")
           expect(yamled).to eql expected
         end
@@ -245,7 +245,7 @@ module Occi
         it 'parses string with category set' do
           link_string = File.open("spec/occi/parser/text_samples/occi_link_simple.text", "rt").read
           link = Occi::Parser::Text.link_string link_string, nil
-          yamled.load(YAML::dump(link))
+          yamled.load(YAML::dump(link, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_link_simple.link_string.yml")
           expect(yamled).to eql expected
         end
@@ -253,7 +253,7 @@ module Occi
         it 'parses link with category' do
           link_string = File.open("spec/occi/parser/text_samples/occi_link_w_category.text", "rt").read
           link = Occi::Parser::Text.link_string link_string, nil
-          yamled.load(YAML::dump(link))
+          yamled.load(YAML::dump(link, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_link_w_category.yml")
           expect(yamled).to eql expected
         end
@@ -261,7 +261,7 @@ module Occi
         it 'parses link with attributes' do
           link_string = File.open("spec/occi/parser/text_samples/occi_link_w_attributes.text", "rt").read
           link = Occi::Parser::Text.link_string link_string, nil
-          yamled.load(YAML::dump(link))
+          yamled.load(YAML::dump(link, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_link_w_attributes.yml")
           expect(yamled).to eql expected
         end
@@ -269,7 +269,7 @@ module Occi
         it 'parses string with action link' do
           link_string = 'Link: </compute/04106bce-87eb-4f8f-a665-2f624e54ba46?action=restart>; rel="http://schemas.ogf.org/occi/infrastructure/compute/action#restart"'
           link = Occi::Parser::Text.link_string(link_string, "source")
-          yamled.load(YAML::dump(link))
+          yamled.load(YAML::dump(link, :canonical => false))
           expected.load_file("spec/occi/parser/text_samples/occi_link_w_action_link.yml")
           expect(yamled).to eql expected
         end
@@ -285,7 +285,7 @@ module Occi
             Occi::Settings['compatibility']=true
             category_string = 'Category: TERM;scheme="http://a.a/a#";class=kind'
             category = Occi::Parser::Text.category category_string
-            yamled.load(YAML::dump(category))
+            yamled.load(YAML::dump(category, :canonical => false))
             expected.load_file("spec/occi/parser/text_samples/occi_term_w_compatibility.yml")
             expect(yamled).to eql expected
           end
@@ -300,7 +300,7 @@ module Occi
             Occi::Settings['compatibility']=true
             category_string = 'Category: 1TERM;scheme="http://a.a/a#";class=kind'
             category = Occi::Parser::Text.category category_string
-            yamled.load(YAML::dump(category))
+            yamled.load(YAML::dump(category, :canonical => false))
             expected.load_file("spec/occi/parser/text_samples/occi_numeric_term_w_compatibility.yml")
             expect(yamled).to eql expected
           end
@@ -318,7 +318,7 @@ module Occi
             Occi::Settings['compatibility']=true
             category_string = 'Category: a_a1-_;scheme="http://a.a/a#a_a1-_";class="kind";title="aA1!\"§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
             category = Occi::Parser::Text.category category_string
-            yamled.load(YAML::dump(category))
+            yamled.load(YAML::dump(category, :canonical => false))
             expected.load_file("spec/occi/parser/text_samples/occi_term_by_schemes_w_compatibility.yml")
             expect(yamled).to eql expected
           end

@@ -132,21 +132,21 @@ module Occi
       it 'parses categories' do
         categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
         categories = Occi::Parser.parse('text/plain', categories_string, true)
-        yamled.load(YAML::dump(categories))
+        yamled.load(YAML::dump(categories, :canonical => false))
         expected.load_file("spec/occi/parser/text_samples/occi_categories.parse_headers.yml")
         expect(yamled).to eql expected
       end
 
       it 'parses resources from headers' do
         resource = Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, resource_in_headers)
-        yamled.load(YAML::dump(resource))
+        yamled.load(YAML::dump(resource, :canonical => false))
         expected.load_file("spec/occi/parser/text_samples/occi_network_rocci_server.resource.header.yml")
         expect(yamled).to eql expected
       end
 
       it 'parses resources from rack-compliant headers' do
         resource = Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rack_resource_in_headers)
-        yamled.load(YAML::dump(resource))
+        yamled.load(YAML::dump(resource, :canonical => false))
         expected.load_file("spec/occi/parser/text_samples/occi_network_rocci_server.resource.rack.yml")
         expect(yamled).to eql expected
       end
@@ -154,7 +154,7 @@ module Occi
       it 'parses link' do
         link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rt").read
         link = Occi::Parser.parse('text/plain', link_string, false, Occi::Core::Link)
-        yamled.load(YAML::dump(link))
+        yamled.load(YAML::dump(link, :canonical => false))
         expected.load_file("spec/occi/parser/text_samples/occi_link_resource_instance.parse.yml")
         expect(yamled).to eql expected
       end
@@ -231,7 +231,7 @@ module Occi
       it 'parses categories' do
         categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
         categories = Occi::Parser.parse('text/plain', categories_string, true)
-        yamled.load(YAML::dump(categories))
+        yamled.load(YAML::dump(categories, :canonical => false))
         expected.load_file("spec/occi/parser/text_samples/occi_categories.body_plain.yml")
         expect(yamled).to eql expected
       end
@@ -239,7 +239,7 @@ module Occi
       it 'parses resources' do
         resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rt").read
         resource = Occi::Parser.parse('text/plain', resource_string, false, Occi::Core::Resource)
-        yamled.load(YAML::dump(resource))
+        yamled.load(YAML::dump(resource, :canonical => false))
         expected.load_file("spec/occi/parser/text_samples/occi_network_rocci_server.body_plain.yml")
         expect(yamled).to eql expected
       end
@@ -247,7 +247,7 @@ module Occi
       it 'parses links' do
         link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rt").read
         link = Occi::Parser.parse('text/plain', link_string, false, Occi::Core::Link)
-        yamled.load(YAML::dump(link))
+        yamled.load(YAML::dump(link, :canonical => false))
         expected.load_file("spec/occi/parser/text_samples/occi_link_resource_instance.body_plain.yml")
         expect(yamled).to eql expected
       end
