@@ -25,6 +25,8 @@ class YAMLHash < Hashie::Mash
         break
       end
 
+      next if /^---/.match(line)
+
       currentDepth = line.scan(/^\s*/).first.length / 2
       while (currentDepth) < stack.length
         stack.pop
