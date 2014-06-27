@@ -2,13 +2,6 @@ require 'hashie'
 
 class YAMLHash < Hashie::Mash
 
-#  def initialize (arg=nil)
-#    super
-#    if !arg.nil? 
-#      self.load(arg)
-#    end
-#  end
-
   def load_file fs
     f = File.open(fs, "rt")
     self.load f.read
