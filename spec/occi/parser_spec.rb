@@ -138,24 +138,21 @@ module Occi
 
       it 'parses resources from headers' do
         resource = Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, resource_in_headers)
-        yamled.load(YAML::dump(resource, :canonical => false))
-        expected.load_file("spec/occi/parser/text_samples/occi_network_rocci_server.resource.header.yml")
-        expect(yamled).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.resource.header.expected", "rt").read.chomp
+        expect(resource.to_text).to eql expected
       end
 
       it 'parses resources from rack-compliant headers' do
         resource = Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rack_resource_in_headers)
-        yamled.load(YAML::dump(resource, :canonical => false))
-        expected.load_file("spec/occi/parser/text_samples/occi_network_rocci_server.resource.rack.yml")
-        expect(yamled).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.resource.rack.expected", "rt").read.chomp
+        expect(resource.to_text).to eql expected
       end
 
       it 'parses link' do
         link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rt").read
         link = Occi::Parser.parse('text/plain', link_string, false, Occi::Core::Link)
-        yamled.load(YAML::dump(link, :canonical => false))
-        expected.load_file("spec/occi/parser/text_samples/occi_link_resource_instance.parse.yml")
-        expect(yamled).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.parse.expected", "rt").read.chomp
+        expect(link.to_text).to eql expected
       end
 
       it 'fails gracefully for unknown entity type' do
@@ -237,17 +234,15 @@ module Occi
       it 'parses resources' do
         resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rt").read
         resource = Occi::Parser.parse('text/plain', resource_string, false, Occi::Core::Resource)
-        yamled.load(YAML::dump(resource, :canonical => false))
-        expected.load_file("spec/occi/parser/text_samples/occi_network_rocci_server.body_plain.yml")
-        expect(yamled).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.body_plain.expected", "rt").read.chomp
+        expect(resource.to_text).to eql expected
       end
 
       it 'parses links' do
         link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rt").read
         link = Occi::Parser.parse('text/plain', link_string, false, Occi::Core::Link)
-        yamled.load(YAML::dump(link, :canonical => false))
-        expected.load_file("spec/occi/parser/text_samples/occi_link_resource_instance.body_plain.yml")
-        expect(yamled).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.body_plain.expected", "rt").read.chomp
+        expect(link.to_text).to eql expected
       end
 
       it 'copes with unknown entity type' do
