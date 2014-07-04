@@ -185,9 +185,8 @@ module Occi
         it 'parses link resource instance' do
           link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rt").read
           link = Occi::Parser::Text.link link_string
-          yamled.load(YAML::dump(link, :canonical => false))
-          expected.load_file("spec/occi/parser/text_samples/occi_link_resource_instance.yml")
-          expect(yamled).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.expected", "rt").read.chomp
+          expect(link.to_text).to eql expected
         end
 
       end
