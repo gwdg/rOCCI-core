@@ -3,12 +3,8 @@
 module Occi
   module Parser
     describe Text do
-      before(:each) { YAML::ENGINE.yamler = 'psych' }
 
       context '.category' do
-        let(:yamled){ YAMLHash.new }
-        let(:expected){ YAMLHash.new }
-
         it 'parses a string describing an OCCI Category' do
           category_string = 'Category: a_a1-_;scheme="http://a.a/a#";class="kind";title="aA1!§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
           category = Occi::Parser::Text.category category_string
@@ -119,9 +115,6 @@ module Occi
       end
 
       context '.resource' do
-        let(:yamled){ YAMLHash.new }
-        let(:expected){ YAMLHash.new }
-
         it 'parses network resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rt").read
           resource = Occi::Parser::Text.resource resource_string
@@ -152,9 +145,6 @@ module Occi
       end
 
       context '.categories' do
-        let(:yamled) { YAMLHash.new }
-        let(:expected) { YAMLHash.new }
-
         it 'parses strings describing OCCI Categories' do
           categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
           categories = Occi::Parser::Text.categories categories_string
@@ -179,9 +169,6 @@ module Occi
       end
 
       context '.link' do
-        let(:yamled){ YAMLHash.new }
-        let(:expected){ YAMLHash.new }
-
         it 'parses link resource instance' do
           link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rt").read
           link = Occi::Parser::Text.link link_string
@@ -220,9 +207,6 @@ module Occi
       end
 
       context '.link_string' do
-        let(:yamled){ YAMLHash.new }
-        let(:expected){ YAMLHash.new }
-
         it 'parses string with category set' do
           link_string = File.open("spec/occi/parser/text_samples/occi_link_simple.text", "rt").read
           link = Occi::Parser::Text.link_string link_string, nil
@@ -253,9 +237,6 @@ module Occi
 
       context 'compatibility' do
         after(:each) { Occi::Settings.reload! }
-        let(:yamled){ YAMLHash.new }
-        let(:expected){ YAMLHash.new }
-
         context 'terms' do
           it 'parses uppercase term, compatibility on' do
             Occi::Settings['compatibility']=true
