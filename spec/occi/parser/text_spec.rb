@@ -226,33 +226,28 @@ module Occi
         it 'parses string with category set' do
           link_string = File.open("spec/occi/parser/text_samples/occi_link_simple.text", "rt").read
           link = Occi::Parser::Text.link_string link_string, nil
-          yamled.load(YAML::dump(link, :canonical => false))
-          expected.load_file("spec/occi/parser/text_samples/occi_link_simple.link_string.yml")
-          expect(yamled).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_link_simple.expected", "rt").read.chomp
+          expect(link.to_text).to eql expected
         end
 
         it 'parses link with category' do
           link_string = File.open("spec/occi/parser/text_samples/occi_link_w_category.text", "rt").read
           link = Occi::Parser::Text.link_string link_string, nil
-          yamled.load(YAML::dump(link, :canonical => false))
-          expected.load_file("spec/occi/parser/text_samples/occi_link_w_category.yml")
-          expect(yamled).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_link_w_category.expected", "rt").read.chomp
+          expect(link.to_text).to eql expected
         end
 
         it 'parses link with attributes' do
           link_string = File.open("spec/occi/parser/text_samples/occi_link_w_attributes.text", "rt").read
           link = Occi::Parser::Text.link_string link_string, nil
-          yamled.load(YAML::dump(link, :canonical => false))
-          expected.load_file("spec/occi/parser/text_samples/occi_link_w_attributes.yml")
-          expect(yamled).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_link_w_attributes.expected", "rt").read.chomp
+          expect(link.to_text).to eql expected
         end
 
         it 'parses string with action link' do
           link_string = 'Link: </compute/04106bce-87eb-4f8f-a665-2f624e54ba46?action=restart>; rel="http://schemas.ogf.org/occi/infrastructure/compute/action#restart"'
           link = Occi::Parser::Text.link_string(link_string, "source")
-          yamled.load(YAML::dump(link, :canonical => false))
-          expected.load_file("spec/occi/parser/text_samples/occi_link_w_action_link.yml")
-          expect(yamled).to eql expected
+          expect(link.to_text).to eql "Category: restart;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\""
         end
       end
 
