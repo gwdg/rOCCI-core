@@ -125,25 +125,22 @@ module Occi
         it 'parses network resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rt").read
           resource = Occi::Parser::Text.resource resource_string
-          yamled.load(YAML::dump(resource, :canonical => false))
-          expected.load_file("spec/occi/parser/text_samples/occi_network_rocci_server.resource.yml")
-          expect(yamled).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.expected", "rt").read.chomp
+          expect(resource.to_text).to eql expected
         end
 
         it 'parses storage resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.text", "rt").read
           resource = Occi::Parser::Text.resource resource_string
-          yamled.load(YAML::dump(resource, :canonical => false))
-          expected.load_file("spec/occi/parser/text_samples/occi_storage_rocci_server.resource.yml")
-          expect(yamled).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.expected", "rt").read.chomp
+          expect(resource.to_text).to eql expected
         end
         
         it 'parses compute resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rt").read
           resource = Occi::Parser::Text.resource resource_string
-          yamled.load(YAML::dump(resource, :canonical => false))
-          expected.load_file("spec/occi/parser/text_samples/occi_compute_rocci_server.resource.yml")
-          expect(yamled).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.expected", "rt").read.chomp
+          expect(resource.to_text).to eql expected
         end
 
         it 'types parsed compute resource from rOCCI server as Occi::Infrastructure::Compute' do

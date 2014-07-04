@@ -1,0 +1,11 @@
+Category: network;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind";location="/network/";title=nil
+Category: network;scheme="http://opennebula.org/occi/infrastructure#";class="mixin";location="/mixin/network/";title=""
+Category: ipnetwork;scheme="http://schemas.ogf.org/occi/infrastructure#";class="mixin";location="/mixin/ipnetwork/";title=""
+X-OCCI-Attribute: occi.core.id="e4bd81c4-adda-5626-840d-39bb7959db97"
+X-OCCI-Attribute: occi.core.title="monitoring"
+X-OCCI-Attribute: occi.network.state="active"
+X-OCCI-Attribute: occi.network.address="192.168.254.0"
+X-OCCI-Attribute: occi.network.allocation="dynamic"
+X-OCCI-Attribute: org.opennebula.network.id="6"
+X-OCCI-Attribute: org.opennebula.network.bridge="xenbr0"
+X-OCCI-Attribute: org.opennebula.network.vlan="NO"
