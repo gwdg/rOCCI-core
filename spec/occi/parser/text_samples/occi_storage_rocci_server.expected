@@ -1,0 +1,9 @@
+Category: storage;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind";location="/storage/";title=nil
+Category: storage;scheme="http://opennebula.org/occi/infrastructure#";class="mixin";location="/mixin/storage/";title=""
+X-OCCI-Attribute: occi.core.id="33601efd-1c81-5547-8e65-6f8ef3dcb8c6"
+X-OCCI-Attribute: occi.core.title="EGI-COMPSs-CESNET_NFS_3"
+X-OCCI-Attribute: occi.storage.state="online"
+X-OCCI-Attribute: org.opennebula.storage.id="116"
+X-OCCI-Attribute: org.opennebula.storage.dev_prefix="xvd"
+X-OCCI-Attribute: org.opennebula.storage.driver="tap2:tapdisk:aio:"
+X-OCCI-Attribute: org.opennebula.storage.persistent="NO"
