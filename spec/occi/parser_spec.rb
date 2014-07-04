@@ -126,9 +126,6 @@ module Occi
         resource
       end
 
-      let(:yamled){ YAMLHash.new }
-      let(:expected){ YAMLHash.new }
-
       it 'parses categories' do
         categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
         categories = Occi::Parser.parse('text/plain', categories_string, true)
@@ -221,9 +218,6 @@ module Occi
     end
 
     context '.parse_body_plain' do
-      let(:yamled){ YAMLHash.new }
-      let(:expected){ YAMLHash.new }
-
       it 'parses categories' do
         categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
         categories = Occi::Parser.parse('text/plain', categories_string, true)
