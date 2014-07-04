@@ -1,5 +1,0 @@
---- !ruby/object:Occi::Core::Action
-scheme: http://schemas.ogf.org/occi/infrastructure/compute/action#
-term: restart
-title: 
-attributes: !ruby/hash:Occi::Core::Attributes {}
