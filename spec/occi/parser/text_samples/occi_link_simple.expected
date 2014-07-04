@@ -1,0 +1,7 @@
+Category: storagelink;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind";location="/link/storagelink/";title="storage link"
+X-OCCI-Attribute: occi.core.id="b2f7f1de-c60c-5b08-879c-81f52429c4ef"
+X-OCCI-Attribute: occi.core.title="monitoring"
+X-OCCI-Attribute: occi.storagelink.deviceid="xvda"
+X-OCCI-Attribute: occi.storagelink.state="inactive"
+X-OCCI-Attribute: org.opennebula.storagelink.bus="ide"
+X-OCCI-Attribute: org.opennebula.storagelink.driver="tap2:tapdisk:aio:"

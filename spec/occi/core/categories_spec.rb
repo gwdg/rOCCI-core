@@ -9,7 +9,7 @@ module Occi
         resource = model.get_by_id Occi::Core::Resource.type_identifier
         resource.location = '/new_location/'
         categories.model = model
-        categories.first.location.should == '/new_location/'
+        expect(categories.first.location).to eq '/new_location/'
       end
 
       it "replaces a category string when a model is added with the instance from the model"  do
@@ -20,7 +20,7 @@ module Occi
 
         resource = model.get_by_id Occi::Core::Resource.type_identifier
         resource.location = '/new_location/'
-        categories.first.location.should == '/new_location/'
+        expect(categories.first.location).to eq '/new_location/'
       end
 
     end

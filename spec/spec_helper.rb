@@ -11,6 +11,8 @@ end
 require 'occi-core'
 require 'json_spec'
 
+Dir["#{File.dirname(__FILE__)}/helpers/*.rb"].each {|file| require file }
+
 # simplify the usage of VCR; this will allow us to use
 #
 #   it "does something", :vcr do
@@ -23,7 +25,5 @@ require 'json_spec'
 #     ...
 #   end
 RSpec.configure do |c|
-  # in RSpec 3 this will no longer be necessary.
-  c.treat_symbols_as_metadata_keys_with_true_values = true
   c.include JsonSpec::Helpers
 end

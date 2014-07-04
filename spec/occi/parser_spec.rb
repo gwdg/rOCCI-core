@@ -127,35 +127,33 @@ module Occi
       end
 
       it 'parses categories' do
-        categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rb").read
-        expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_categories.dump", "rb"))
+        categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
         categories = Occi::Parser.parse('text/plain', categories_string, true)
-        expect(categories).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_categories.parse_headers.expected", "rt").read
+        expect(categories.to_text).to eql expected
       end
 
       it 'parses resources from headers' do
-        expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_network_rocci_server.resource.dump", "rb"))
         resource = Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, resource_in_headers)
-        expect(resource).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.resource.header.expected", "rt").read.chomp
+        expect(resource.to_text).to eql expected
       end
 
       it 'parses resources from rack-compliant headers' do
-        expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_network_rocci_server.resource.dump", "rb"))
         resource = Occi::Parser.parse('text/occi', '', false, Occi::Core::Resource, rack_resource_in_headers)
-        expect(resource).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.resource.rack.expected", "rt").read.chomp
+        expect(resource.to_text).to eql expected
       end
 
       it 'parses link' do
-        link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rb").read
+        link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rt").read
         link = Occi::Parser.parse('text/plain', link_string, false, Occi::Core::Link)
-        expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_resource_instance.dump", "rb"))
-        expected.links.each { |exp| exp.id = 'emptied' }
-        link.links.each { |lnk| lnk.id = 'emptied' }
-        expect(link).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.parse.expected", "rt").read.chomp
+        expect(link.to_text).to eql expected
       end
 
       it 'fails gracefully for unknown entity type' do
-        resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rb").read
+        resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rt").read
         expect{ Occi::Parser.parse('text/plain', resource_string, false, Occi::Core::Action) }.to raise_error(Occi::Errors::ParserTypeError)
       end
     end
@@ -221,26 +219,24 @@ module Occi
 
     context '.parse_body_plain' do
       it 'parses categories' do
-        categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rb").read
-        expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_categories.dump", "rb"))
+        categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
         categories = Occi::Parser.parse('text/plain', categories_string, true)
-        expect(categories).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_categories.body_plain.expected", "rt").read
+        expect(categories.to_text).to eql expected
       end
 
       it 'parses resources' do
-        resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rb").read
-        expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_network_rocci_server.resource.dump", "rb"))
+        resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rt").read
         resource = Occi::Parser.parse('text/plain', resource_string, false, Occi::Core::Resource)
-        expect(resource).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.body_plain.expected", "rt").read.chomp
+        expect(resource.to_text).to eql expected
       end
 
       it 'parses links' do
-        link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rb").read
+        link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rt").read
         link = Occi::Parser.parse('text/plain', link_string, false, Occi::Core::Link)
-        expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_resource_instance.dump", "rb"))
-        expected.links.each { |exp| exp.id = 'emptied' }
-        link.links.each { |lnk| lnk.id = 'emptied' }
-        expect(link).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.body_plain.expected", "rt").read.chomp
+        expect(link.to_text).to eql expected
       end
 
       it 'copes with unknown entity type' do

@@ -5,29 +5,31 @@ module Occi
     describe Text do
 
       context '.category' do
-
         it 'parses a string describing an OCCI Category' do
-          category_string = 'Category: a_a1-_;scheme="http://a.a/a#";class="kind";title="aA1!\"§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
-
+          category_string = 'Category: a_a1-_;scheme="http://a.a/a#";class="kind";title="aA1!§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
           category = Occi::Parser::Text.category category_string
-          expected = Marshal.restore("\x04\bo:\x15Occi::Core::Kind\r:\f@schemeI\"\x12http://a.a/a#\x06:\x06ET:\n@termI\"\va_a1-_\x06;\aT:\v@titleI\"%aA1!\\\"\xC2\xA7$%&/()=?`\xC2\xB4\xC3\x9F+*#-_.:,;<>\x06;\aT:\x10@attributesC:\eOcci::Core::Attributes{\aI\"\na_1-_\x06;\aTC;\v{\x06I\"\na1-_a\x06;\aTo:\eOcci::Core::Properties\v:\r@default0:\n@typeI\"\vstring\x06;\aF:\x0E@requiredF:\r@mutableF:\r@patternI\"\a.*\x06;\aF:\x11@description0I\"\ba-1\x06;\aTC;\v{\x06I\"\x06a\x06;\aTC;\v{\x06I\"\x06b\x06;\aTo;\f\v;\r0;\x0EI\"\vstring\x06;\aF;\x0FF;\x10F;\x11I\"\a.*\x06;\aF;\x120:\f@parentI\"\x13http://a.a/b#a\x06;\aT:\r@actionso:\x18Occi::Core::Actions\x06:\n@hash{\ao:\x17Occi::Core::Action\t;\x06I\"\x13http://a.a/a1#\x06;\aT;\bI\"\aa1\x06;\aT;\t0;\nC;\v{\x00To;\x17\t;\x06I\"\x14http://a.b1/b1#\x06;\aT;\bI\"\ab2\x06;\aT;\t0;\nC;\v{\x00T:\x0E@entitieso:\x19Occi::Core::Entities\x06;\x16{\x00:\x0E@locationI\"\v/a1-A/\x06;\aT")
-
-          expect(category).to eql expected
+          expect(category.to_text).to eql category_string
         end
 
         it 'parses a string describing an OCCI Category with unquoted class value' do
-          category_string = 'Category: a_a1-_;scheme="http://a.a/a#";class=kind'
-          expected = Marshal.restore("\x04\bo:\x15Occi::Core::Kind\r:\f@schemeI\"\x12http://a.a/a#\x06:\x06ET:\n@termI\"\va_a1-_\x06;\aT:\v@title0:\x10@attributesC:\eOcci::Core::Attributes{\x00:\f@parent0:\r@actionso:\x18Occi::Core::Actions\x06:\n@hash{\x00:\x0E@entitieso:\x19Occi::Core::Entities\x06;\x0F{\x00:\x0E@locationI\"\r/a_a1-_/\x06;\aF")
+          category_string = 'Category: a_a1-_;scheme="http://a.a/a#";class="kind"'
           category = Occi::Parser::Text.category category_string
-          expect(category).to eql expected
+          expect(category.to_text).to eql "#{category_string};location=\"/a_a1-_/\""
+        end
+
+        it 'parses a string describing an OCCI Category with unquoted class value and explicit location' do
+          category_string = 'Category: a_a1-_;scheme="http://a.a/a#";class="kind";location="/a_a1-_/"'
+          category = Occi::Parser::Text.category category_string
+          expect(category.to_text).to eql category_string
         end
 
         it 'parses a string describing an OCCI Category with uppercase term' do
-          category_string = 'Category: TERM;scheme="http://a.a/a#";class=kind'
-          expected = Marshal.restore("\x04\bo:\x15Occi::Core::Kind\r:\f@schemeI\"\x12http://a.a/a#\x06:\x06ET:\n@termI\"\tterm\x06;\aT:\v@title0:\x10@attributesC:\eOcci::Core::Attributes{\x00:\f@parent0:\r@actionso:\x18Occi::Core::Actions\x06:\n@hash{\x00:\x0E@entitieso:\x19Occi::Core::Entities\x06;\x0F{\x00:\x0E@locationI\"\v/term/\x06;\aF")
+          category_string = 'Category: TERM;scheme="http://a.a/a#";class="kind"'
           category = Occi::Parser::Text.category category_string
-          expect(category).to eql expected
+          expect(category.to_text).to eql 'Category: term;scheme="http://a.a/a#";class="kind";location="/term/"'
         end
+
+        it 'refuses upper case Category with compatibility mode off'
 
         it 'parses a string describing an OCCI Category incl. attributes with properties' do
           category_string = 'Category: restart;scheme="http://schemas.ogf.org/occi/infrastructure/compute/action#";class="action";title="Restart Compute instance";attributes="method{required} test{immutable}"'
@@ -40,60 +42,52 @@ module Occi
         end
 
         it 'parses attributes correctly' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_attributes.text", "rb").read
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_resource_w_attributes.dump", "rb"))
-          collection = Occi::Parser::Text.category resource_string
-          expect(collection).to eql expected
+          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_attributes.text", "rt").read
+          category = Occi::Parser::Text.category resource_string
+          expect(category.to_text).to eql "Category: compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/compute/\""
         end
 
         it 'parses inline links correctly' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.text", "rb").read
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.dump", "rb"))
-          collection = Occi::Parser::Text.category resource_string
-          expect(collection).to eql expected
+          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.text", "rt").read
+          category = Occi::Parser::Text.category resource_string
+          expect(category.to_text).to eql "Category: compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/compute/\""         
         end
 
         it 'parses inline Links and Mixins correctly' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.text", "rb").read
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.dump", "rb"))
-          collection = Occi::Parser::Text.category resource_string
-          expect(collection).to eql expected
+          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.text", "rt").read
+          category = Occi::Parser::Text.category resource_string
+          expected = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links.expected", "rt").read.chomp
+          expect(category.to_text).to eql expected
         end
 
         it 'parses action correctly' do
           category_string = 'Category: restart;scheme="http://schemas.ogf.org/occi/infrastructure/compute/action#";class="action";title="Restart Compute instance";attributes="method"'
           category = Occi::Parser::Text.category category_string
-          expected = Marshal.restore("\x04\bo:\x17Occi::Core::Action\t:\f@schemeI\"?http://schemas.ogf.org/occi/infrastructure/compute/action#\x06:\x06ET:\n@termI\"\frestart\x06;\aT:\v@titleI\"\x1DRestart Compute instance\x06;\aT:\x10@attributesC:\eOcci::Core::Attributes{\x06I\"\vmethod\x06;\aTo:\eOcci::Core::Properties\v:\r@default0:\n@typeI\"\vstring\x06;\aF:\x0E@requiredF:\r@mutableF:\r@patternI\"\a.*\x06;\aF:\x11@description0")
-
-          expect(category).to eql expected
+          expect(category.to_text).to eql category_string
         end
 
         it 'parses network resource from rOCCI server' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rb").read
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_network_rocci_server.dump", "rb"))
-          collection =  Occi::Parser::Text.category resource_string
-          expect(collection).to eql expected
+          resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rt").read
+          category = Occi::Parser::Text.category resource_string
+          expect(category.to_text).to eql "Category: network;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/network/\""
         end
         
         it 'parses storage resource from rOCCI server' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.text", "rb").read
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.dump", "rb"))
-          collection =  Occi::Parser::Text.category resource_string
-          expect(collection).to eql expected
+          resource_string = File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.text", "rt").read
+          category = Occi::Parser::Text.category resource_string
+          expect(category.to_text).to eql "Category: storage;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/storage/\""
         end
         
         it 'parses compute resource from rOCCI server' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rb").read
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.dump", "rb"))
-          collection =  Occi::Parser::Text.category resource_string
-          expect(collection).to eql expected
+          resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rt").read
+          category = Occi::Parser::Text.category resource_string
+          expect(category.to_text).to eql "Category: compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/compute/\""
         end
         
         it 'parses model from rOCCI server' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_model_rocci_server.text", "rb").read
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_model_rocci_server.dump", "rb"))
-          collection =  Occi::Parser::Text.category resource_string
-          expect(collection).to eql expected
+          resource_string = File.open("spec/occi/parser/text_samples/occi_model_rocci_server.text", "rt").read
+          category = Occi::Parser::Text.category resource_string
+          
         end
         
         it 'raises error for obviously nonsensical class' do
@@ -122,53 +116,52 @@ module Occi
 
       context '.resource' do
         it 'parses network resource from rOCCI server' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rb").read
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_network_rocci_server.resource.dump", "rb"))
-          resource =  Occi::Parser::Text.resource resource_string
-          expect(resource).to eql expected
+          resource_string = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.text", "rt").read
+          resource = Occi::Parser::Text.resource resource_string
+          expected = File.open("spec/occi/parser/text_samples/occi_network_rocci_server.expected", "rt").read.chomp
+          expect(resource.to_text).to eql expected
         end
 
         it 'parses storage resource from rOCCI server' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.text", "rb").read
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.resource.dump", "rb"))
-          resource =  Occi::Parser::Text.resource resource_string
-          expect(resource).to eql expected
+          resource_string = File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.text", "rt").read
+          resource = Occi::Parser::Text.resource resource_string
+          expected = File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.expected", "rt").read.chomp
+          expect(resource.to_text).to eql expected
         end
         
         it 'parses compute resource from rOCCI server' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rb").read
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.resource.dump", "rb"))
-          resource =  Occi::Parser::Text.resource resource_string
-          expect(resource).to eql expected
+          resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rt").read
+          resource = Occi::Parser::Text.resource resource_string
+          expected = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.expected", "rt").read.chomp
+          expect(resource.to_text).to eql expected
         end
 
         it 'types parsed compute resource from rOCCI server as Occi::Infrastructure::Compute' do
-          resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rb").read
+          resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rt").read
           expected_class = Occi::Infrastructure::Compute
-          resource_class =  Occi::Parser::Text.resource(resource_string).resources.first.class
+          resource_class = Occi::Parser::Text.resource(resource_string).resources.first.class
           expect(resource_class).to eql expected_class
         end
       end
 
       context '.categories' do
         it 'parses strings describing OCCI Categories' do
-          categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rb").read
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_categories.dump", "rb"))
+          categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
           categories = Occi::Parser::Text.categories categories_string
-          expect(categories).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_categories.expected", "rt").read
+          expect(categories.to_text).to eql expected
         end
 
         it 'parses strings describing OCCI Categories, skipping unparseable additions' do
-          categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rb").read
+          categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
           categories_string["\n"] = "\n\n&*$this won't parse\n"
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_categories.dump", "rb"))
           categories = Occi::Parser::Text.categories categories_string
-          expect(categories).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_categories.expected", "rt").read
+          expect(categories.to_text).to eql expected
         end
 
         it 'does not fail on unparseable input' do
           categories_string = "\n\n&*$this won't parse\n"
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_categories.dump", "rb"))
           categories = Occi::Parser::Text.categories categories_string
           expect(categories.blank?).to eql true
         end
@@ -177,12 +170,10 @@ module Occi
 
       context '.link' do
         it 'parses link resource instance' do
-          link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rb").read
+          link_string = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.text", "rt").read
           link = Occi::Parser::Text.link link_string
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_resource_instance.dump", "rb"))
-          expected.links.each { |exp| exp.id = 'emptied' }
-          link.links.each { |lnk| lnk.id = 'emptied' }
-          expect(link).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_link_resource_instance.expected", "rt").read.chomp
+          expect(link.to_text).to eql expected
         end
 
       end
@@ -217,58 +208,54 @@ module Occi
 
       context '.link_string' do
         it 'parses string with category set' do
-          link_string = File.open("spec/occi/parser/text_samples/occi_link_simple.text", "rb").read
+          link_string = File.open("spec/occi/parser/text_samples/occi_link_simple.text", "rt").read
           link = Occi::Parser::Text.link_string link_string, nil
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_simple.link_string.dump", "rb"))
-          expect(link).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_link_simple.expected", "rt").read.chomp
+          expect(link.to_text).to eql expected
         end
 
         it 'parses link with category' do
-          link_string = File.open("spec/occi/parser/text_samples/occi_link_w_category.text", "rb").read
+          link_string = File.open("spec/occi/parser/text_samples/occi_link_w_category.text", "rt").read
           link = Occi::Parser::Text.link_string link_string, nil
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_w_category.dump", "rb"))
-          expect(link).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_link_w_category.expected", "rt").read.chomp
+          expect(link.to_text).to eql expected
         end
 
         it 'parses link with attributes' do
-          link_string = File.open("spec/occi/parser/text_samples/occi_link_w_attributes.text", "rb").read
+          link_string = File.open("spec/occi/parser/text_samples/occi_link_w_attributes.text", "rt").read
           link = Occi::Parser::Text.link_string link_string, nil
-          expected = Marshal.load(File.open("spec/occi/parser/text_samples/occi_link_w_attributes.dump", "rb"))
-          expect(link).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_link_w_attributes.expected", "rt").read.chomp
+          expect(link.to_text).to eql expected
         end
 
         it 'parses string with action link' do
           link_string = 'Link: </compute/04106bce-87eb-4f8f-a665-2f624e54ba46?action=restart>; rel="http://schemas.ogf.org/occi/infrastructure/compute/action#restart"'
           link = Occi::Parser::Text.link_string(link_string, "source")
-          expected = Marshal.restore("\x04\bo:\x17Occi::Core::Action\t:\f@schemeI\"?http://schemas.ogf.org/occi/infrastructure/compute/action#\x06:\x06ET:\n@termI\"\frestart\x06;\aT:\v@title0:\x10@attributesC:\eOcci::Core::Attributes{\x00")
-          expect(link).to eql expected
+          expect(link.to_text).to eql "Category: restart;scheme=\"http://schemas.ogf.org/occi/infrastructure/compute/action#\";class=\"action\""
         end
       end
 
       context 'compatibility' do
         after(:each) { Occi::Settings.reload! }
-
         context 'terms' do
           it 'parses uppercase term, compatibility on' do
             Occi::Settings['compatibility']=true
-            category_string = 'Category: TERM;scheme="http://a.a/a#";class=kind'
-            expected = Marshal.restore("\x04\bo:\x15Occi::Core::Kind\r:\f@schemeI\"\x12http://a.a/a#\x06:\x06ET:\n@termI\"\tterm\x06;\aT:\v@title0:\x10@attributesC:\eOcci::Core::Attributes{\x00:\f@parent0:\r@actionso:\x18Occi::Core::Actions\x06:\n@hash{\x00:\x0E@entitieso:\x19Occi::Core::Entities\x06;\x0F{\x00:\x0E@locationI\"\v/term/\x06;\aF")
+            category_string = 'Category: TERM;scheme="http://a.a/a#";class="kind"'
             category = Occi::Parser::Text.category category_string
-            expect(category).to eql expected
+            expect(category.to_text).to eql "Category: term;scheme=\"http://a.a/a#\";class=\"kind\";location=\"/term/\""
           end
 
           it 'refuses uppercase term, compatibility off' do
             Occi::Settings['compatibility']=false
-            category_string = 'Category: TERM;scheme="http://a.a/a#";class=kind'
+            category_string = 'Category: TERM;scheme="http://a.a/a#";class="kind"'
             expect{ category = Occi::Parser::Text.category category_string }.to raise_error(Occi::Errors::ParserInputError)
           end
 
           it 'parses term starting with number, compatibility on' do
             Occi::Settings['compatibility']=true
-            category_string = 'Category: 1TERM;scheme="http://a.a/a#";class=kind'
-            expected = Marshal.restore("\x04\bo:\x15Occi::Core::Kind\r:\f@schemeI\"\x12http://a.a/a#\x06:\x06ET:\n@termI\"\n1term\x06;\aT:\v@title0:\x10@attributesC:\eOcci::Core::Attributes{\x00:\f@parent0:\r@actionso:\x18Occi::Core::Actions\x06:\n@hash{\x00:\x0E@entitieso:\x19Occi::Core::Entities\x06;\x0F{\x00:\x0E@locationI\"\f/1term/\x06;\aF")
+            category_string = 'Category: 1TERM;scheme="http://a.a/a#";class="kind"'
             category = Occi::Parser::Text.category category_string
-            expect(category).to eql expected
+            expect(category.to_text).to eql "Category: 1term;scheme=\"http://a.a/a#\";class=\"kind\";location=\"/1term/\""
           end
 
           it 'refuses term starting with number, compatibility off' do
@@ -282,10 +269,9 @@ module Occi
         context 'schemes' do
           it 'parses a Category, compatibility on' do
             Occi::Settings['compatibility']=true
-            category_string = 'Category: a_a1-_;scheme="http://a.a/a#a_a1-_";class="kind";title="aA1!\"§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
+            category_string = 'Category: a_a1-_;scheme="http://a.a/a#a_a1-_";class="kind";title="aA1!§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
             category = Occi::Parser::Text.category category_string
-            expected = Marshal.restore("\x04\bo:\x15Occi::Core::Kind\r:\f@schemeI\"\x12http://a.a/a#\x06:\x06ET:\n@termI\"\va_a1-_\x06;\aT:\v@titleI\"%aA1!\\\"\xC2\xA7$%&/()=?`\xC2\xB4\xC3\x9F+*#-_.:,;<>\x06;\aT:\x10@attributesC:\eOcci::Core::Attributes{\aI\"\na_1-_\x06;\aTC;\v{\x06I\"\na1-_a\x06;\aTo:\eOcci::Core::Properties\v:\r@default0:\n@typeI\"\vstring\x06;\aF:\x0E@requiredF:\r@mutableF:\r@patternI\"\a.*\x06;\aF:\x11@description0I\"\ba-1\x06;\aTC;\v{\x06I\"\x06a\x06;\aTC;\v{\x06I\"\x06b\x06;\aTo;\f\v;\r0;\x0EI\"\vstring\x06;\aF;\x0FF;\x10F;\x11I\"\a.*\x06;\aF;\x120:\f@parentI\"\x13http://a.a/b#a\x06;\aT:\r@actionso:\x18Occi::Core::Actions\x06:\n@hash{\ao:\x17Occi::Core::Action\t;\x06I\"\x13http://a.a/a1#\x06;\aT;\bI\"\aa1\x06;\aT;\t0;\nC;\v{\x00To;\x17\t;\x06I\"\x14http://a.b1/b1#\x06;\aT;\bI\"\ab2\x06;\aT;\t0;\nC;\v{\x00T:\x0E@entitieso:\x19Occi::Core::Entities\x06;\x16{\x00:\x0E@locationI\"\v/a1-A/\x06;\aT")
-            expect(category).to eql expected
+            expect(category.to_text).to eql "Category: a_a1-_;scheme=\"http://a.a/a#\";class=\"kind\";title=\"aA1!§$%&/()=?`´ß+*#-_.:,;<>\";rel=\"http://a.a/b#a\";location=\"/a1-A/\";attributes=\"a_1-_.a1-_a a-1.a.b\";actions=\"http://a.a/a1#a1 http://a.b1/b1#b2\""
           end
 
           it 'parses a Category, compatibility off' do
