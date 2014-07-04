@@ -158,18 +158,16 @@ module Occi
         it 'parses strings describing OCCI Categories' do
           categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
           categories = Occi::Parser::Text.categories categories_string
-          yamled.load(YAML::dump(categories, :canonical => false))
-          expected.load_file("spec/occi/parser/text_samples/occi_categories.yml")
-          expect(yamled).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_categories.expected", "rt").read
+          expect(categories.to_text).to eql expected
         end
 
         it 'parses strings describing OCCI Categories, skipping unparseable additions' do
           categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
           categories_string["\n"] = "\n\n&*$this won't parse\n"
           categories = Occi::Parser::Text.categories categories_string
-          yamled.load(YAML::dump(categories, :canonical => false))
-          expected.load_file("spec/occi/parser/text_samples/occi_categories.yml")
-          expect(yamled).to eql expected
+          expected = File.open("spec/occi/parser/text_samples/occi_categories.expected", "rt").read
+          expect(categories.to_text).to eql expected
         end
 
         it 'does not fail on unparseable input' do

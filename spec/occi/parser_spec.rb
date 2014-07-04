@@ -132,9 +132,8 @@ module Occi
       it 'parses categories' do
         categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
         categories = Occi::Parser.parse('text/plain', categories_string, true)
-        yamled.load(YAML::dump(categories, :canonical => false))
-        expected.load_file("spec/occi/parser/text_samples/occi_categories.parse_headers.yml")
-        expect(yamled).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_categories.parse_headers.expected", "rt").read
+        expect(categories.to_text).to eql expected
       end
 
       it 'parses resources from headers' do
@@ -231,9 +230,8 @@ module Occi
       it 'parses categories' do
         categories_string = File.open("spec/occi/parser/text_samples/occi_categories.text", "rt").read
         categories = Occi::Parser.parse('text/plain', categories_string, true)
-        yamled.load(YAML::dump(categories, :canonical => false))
-        expected.load_file("spec/occi/parser/text_samples/occi_categories.body_plain.yml")
-        expect(yamled).to eql expected
+        expected = File.open("spec/occi/parser/text_samples/occi_categories.body_plain.expected", "rt").read
+        expect(categories.to_text).to eql expected
       end
 
       it 'parses resources' do
