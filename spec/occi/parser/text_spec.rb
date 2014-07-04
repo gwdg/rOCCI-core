@@ -290,9 +290,7 @@ module Occi
             Occi::Settings['compatibility']=true
             category_string = 'Category: a_a1-_;scheme="http://a.a/a#a_a1-_";class="kind";title="aA1!\"§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
             category = Occi::Parser::Text.category category_string
-            yamled.load(YAML::dump(category, :canonical => false))
-            expected.load_file("spec/occi/parser/text_samples/occi_term_by_schemes_w_compatibility.yml")
-            expect(yamled).to eql expected
+            expect(category.to_text).to eql "Category: a_a1-_;scheme=\"http://a.a/a#\";class=\"kind\";title=\"aA1!\\\\\\\"§$%&/()=?`´ß+*#-_.:,;<>\";rel=\"http://a.a/b#a\";location=\"/a1-A/\";attributes=\"a_1-_.a1-_a a-1.a.b\";actions=\"http://a.a/a1#a1 http://a.b1/b1#b2\""
           end
 
           it 'parses a Category, compatibility off' do
