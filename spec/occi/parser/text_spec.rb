@@ -259,26 +259,22 @@ module Occi
         context 'terms' do
           it 'parses uppercase term, compatibility on' do
             Occi::Settings['compatibility']=true
-            category_string = 'Category: TERM;scheme="http://a.a/a#";class=kind'
+            category_string = 'Category: TERM;scheme="http://a.a/a#";class="kind"'
             category = Occi::Parser::Text.category category_string
-            yamled.load(YAML::dump(category, :canonical => false))
-            expected.load_file("spec/occi/parser/text_samples/occi_term_w_compatibility.yml")
-            expect(yamled).to eql expected
+            expect(category.to_text).to eql "Category: term;scheme=\"http://a.a/a#\";class=\"kind\";location=\"/term/\""
           end
 
           it 'refuses uppercase term, compatibility off' do
             Occi::Settings['compatibility']=false
-            category_string = 'Category: TERM;scheme="http://a.a/a#";class=kind'
+            category_string = 'Category: TERM;scheme="http://a.a/a#";class="kind"'
             expect{ category = Occi::Parser::Text.category category_string }.to raise_error(Occi::Errors::ParserInputError)
           end
 
           it 'parses term starting with number, compatibility on' do
             Occi::Settings['compatibility']=true
-            category_string = 'Category: 1TERM;scheme="http://a.a/a#";class=kind'
+            category_string = 'Category: 1TERM;scheme="http://a.a/a#";class="kind"'
             category = Occi::Parser::Text.category category_string
-            yamled.load(YAML::dump(category, :canonical => false))
-            expected.load_file("spec/occi/parser/text_samples/occi_numeric_term_w_compatibility.yml")
-            expect(yamled).to eql expected
+            expect(category.to_text).to eql "Category: 1term;scheme=\"http://a.a/a#\";class=\"kind\";location=\"/1term/\""
           end
 
           it 'refuses term starting with number, compatibility off' do
