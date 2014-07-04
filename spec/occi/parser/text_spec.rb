@@ -288,9 +288,9 @@ module Occi
         context 'schemes' do
           it 'parses a Category, compatibility on' do
             Occi::Settings['compatibility']=true
-            category_string = 'Category: a_a1-_;scheme="http://a.a/a#a_a1-_";class="kind";title="aA1!\"§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
+            category_string = 'Category: a_a1-_;scheme="http://a.a/a#a_a1-_";class="kind";title="aA1!§$%&/()=?`´ß+*#-_.:,;<>";rel="http://a.a/b#a";location="/a1-A/";attributes="a_1-_.a1-_a a-1.a.b";actions="http://a.a/a1#a1 http://a.b1/b1#b2"'
             category = Occi::Parser::Text.category category_string
-            expect(category.to_text).to eql "Category: a_a1-_;scheme=\"http://a.a/a#\";class=\"kind\";title=\"aA1!\\\\\\\"§$%&/()=?`´ß+*#-_.:,;<>\";rel=\"http://a.a/b#a\";location=\"/a1-A/\";attributes=\"a_1-_.a1-_a a-1.a.b\";actions=\"http://a.a/a1#a1 http://a.b1/b1#b2\""
+            expect(category.to_text).to eql "Category: a_a1-_;scheme=\"http://a.a/a#\";class=\"kind\";title=\"aA1!§$%&/()=?`´ß+*#-_.:,;<>\";rel=\"http://a.a/b#a\";location=\"/a1-A/\";attributes=\"a_1-_.a1-_a a-1.a.b\";actions=\"http://a.a/a1#a1 http://a.b1/b1#b2\""
           end
 
           it 'parses a Category, compatibility off' do
