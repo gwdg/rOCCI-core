@@ -245,5 +245,15 @@ module Occi
       end
     end
 
+    context 'output from other producers' do
+      it 'parses input from FogBow Cloud' #do
+#        category_string = File.open("spec/occi/parser/text_samples/occi_fogbowcloud_category.text", "rt").read
+#        collection = Occi::Parser.parse('text/plain', category_string)
+#        expected = ""
+#        expect(collection.to_text).to eql expected
+#      end
+
+    end
+
   end
 end
