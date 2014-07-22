@@ -306,7 +306,7 @@ module Occi
       context 'with other OCCI implementations' do
 
         it 'correctly parses input from FogBow Cloud' do
-          category_string = File.open("spec/occi/parser/text_samples/occi_fogbowcloud_category.text", "rt").read
+          category_string = File.open("spec/occi/parser/text_samples/occi_resource_custom_class_w_attributes.text", "rt").read
           category = Occi::Parser::Text.category category_string
           expected = "Category: fogbow_request;scheme=\"http://schemas.fogbowcloud.org/request#\";class=\"kind\";title=\"Request new Instances\";rel=\"http://schemas.ogf.org/occi/core#resource\";location=\"/fogbow_request/\";attributes=\"org.fogbowcloud.request.instance-count org.fogbowcloud.request.type org.fogbowcloud.request.valid-until org.fogbowcloud.request.valid-from org.fogbowcloud.request.state org.fogbowcloud.request.instance-id\""
           expect(category.to_text).to eql expected
