@@ -29,8 +29,6 @@ module Occi
           expect(category.to_text).to eql 'Category: term;scheme="http://a.a/a#";class="kind";location="/term/"'
         end
 
-        it 'refuses upper case Category with compatibility mode off'
-
         it 'parses a string describing an OCCI Category incl. attributes with properties' do
           category_string = 'Category: restart;scheme="http://schemas.ogf.org/occi/infrastructure/compute/action#";class="action";title="Restart Compute instance";attributes="method{required} test{immutable}"'
           category = Occi::Parser::Text.category category_string
@@ -274,6 +272,19 @@ module Occi
             expect{ category = Occi::Parser::Text.category category_string }.to raise_error(Occi::Errors::ParserInputError)
           end
 
+
+          it 'parses upper case Category with compatibility mode on' do
+            Occi::Settings['compatibility']=true
+            category_string = 'Category: A_A1-_;scheme="http://a.a/a#";class="kind"'
+            expect{ category = Occi::Parser::Text.category category_string }.to_not raise_error
+          end
+
+          it 'refuses upper case Category with compatibility mode off' do
+            Occi::Settings['compatibility']=false
+            category_string = 'Category: A_A1-_;scheme="http://a.a/a#";class="kind"'
+            expect{ category = Occi::Parser::Text.category category_string }.to raise_error(Occi::Errors::ParserInputError)
+          end
+
         end
 
         context 'schemes' do
@@ -292,7 +303,15 @@ module Occi
         end
       end
 
-      context 'other OCCI implementations' do
+      context 'with other OCCI implementations' do
+
+        it 'correctly parses input from FogBow Cloud' do
+          category_string = File.open("spec/occi/parser/text_samples/occi_resource_custom_class_w_attributes.text", "rt").read
+          category = Occi::Parser::Text.category category_string
+          expected = "Category: fogbow_request;scheme=\"http://schemas.fogbowcloud.org/request#\";class=\"kind\";title=\"Request new Instances\";rel=\"http://schemas.ogf.org/occi/core#resource\";location=\"/fogbow_request/\";attributes=\"org.fogbowcloud.request.instance-count org.fogbowcloud.request.type org.fogbowcloud.request.valid-until org.fogbowcloud.request.valid-from org.fogbowcloud.request.state org.fogbowcloud.request.instance-id\""
+          expect(category.to_text).to eql expected
+        end 
+
         it 'renders correctly OCCI from other sources'
       end
 
