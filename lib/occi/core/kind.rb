@@ -38,6 +38,10 @@ module Occi
 
         if parent.to_s == 'http://schemas.ogf.org/occi/core#entity'
           parent = Occi::Core::Entity.kind
+        elsif parent.to_s == 'http://schemas.ogf.org/occi/core#resource'
+          parent = Occi::Core::Resource.kind
+        elsif parent.to_s == 'http://schemas.ogf.org/occi/core#link'
+          parent = Occi::Core::Link.kind
         elsif parent.kind_of? Occi::Core::Kind
           parent = parent
         else
