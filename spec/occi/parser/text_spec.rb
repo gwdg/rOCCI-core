@@ -48,7 +48,7 @@ module Occi
         it 'parses inline links correctly' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_resource_w_inline_links_only.text", "rt").read
           category = Occi::Parser::Text.category resource_string
-          expect(category.to_text).to eql "Category: compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/compute/\""         
+          expect(category.to_text).to eql "Category: compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/compute/\""
         end
 
         it 'parses inline Links and Mixins correctly' do
@@ -69,25 +69,25 @@ module Occi
           category = Occi::Parser::Text.category resource_string
           expect(category.to_text).to eql "Category: network;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/network/\""
         end
-        
+
         it 'parses storage resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.text", "rt").read
           category = Occi::Parser::Text.category resource_string
           expect(category.to_text).to eql "Category: storage;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/storage/\""
         end
-        
+
         it 'parses compute resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rt").read
           category = Occi::Parser::Text.category resource_string
           expect(category.to_text).to eql "Category: compute;scheme=\"http://schemas.ogf.org/occi/infrastructure#\";class=\"kind\";location=\"/compute/\""
         end
-        
+
         it 'parses model from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_model_rocci_server.text", "rt").read
           category = Occi::Parser::Text.category resource_string
-          
+
         end
-        
+
         it 'raises error for obviously nonsensical class' do
           category_string = 'Category: restart;scheme="http://schemas.ogf.org/occi/infrastructure/compute/action#";class="actions";title="Restart Compute instance";attributes="method"'
           expect{ category = Occi::Parser::Text.category category_string }.to raise_error(Occi::Errors::ParserInputError)
@@ -126,7 +126,7 @@ module Occi
           expected = File.open("spec/occi/parser/text_samples/occi_storage_rocci_server.expected", "rt").read.chomp
           expect(resource.to_text).to eql expected
         end
-        
+
         it 'parses compute resource from rOCCI server' do
           resource_string = File.open("spec/occi/parser/text_samples/occi_compute_rocci_server.text", "rt").read
           resource = Occi::Parser::Text.resource resource_string
@@ -139,6 +139,16 @@ module Occi
           expected_class = Occi::Infrastructure::Compute
           resource_class = Occi::Parser::Text.resource(resource_string).resources.first.class
           expect(resource_class).to eql expected_class
+        end
+
+        it 'types parsed custom resource as related to Occi::Core::Resource' do
+          resource_string = File.open("spec/occi/parser/text_samples/occi_resource_custom_class_w_attributes.text", "rt").read
+          expected_class = "Org::Fogbowcloud::Schemas::Request::FogbowRequest"
+
+          resource_instance = Occi::Parser::Text.resource(resource_string).resources.first
+          resource_class = resource_instance.class.to_s
+          expect(resource_class).to eql expected_class
+          expect(resource_instance).to be_kind_of Occi::Core::Resource
         end
       end
 
