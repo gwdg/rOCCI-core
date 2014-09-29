@@ -1,13 +1,14 @@
 require 'rubygems'
 
-require 'set'
-require 'uri'
-require 'hashie/mash'
-
+require 'active_support'
 require 'active_support/core_ext'
 require 'active_support/json'
 require 'active_support/inflector'
 require 'active_support/notifications'
+
+require 'set'
+require 'uri'
+require 'hashie/mash'
 
 require 'logger'
 require 'uuidtools'
