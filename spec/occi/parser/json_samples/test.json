@@ -5,6 +5,7 @@
             "attributes":{
                 "occi":{
                     "core":{
+                        "id": "34c88188-d31a-11e1-a11a-a4b197fffef4",
                         "summary":""
                     },
                     "compute":{
@@ -13,7 +14,21 @@
                     }
                 }
             },
-            "links":["/storagelink/34cbb948-d31a-11e1-a11a-a4b197fffef3"]
+            "links":[
+                {
+                    "kind":"http://schemas.ogf.org/occi/infrastructure#storagelink",
+                    "attributes":{
+                        "occi":{
+                            "core":{
+                                "id":"urn:uuid:34cbb948-d31a-11e1-a11a-a4b197fffef3",
+                                "title":"Harddisk 1",
+                                "source": "/compute/34c88188-d31a-11e1-a11a-a4b197fffef4",
+                                "target":"/storage/34c88188-d31a-11e1-a11a-a4b197fffef3"
+                            }
+                        }
+                    }
+                }
+            ]
         }
     ],
     "links":[
@@ -24,6 +39,7 @@
                     "core":{
                         "id":"urn:uuid:34cbb948-d31a-11e1-a11a-a4b197fffef3",
                         "title":"Harddisk 1",
+                        "source": "/compute/34c88188-d31a-11e1-a11a-a4b197fffef4",
                         "target":"/storage/34c88188-d31a-11e1-a11a-a4b197fffef3"
                     }
                 }
