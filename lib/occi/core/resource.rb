@@ -73,8 +73,7 @@ module Occi
       # @return [Hashie::Mash] link as Hashie::Mash to be parsed into a JSON object
       def as_json(options={})
         resource = super
-        link_strings = @links.collect { |link| link.to_s if link.to_s }.compact
-        resource.links = link_strings unless link_strings.empty?
+        resource.links = @links.as_json if @links.any?
         resource
       end
 
