@@ -11,5 +11,5 @@ group :development do
   gem 'simplecov'
   gem 'yard'
   gem 'yard-rspec'
-  gem 'debugger', :platforms => :ruby
+  gem 'debugger', :platforms => :ruby if RUBY_VERSION == '1.9.3'
 end
