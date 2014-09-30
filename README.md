@@ -1,10 +1,10 @@
 rOCCI-core - A Ruby OCCI Framework
 =================================
 
-[![Build Status](https://secure.travis-ci.org/gwdg/rOCCI-core.png)](http://travis-ci.org/gwdg/rOCCI-core)
-[![Dependency Status](https://gemnasium.com/gwdg/rOCCI-core.png)](https://gemnasium.com/gwdg/rOCCI-core)
+[![Build Status](https://secure.travis-ci.org/EGI-FCTF/rOCCI-core.png)](http://travis-ci.org/EGI-FCTF/rOCCI-core)
+[![Dependency Status](https://gemnasium.com/EGI-FCTF/rOCCI-core.png)](https://gemnasium.com/EGI-FCTF/rOCCI-core)
 [![Gem Version](https://fury-badge.herokuapp.com/rb/occi-core.png)](https://badge.fury.io/rb/occi-core)
-[![Code Climate](https://codeclimate.com/github/gwdg/rOCCI-core.png)](https://codeclimate.com/github/gwdg/rOCCI-core)
+[![Code Climate](https://codeclimate.com/github/EGI-FCTF/rOCCI-core.png)](https://codeclimate.com/github/EGI-FCTF/rOCCI-core)
 
 Requirements
 ------------
@@ -12,7 +12,6 @@ Requirements
 ### Ruby
 * Ruby 1.9.3 is required
 * RubyGems have to be installed
-* Rake has to be installed (e.g., `gem install rake`)
 
 ### Examples
 #### For distros based on Debian:
@@ -42,12 +41,10 @@ Installation
 
 To install the most recent stable version
 
-    gem install rake
     gem install occi-core
 
 To install the most recent beta version
 
-    gem install rake
     gem install occi-core --pre
 
 ### From source (dev)
@@ -58,11 +55,11 @@ To install the most recent beta version
 
 To build and install the bleeding edge version from master
 
-    git clone git://github.com/gwdg/rOCCI-core.git
+    git clone git://github.com/EGI-FCTF/rOCCI-core.git
     cd rOCCI-core
     gem install bundler
     bundle install
-    bundle exec rake test
+    bundle exec rake spec
     rake install
 
 ### RVM
@@ -85,55 +82,15 @@ ruby -v
 
 Usage
 -----
-Detailed documentation is available in our [Wiki](https://github.com/gwdg/rOCCI-core/wiki).
-
-### Logging
-
-The OCCI gem includes its own logging mechanism using a message queue. By default, no one is listening to that queue.
-A new OCCI Logger can be initialized by specifying the log destination (either a filename or an IO object like
-STDOUT) and the log level.
-
-    logger = Occi::Log.new STDOUT
-    logger.level = Occi::Log::INFO
-
-You can create multiple Loggers to receive the log output.
-
-You can always, even if there is no logger defined, log output using the class methods of OCCI::Log e.g.
-
-    Occi::Log.info("Test message")
-
-### Registering categories in the OCCI Model
-
-Before the parser may be used, the available categories have to be registered in the OCCI Model.
-
-For categories already specified by the OCCI WG a method exists in the OCCI Model class to register them:
-
-    model = Occi::Model.new
-    model.register_infrastructure
-
-Further categories can either be registered from files which include OCCI collections in JSON format or or from parsed
- JSON objects (e.g. from the query interface of an OCCI service endpoint).
-
-### Parsing OCCI messages
-
-The OCCI gem includes a Parser to easily parse OCCI messages. With a given media type (e.g. json,
-xml or plain text) the parser analyses the content of the message body and, if supplied,
-the message header. As the text/plain and text/occi media type do not clearly distinguish between a message with a
-category and a message with an entity which has a kind, it has to be specified if the message contains a category
-(e.g. for user defined mixins)
-
-OCCI messages can be parsed to an OCCI collection for example like
-
-    media_type = 'text/plain'
-    body = %Q|Category: compute; scheme="http://schemas.ogf.org/occi/infrastructure#"; class="kind"|
-    collection=Occi::Parser.parse(media_type, body)
-
-### Using the OCCI model
-
-The occi-core gem includes all OCCI Core classes necessary to handly arbitrary OCCI objects.
+Detailed documentation is available in our [Wiki](https://github.com/EGI-FCTF/rOCCI-core/wiki).
 
 Changelog
 ---------
+
+### Version 4.3
+* Internal updates and bug fixes
+* Updated JSON rendering
+* Updated dependencies
 
 ### Version 4.2
 * Internal changes and bug fixes
@@ -211,7 +168,7 @@ Development
 
 Checkout latest version from git:
 
-    git clone git://github.com/gwdg/rOCCI-core.git
+    git clone git://github.com/EGI-FCTF/rOCCI-core.git
 
 Change to rOCCI-core folder
 
@@ -223,11 +180,11 @@ Install dependencies
 
 ### Code Documentation
 
-[Code Documentation for rOCCI by YARD](http://rubydoc.info/github/gwdg/rOCCI-core/)
+[Code Documentation for rOCCI by YARD](http://rubydoc.info/github/EGI-FCTF/rOCCI-core/)
 
 ### Continuous integration
 
-[Continuous integration for rOCCI by Travis-CI](http://travis-ci.org/gwdg/rOCCI-core/)
+[Continuous integration for rOCCI by Travis-CI](http://travis-ci.org/EGI-FCTF/rOCCI-core/)
 
 ### Contribute
 
