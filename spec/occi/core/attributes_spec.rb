@@ -602,14 +602,34 @@ module Occi
           expect(attrs['numeric']).to eql 16
         end
 
+        it 'correctly accepts Numeric given as string' do
+          attrs['numeric'] = '16'
+          expect(attrs['numeric']).to eql 16
+        end
+
+        it 'correctly accepts floating point given as string' do
+          attrs['numeric'] = '16.4'
+          expect(attrs['numeric']).to eql 16.4
+        end
+
         it 'correctly accepts TrueClass' do
           attrs['tr'] = true
           expect(attrs['tr']).to eql true
         end
 
+        it 'correctly accepts TrueClass given as string' do
+          attrs['tr'] = true
+          expect(attrs['tr']).to eql 'true'
+        end
+
         it 'correctly accepts FalseClass' do
           attrs['fal'] = false
           expect(attrs['fal']).to eql false
+        end
+
+        it 'correctly accepts FalseClass given as string' do
+          attrs['fal'] = false
+          expect(attrs['fal']).to eql 'false'
         end
 
         it 'correctly responds to NilClass' do
