@@ -618,8 +618,8 @@ module Occi
         end
 
         it 'correctly accepts TrueClass given as string' do
-          attrs['tr'] = true
-          expect(attrs['tr']).to eql 'true'
+          attrs['tr'] = 'true'
+          expect(attrs['tr']).to eql true
         end
 
         it 'correctly accepts FalseClass' do
@@ -628,8 +628,8 @@ module Occi
         end
 
         it 'correctly accepts FalseClass given as string' do
-          attrs['fal'] = false
-          expect(attrs['fal']).to eql 'false'
+          attrs['fal'] = 'false'
+          expect(attrs['fal']).to eql false
         end
 
         it 'correctly responds to NilClass' do
