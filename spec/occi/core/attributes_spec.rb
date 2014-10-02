@@ -546,7 +546,7 @@ module Occi
 
 
       context '.validate_and_assign' do
-        let(:attrs){ 
+        let(:attrs){
           attrs = Occi::Core::Attributes.new
           attrs['entity'] = {:type => 'string'}
           attrs['category'] = {:type => 'string'}
@@ -622,6 +622,12 @@ module Occi
 
         it 'correctly refuses empty Numeric value' do
           expect{ attrs['numeric'] = '' }.to raise_exception(Occi::Errors::AttributeTypeError)
+        end
+
+        it 'correctly refuses malformed Numeric value' do
+          expect{ attrs['numeric'] = '1.b' }.to raise_exception(Occi::Errors::AttributeTypeError)
+          expect{ attrs['numeric'] = '.b' }.to raise_exception(Occi::Errors::AttributeTypeError)
+          expect{ attrs['numeric'] = 'b.1' }.to raise_exception(Occi::Errors::AttributeTypeError)
         end
 
         it 'correctly accepts TrueClass' do
