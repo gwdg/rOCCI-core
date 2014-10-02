@@ -620,6 +620,10 @@ module Occi
           expect(attrs['numeric']).to eql 16.4
         end
 
+        it 'correctly refuses empty Numeric value' do
+          expect{ attrs['numeric'] = '' }.to raise_exception(Occi::Errors::AttributeTypeError)
+        end
+
         it 'correctly accepts TrueClass' do
           attrs['tr'] = true
           expect(attrs['tr']).to eql true

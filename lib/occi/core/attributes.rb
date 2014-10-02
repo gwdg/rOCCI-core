@@ -281,8 +281,8 @@ module Occi
       end
 
       def interpret_string(value, property)
-          if property.type == 'number' && (/^[.0-9]*$/ =~ value)
-            value = (/^[0-9]*$/ =~ value) ? value.to_i : value.to_f
+          if property.type == 'number' && (/^[.0-9]+$/ =~ value)
+            value = (/^[0-9]+$/ =~ value) ? value.to_i : value.to_f
             match_type(value, 'number', property)
           elsif property.type == 'boolean'
             if value.casecmp("yes") == 0 || value.casecmp("true") == 0
