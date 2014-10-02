@@ -47,15 +47,16 @@ module Occi
 
       def remove(attributes)
         attributes.keys.each do |key|
-          if self.keys.include? key
-            case self[key]
-            when Occi::Core::Attributes
-              self[key].remove attributes[key]
-            else
-              self.delete(key)
-            end
+          next unless self.keys.include?(key)
+
+          case self[key]
+          when Occi::Core::Attributes
+            self[key].remove attributes[key]
+          else
+            self.delete(key)
           end
         end
+
         self
       end
 
@@ -69,6 +70,7 @@ module Occi
             attributes[key] = nil
           end
         end
+
         attributes.converted = true
         attributes
       end
@@ -88,6 +90,7 @@ module Occi
             hash[key] = self[key]
           end
         end
+
         hash
       end
 
@@ -243,6 +246,7 @@ module Occi
       def validate_and_assign(key, value, property_key)
         raise Occi::Errors::AttributeNameInvalidError,
               "Attribute names (as in \"#{key}\") must not begin with underscores" if key =~ /^_/
+
         case value
         when Occi::Core::Attributes
           add_to_hashie(key, value)
@@ -281,20 +285,24 @@ module Occi
       end
 
       def interpret_string(value, property)
-          if property.type == 'number' && (/^[.0-9]+$/ =~ value)
-            value = (/^[0-9]+$/ =~ value) ? value.to_i : value.to_f
-            match_type(value, 'number', property)
-          elsif property.type == 'boolean'
-            if value.casecmp("yes") == 0 || value.casecmp("true") == 0
-              value = true
-            elsif value.casecmp("no") == 0 || value.casecmp("false") == 0
-              value = false
-            end
-            match_type(value, 'boolean', property)
-          else
-            match_type(value, 'string', property)
-          end
-          value
+        if property.type == 'number' && (/^[.0-9]+$/ =~ value)
+          value = (/^[0-9]+$/ =~ value) ? value.to_i : value.to_f
+          match_type(value, 'number', property)
+        elsif property.type == 'boolean'
+          value = if value.casecmp("yes") == 0 || value.casecmp("true") == 0
+                    true
+                  elsif value.casecmp("no") == 0 || value.casecmp("false") == 0
+                    false
+                  else
+                    value
+                  end
+
+          match_type(value, 'boolean', property)
+        else
+          match_type(value, 'string', property)
+        end
+
+        value
       end
 
       def match_type(value, value_type, property)
