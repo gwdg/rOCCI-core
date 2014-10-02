@@ -266,10 +266,10 @@ module Occi
               value = (/^[0-9]*$/ =~ value) ? value.to_i : value.to_f
               actual_type='number'
             elsif self[property_key].type == 'boolean'
-              if value.casecmp("true") == 0
-                value = true;
-              elsif value.casecmp("false") == 0
-                value = false;
+              if value.casecmp("yes") == 0 || value.casecmp("true") == 0
+                value = true
+              elsif value.casecmp("no") == 0 || value.casecmp("false") == 0
+                value = false
               end
               actual_type='boolean'
             end
