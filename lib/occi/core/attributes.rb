@@ -263,6 +263,10 @@ module Occi
           match_type(value, self[property_key], 'string') if self[property_key]
           add_to_hashie(key, value)
         when Numeric
+          fuckit
+          if value.is_a?(String) && (/^[.0-9]*$/ =~ value)
+            value = (/^[0-9]*$/ =~ value) ? value.to_i : value.to_f
+          end
           match_type(value, self[property_key], 'number') if self[property_key]
           add_to_hashie(key, value)
         when FalseClass, TrueClass
