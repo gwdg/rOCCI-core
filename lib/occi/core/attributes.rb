@@ -260,21 +260,7 @@ module Occi
           match_type(value, 'string', self[property_key]) if self[property_key]
           add_to_hashie(key, value)
         when String
-          actual_type='string'
-          if self[property_key]
-            if self[property_key].type == 'number' && (/^[.0-9]*$/ =~ value)
-              value = (/^[0-9]*$/ =~ value) ? value.to_i : value.to_f
-              actual_type='number'
-            elsif self[property_key].type == 'boolean'
-              if value.casecmp("yes") == 0 || value.casecmp("true") == 0
-                value = true
-              elsif value.casecmp("no") == 0 || value.casecmp("false") == 0
-                value = false
-              end
-              actual_type='boolean'
-            end
-            match_type(value, actual_type, self[property_key])
-          end
+          value = interpret_string(value, self[property_key]) if self[property_key]
           add_to_hashie(key, value)
         when Numeric
           match_type(value, 'number', self[property_key]) if self[property_key]
@@ -292,6 +278,24 @@ module Occi
 
       def add_to_hashie(*args)
         Hashie::Mash.instance_method(:[]=).bind(self).call(*args)
+      end
+
+      def interpret_string(value, property)
+          if property.type == 'number' && (/^[.0-9]*$/ =~ value)
+            value = (/^[0-9]*$/ =~ value) ? value.to_i : value.to_f
+            match_type(value, 'number', property)
+          elsif property.type == 'boolean'
+            if value.casecmp("yes") == 0 || value.casecmp("true") == 0
+              value = true
+            elsif value.casecmp("no") == 0 || value.casecmp("false") == 0
+              value = false
+            end
+            actual_type='boolean'
+            match_type(value, 'boolean', property)
+          else
+            match_type(value, 'string', property)
+          end
+          value
       end
 
       def match_type(value, value_type, property)
