@@ -260,12 +260,23 @@ module Occi
           match_type(value, 'string', self[property_key]) if self[property_key]
           add_to_hashie(key, value)
         when String
-          match_type(value, 'string', self[property_key]) if self[property_key]
+          actual_type='string'
+          if self[property_key]
+            if self[property_key].type == 'number' && (/^[.0-9]*$/ =~ value)
+              value = (/^[0-9]*$/ =~ value) ? value.to_i : value.to_f
+              actual_type='number'
+            elsif self[property_key].type == 'boolean'
+              if value.casecmp("true") == 0
+                value = true;
+              elsif value.casecmp("false") == 0
+                value = false;
+              end
+              actual_type='boolean'
+            end
+            match_type(value, actual_type, self[property_key])
+          end
           add_to_hashie(key, value)
         when Numeric
-          if value.is_a?(String) && (/^[.0-9]*$/ =~ value)
-            value = (/^[0-9]*$/ =~ value) ? value.to_i : value.to_f
-          end
           match_type(value, 'number', self[property_key]) if self[property_key]
           add_to_hashie(key, value)
         when FalseClass, TrueClass
