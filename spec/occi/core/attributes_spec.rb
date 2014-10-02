@@ -546,10 +546,18 @@ module Occi
 
 
       context '.validate_and_assign' do
-        let(:attrs){ Occi::Core::Attributes.new }
+        let(:attrs){ 
+          attrs = Occi::Core::Attributes.new
+          attrs['entity'] = {:type => 'string'}
+          attrs['category'] = {:type => 'string'}
+          attrs['numeric'] = {:type => 'number'}
+          attrs['tr'] = {:type => 'boolean'}
+          attrs['fal'] = {:type => 'boolean'}
+          attrs.convert
+          attrs}
 
         it 'correctly accepts Occi::Core::Attributes' do
-          inattrs = Occi::Core::Attributes.new
+          inattrs = attrs
           inattrs['numbertype'] = { :type => 'number', :default => 42, :mutable => true, :pattern => '^[0-9]+' }
           inattrs.convert
           inattrs['numbertype'] = 13
@@ -559,9 +567,9 @@ module Occi
         end
 
         it 'correctly accepts Occi::Core::Properties' do
+          expected = attrs
           attrs['properties'] = Occi::Core::Properties.new
 
-          expected = Occi::Core::Attributes.new
           expected['properties'] = { :type => 'string', :pattern => '.*', :mutable => false, :required => false }
           expected.convert
 
@@ -569,9 +577,9 @@ module Occi
         end
 
         it 'correctly accepts Hash' do
+          expected = attrs
           attrs['hash'] = { :type => 'string', :pattern => '.*', :mutable => false, :required => false }
 
-          expected = Occi::Core::Attributes.new
           expected['hash'] = { :type => 'string', :pattern => '.*', :mutable => false, :required => false }
           expected.convert
 
