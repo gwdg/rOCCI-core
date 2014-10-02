@@ -254,23 +254,23 @@ module Occi
           add_to_hashie(key, properties.clone)
           add_to_hashie(property_key, properties.clone)
         when Occi::Core::Entity
-          match_type(value, self[property_key], 'string') if self[property_key]
+          match_type(value, 'string', self[property_key]) if self[property_key]
           add_to_hashie(key, value)
         when Occi::Core::Category
-          match_type(value, self[property_key], 'string') if self[property_key]
+          match_type(value, 'string', self[property_key]) if self[property_key]
           add_to_hashie(key, value)
         when String
-          match_type(value, self[property_key], 'string') if self[property_key]
+          match_type(value, 'string', self[property_key]) if self[property_key]
           add_to_hashie(key, value)
         when Numeric
           fuckit
           if value.is_a?(String) && (/^[.0-9]*$/ =~ value)
             value = (/^[0-9]*$/ =~ value) ? value.to_i : value.to_f
           end
-          match_type(value, self[property_key], 'number') if self[property_key]
+          match_type(value, 'number', self[property_key]) if self[property_key]
           add_to_hashie(key, value)
         when FalseClass, TrueClass
-          match_type(value, self[property_key], 'boolean') if self[property_key]
+          match_type(value, 'boolean', self[property_key]) if self[property_key]
           add_to_hashie(key, value)
         when NilClass
           add_to_hashie(key, value)
@@ -284,10 +284,10 @@ module Occi
         Hashie::Mash.instance_method(:[]=).bind(self).call(*args)
       end
 
-      def match_type(value, property, expected_type)
+      def match_type(value, value_type, property)
         raise Occi::Errors::AttributeTypeError,
               "Value #{value} derived from #{value.class} assigned " \
-              "but attribute of type #{property.type} required" unless property.type == expected_type
+              "but attribute of type #{property.type} required" unless property.type == value_type
         match_pattern(property.pattern, value)
       end
 
