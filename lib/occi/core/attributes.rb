@@ -290,7 +290,6 @@ module Occi
             elsif value.casecmp("no") == 0 || value.casecmp("false") == 0
               value = false
             end
-            actual_type='boolean'
             match_type(value, 'boolean', property)
           else
             match_type(value, 'string', property)
