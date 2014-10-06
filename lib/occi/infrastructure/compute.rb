@@ -40,8 +40,10 @@ module Occi
                                                 :mutable => true}
       self.attributes['occi.compute.speed'] = {:type => 'number',
                                                 :mutable => true}
-      self.attributes['occi.compute.state'] = {:pattern => 'inactive|active|suspended|error',
-                                               :default => 'inactive'}
+      self.attributes['occi.compute.state'] = {:type => 'string',
+                                               :pattern => 'inactive|active|suspended|error',
+                                               :default => 'inactive',
+                                               :mutable => false}
 
       self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/infrastructure#',
                                        term='compute',

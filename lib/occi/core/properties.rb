@@ -25,7 +25,7 @@ module Occi
 
         self.type = source_hash[:type] || 'string'
         self.required = source_hash[:required].nil? ? false : source_hash[:required]
-        self.mutable = source_hash[:mutable].nil? ? false : source_hash[:mutable]
+        self.mutable = source_hash[:mutable].nil? ? true : source_hash[:mutable]
         self.pattern = source_hash[:pattern] || '.*'
         self.description = source_hash[:description]
         self.default = source_hash[:default]

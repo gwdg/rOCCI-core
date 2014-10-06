@@ -43,7 +43,7 @@ module Occi
 
         context 'number' do
           let(:properties){ properties = Occi::Core::Properties.new
-            properties.type = 'number' 
+            properties.type = 'number'
             properties }
 
           it 'permits number' do
@@ -117,20 +117,20 @@ module Occi
             expected["pattern"] = "[adefltuv]+"
             expected["required"] = true
             expected["type"] = "string"
-    
+
             expect(properties.to_hash).to eql expected
           end
 
           it 'makes a correct rendering of empty props' do
             empty = Occi::Core::Properties.new
             expected = Hash.new
-            expected["mutable"] = false
+            expected["mutable"] = true
             expected["pattern"] = ".*"
             expected["required"] = false
             expected["type"] = "string"
-      
+
             expect(empty.to_hash).to eql expected
-          end 
+          end
 
         end
 

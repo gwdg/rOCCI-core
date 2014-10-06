@@ -13,7 +13,7 @@ module Occi
       self.mixins = Occi::Core::Mixins.new
 
       self.attributes = Occi::Core::Attributes.new
-      self.attributes['occi.core.id'] = {:pattern => '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'}
+      self.attributes['occi.core.id'] = {:pattern => '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}', :required => true, :mutable => false}
       self.attributes['occi.core.title'] = {:mutable => true}
 
       self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/core#',

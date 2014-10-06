@@ -15,8 +15,10 @@ module Occi
       self.attributes = Occi::Core::Attributes.new(Occi::Core::Link.attributes)
       self.attributes['occi.storagelink.deviceid'] = {:mutable => true}
       self.attributes['occi.storagelink.mountpoint'] = {:mutable => true}
-      self.attributes['occi.storagelink.state'] = {:pattern => 'active|inactive|error',
-                                                   :default => 'inactive'}
+      self.attributes['occi.storagelink.state'] = {:type => 'string',
+                                                   :pattern => 'active|inactive|error',
+                                                   :default => 'inactive',
+                                                   :mutable => false}
 
       self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/infrastructure#',
                                        term='storagelink',

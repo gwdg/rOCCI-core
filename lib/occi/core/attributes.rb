@@ -395,13 +395,13 @@ module Occi
 
         return attribute_name unless self[property_name]
 
-        if !self[property_name].mutable
-          "#{attribute_name}{immutable}"
-        elsif self[property_name].required
-          "#{attribute_name}{required}"
-        else
-          attribute_name
-        end
+        props = []
+        props << "immutable" if !self[property_name].mutable
+        props << "required" if self[property_name].required
+
+        attribute_name = "#{attribute_name}{#{props.join(' ')}}" unless props.empty?
+
+        attribute_name
       end
 
     end
