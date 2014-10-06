@@ -21,6 +21,7 @@ module Occi
           model = Occi::Model.new
           model.register(link.kind)
           link.model = model
+          link.source = Occi::Core::Resource.new
 
           link.check
           expect(link.attributes['stringtype']).to eql 'defaultforlink'
@@ -33,6 +34,7 @@ module Occi
           model = Occi::Model.new
           model.register(link.kind)
           link.model = model
+          link.source = Occi::Core::Resource.new
 
           link.check(true)
           expect(link.attributes['stringtype']).to eql 'defaultforlink'
@@ -44,7 +46,7 @@ module Occi
           norel.instance_eval { @rel=nil }
           expect{ norel.check }.to raise_exception ArgumentError
         end
-      end 
+      end
     end
   end
 end

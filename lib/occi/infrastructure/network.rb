@@ -20,7 +20,8 @@ module Occi
                                                :mutable => true}
       self.attributes['occi.network.state'] ={:type => 'string',
                                               :pattern => 'active|inactive|error',
-                                              :default => 'inactive'}
+                                              :default => 'inactive',
+                                              :mutable => false}
 
       self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/infrastructure#',
                                        term='network',
