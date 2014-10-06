@@ -245,7 +245,7 @@ module Occi
           }
 
           it 'renders attributes correctly' do
-            expected = ";attributes=\"numbertype stringtype booleantype booleantypefalse booleantypepattern nest.nested properties{immutable} category entity\""
+            expected = ";attributes=\"numbertype stringtype booleantype booleantypefalse booleantypepattern nest.nested properties category entity\""
             expect(attrs.to_string_short).to eql expected
           end
 
@@ -255,7 +255,7 @@ module Occi
           end
 
           it 'renders attributes with properties correctly' do
-            expected = ";attributes=\"immut_attr{immutable} req_attr{required} immut_req_attr{immutable}\""
+            expected = ";attributes=\"immut_attr{immutable} req_attr{required} immut_req_attr{immutable required}\""
             expect(attrs_with_req_immut.to_string_short).to eql expected
           end
         end

@@ -6,7 +6,7 @@ module Occi
 
       self.attributes = Occi::Core::Attributes.new(Occi::Core::Entity.attributes)
       self.attributes['occi.core.target'] = {:mutable => true}
-      self.attributes['occi.core.source'] = {:mutable => true}
+      self.attributes['occi.core.source'] = {:mutable => true, :required => true}
 
       self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/core#',
                                        term='link',
