@@ -160,7 +160,9 @@ module Occi
         related = match[:rel].to_s.split
         attributes = Occi::Core::Attributes.new
         if match[:attributes]
-          match[:attributes].split.each do |attribute|
+          matched_attributes = match[:attributes].gsub(/\{(immutable|required)\s+(required|immutable)\}/, '{\1_\2}')
+          matched_attributes.split.each do |attribute|
+            attribute.gsub! /\{(immutable|required)_(required|immutable)\}/, '{\1 \2}'
             property_string = attribute[/#{REGEXP_ATTRIBUTE_DEF}/, -2]
             properties = Occi::Core::Properties.new
             if property_string
