@@ -115,21 +115,7 @@ module Occi
           title = match[:title]
           related = match[:rel].to_s.split(/\s+/)
 
-          attributes = Occi::Core::Attributes.new
-          if match[:attributes]
-            match[:attributes].split.each do |attribute|
-              property_string = attribute[/#{REGEXP_ATTRIBUTE_DEF}/, -2]
-              properties = Occi::Core::Properties.new
-
-              if property_string
-                properties.required = property_string.include?('required')
-                properties.mutable = !property_string.include?('immutable')
-              end
-
-              name = attribute[/#{REGEXP_ATTRIBUTE_DEF}/, 1]
-              attributes.merge! name.split('.').reverse.inject(properties) { |a, n| Occi::Core::Attributes.new(n => a) }
-            end
-          end
+          attributes = category_attributes(match[:attributes])
           actions = match[:actions].to_s.split
           location = match[:location]
 
@@ -146,6 +132,30 @@ module Occi
           else
             raise Occi::Errors::ParserInputError, "Category with class #{match[:class].inspect} not recognized in string: #{string}"
           end
+        end
+
+        def category_attributes(matched_attributes)
+          attributes = Occi::Core::Attributes.new
+          return attributes unless matched_attributes
+
+          # TODO: find a better approach to fixing split
+          matched_attributes.gsub! /\{(immutable|required)\s+(required|immutable)\}/, '{\1_\2}'
+
+          matched_attributes.split.each do |attribute|
+            attribute.gsub! /\{(immutable|required)_(required|immutable)\}/, '{\1 \2}'
+            property_string = attribute[/#{REGEXP_ATTRIBUTE_DEF}/, -2]
+            properties = Occi::Core::Properties.new
+
+            if property_string
+              properties.required = property_string.include?('required')
+              properties.mutable = !property_string.include?('immutable')
+            end
+
+            name = attribute[/#{REGEXP_ATTRIBUTE_DEF}/, 1]
+            attributes.merge! name.split('.').reverse.inject(properties) { |a, n| Occi::Core::Attributes.new(n => a) }
+          end
+
+          attributes
         end
 
         def attribute(string)
