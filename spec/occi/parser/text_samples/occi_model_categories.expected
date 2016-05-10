@@ -1,3 +1,0 @@
-Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";title="entity";location="/entity/";attributes="occi.core.id{immutable required} occi.core.title string_attribute"
-Category: resource;scheme="http://schemas.ogf.org/occi/core#";class="kind";title="resource";rel="http://schemas.ogf.org/occi/core#entity";location="/new_location/";attributes="occi.core.id{immutable required} occi.core.title occi.core.summary"
-Category: link;scheme="http://schemas.ogf.org/occi/core#";class="kind";title="link";rel="http://schemas.ogf.org/occi/core#entity";location="/link/";attributes="occi.core.id{required} occi.core.title occi.core.target occi.core.source{required} stringtype{required} stringtypeoptional"

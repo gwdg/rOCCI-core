@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'rubygems/tasks'
 
 task :default => 'test'
@@ -23,9 +22,4 @@ namespace :rcov do
     rm "coverage/coverage.data" if File.exist?("coverage/coverage.data")
     Rake::Task['rcov:rspec'].invoke
   end
-end
-
-require 'yard'
-YARD::Rake::YardocTask.new(:yard) do |t|
-  t.options = ['--any', '--extra', '--opts'] # optional
 end

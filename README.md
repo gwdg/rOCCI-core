@@ -87,6 +87,12 @@ Detailed documentation is available in our [Wiki](https://github.com/EGI-FCTF/rO
 Changelog
 ---------
 
+### Version 5.0
+* Major refactoring
+* Support for OCCI 1.2
+* Support for JSON rendering
+* New logging mechanism
+
 ### Version 4.3
 * Internal updates and bug fixes
 * Updated JSON rendering
@@ -109,32 +115,32 @@ Changelog
 * improved action and mixin handling
 * aligned with latest draft of OCCI Core and OCCI JSON specification
 * split the code into rOCCI-core, rOCCI-api and rOCCI-cli
-* internal changes, refactoring and some bugfixes
+* internal changes, refactoring and some bug fixes
 
 ### Version 3.1
 * added basic OS Keystone support
 * added support for PKCS12 credentials for X.509 authN
 * updated templates for plain output formatting
 * minor client API changes
-* several bugfixes
+* several bug fixes
 
 ### Version 3.0
 
-* many bugfixes
+* many bug fixes
 * rewrote Core classes to use metaprogramming techniques
 * added VCR cassettes for reliable testing against prerecorded server responses
 * several updates to the OCCI Client
 * started work on an OCCI Client using AMQP as transport protocol
 * added support for keystone authentication to be used with the OpenStack OCCI server
 * updated dependencies
-* updated rspec tests
+* updated RSpec tests
 * started work on cucumber features
 
 ### Version 2.5
 
 * improved OCCI Client
 * improved documentation
-* several bugfixes
+* several bug fixes
 
 ### Version 2.4
 
@@ -157,7 +163,7 @@ future versions of rOCCI.
 
 ### Version 2.0
 
-* Starting with version 2.0 Florian Feldhaus and Piotr Kasprzak took over the development of the OCCI gem. The codebase was taken from the rOCCI framework and improved to be bundled as a standalone gem.
+* Starting with version 2.0 Florian Feldhaus and Piotr Kasprzak took over the development of the OCCI gem. The code base was taken from the rOCCI framework and improved to be bundled as a standalone gem.
 
 ### Version 1.X
 
@@ -180,7 +186,7 @@ Install dependencies
 
 ### Code Documentation
 
-[Code Documentation for rOCCI by YARD](http://rubydoc.info/github/EGI-FCTF/rOCCI-core/)
+[Code Documentation for rOCCI](http://rubydoc.info/github/EGI-FCTF/rOCCI-core/)
 
 ### Continuous integration
 
