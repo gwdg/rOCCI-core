@@ -1,30 +1,15 @@
-require 'occi/core/properties'
-require 'occi/core/attributes'
-require 'occi/core/category'
-require 'occi/core/categories'
-require 'occi/core/kind'
-require 'occi/core/kinds'
-require 'occi/core/mixin'
-require 'occi/core/mixins'
-require 'occi/core/dependencies'
-require 'occi/core/action'
-require 'occi/core/action_instance'
-require 'occi/core/actions'
-require 'occi/core/entities'
-require 'occi/core/entity'
-require 'occi/core/link'
-require 'occi/core/links'
-require 'occi/core/resource'
-require 'occi/core/resources'
+# external deps
+require 'active_support/all'
 
+# TODO: docs
 module Occi
+  # TODO: docs
   module Core
-
-    extend Occi
-
-    def self.kinds
-      Occi::Core::Kinds.new << Occi::Core::Entity.kind << Occi::Core::Link.kind << Occi::Core::Resource.kind
-    end
-
+    autoload :Category, 'occi/core/category'
+    autoload :Kind, 'occi/core/kind'
+    autoload :Action, 'occi/core/action'
+    autoload :Mixin, 'occi/core/mixin'
   end
 end
+
+require 'occi/core/version'
