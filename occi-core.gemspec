@@ -29,6 +29,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'simplecov', '~> 0.11'
   gem.add_development_dependency 'pry', '~> 0.10'
   gem.add_development_dependency 'rubocop', '~> 0.32'
+  gem.add_development_dependency 'rubygems-tasks', '~> 0.2'
 
   gem.required_ruby_version = '>= 1.9.3'
 end
