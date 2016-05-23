@@ -26,11 +26,30 @@ module Occi
 
       def validate!; end
 
+      def render(format, options = {}); end
+
+      def empty?; end
+
+      def hash; end
+
+      def eql?(object); end
+
+      def ==(object); end
+
+      def respond_to?(method_sym, include_private = false);
+        super # TODO: change
+      end
+
       protected
 
       #
       def defaults
-        { title: '', attribute_definitions: AttributeDefinitions.new }
+        {
+          term: nil,
+          schema: nil,
+          title: nil,
+          attribute_definitions: AttributeDefinitions.new
+        }
       end
 
       #
@@ -38,6 +57,12 @@ module Occi
 
       #
       def post_initialize; end
+
+      private
+
+      def method_missing(m, *args, &block);
+        super # TODO: change
+      end
     end
   end
 end

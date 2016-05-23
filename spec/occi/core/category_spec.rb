@@ -1,135 +1,143 @@
 module Occi
   module Core
     describe Category do
+      subject { category }
+
       let(:category) do
         Category.new(
           term: 'generic',
           schema: 'http://schemas.org/schema#',
           title: 'Generic category',
-          attribute_definitions: double('attribute_definitions')
+          attribute_definitions: instance_double('Occi::Core::AttributeDefinitions')
         )
       end
 
-      it 'has term' do
-        expect(category.term).to eq 'generic'
+      it 'has term accessor' do
+        is_expected.to have_attr_accessor :term
       end
 
-      it 'has schema' do
-        expect(category.schema).to eq 'http://schemas.org/schema#'
+      it 'has schema accessor' do
+        is_expected.to have_attr_accessor :schema
       end
 
-      it 'has title' do
-        expect(category.title).to eq 'Generic category'
+      it 'has title accessor' do
+        is_expected.to have_attr_accessor :title
       end
 
-      it 'has identifier' do
-        expect(category.identifier).to eq 'http://schemas.org/schema#generic'
+      it 'has attribute_definitions accessor' do
+        is_expected.to have_attr_accessor :attribute_definitions
       end
 
-      it 'has attribute definitions' do
-        expect(category.attribute_definitions).not_to be_nil
+      it 'has only a reader for identifier' do
+        is_expected.to have_attr_reader_only :identifier
       end
 
-      it 'allows the change of term' do
-        expect { category.term = 'nope' }.not_to raise_error
-        expect(category.term).to eq 'nope'
+      describe '.valid?' do
+        it 'is invalid without term' do
+          category.term = nil
+          expect(category.valid?).to be false
+        end
+
+        it 'is invalid with empty term' do
+          category.term = ''
+          expect(category.valid?).to be false
+        end
+
+        it 'is invalid with invalid term' do
+          category.term = '*%^3*5636 43 32456//'
+          expect(category.valid?).to be false
+        end
+
+        it 'is invalid without schema' do
+          category.schema = nil
+          expect(category.valid?).to be false
+        end
+
+        it 'is invalid with empty schema' do
+          category.schema = ''
+          expect(category.valid?).to be false
+        end
+
+        it 'is invalid with invalid schema' do
+          category.schema = '%$4565+ 25 2+65 //=='
+          expect(category.valid?).to be false
+        end
+
+        it 'is invalid without attribute definitions' do
+          category.attribute_definitions = nil
+          expect(category.valid?).to be false
+        end
+
+        it 'is valid with valid term, schema, title, and attribute definitions' do
+          expect(category.valid?).to be true
+        end
+
+        it 'is valid without title' do
+          category.title = nil
+          expect(category.valid?).to be true
+        end
+
+        it 'is valid with empty title' do
+          category.title = nil
+          expect(category.valid?).to be true
+        end
+
+        it 'is valid with attribute definitions' do
+          expect(category.attribute_definitions).not_to be_nil
+          expect(category.valid?).to be true
+        end
+
+        it 'is valid with empty attribute definitions' do
+          expect(category.attribute_definitions).to be_empty
+          expect(category.valid?).to be true
+        end
       end
 
-      it 'allows the change of schema' do
-        expect { category.schema = 'http://schemas.org/nope#' }.not_to raise_error
-        expect(category.schema).to eq 'http://schemas.org/nope#'
+      describe '.validate' do
+        it 'passes validation when valid' do
+          expect(category.validate).to be true
+        end
+
+        it 'does not pass validation when invalid' do
+          category.term = nil
+          expect(category.validate).to be false
+        end
       end
 
-      it 'allows the change of title' do
-        expect { category.title = 'Nope category' }.not_to raise_error
-        expect(category.title).to eq 'Nope category'
+      describe '.validate!' do
+        it 'raises an error when validated with bang and invalid' do
+          category.term = nil
+          expect { category.validate! }.to raise_error(Occi::Core::Errors::ValidationError)
+        end
+
+        it 'does not raise an error when validated with bang and valid' do
+          expect { category.validate! }.not_to raise_error(Occi::Core::Errors::ValidationError)
+        end
       end
 
-      it 'does not allow the change of identifier' do
-        expect { category.identifier = 'http://schemas.org/nope#nope' }.to raise_error(NoMethodError)
-        expect(category.identifier).to eq 'http://schemas.org/schema#generic'
+      describe '.render' do
+        it 'cannot be directly rendered'
       end
 
-      it 'allows the change of attribute definitions' do
-        old_attribute_definitions = category.attribute_definitions
-        expect { category.attribute_definitions = double('attribute_definitions') }.not_to raise_error
-        expect(category.attribute_definitions).not_to equal old_attribute_definitions
+      describe '.empty?' do
+        it 'can be checked for emptiness'
       end
 
-      it 'is invalid without term' do
-        category.term = nil
-        expect(category.valid?).to be false
+      describe '.eql?' do
+        it 'can be compared with another instance'
       end
 
-      it 'is invalid with empty term' do
-        category.term = ''
-        expect(category.valid?).to be false
+      describe '.==' do
+        it 'can be compared with another instance'
       end
 
-      it 'is invalid with invalid term' do
-        category.term = '*%^3*5636 43 32456//'
-        expect(category.valid?).to be false
+      describe '.hash' do
+        it 'has output'
+        it 'has a consistent output'
+        it 'changes output when identifier changes'
+        it 'does not change output when title changes'
+        it 'does not change output when attribute definitions change'
       end
-
-      it 'is invalid without schema' do
-        category.schema = nil
-        expect(category.valid?).to be false
-      end
-
-      it 'is invalid with empty schema' do
-        category.schema = ''
-        expect(category.valid?).to be false
-      end
-
-      it 'is invalid with invalid schema' do
-        category.schema = '%$4565+ 25 2+65 //=='
-        expect(category.valid?).to be false
-      end
-
-      it 'is invalid without attribute definitions' do
-        category.attribute_definitions = nil
-        expect(category.valid?).to be false
-      end
-
-      it 'is valid with valid term, schema, title, and attribute definitions' do
-        expect(category.valid?).to be true
-      end
-
-      it 'is valid without title' do
-        category.title = nil
-        expect(category.valid?).to be true
-      end
-
-      it 'is valid with attribute definitions' do
-        expect(category.attribute_definitions).not_to be_nil
-        expect(category.valid?).to be true
-      end
-
-      it 'passes validation when valid' do
-        expect(category.valid?).to be true
-        expect(category.validate).to be true
-      end
-
-      it 'does not pass validation when invalid' do
-        category.term = nil
-        expect(category.valid?).to be false
-        expect(category.validate).to be false
-      end
-
-      it 'raises an error when validated with bang and invalid' do
-        category.term = nil
-        expect(category.valid?).to be false
-        expect { category.validate! }.to raise_error
-      end
-
-      it 'does not raise an error when validated with bang and valid' do
-        expect(category.valid?).to be true
-        expect { category.validate! }.not_to raise_error
-      end
-
-      it 'cannot be directly rendered'
-      it 'can be checked for emptiness'
-      it 'can be compared with another instance'
     end
   end
 end
