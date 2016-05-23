@@ -3,9 +3,9 @@ module Occi
     MAJOR_VERSION = 5
     MINOR_VERSION = 0
     PATCH_VERSION = 0
-    STAGE_VERSION = 'alpha.1' # use `nil` for production releases
+    STAGE_VERSION = 'alpha.1'.freeze # use `nil` for production releases
 
-    if !defined?(::Occi::Core::VERSION)
+    unless defined?(::Occi::Core::VERSION)
       VERSION = [
         MAJOR_VERSION,
         MINOR_VERSION,

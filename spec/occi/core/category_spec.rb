@@ -1,13 +1,12 @@
 module Occi
   module Core
     describe Category do
-
       before(:each) do
         @category = Category.new(
           term: 'generic',
           schema: 'http://schemas.org/schema#',
           title: 'Generic category',
-          attribute_definitions: double("attribute_definitions")
+          attribute_definitions: double('attribute_definitions')
         )
       end
 
@@ -53,7 +52,7 @@ module Occi
 
       it 'allows the change of attribute definitions' do
         old_attribute_definitions = @category.attribute_definitions
-        expect { @category.attribute_definitions = double("attribute_definitions") }.not_to raise_error
+        expect { @category.attribute_definitions = double('attribute_definitions') }.not_to raise_error
         expect(@category.attribute_definitions).not_to equal old_attribute_definitions
       end
 
@@ -131,7 +130,6 @@ module Occi
       it 'cannot be directly rendered'
       it 'can be checked for emptiness'
       it 'can be compared with another instance'
-
     end
   end
 end

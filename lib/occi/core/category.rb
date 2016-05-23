@@ -2,7 +2,6 @@ module Occi
   module Core
     #
     class Category
-
       attr_accessor :term, :schema, :title, :attribute_definitions
 
       def initialize(args = {})
@@ -39,7 +38,6 @@ module Occi
 
       #
       def post_initialize; end
-
     end
   end
 end
