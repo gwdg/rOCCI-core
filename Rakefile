@@ -1,4 +1,5 @@
 require 'rubygems/tasks'
+require 'rubocop/rake_task'
 
 task default: 'test'
 
@@ -9,6 +10,8 @@ desc 'Run all tests; includes rspec and coverage reports'
 task spec: 'test'
 
 Gem::Tasks.new(build: { tar: true, zip: true }, sign: { checksum: true, pgp: false })
+
+RuboCop::RakeTask.new
 
 namespace :rcov do
   require 'rspec/core/rake_task'

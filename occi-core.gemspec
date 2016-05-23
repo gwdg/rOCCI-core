@@ -8,7 +8,8 @@ Gem::Specification.new do |gem|
   gem.version       = Occi::Core::VERSION
   gem.authors       = ['Boris Parak', 'Florian Feldhaus', 'Piotr Kasprzak']
   gem.email         = ['parak@cesnet.cz', 'florian.feldhaus@gmail.com', 'piotr.kasprzak@gwdg.de']
-  gem.description   = 'The rOCCI toolkit is a collection of classes simplifying implementation of Open Cloud Computing Interface in Ruby'
+  gem.description   = 'The rOCCI toolkit is a collection of classes simplifying implementation ' \
+                      'of Open Cloud Computing Interface in Ruby'
   gem.summary       = 'The rOCCI toolkit'
   gem.homepage      = 'https://github.com/EGI-FCTF/rOCCI-core'
   gem.license       = 'Apache License, Version 2.0'
@@ -29,6 +30,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'simplecov', '~> 0.11'
   gem.add_development_dependency 'pry', '~> 0.10'
   gem.add_development_dependency 'rubocop', '~> 0.32'
+  gem.add_development_dependency 'rubocop-rspec', '~> 1.5'
   gem.add_development_dependency 'rubygems-tasks', '~> 0.2'
 
   gem.required_ruby_version = '>= 1.9.3'

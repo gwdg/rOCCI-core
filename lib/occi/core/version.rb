@@ -1,4 +1,6 @@
+# :nodoc:
 module Occi
+  # :nodoc:
   module Core
     MAJOR_VERSION = 5
     MINOR_VERSION = 0
