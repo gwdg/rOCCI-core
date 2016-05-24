@@ -116,19 +116,25 @@ module Occi
       end
 
       describe '.render' do
-        it 'cannot be directly rendered'
+        it 'raises a rendering error'
       end
 
       describe '.empty?' do
-        it 'can be checked for emptiness'
+        it 'returns `true` for blank term'
+        it 'returns `true` for blank schema'
+        it 'returns `false` for non-empty term and schema'
       end
 
       describe '.eql?' do
-        it 'can be compared with another instance'
+        it 'returns `false` for object without identifier'
+        it 'returns `false` for object without matching identifier value'
+        it 'returns `true` for object with matching identifier value'
       end
 
       describe '.==' do
-        it 'can be compared with another instance'
+        it 'returns `false` for object without identifier'
+        it 'returns `false` for object without matching identifier value'
+        it 'returns `true` for object with matching identifier value'
       end
 
       describe '.hash' do
