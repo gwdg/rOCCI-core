@@ -26,4 +26,6 @@ env:
 
 install: 'gem install bundler -v ">= 1.12" && bundle install --retry=10'
 
+script: 'bundle exec rake acceptance'
+
 sudo: false
