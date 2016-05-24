@@ -32,11 +32,11 @@ module Occi
 
       def hash; end
 
-      def eql?(object); end
+      def eql?(other); end
 
-      def ==(object); end
+      def ==(other); end
 
-      def respond_to?(method_sym, include_private = false);
+      def respond_to?(method_sym, include_private = false)
         super # TODO: change
       end
 
@@ -60,7 +60,7 @@ module Occi
 
       private
 
-      def method_missing(m, *args, &block);
+      def method_missing(m, *args, &block)
         super # TODO: change
       end
     end

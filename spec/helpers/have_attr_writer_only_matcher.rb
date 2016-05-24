@@ -12,6 +12,6 @@ RSpec::Matchers.define :have_attr_writer_only do |field|
   end
 
   description do
-    "assert there is only attr_writer of the given name on the supplied object"
+    'assert there is only attr_writer of the given name on the supplied object'
   end
 end
