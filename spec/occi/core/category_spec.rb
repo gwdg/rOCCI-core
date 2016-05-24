@@ -12,24 +12,25 @@ module Occi
         )
       end
 
-      it 'has term accessor' do
-        is_expected.to have_attr_accessor :term
-      end
+      CAT_ATTRS = [:term, :schema, :title, :attribute_definitions].freeze
 
-      it 'has schema accessor' do
-        is_expected.to have_attr_accessor :schema
-      end
-
-      it 'has title accessor' do
-        is_expected.to have_attr_accessor :title
-      end
-
-      it 'has attribute_definitions accessor' do
-        is_expected.to have_attr_accessor :attribute_definitions
+      CAT_ATTRS.each do |attr|
+        it "has #{attr} accessor" do
+          is_expected.to have_attr_accessor attr.to_sym
+        end
       end
 
       it 'has only a reader for identifier' do
         is_expected.to have_attr_reader_only :identifier
+      end
+
+      describe '.new' do
+        it 'fails without term'
+        it 'fails without schema'
+
+        CAT_ATTRS.each do |attr|
+          it "assigns #{attr}"
+        end
       end
 
       describe '.valid?' do
@@ -90,17 +91,6 @@ module Occi
         it 'is valid with empty attribute definitions' do
           expect(category.attribute_definitions).to be_empty
           expect(category.valid?).to be true
-        end
-      end
-
-      describe '.validate' do
-        it 'passes validation when valid' do
-          expect(category.validate).to be true
-        end
-
-        it 'does not pass validation when invalid' do
-          category.term = nil
-          expect(category.validate).to be false
         end
       end
 

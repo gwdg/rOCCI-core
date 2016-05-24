@@ -8,6 +8,8 @@ module Occi
         pre_initialize
 
         args.merge!(defaults) { |_, oldval, _| oldval }
+        sufficient_args!(args)
+
         @term = args.fetch(:term)
         @schema = args.fetch(:schema)
         @title = args.fetch(:title)
@@ -16,26 +18,33 @@ module Occi
         post_initialize
       end
 
+      #
       def identifier
         "#{schema}#{term}"
       end
 
+      #
       def valid?; end
 
-      def validate; end
-
+      #
       def validate!; end
 
+      #
       def render(format, options = {}); end
 
+      # :nodoc:
       def empty?; end
 
+      # :nodoc:
       def hash; end
 
+      # :nodoc:
       def eql?(other); end
 
+      # :nodoc:
       def ==(other); end
 
+      # :nodoc:
       def respond_to?(method_sym, include_private = false)
         super # TODO: change
       end
@@ -43,12 +52,15 @@ module Occi
       protected
 
       #
+      def sufficient_args!(args); end
+
+      #
       def defaults
         {
           term: nil,
           schema: nil,
           title: nil,
-          attribute_definitions: AttributeDefinitions.new
+          attribute_definitions: nil
         }
       end
 
@@ -60,6 +72,7 @@ module Occi
 
       private
 
+      # :nodoc:
       def method_missing(m, *args, &block)
         super # TODO: change
       end
