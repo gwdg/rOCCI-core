@@ -8,7 +8,7 @@ module Occi
           term: 'generic',
           schema: 'http://schemas.org/schema#',
           title: 'Generic category',
-          attribute_definitions: instance_double('Occi::Core::AttributeDefinitions')
+          attribute_definitions: instance_double('Hash')
         )
       end
 
@@ -24,7 +24,7 @@ module Occi
         is_expected.to have_attr_reader_only :identifier
       end
 
-      describe '.new' do
+      describe '::new' do
         it 'fails without term'
         it 'fails without schema'
 
@@ -33,101 +33,37 @@ module Occi
         end
       end
 
-      describe '.valid?' do
-        it 'is invalid without term' do
-          category.term = nil
-          expect(category.valid?).to be false
-        end
-
-        it 'is invalid with empty term' do
-          category.term = ''
-          expect(category.valid?).to be false
-        end
-
-        it 'is invalid with invalid term' do
-          category.term = '*%^3*5636 43 32456//'
-          expect(category.valid?).to be false
-        end
-
-        it 'is invalid without schema' do
-          category.schema = nil
-          expect(category.valid?).to be false
-        end
-
-        it 'is invalid with empty schema' do
-          category.schema = ''
-          expect(category.valid?).to be false
-        end
-
-        it 'is invalid with invalid schema' do
-          category.schema = '%$4565+ 25 2+65 //=='
-          expect(category.valid?).to be false
-        end
-
-        it 'is invalid without attribute definitions' do
-          category.attribute_definitions = nil
-          expect(category.valid?).to be false
-        end
-
-        it 'is valid with valid term, schema, title, and attribute definitions' do
-          expect(category.valid?).to be true
-        end
-
-        it 'is valid without title' do
-          category.title = nil
-          expect(category.valid?).to be true
-        end
-
-        it 'is valid with empty title' do
-          category.title = nil
-          expect(category.valid?).to be true
-        end
-
-        it 'is valid with attribute definitions' do
-          expect(category.attribute_definitions).not_to be_nil
-          expect(category.valid?).to be true
-        end
-
-        it 'is valid with empty attribute definitions' do
-          expect(category.attribute_definitions).to be_empty
-          expect(category.valid?).to be true
-        end
+      describe '#[]' do
+        it 'delegates to attribute definitions'
       end
 
-      describe '.validate!' do
-        it 'raises an error when validated with bang and invalid' do
-          category.term = nil
-          expect { category.validate! }.to raise_error(Occi::Core::Errors::ValidationError)
-        end
-
-        it 'does not raise an error when validated with bang and valid' do
-          expect { category.validate! }.not_to raise_error(Occi::Core::Errors::ValidationError)
-        end
+      describe '#[]=' do
+        it 'delegates to attribute definitions'
       end
 
-      describe '.render' do
+      describe '#render' do
         it 'raises a rendering error'
       end
 
-      describe '.empty?' do
+      describe '#empty?' do
         it 'returns `true` for blank term'
         it 'returns `true` for blank schema'
         it 'returns `false` for non-empty term and schema'
       end
 
-      describe '.eql?' do
+      describe '#eql?' do
         it 'returns `false` for object without identifier'
         it 'returns `false` for object without matching identifier value'
         it 'returns `true` for object with matching identifier value'
       end
 
-      describe '.==' do
+      describe '#==' do
         it 'returns `false` for object without identifier'
         it 'returns `false` for object without matching identifier value'
         it 'returns `true` for object with matching identifier value'
       end
 
-      describe '.hash' do
+      describe '#hash' do
         it 'has output'
         it 'has a consistent output'
         it 'changes output when identifier changes'

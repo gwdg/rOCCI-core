@@ -24,10 +24,14 @@ module Occi
       end
 
       #
-      def valid?; end
+      def [](key)
+        attribute_definitions[key]
+      end
 
       #
-      def validate!; end
+      def []=(key, val)
+        attribute_definitions[key] = val
+      end
 
       #
       def render(format, options = {}); end
@@ -60,7 +64,7 @@ module Occi
           term: nil,
           schema: nil,
           title: nil,
-          attribute_definitions: nil
+          attribute_definitions: {}
         }
       end
 

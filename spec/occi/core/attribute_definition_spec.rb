@@ -5,7 +5,6 @@ module Occi
 
       let(:attribute_definition) do
         AttributeDefinition.new(
-          name: 'test.attribute',
           type: String,
           required: false,
           mutable: true,
@@ -15,7 +14,7 @@ module Occi
         )
       end
 
-      ATTR_DEF_ATTRS = [:name, :type, :required, :mutable, :default, :description, :pattern].freeze
+      ATTR_DEF_ATTRS = [:type, :required, :mutable, :default, :description, :pattern].freeze
 
       ATTR_DEF_ATTRS.each do |attr|
         it "has #{attr} accessor" do
@@ -23,8 +22,7 @@ module Occi
         end
       end
 
-      describe '.new' do
-        it 'fails without name'
+      describe '::new' do
         it 'fails without type'
 
         ATTR_DEF_ATTRS.each do |attr|
@@ -32,44 +30,50 @@ module Occi
         end
       end
 
-      describe '.required?' do
+      describe '#required?' do
         it 'matches required attribute'
       end
 
-      describe '.mutable?' do
+      describe '#required!' do
+        it 'does not change `true` required attribute'
+        it 'changes `false` required attribute'
+        it 'changes `nil` required attribute'
+      end
+
+      describe '#optional?' do
+        it 'matches negated required attribute'
+      end
+
+      describe '#optional!' do
+        it 'does not change `false` required attribute'
+        it 'changes `true` required attribute'
+        it 'changes `nil` required attribute'
+      end
+
+      describe '#mutable?' do
         it 'matches mutable attribute'
       end
 
-      describe '.mutable!' do
+      describe '#mutable!' do
         it 'does not change `true` mutable attribute'
         it 'changes `false` mutable attribute'
         it 'changes `nil` mutable attribute'
       end
 
-      describe '.immutable?' do
+      describe '#immutable?' do
         it 'matches negated mutable attribute'
       end
 
-      describe '.immutable!' do
+      describe '#immutable!' do
         it 'does not change `false` mutable attribute'
         it 'changes `true` mutable attribute'
         it 'changes `nil` mutable attribute'
       end
 
-      describe '.valid?' do
+      describe '#valid?' do
       end
 
-      describe '.validate!' do
-      end
-
-      describe '.hash' do
-        it 'has output'
-        it 'has a consistent output'
-        it 'changes output when name changes'
-
-        (ATTR_DEF_ATTRS - [:name]).each do |attr|
-          it "does not change output when #{attr} changes"
-        end
+      describe '#valid!' do
       end
     end
   end

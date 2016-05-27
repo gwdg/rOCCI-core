@@ -2,14 +2,13 @@ module Occi
   module Core
     #
     class AttributeDefinition
-      attr_accessor :name, :type, :required, :mutable,
+      attr_accessor :type, :required, :mutable,
                     :default, :description, :pattern
 
       def initialize(args = {})
         args.merge!(defaults) { |_, oldval, _| oldval }
         sufficient_args!(args)
 
-        @name = args.fetch(:name)
         @type = args.fetch(:type)
         @required = args.fetch(:required)
         @mutable = args.fetch(:mutable)
@@ -20,6 +19,15 @@ module Occi
 
       #
       def required?; end
+
+      #
+      def required!; end
+
+      #
+      def optional?; end
+
+      #
+      def optional!; end
 
       #
       def mutable?; end
@@ -37,10 +45,7 @@ module Occi
       def valid?(value); end
 
       #
-      def validate!(value); end
-
-      # :nodoc:
-      def hash; end
+      def valid!(value); end
 
       private
 
@@ -50,7 +55,6 @@ module Occi
       #
       def defaults
         {
-          name: nil,
           type: String,
           required: false,
           mutable: true,
