@@ -1,7 +1,34 @@
 module Occi
   module Core
+    # Contains an attribute definition, including:
+    # * `type`         -- Ruby class of the desired value
+    # * `required`     -- Boolean
+    # * `mutable`      -- Boolean
+    # * `default`      -- Depends on `type`, or `nil`
+    # * `description`  -- String, or `nil`
+    # * `pattern`      -- Regexp instance, or `nil`
     #
+    # This definition does not carry the name of the
+    # attribute or its value. These should be associated
+    # with the definition by other means, e.g. in a hash
+    # `{ name: definition }` or by using instances of
+    # the `Occi::Core::Attribute` class.
+    #
+    # @example
+    #   adfn = AttributeDefinition.new({
+    #            type: String,
+    #            required: false,
+    #            mutable: true,
+    #            default: nil,
+    #            description: 'This is an attribute',
+    #            pattern: /.*/
+    #          })
+    #   adfn.mutable? # => true
+    #
+    # @author Boris Parak <parak@cesnet.cz>
     class AttributeDefinition
+      include Yell::Loggable
+
       attr_accessor :type, :required, :mutable,
                     :default, :description, :pattern
 
@@ -40,6 +67,12 @@ module Occi
 
       #
       def immutable!; end
+
+      #
+      def default?; end
+
+      #
+      def pattern?; end
 
       #
       def valid?(value); end

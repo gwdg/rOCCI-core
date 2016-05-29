@@ -2,6 +2,9 @@ module Occi
   module Core
     #
     class Category
+      #
+      include Rendering::Renderable
+
       attr_accessor :term, :schema, :title, :attribute_definitions
 
       def initialize(args = {})
@@ -33,9 +36,6 @@ module Occi
         attribute_definitions[key] = val
       end
 
-      #
-      def render(format, options = {}); end
-
       # :nodoc:
       def empty?; end
 
@@ -47,11 +47,6 @@ module Occi
 
       # :nodoc:
       def ==(other); end
-
-      # :nodoc:
-      def respond_to?(method_sym, include_private = false)
-        super # TODO: change
-      end
 
       protected
 
@@ -73,13 +68,6 @@ module Occi
 
       #
       def post_initialize; end
-
-      private
-
-      # :nodoc:
-      def method_missing(m, *args, &block)
-        super # TODO: change
-      end
     end
   end
 end
