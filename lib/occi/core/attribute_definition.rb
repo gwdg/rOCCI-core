@@ -44,48 +44,158 @@ module Occi
         @pattern = args.fetch(:pattern)
       end
 
-      #
-      def required?; end
+      # Alias with a question mark
+      alias required? required
+      alias mutable? mutable
 
+      # Changes the value of `required` to `true`, in case
+      # `required` is `nil` or `false`.
       #
-      def required!; end
+      # @example
+      #   attr_def.required? # => false
+      #   attr_def.required!
+      #   attr_def.required? # => true
+      def required!
+        self.required = true
+      end
 
+      # Shorthand for getting the negated value of `required`.
       #
-      def optional?; end
+      # @example
+      #   attr_def.required? # => false
+      #   attr_def.optional? # => true
+      #
+      # @return [TrueClass, FalseClass] negated value of `required`
+      def optional?
+        !required?
+      end
 
+      # Changes the value of `required` to `false`, in case
+      # `required` is `nil` or `true`.
       #
-      def optional!; end
+      # @example
+      #   attr_def.required? # => true
+      #   attr_def.optional!
+      #   attr_def.required? # => false
+      def optional!
+        self.required = false
+      end
 
+      # Changes the value of `mutable` to `true`, in case
+      # `mutable` is `nil` or `false`.
       #
-      def mutable?; end
+      # @example
+      #   attr_def.mutable? # => false
+      #   attr_def.mutable!
+      #   attr_def.mutable? # => true
+      def mutable!
+        self.mutable = true
+      end
 
+      # Shorthand for getting the negated value of `mutable`.
       #
-      def mutable!; end
+      # @example
+      #   attr_def.mutable?   # => true
+      #   attr_def.immutable? # => false
+      #
+      # @return [TrueClass, FalseClass] negated value of `mutable`
+      def immutable?
+        !mutable?
+      end
 
+      # Changes the value of `mutable` to `false`, in case
+      # `mutable` is `nil` or `true`.
       #
-      def immutable?; end
+      # @example
+      #   attr_def.mutable?   # => true
+      #   attr_def.immutable!
+      #   attr_def.mutable?   # => false
+      def immutable!
+        self.mutable = false
+      end
 
+      # Indicates the presence of a default value.
       #
-      def immutable!; end
+      # @example
+      #   attr_def.default  # => nil
+      #   attr_def.default? # => false
+      #
+      # @return [TrueClass, FalseClass] default value indicator
+      def default?
+        !default.nil?
+      end
 
+      # Indicates the presence of a pattern for value.
       #
-      def default?; end
+      # @example
+      #   attr_def.pattern  # => /.*/
+      #   attr_def.pattern? # => true
+      #
+      # @return [TrueClass, FalseClass] pattern indicator
+      def pattern?
+        !pattern.nil?
+      end
 
+      # Indicates whether the given value is an acceptable
+      # value for an attribute with this definition.
       #
-      def pattern?; end
+      # @example
+      #   attr_def.type       # => String
+      #   attr_def.value? 5.0 # => false
+      #
+      # @param value [Object] candidate value
+      # @return [TrueClass, FalseClass] validation result
+      def valid?(value)
+        begin
+          valid! value
+        rescue Occi::Core::Errors::AttributeValidationError => ex
+          logger.debug "AttributeValidation: #{ex.message}"
+          return false
+        end
 
-      #
-      def valid?(value); end
+        true
+      end
 
+      # Indicates whether the given value is an acceptable
+      # value for an attribute with this definition. This
+      # method will raise an error if the given value is
+      # not acceptable.
       #
-      def valid!(value); end
+      # @example
+      #   attr_def.type       # => String
+      #   attr_def.value! 0.5 # => Occi::Core::Errors::AttributeValidationError
+      #
+      # @param value [Object] candidate value
+      def valid!(value)
+        fail Occi::Core::Errors::AttributeValidationError,
+             'No type has been defined' unless type
+        fail Occi::Core::Errors::AttributeValidationError,
+             "Type #{value.class} is incompatible with " \
+             "defined type #{type}" unless type.ancestors.include?(value.class)
+
+        if type.is_a?(String) && pattern?
+          fail Occi::Core::Errors::AttributeValidationError,
+               "#{value.inspect} does not match pattern " \
+               "#{pattern.inspect}" unless pattern.match(value)
+        end
+      end
 
       private
 
-      #
-      def sufficient_args!(args); end
+      # :nodoc:
+      def sufficient_args!(args)
+        fail Occi::Core::Errors::MandatoryArgumentError,
+             'type is a mandatory argument' if args[:type].nil?
+        fail Occi::Core::Errors::MandatoryArgumentError,
+             'type must be a class' unless args[:type].is_a?(Class)
 
-      #
+        [:required, :mutable].each do |attr|
+          fail Occi::Core::Errors::MandatoryArgumentError,
+               "#{attr} is a mandatory argument" if args[attr].nil?
+        end
+      end
+
+      # :nodoc:
       def defaults
         {
           type: String,

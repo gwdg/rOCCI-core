@@ -26,6 +26,8 @@ module Occi
   #
   # @author Boris Parak <parak@cesnet.cz>
   module Core
+    autoload :Errors, 'occi/core/errors'
+
     # Contains all rendering-related classes and modules. This
     # module houses functionality transforming various internal
     # instances to standardized over-the-wire renderings. In most

@@ -35,6 +35,18 @@ module Occi
             expect(subject.send(attr)).to match send("example_#{attr}")
           end
         end
+
+        it 'fails with `nil` type' do
+          expect { AttributeDefinition.new(type: nil) }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+        end
+
+        it 'fails with `nil` mutable' do
+          expect { AttributeDefinition.new(mutable: nil) }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+        end
+
+        it 'fails with `nil` required' do
+          expect { AttributeDefinition.new(required: nil) }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+        end
       end
 
       describe '#required?' do
