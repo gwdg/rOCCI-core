@@ -97,31 +97,31 @@ module Occi
 
         describe '.valid_term?' do
           it 'recognizes valid term' do
-            expect(Category.valid_term? subject.term).to be true
+            expect(Category.valid_term?(subject.term)).to be true
           end
 
           it 'fails on non-URI compliant term' do
-            expect(Category.valid_term? example_invalid_term).to be false
+            expect(Category.valid_term?(example_invalid_term)).to be false
           end
         end
 
         describe '.valid_schema?' do
           it 'recognizes valid schema' do
-            expect(Category.valid_schema? subject.schema).to be true
+            expect(Category.valid_schema?(subject.schema)).to be true
           end
 
           it 'fails on non-URI compliant schema' do
-            expect(Category.valid_schema? example_invalid_schema).to be false
+            expect(Category.valid_schema?(example_invalid_schema)).to be false
           end
         end
 
         describe '.valid_identifier?' do
           it 'recognizes valid identifier' do
-            expect(Category.valid_identifier? subject.identifier).to be true
+            expect(Category.valid_identifier?(subject.identifier)).to be true
           end
 
           it 'fails on non-URI compliant identifier' do
-            expect(Category.valid_identifier? example_invalid_idf).to be false
+            expect(Category.valid_identifier?(example_invalid_idf)).to be false
           end
         end
       end

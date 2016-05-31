@@ -171,31 +171,42 @@ module Occi
       #
       # @param value [Object] candidate value
       def valid!(value)
-        fail Occi::Core::Errors::AttributeValidationError,
-             'No type has been defined' unless type
-        fail Occi::Core::Errors::AttributeValidationError,
-             "Type #{value.class} is incompatible with " \
-             "defined type #{type}" unless type.ancestors.include?(value.class)
+        raise Occi::Core::Errors::AttributeValidationError,
+              'No type has been defined' unless type
+        raise Occi::Core::Errors::AttributeValidationError,
+              "Type #{value.class} is incompatible with " \
+              "defined type #{type}" unless type_ancestors.include?(value.class)
 
-        if type.ancestors.include?(String) && pattern?
-          fail Occi::Core::Errors::AttributeValidationError,
-               "#{value.inspect} does not match pattern " \
-               "#{pattern.inspect}" unless pattern.match(value)
-        end
+        match_pattern! value
       end
 
       private
 
       # :nodoc:
+      def match_pattern!(value)
+        return unless type_ancestors.include?(String)
+
+        if pattern? && !pattern.match(value)
+          raise Occi::Core::Errors::AttributeValidationError,
+                "#{value.inspect} does not match pattern #{pattern.inspect}"
+        end
+      end
+
+      # :nodoc:
+      def type_ancestors
+        type.ancestors
+      end
+
+      # :nodoc:
       def sufficient_args!(args)
-        fail Occi::Core::Errors::MandatoryArgumentError,
-             'type is a mandatory argument' if args[:type].nil?
-        fail Occi::Core::Errors::MandatoryArgumentError,
-             'type must be a class' unless args[:type].is_a?(Class)
+        raise Occi::Core::Errors::MandatoryArgumentError,
+              'type is a mandatory argument' if args[:type].nil?
+        raise Occi::Core::Errors::MandatoryArgumentError,
+              'type must be a class' unless args[:type].is_a?(Class)
 
         [:required, :mutable].each do |attr|
-          fail Occi::Core::Errors::MandatoryArgumentError,
-               "#{attr} is a mandatory argument" if args[attr].nil?
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                "#{attr} is a mandatory argument" if args[attr].nil?
         end
       end
 

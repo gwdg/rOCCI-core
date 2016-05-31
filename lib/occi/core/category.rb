@@ -72,11 +72,11 @@ module Occi
       end
 
       class << self
+        # Characters prohibited in `schema` attribute
         PROHIBITED_SCHEMA_CHARS = %w(% & ? ! \\).freeze
 
-        REGEXP_ALPHA = /[a-zA-Z]/
-        REGEXP_DIGIT = /[0-9]/
-        REGEXP_TERM = /^(#{REGEXP_ALPHA}|#{REGEXP_DIGIT})(#{REGEXP_ALPHA}|#{REGEXP_DIGIT}|-|_)*$/
+        # Definition of characters allowed in `term` attribute
+        REGEXP_TERM = /^([[:alpha:]]|[[:digit:]])([[:alpha:]]|[[:digit:]]|-|_)*$/
 
         # Validates given `term` against the restrictions imposed by the
         # OCCI specification. See `REGEXP_TERM` in this class for details.
@@ -102,7 +102,7 @@ module Occi
         # @param schema [String] schema candidate
         # @return [TrueClass, FalseClass] result
         def valid_schema?(schema)
-          !schema.blank? && valid_uri?(schema) && schema.include?('#') && !has_prohibited_chars?(schema)
+          !schema.blank? && valid_uri?(schema) && schema.include?('#') && !prohibited_chars?(schema)
         end
 
         # Validates given `identifier` as a combination of rules for `term`
@@ -138,7 +138,7 @@ module Occi
         end
 
         # :nodoc:
-        def has_prohibited_chars?(schema)
+        def prohibited_chars?(schema)
           PROHIBITED_SCHEMA_CHARS.collect { |char| schema.include?(char) }.reduce(:&)
         end
       end
@@ -148,8 +148,8 @@ module Occi
       # :nodoc:
       def sufficient_args!(args)
         [:term, :schema].each do |attr|
-          fail Occi::Core::Errors::MandatoryArgumentError,
-               "#{attr} is a mandatory argument" unless self.class.send("valid_#{attr}?", args[attr])
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                "#{attr} is a mandatory argument" unless self.class.send("valid_#{attr}?", args[attr])
         end
       end
 
