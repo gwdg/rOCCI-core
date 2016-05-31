@@ -173,7 +173,7 @@ module Occi
              "Type #{value.class} is incompatible with " \
              "defined type #{type}" unless type.ancestors.include?(value.class)
 
-        if type.is_a?(String) && pattern?
+        if type.ancestors.include?(String) && pattern?
           fail Occi::Core::Errors::AttributeValidationError,
                "#{value.inspect} does not match pattern " \
                "#{pattern.inspect}" unless pattern.match(value)

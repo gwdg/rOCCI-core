@@ -181,6 +181,7 @@ module Occi
         let(:example_value1) { 'String' }
         let(:example_value2) { 25.02 }
         let(:example_value3) { '' }
+        let(:example_strict_pattern) { /\S+/ }
 
         describe '#valid?' do
           it 'returns `true` to indicate success' do
@@ -192,6 +193,7 @@ module Occi
           end
 
           it 'returns `false` to indicate failure on pattern' do
+            subject.pattern = example_strict_pattern
             expect(subject.valid?(example_value3)).to be false
           end
 
@@ -211,6 +213,7 @@ module Occi
           end
 
           it 'raises error with message to indicate failure on pattern' do
+            subject.pattern = example_strict_pattern
             expect { subject.valid!(example_value3) }.to raise_error(Occi::Core::Errors::AttributeValidationError)
           end
 
