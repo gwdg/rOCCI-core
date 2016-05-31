@@ -6,6 +6,7 @@ module Occi
       let(:example_term) { 'generic' }
       let(:example_schema) { 'http://schemas.org/schema#' }
       let(:example_title) { 'Generic category' }
+      let(:example_attributes) { instance_double('Hash') }
 
       let(:example_attribute) { 'org.example.attribute' }
       let(:example_value) { 'text' }
@@ -15,11 +16,11 @@ module Occi
           term: example_term,
           schema: example_schema,
           title: example_title,
-          attribute_definitions: instance_double('Hash')
+          attributes: example_attributes
         )
       end
 
-      CAT_ATTRS = [:term, :schema, :title, :attribute_definitions].freeze
+      CAT_ATTRS = [:term, :schema, :title, :attributes].freeze
 
       CAT_ATTRS.each do |attr|
         it "has #{attr} accessor" do
@@ -33,96 +34,101 @@ module Occi
 
       describe '::new' do
         it 'fails without term' do
-          expect { Category.new(term: nil, schema: example_schema) }.to raise_error(Occi::Core::Errors::InvalidEntry)
+          expect { Category.new(term: nil, schema: example_schema) }.to raise_error(
+            Occi::Core::Errors::MandatoryArgumentError
+          )
         end
 
         it 'fails with empty term' do
-          expect { Category.new(term: '', schema: example_schema) }.to raise_error(Occi::Core::Errors::InvalidEntry)
+          expect { Category.new(term: '', schema: example_schema) }.to raise_error(
+            Occi::Core::Errors::MandatoryArgumentError
+          )
         end
 
         it 'fails without schema' do
-          expect { Category.new(term: example_term, schema: nil) }.to raise_error(Occi::Core::Errors::InvalidEntry)
+          expect { Category.new(term: example_term, schema: nil) }.to raise_error(
+            Occi::Core::Errors::MandatoryArgumentError
+          )
         end
 
         it 'fails with empty schema' do
-          expect { Category.new(term: example_term, schema: '') }.to raise_error(Occi::Core::Errors::InvalidEntry)
+          expect { Category.new(term: example_term, schema: '') }.to raise_error(
+            Occi::Core::Errors::MandatoryArgumentError
+          )
         end
 
-        it 'fails with invalid term'
-        it 'fails with invalid schema'
+        it 'fails with invalid term' do
+          expect { Category.new(term: 'as tr%$^!', schema: example_schema) }.to raise_error(
+            Occi::Core::Errors::MandatoryArgumentError
+          )
+        end
+
+        it 'fails with invalid schema' do
+          expect { Category.new(term: example_term, schema: 'sf 5as4%$61&') }.to raise_error(
+            Occi::Core::Errors::MandatoryArgumentError
+          )
+        end
 
         CAT_ATTRS.each do |attr|
-          it "assigns #{attr}"
+          it "assigns #{attr}" do
+            expect(subject.send(attr)).to match send("example_#{attr}")
+          end
         end
       end
 
       describe '#[]' do
-        it 'delegates to attribute definitions' do
-          expect(category.attribute_definitions).to receive(:[]).with(example_attribute)
-          category[example_attribute]
+        it 'delegates to attributes' do
+          expect(subject.attributes).to receive(:[]).with(example_attribute)
+          subject[example_attribute]
         end
       end
 
       describe '#[]=' do
-        it 'delegates to attribute definitions' do
-          expect(category.attribute_definitions).to receive(:[]=).with(example_attribute, example_value)
-          category[example_attribute] = example_value
+        it 'delegates to attributes' do
+          expect(subject.attributes).to receive(:[]=).with(example_attribute, example_value)
+          subject[example_attribute] = example_value
         end
       end
 
       describe '#render' do
         it 'raises a rendering error' do
-          expect { category.render :text }.to raise_error(Occi::Core::Errors::RenderingError)
+          expect { subject.render :text }.to raise_error(Occi::Core::Errors::RenderingError)
         end
       end
 
-      describe '#empty?' do
-        it 'returns `true` for blank term'
-        it 'returns `true` for blank schema'
-        it 'returns `false` for non-empty term and schema'
-      end
+      context 'during URI validation' do
+        let(:example_invalid_term) { 'term safa %$%$%426&' }
+        let(:example_invalid_schema) { 'http:// asd df %^$@%@$% as/dsd#' }
+        let(:example_invalid_idf) { "#{example_invalid_schema}#{example_invalid_term}" }
 
-      describe '#eql?' do
-        it 'returns `false` for object without identifier'
-        it 'returns `false` for object without matching identifier value'
-        it 'returns `true` for object with matching identifier value'
-      end
+        describe '.valid_term?' do
+          it 'recognizes valid term' do
+            expect(Category.valid_term? subject.term).to be true
+          end
 
-      describe '#==' do
-        it 'returns `false` for object without identifier'
-        it 'returns `false` for object without matching identifier value'
-        it 'returns `true` for object with matching identifier value'
-      end
-
-      describe '#hash' do
-        it 'has output'
-        it 'has a consistent output'
-        it 'changes output when identifier changes'
-        it 'does not change output when title changes'
-        it 'does not change output when attribute definitions change'
-      end
-
-      describe '#to_<format>' do
-        it 'redirects to #render when renderer available'
-        it 'prefers renderer to local methods'
-        it 'executes locally if method available'
-        it 'raises error when completely missing'
-      end
-
-      describe '#respond_to?' do
-        it 'returns `true` for missing to_<format> methods' do
-          expect(category.methods).not_to include(:to_text)
-          expect(category.respond_to?(:to_text)).to be true
+          it 'fails on non-URI compliant term' do
+            expect(Category.valid_term? example_invalid_term).to be false
+          end
         end
 
-        it 'returns `true` for existing to_<format> methods' do
-          expect(category.methods).to include(:to_s)
-          expect(category.respond_to?(:to_s)).to be true
+        describe '.valid_schema?' do
+          it 'recognizes valid schema' do
+            expect(Category.valid_schema? subject.schema).to be true
+          end
+
+          it 'fails on non-URI compliant schema' do
+            expect(Category.valid_schema? example_invalid_schema).to be false
+          end
         end
 
-        it 'returns `false` on missing methods' do
-          expect(category.methods).not_to include(:this_is_not_there)
-          expect(category.respond_to?(:this_is_not_there)).to be false
+        describe '.valid_identifier?' do
+          it 'recognizes valid identifier' do
+            expect(Category.valid_identifier? subject.identifier).to be true
+          end
+
+          it 'fails on non-URI compliant identifier' do
+            expect(Category.valid_identifier? example_invalid_idf).to be false
+          end
         end
       end
     end

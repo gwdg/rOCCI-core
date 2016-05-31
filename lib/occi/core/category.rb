@@ -5,7 +5,7 @@ module Occi
       #
       include Rendering::Renderable
 
-      attr_accessor :term, :schema, :title, :attribute_definitions
+      attr_accessor :term, :schema, :title, :attributes
 
       def initialize(args = {})
         pre_initialize
@@ -16,7 +16,7 @@ module Occi
         @term = args.fetch(:term)
         @schema = args.fetch(:schema)
         @title = args.fetch(:title)
-        @attribute_definitions = args.fetch(:attribute_definitions)
+        @attributes = args.fetch(:attributes)
 
         post_initialize
       end
@@ -26,47 +26,56 @@ module Occi
         "#{schema}#{term}"
       end
 
-      #
+      # :nodoc:
+      def to_s
+        identifier
+      end
+
+      # :nodoc:
       def [](key)
-        attribute_definitions[key]
+        attributes[key]
       end
 
-      #
+      # :nodoc:
       def []=(key, val)
-        attribute_definitions[key] = val
+        attributes[key] = val
       end
 
-      # :nodoc:
-      def empty?; end
+      class << self
+        #
+        def valid_term?(term); end
 
-      # :nodoc:
-      def hash; end
+        #
+        def valid_schema?(schema); end
 
-      # :nodoc:
-      def eql?(other); end
-
-      # :nodoc:
-      def ==(other); end
+        #
+        def valid_identifier?(identifier); end
+      end
 
       protected
 
-      #
-      def sufficient_args!(args); end
+      # :nodoc:
+      def sufficient_args!(args)
+        [:term, :schema].each do |attr|
+          fail Occi::Core::Errors::MandatoryArgumentError,
+               "#{attr} is a mandatory argument" if args[attr].nil?
+        end
+      end
 
-      #
+      # :nodoc:
       def defaults
         {
           term: nil,
           schema: nil,
           title: nil,
-          attribute_definitions: {}
+          attributes: {}
         }
       end
 
-      #
+      # :nodoc:
       def pre_initialize; end
 
-      #
+      # :nodoc:
       def post_initialize; end
     end
   end

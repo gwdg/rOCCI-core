@@ -1,5 +1,6 @@
 # external deps
 require 'active_support/all'
+require 'uri'
 require 'yell'
 
 # Contains all OCCI-related classes and modules. This module
