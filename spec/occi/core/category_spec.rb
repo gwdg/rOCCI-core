@@ -90,12 +90,6 @@ module Occi
         end
       end
 
-      describe '#render' do
-        it 'raises a rendering error' do
-          expect { subject.render :text }.to raise_error(Occi::Core::Errors::RenderingError)
-        end
-      end
-
       context 'during URI validation' do
         let(:example_invalid_term) { 'term safa %$%$%426&' }
         let(:example_invalid_schema) { 'http:// asd df %^$@%@$% as/dsd#' }

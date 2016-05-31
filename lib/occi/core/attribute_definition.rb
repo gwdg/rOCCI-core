@@ -1,29 +1,18 @@
 module Occi
   module Core
-    # Contains an attribute definition, including:
-    # * `type`         -- Ruby class of the desired value
-    # * `required`     -- Boolean
-    # * `mutable`      -- Boolean
-    # * `default`      -- Depends on `type`, or `nil`
-    # * `description`  -- String, or `nil`
-    # * `pattern`      -- Regexp instance, or `nil`
-    #
+    # Contains an attribute definition information.
     # This definition does not carry the name of the
     # attribute or its value. These should be associated
     # with the definition by other means, e.g. in a hash
     # `{ name: definition }` or by using instances of
     # the `Occi::Core::Attribute` class.
     #
-    # @example
-    #   adfn = AttributeDefinition.new({
-    #            type: String,
-    #            required: false,
-    #            mutable: true,
-    #            default: nil,
-    #            description: 'This is an attribute',
-    #            pattern: /.*/
-    #          })
-    #   adfn.mutable? # => true
+    # @attr type [Class] Ruby class of the desired value
+    # @attr required [TrueClass, FalseClass] required flag
+    # @attr mutable [TrueClass, FalseClass] mutable flag
+    # @attr default [Object] default value, optional
+    # @attr description [String, NilClass] attribute description, optional
+    # @attr pattern [Regexp, NilClass] value pattern, only for type `String`
     #
     # @author Boris Parak <parak@cesnet.cz>
     class AttributeDefinition
@@ -32,6 +21,21 @@ module Occi
       attr_accessor :type, :required, :mutable,
                     :default, :description, :pattern
 
+      # Constructs an instance with sensible defaults. The default
+      # definition is for a String-based optional attribute without
+      # a pattern.
+      #
+      # @example
+      #   AttributeDefinition.new type: Integer, required: true
+      #   AttributeDefinition.new
+      #
+      # @param args [Hash] arguments with definition information
+      # @option args [Class] :type (String) class of the desired value
+      # @option args [TrueClass, FalseClass] :required (false) required flag
+      # @option args [TrueClass, FalseClass] :mutable (true) mutable flag
+      # @option args [Object] :default (nil) default value
+      # @option args [String, NilClass] :description (nil) attribute description
+      # @option args [Regexp, NilClass] :pattern (nil) value pattern
       def initialize(args = {})
         args.merge!(defaults) { |_, oldval, _| oldval }
         sufficient_args!(args)
