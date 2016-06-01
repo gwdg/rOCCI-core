@@ -11,6 +11,16 @@ module Occi
           super # TODO: change
         end
 
+        # :nodoc:
+        def methods(regular = true)
+          super # TODO: change
+        end
+
+        # :nodoc:
+        def public_methods(all = true)
+          super # TODO: change
+        end
+
         private
 
         # :nodoc:
