@@ -41,8 +41,8 @@ module Occi
     # for details on how to add a new rendering format.
     #
     # @author Boris Parak <parak@cesnet.cz>
-    module Rendering
-      autoload :Renderable, 'occi/core/rendering/renderable'
+    module Renderers
+      autoload :Renderable, 'occi/core/renderers/renderable'
     end
 
     autoload :AttributeDefinition, 'occi/core/attribute_definition'

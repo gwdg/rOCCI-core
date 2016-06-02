@@ -15,7 +15,7 @@ module Occi
     # @author Boris Parak <parak@cesnet.cz>
     class Category
       include Yell::Loggable
-      include Rendering::Renderable
+      include Renderers::Renderable
 
       attr_accessor :term, :schema, :title, :attributes
 

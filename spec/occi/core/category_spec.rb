@@ -95,7 +95,7 @@ module Occi
         let(:example_invalid_schema) { 'http:// asd df %^$@%@$% as/dsd#' }
         let(:example_invalid_idf) { "#{example_invalid_schema}#{example_invalid_term}" }
 
-        describe '.valid_term?' do
+        describe '::valid_term?' do
           it 'recognizes valid term' do
             expect(Category.valid_term?(subject.term)).to be true
           end
@@ -105,7 +105,7 @@ module Occi
           end
         end
 
-        describe '.valid_schema?' do
+        describe '::valid_schema?' do
           it 'recognizes valid schema' do
             expect(Category.valid_schema?(subject.schema)).to be true
           end
@@ -115,7 +115,7 @@ module Occi
           end
         end
 
-        describe '.valid_identifier?' do
+        describe '::valid_identifier?' do
           it 'recognizes valid identifier' do
             expect(Category.valid_identifier?(subject.identifier)).to be true
           end
