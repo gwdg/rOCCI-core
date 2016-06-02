@@ -1,6 +1,6 @@
 module Occi
   module Core
-    module Renderers
+    module Helpers
       #
       module Renderable
         #
