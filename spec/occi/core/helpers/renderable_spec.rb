@@ -6,7 +6,7 @@ module Occi
 
         let(:renderable_object) do
           object = Object.new
-          object.include(Renderable)
+          object.extend(Renderable)
         end
 
         describe '#render' do
@@ -18,8 +18,14 @@ module Occi
           it 'passes `options` to renderer'
         end
 
-        describe '::included' do
-        end
+        describe '::included'
+        describe '::extended'
+        describe '::available_formats'
+        describe '::available_renderers'
+        describe '::renderer?'
+        describe '::renderer_candidates'
+        describe '::required_renderer_methods'
+        describe '::renderer_namespace'
       end
     end
   end
