@@ -25,7 +25,7 @@ module Occi
           raise Occi::Core::RenderingError,
                 'Rendering to an unspecified format is not allowed' if format.blank?
           options[:format] = format
-          available_renderers[format].render(self, options)
+          Renderable.available_renderers[format].render(self, options)
         end
 
         # Adds available rendering formats as `to_<format>` methods on
