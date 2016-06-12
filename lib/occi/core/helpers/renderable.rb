@@ -22,7 +22,7 @@ module Occi
         # @param options [Hash] options passed to the underlying renderer
         # @return [Object] output of the chosen renderer
         def render(format, options = {})
-          raise Occi::Core::RenderingError,
+          raise Occi::Core::Errors::RenderingError,
                 'Rendering to an unspecified format is not allowed' if format.blank?
           options[:format] = format
           Renderable.available_renderers[format].render(self, options)
@@ -77,7 +77,7 @@ module Occi
         # @return [Hash] map of available renderers, keyed by `format`
         def self.available_renderers
           rcands = renderer_candidates(renderer_namespace).select do |candidate|
-            renderer?(candidate, required_renderer_methods)
+            renderer?(candidate)
           end
 
           ravail = {}
@@ -91,12 +91,12 @@ module Occi
         # Checks whether the given object can act as a renderer.
         #
         # @example
-        #   renderer?(TextRenderer, [:renderer?, :render, :formats]) # => true
-        #   renderer?(NilClass, [:renderer?, :render, :formats]) # => false
+        #   renderer? TextRenderer # => true
+        #   renderer? NilClass # => false
         #
         # @param candidate [Object] object to check
-        # @param required_renderer_methods [Array] required method symbols
-        def self.renderer?(candidate, required_renderer_methods)
+        # @return [TrueClass, FalseClass] renderer flag
+        def self.renderer?(candidate)
           return false unless candidate.is_a?(Class)
 
           required_renderer_methods.each { |method| return false unless candidate.respond_to?(method) }
