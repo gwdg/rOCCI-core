@@ -1,6 +1,7 @@
 # external deps
 require 'active_support/all'
 require 'uri'
+require 'singleton'
 require 'yell'
 
 # Contains all OCCI-related classes and modules. This module
@@ -31,6 +32,7 @@ module Occi
     autoload :Renderers, 'occi/core/renderers'
     autoload :Helpers, 'occi/core/helpers'
     autoload :Parsers, 'occi/core/parsers'
+    autoload :RendererFactory, 'occi/core/renderer_factory'
 
     autoload :AttributeDefinition, 'occi/core/attribute_definition'
 

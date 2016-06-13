@@ -148,8 +148,8 @@ module Occi
       # :nodoc:
       def sufficient_args!(args)
         [:term, :schema].each do |attr|
-          raise Occi::Core::Errors::MandatoryArgumentError,
-                "#{attr} is a mandatory argument" unless self.class.send("valid_#{attr}?", args[attr])
+          raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
+                "argument for #{self.class}" unless self.class.send("valid_#{attr}?", args[attr])
         end
       end
 

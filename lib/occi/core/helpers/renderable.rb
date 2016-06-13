@@ -1,12 +1,16 @@
 module Occi
   module Core
     module Helpers
+      # Introduces rendering capabilities to every receiver
+      # class. Short-hand `to_<format>` methods are automatically
+      # generated for every available rendering `format`. The
+      # renderability is evaluated in runtime, when calling `render`
+      # or one of the `to_<format>` methods.
+      #
       # @author Boris Parak <parak@cesnet.cz>
       module Renderable
-        # Methods expected on supported renderer classes
-        REQUIRED_RENDERER_METHODS = [:renderer?, :formats, :render].freeze
-        # Parent namespace of all supported renderer classes
-        RENDERER_NAMESPACE = Occi::Core::Renderers
+        # Default renderer factory class
+        RENDERER_FACTORY_CLASS = Occi::Core::RendererFactory
 
         # Renders the receiver into the specified over-the-wire `format`.
         # `format` is automatically injected into `options` and these
@@ -23,9 +27,22 @@ module Occi
         # @return [Object] output of the chosen renderer
         def render(format, options = {})
           raise Occi::Core::Errors::RenderingError,
-                'Rendering to an unspecified format is not allowed' if format.blank?
+                "Rendering to an unspecified format is not allowed for #{self.class}" if format.blank?
           options[:format] = format
-          Renderable.available_renderers[format].render(self, options)
+          renderer_for(format).render(self, options)
+        end
+
+        # Returns a renderer corresponding with the given `format`.
+        # If no such renderer exists, `nil` is returned.
+        #
+        # @example
+        #   kind.renderer_for 'text'   # => Occi::Core::Renderers::TextRenderer
+        #   kind.renderer_for 'tewat?' # => NilClass
+        #
+        # @param format [String] over-the-wire format
+        # @return [Class] factory renderer corresponding to `format` or `nil`
+        def renderer_for(format)
+          Renderable.renderer_factory.available_renderers[format]
         end
 
         # Adds available rendering formats as `to_<format>` methods on
@@ -41,7 +58,7 @@ module Occi
         #
         # @param base [Class] class receiving this module
         def self.included(base)
-          available_formats.each do |format|
+          renderer_factory.available_formats.each do |format|
             base.send(:define_method, "to_#{format}", proc { render(format) })
           end
         end
@@ -59,71 +76,19 @@ module Occi
           base.is_a?(Class) ? raise("#{self} cannot extend #{base}") : included(base.class)
         end
 
-        # Lists available rendering `format`s.
+        # Returns pre-constructed instance of the active renderer
+        # factory providing access to registered renderers.
         #
-        # @example
-        #   available_formats # => ['text', 'json', 'headers']
-        #
-        # @return [Array] list of formats, as Strings
-        def self.available_formats
-          available_renderers.keys
+        # @return [Object] instance of the renderer factory
+        def self.renderer_factory
+          renderer_factory_class.instance
         end
 
-        # Lists available renderers, as a Hash mapping `format` to `Renderer` class.
+        # Provides access to the default renderer factory class.
         #
-        # @example
-        #   available_renderers # => { 'text' => TextRenderer }
-        #
-        # @return [Hash] map of available renderers, keyed by `format`
-        def self.available_renderers
-          rcands = renderer_candidates(renderer_namespace).select do |candidate|
-            renderer?(candidate)
-          end
-
-          ravail = {}
-          rcands.each do |rcand|
-            rcand.formats.each { |rcand_f| ravail[rcand_f] = rcand }
-          end
-
-          ravail
-        end
-
-        # Checks whether the given object can act as a renderer.
-        #
-        # @example
-        #   renderer? TextRenderer # => true
-        #   renderer? NilClass # => false
-        #
-        # @param candidate [Object] object to check
-        # @return [TrueClass, FalseClass] renderer flag
-        def self.renderer?(candidate)
-          return false unless candidate.is_a?(Class)
-
-          required_renderer_methods.each { |method| return false unless candidate.respond_to?(method) }
-          candidate.renderer?
-        end
-
-        # Returns all renderer candidates from the given namespace. The list may contain
-        # other constants from the given namespace and needs to be refined further.
-        #
-        # @param renderer_namespace [Module] base namespace
-        # @return [Array] list of candidates
-        def self.renderer_candidates(renderer_namespace)
-          renderer_namespace.constants.collect { |const| renderer_namespace.const_get(const) }
-        end
-
-        # Lists default methods required from any supported renderer.
-        #
-        # @return [Array] list of method symbols
-        def self.required_renderer_methods
-          REQUIRED_RENDERER_METHODS
-        end
-
-        # Returns the default renderer namespace.
-        #
-        # @return [Module] base namespace
-        def self.renderer_namespace
-          RENDERER_NAMESPACE
+        # @return [Class] renderer factory class
+        def self.renderer_factory_class
+          RENDERER_FACTORY_CLASS
         end
       end
     end
