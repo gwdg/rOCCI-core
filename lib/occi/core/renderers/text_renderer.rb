@@ -33,7 +33,7 @@ module Occi
           # @option options [String] :format (nil) rendering (sub)type
           # @return [String] object rendering
           def render(object, options)
-            object.inspect # TODO: impl
+            "#{object.inspect} with #{options.inspect}" # TODO: impl
           end
         end
       end

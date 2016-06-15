@@ -4,12 +4,9 @@ module Occi
       describe Renderable do
         subject { Renderable }
 
-        # Hack renderer loading for testing
-        #silence_warnings { Renderable::RENDERER_NAMESPACE = RocciCoreSpec::Renderers }
-
         let(:renderable_object) do
           object = instance_double('Object')
-          object.extend(Renderable)
+          object.extend(subject)
         end
 
         let(:dummy_receiver_class) do
@@ -27,7 +24,7 @@ module Occi
           end
 
           it 'raises error for unknown `format`' do
-            expect(renderable_object.render('definitely_not_a_format')).to raise_error(Occi::Core::RenderingError)
+            expect { renderable_object.render('not_a_format') }.to raise_error(Occi::Core::Errors::RenderingError)
           end
 
           it 'delegates to renderer based on `format`'
@@ -36,17 +33,30 @@ module Occi
         end
 
         describe '::included' do
-          context 'for every <format>' do
-            it 'adds to_<format> method' do
-              subject.included(dummy_receiver_class)
-              expect(dummy_receiver_class).to respond_to(:to_dummy)
-              expect(dummy_receiver_class).to respond_to(:to_dummier_dummy)
-              expect(dummy_receiver_class).to respond_to(:to_the_dummiest_dummy)
-            end
-
-            it 'overrides existing to_<format> method'
-            it 'redirects to #render from to_<format>'
+          before(:each) do
+            Singleton.__init__(subject.renderer_factory_class)
+            subject.renderer_factory.namespace = RocciCoreSpec::Renderers
           end
+
+          after(:each) { Singleton.__init__(subject.renderer_factory_class) }
+
+          it 'adds to_dummy method' do
+            subject.included(dummy_receiver_class)
+            expect(dummy_receiver_class.instance_methods).to include(:to_dummy)
+          end
+
+          it 'adds to_dummier_dummy method' do
+            subject.included(dummy_receiver_class)
+            expect(dummy_receiver_class.instance_methods).to include(:to_dummier_dummy)
+          end
+
+          it 'adds to_the_dummiest_dummy method' do
+            subject.included(dummy_receiver_class)
+            expect(dummy_receiver_class.instance_methods).to include(:to_the_dummiest_dummy)
+          end
+
+          it 'overrides existing to_<format> method'
+          it 'redirects to #render from to_<format>'
         end
 
         describe '::extended' do

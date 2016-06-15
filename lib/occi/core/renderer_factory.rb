@@ -73,7 +73,7 @@ module Occi
       # @return [Class] factory renderer corresponding to `format`
       def renderer_for(format)
         raise Occi::Core::Errors::RenderingError,
-              "Cannot return a renderer for an unspecified format" if format.blank?
+              'Cannot return a renderer for an unspecified format' if format.blank?
         renderers[format] || raise(Occi::Core::Errors::RenderingError, "No renderer for #{format.inspect}")
       end
 
@@ -124,7 +124,7 @@ module Occi
           return false unless candidate.is_a?(Class)
 
           required_methods.each { |method| return false unless candidate.respond_to?(method) }
-          candidate.renderer?
+          candidate.renderer? && candidate.formats
         end
       end
 

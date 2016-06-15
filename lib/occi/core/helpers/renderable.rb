@@ -35,7 +35,7 @@ module Occi
         #
         # @example
         #   class Test
-        #     include Renderable
+        #     include Occi::Core::Helpers::Renderable
         #   end
         #
         #   t = Test.new

@@ -12,7 +12,7 @@ module RocciCoreSpec
       end
     end
 
-    class DummyMethodsMissingRenderer
+    class DummyTrueRenderer
       class << self
         def renderer?
           true
@@ -20,48 +20,32 @@ module RocciCoreSpec
       end
     end
 
-    class DummyNoFormatsRenderer
+    class DummyTrueRenderRenderer < DummyTrueRenderer
       class << self
-        def renderer?
-          true
-        end
-
         def render(object, options)
           # DO NOTHING
         end
+      end
+    end
 
+    class DummyNoFormatsRenderer < DummyTrueRenderRenderer
+      class << self
         def formats
           nil
         end
       end
     end
 
-    class DummyNoFormatsRenderer
+    class DummyEmptyFormatsRenderer < DummyTrueRenderRenderer
       class << self
-        def renderer?
-          true
-        end
-
-        def render(object, options)
-          # DO NOTHING
-        end
-
         def formats
           []
         end
       end
     end
 
-    class DummyWorkingRenderer
+    class DummyWorkingRenderer < DummyTrueRenderRenderer
       class << self
-        def renderer?
-          true
-        end
-
-        def render(object, options)
-          # DO NOTHING
-        end
-
         def formats
           %w(dummy dummier_dummy the_dummiest_dummy).freeze
         end
