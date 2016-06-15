@@ -53,6 +53,15 @@ module Occi
           it 'raises exception when passed Class'
           it 'executes ::included when passed instance'
         end
+
+        describe '::renderer_factory_class' do
+          it 'returns existing class'
+          it 'returns singleton-like class'
+        end
+
+        describe '::renderer_factory' do
+          it 'returns an instance of renderer factory class'
+        end
       end
     end
   end

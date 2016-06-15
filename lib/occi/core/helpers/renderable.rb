@@ -43,7 +43,7 @@ module Occi
         #
         # @param base [Class] class receiving this module
         def self.included(base)
-          renderer_factory.available_formats.each do |format|
+          renderer_factory.formats.each do |format|
             base.send(:define_method, "to_#{format}", proc { render(format) })
           end
         end

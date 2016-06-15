@@ -1,21 +1,27 @@
 module Occi
   module Core
     describe RendererFactory do
-      describe '#available_formats' do
+      describe '#formats' do
         it 'returns enumerable object'
         it 'contains String-like items'
         it 'contains method-compliant names'
       end
 
-      describe '#available_renderers' do
+      describe '#renderers' do
         it 'returns map from format to renderer'
         it 'returns map with String-like keys and Class-like values'
       end
 
       describe '#renderer_for' do
         it 'returns renderer for the given format'
-        it 'returns `nil` for unknown format'
+        it 'raises error for unknown format'
         it 'raises error when `format` is not specified'
+      end
+
+      describe '#renderer_classes' do
+        it 'returns Array-like structure'
+        it 'returns list of classes'
+        it 'returns list of valid renderer classes'
       end
 
       describe '::renderer?' do

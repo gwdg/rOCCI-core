@@ -38,45 +38,53 @@ module Occi
       # Lists available rendering `format`s.
       #
       # @example
-      #   available_formats # => ['text', 'json', 'headers']
+      #   formats # => ['text', 'json', 'headers']
       #
       # @return [Array] list of formats, as Strings
-      def available_formats
-        available_renderers.keys
+      def formats
+        renderers.keys
       end
 
-      # Lists available renderers, as a Hash mapping `format` to `Renderer` class.
+      # Lists available renderers as a Hash mapping `format` to `Renderer` class.
       #
       # @example
-      #   available_renderers # => { 'text' => TextRenderer }
+      #   renderers # => { 'text' => TextRenderer }
       #
       # @return [Hash] map of available renderers, keyed by `format`
-      def available_renderers
-        rcands = self.class.renderer_candidates(namespace).select do |candidate|
-          self.class.renderer?(candidate, required_methods)
-        end
-
+      def renderers
         ravail = {}
-        rcands.each do |rcand|
-          rcand.formats.each { |rcand_f| ravail[rcand_f] = rcand }
+
+        renderer_classes.each do |rndr_klass|
+          rndr_klass.formats.each { |rndr_klass_f| ravail[rndr_klass_f] = rndr_klass }
         end
 
         ravail
       end
 
       # Returns a renderer corresponding with the given `format`.
-      # If no such renderer exists, `nil` is returned.
+      # If no such renderer exists, `Occi::Core::Errors::RenderingError`
+      # error is raised.
       #
       # @example
       #   renderer_for 'text'   # => Occi::Core::Renderers::TextRenderer
-      #   renderer_for 'tewat?' # => NilClass
+      #   renderer_for 'tewat?' # => !Error: Occi::Core::Errors::RenderingError!
       #
       # @param format [String] over-the-wire format
-      # @return [Class] factory renderer corresponding to `format` or `nil`
+      # @return [Class] factory renderer corresponding to `format`
       def renderer_for(format)
         raise Occi::Core::Errors::RenderingError,
               "Cannot return a renderer for an unspecified format" if format.blank?
-        available_renderers[format]
+        renderers[format] || raise(Occi::Core::Errors::RenderingError, "No renderer for #{format.inspect}")
+      end
+
+      # Lists available renderers as an Array of renderer classes.
+      #
+      # @example
+      #   renderer_classes #=> [Occi::Core::Renderers::TextRenderer]
+      #
+      # @return [Array] list of renderer classes
+      def renderer_classes
+        self.class.renderer_candidates(namespace).select { |cand| self.class.renderer?(cand, required_methods) }
       end
 
       class << self
