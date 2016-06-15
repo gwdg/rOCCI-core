@@ -64,6 +64,21 @@ module Occi
         ravail
       end
 
+      # Returns a renderer corresponding with the given `format`.
+      # If no such renderer exists, `nil` is returned.
+      #
+      # @example
+      #   renderer_for 'text'   # => Occi::Core::Renderers::TextRenderer
+      #   renderer_for 'tewat?' # => NilClass
+      #
+      # @param format [String] over-the-wire format
+      # @return [Class] factory renderer corresponding to `format` or `nil`
+      def renderer_for(format)
+        raise Occi::Core::Errors::RenderingError,
+              "Cannot return a renderer for an unspecified format" if format.blank?
+        available_renderers[format]
+      end
+
       class << self
         # Lists default methods required from any supported renderer.
         #

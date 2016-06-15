@@ -8,8 +8,14 @@ module Occi
       end
 
       describe '#available_renderers' do
-        it 'returns a map from format to renderer'
-        it 'returns a map with String-like keys and Class-like values'
+        it 'returns map from format to renderer'
+        it 'returns map with String-like keys and Class-like values'
+      end
+
+      describe '#renderer_for' do
+        it 'returns renderer for the given format'
+        it 'returns `nil` for unknown format'
+        it 'raises error when `format` is not specified'
       end
 
       describe '::renderer?' do

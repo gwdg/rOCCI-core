@@ -18,31 +18,16 @@ module Occi
         # documentation of a specific renderer for details.
         #
         # @example
-        #   kind.render 'text' # => String
-        #   kind.render 'json' # => String
-        #   kind.render 'headers' # => Hash
+        #   render 'text' # => String
+        #   render 'json' # => String
+        #   render 'headers' # => Hash
         #
         # @param format [String] over-the-wire format, mandatory
         # @param options [Hash] options passed to the underlying renderer
         # @return [Object] output of the chosen renderer
         def render(format, options = {})
-          raise Occi::Core::Errors::RenderingError,
-                "Rendering to an unspecified format is not allowed for #{self.class}" if format.blank?
           options[:format] = format
-          renderer_for(format).render(self, options)
-        end
-
-        # Returns a renderer corresponding with the given `format`.
-        # If no such renderer exists, `nil` is returned.
-        #
-        # @example
-        #   kind.renderer_for 'text'   # => Occi::Core::Renderers::TextRenderer
-        #   kind.renderer_for 'tewat?' # => NilClass
-        #
-        # @param format [String] over-the-wire format
-        # @return [Class] factory renderer corresponding to `format` or `nil`
-        def renderer_for(format)
-          Renderable.renderer_factory.available_renderers[format]
+          Renderable.renderer_factory.renderer_for(format).render(self, options)
         end
 
         # Adds available rendering formats as `to_<format>` methods on
