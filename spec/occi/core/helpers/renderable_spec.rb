@@ -9,6 +9,11 @@ module Occi
           stub_const('Occi::Core::RendererFactory::NAMESPACE', RocciCoreSpec::Renderers)
         end
 
+        after(:each) do
+          Singleton.__init__(Renderable::RENDERER_FACTORY_CLASS)
+          stub_const('Occi::Core::RendererFactory::NAMESPACE', Occi::Core::RendererFactory)
+        end
+
         let(:dummy_receiver_class) { Class.new }
 
         let(:dummy_receiver_instance) { dummy_receiver_class.new }
