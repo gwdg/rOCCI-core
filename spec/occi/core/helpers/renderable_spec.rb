@@ -33,13 +33,6 @@ module Occi
         end
 
         describe '::included' do
-          before(:each) do
-            Singleton.__init__(subject.renderer_factory_class)
-            subject.renderer_factory.namespace = RocciCoreSpec::Renderers
-          end
-
-          after(:each) { Singleton.__init__(subject.renderer_factory_class) }
-
           it 'adds to_dummy method' do
             subject.included(dummy_receiver_class)
             expect(dummy_receiver_class.instance_methods).to include(:to_dummy)

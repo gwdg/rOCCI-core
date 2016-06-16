@@ -1,5 +1,7 @@
 module RocciCoreSpec
   module Renderers
+    NOT_EVEN_A_MODULE = 'test_constant'
+
     module NotEvenAClassRenderer; end
 
     class DummyNonRenderer; end
@@ -53,3 +55,6 @@ module RocciCoreSpec
     end
   end
 end
+
+# Replace internal namespace for testing purposes
+Occi::Core::Helpers::Renderable.renderer_factory.namespace = RocciCoreSpec::Renderers
