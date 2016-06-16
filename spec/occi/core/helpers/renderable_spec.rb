@@ -4,22 +4,26 @@ module Occi
       describe Renderable do
         subject { Renderable }
 
+        before(:each) do
+          Singleton.__init__(Renderable::RENDERER_FACTORY_CLASS)
+          stub_const('Occi::Core::RendererFactory::NAMESPACE', RocciCoreSpec::Renderers)
+        end
+
+        let(:dummy_receiver_class) { Class.new }
+
+        let(:dummy_receiver_instance) { dummy_receiver_class.new }
+
         let(:renderable_object) do
-          object = instance_double('Object')
+          object = instance_double('RocciCoreSpec::TestObject')
           object.extend(subject)
-        end
-
-        let(:dummy_receiver_class) do
-          Class.new
-        end
-
-        let(:dummy_receiver_instance) do
-          dummy_receiver_class.new
         end
 
         describe '#render' do
           it 'raises error without `format` specified' do
             expect { renderable_object.render(nil) }.to raise_error(Occi::Core::Errors::RenderingError)
+          end
+
+          it 'raises error with empty `format` specified' do
             expect { renderable_object.render('') }.to raise_error(Occi::Core::Errors::RenderingError)
           end
 
@@ -27,9 +31,29 @@ module Occi
             expect { renderable_object.render('not_a_format') }.to raise_error(Occi::Core::Errors::RenderingError)
           end
 
-          it 'delegates to renderer based on `format`'
-          it 'passes `options` to renderer'
-          it 'passes `format` in `options`'
+          it 'delegates to renderer based on `format`' do
+            expect(renderable_object.render('dummy')).to eq 'RocciCoreSpec::Renderers::DummyWorkingRenderer'
+          end
+        end
+
+        describe '#renderer_for' do
+          it 'returns renderer for existing format' do
+            expect(renderable_object.renderer_for('dummy')).to eq RocciCoreSpec::Renderers::DummyWorkingRenderer
+          end
+
+          it 'raises error for non-existent format' do
+            expect { renderable_object.renderer_for('not_format') }.to raise_error(Occi::Core::Errors::RenderingError)
+          end
+
+          it 'returns class' do
+            expect(renderable_object.renderer_for('dummy')).to be_kind_of(Class)
+          end
+        end
+
+        describe '#renderer_factory' do
+          it 'returns renderer factory instance' do
+            expect(renderable_object.renderer_factory).to be_instance_of(Renderable::RENDERER_FACTORY_CLASS)
+          end
         end
 
         describe '::included' do
@@ -48,22 +72,35 @@ module Occi
             expect(dummy_receiver_class.instance_methods).to include(:to_the_dummiest_dummy)
           end
 
-          it 'overrides existing to_<format> method'
-          it 'redirects to #render from to_<format>'
+          it 'overrides existing to_<format> method' do
+            expect(renderable_object.to_the_dummiest_dummy).to eq 'RocciCoreSpec::Renderers::DummyWorkingRenderer'
+          end
         end
 
         describe '::extended' do
-          it 'raises exception when passed Class'
-          it 'executes ::included when passed instance'
+          it 'raises exception when passed Class' do
+            expect { subject.extended(dummy_receiver_class) }.to raise_error(RuntimeError)
+          end
+
+          it 'executes ::included when passed instance' do
+            expect { subject.extended(dummy_receiver_instance) }.not_to raise_error
+          end
         end
 
         describe '::renderer_factory_class' do
-          it 'returns existing class'
-          it 'returns singleton-like class'
+          it 'returns existing class' do
+            expect(subject.renderer_factory_class).to be_kind_of(Class)
+          end
+
+          it 'returns singleton-like class' do
+            expect(subject.renderer_factory_class).to respond_to(:instance)
+          end
         end
 
         describe '::renderer_factory' do
-          it 'returns an instance of renderer factory class'
+          it 'returns an instance of renderer factory class' do
+            expect(subject.renderer_factory).to be_instance_of(Renderable::RENDERER_FACTORY_CLASS)
+          end
         end
       end
     end

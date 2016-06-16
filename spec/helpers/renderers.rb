@@ -1,4 +1,10 @@
 module RocciCoreSpec
+  class TestObject
+    def to_the_dummiest_dummy
+      'original method'
+    end
+  end
+
   module Renderers
     NOT_EVEN_A_MODULE = 'test_constant'.freeze
 
@@ -51,10 +57,11 @@ module RocciCoreSpec
         def formats
           %w(dummy dummier_dummy the_dummiest_dummy).freeze
         end
+
+        def render(_object, _options)
+          name
+        end
       end
     end
   end
 end
-
-# Replace internal namespace for testing purposes
-Occi::Core::Helpers::Renderable.renderer_factory.namespace = RocciCoreSpec::Renderers

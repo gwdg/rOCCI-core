@@ -27,7 +27,17 @@ module Occi
         # @return [Object] output of the chosen renderer
         def render(format, options = {})
           options[:format] = format
-          Renderable.renderer_factory.renderer_for(format).render(self, options)
+          renderer_for(format).render(self, options)
+        end
+
+        # Instance delegate for `RendererFactory#renderer_for`, see `RendererFactory`.
+        def renderer_for(format)
+          renderer_factory.renderer_for(format)
+        end
+
+        # Instance proxy to `renderer_factory` instance, see `Renderable::renderer_factory`.
+        def renderer_factory
+          Renderable.renderer_factory
         end
 
         # Adds available rendering formats as `to_<format>` methods on
