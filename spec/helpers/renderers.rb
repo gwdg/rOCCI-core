@@ -1,6 +1,6 @@
 module RocciCoreSpec
   module Renderers
-    NOT_EVEN_A_MODULE = 'test_constant'
+    NOT_EVEN_A_MODULE = 'test_constant'.freeze
 
     module NotEvenAClassRenderer; end
 
