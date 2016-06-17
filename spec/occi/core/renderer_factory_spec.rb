@@ -88,7 +88,9 @@ module Occi
         end
       end
 
-      describe '::renderer?' do
+      describe '#renderer?' do
+        subject { factory_instance }
+
         let(:object) { Object.new }
         let(:klass) { Class.new }
 
@@ -103,24 +105,26 @@ module Occi
         end
 
         it 'returns false for non-Class arguments' do
-          expect(subject.renderer?(object, required_methods)).to be false
+          expect(subject.renderer?(object)).to be false
         end
 
         it 'returns false for classes not responding to required methods' do
-          expect(subject.renderer?(klass, required_methods)).to be false
+          expect(subject.renderer?(klass)).to be false
         end
 
         it 'returns false for classes claiming not to be renderer' do
-          expect(subject.renderer?(klass_non_renderer, required_methods)).to be false
+          expect(subject.renderer?(klass_non_renderer)).to be false
         end
 
         it 'returns true for classes claiming to be renderer' do
-          expect(subject.renderer?(klass_renderer, required_methods)).to be true
+          expect(subject.renderer?(klass_renderer)).to be true
         end
       end
 
-      describe '::renderer_candidates' do
+      describe '::constants_from' do
         let(:empty_module) { Module.new }
+        let(:empty_non_module) { Object.new }
+
         let(:expected_consts) do
           ['test_constant',
            RocciCoreSpec::Renderers::NotEvenAClassRenderer,
@@ -133,12 +137,43 @@ module Occi
            RocciCoreSpec::Renderers::DummyWorkingRenderer]
         end
 
-        it 'lists candidates from given namespace' do
-          expect(subject.renderer_candidates(test_namespace)).to eq expected_consts
+        it 'lists constants from given namespace' do
+          expect(subject.constants_from(test_namespace)).to eq expected_consts
         end
 
         it 'returns empty list for empty namespace' do
-          expect(subject.renderer_candidates(empty_module)).to eq []
+          expect(subject.constants_from(empty_module)).to eq []
+        end
+
+        it 'raises error when not passed a Module' do
+          expect { subject.constants_from(empty_non_module) }.to raise_error(Occi::Core::Errors::RendererError)
+        end
+      end
+
+      describe '::classes_from' do
+        let(:empty_module) { Module.new }
+        let(:empty_non_module) { Object.new }
+
+        let(:expected_classes) do
+          [RocciCoreSpec::Renderers::DummyNonRenderer,
+           RocciCoreSpec::Renderers::DummyFalseRenderer,
+           RocciCoreSpec::Renderers::DummyTrueRenderer,
+           RocciCoreSpec::Renderers::DummyTrueRenderRenderer,
+           RocciCoreSpec::Renderers::DummyNoFormatsRenderer,
+           RocciCoreSpec::Renderers::DummyEmptyFormatsRenderer,
+           RocciCoreSpec::Renderers::DummyWorkingRenderer]
+        end
+
+        it 'returns list of classes' do
+          expect(subject.classes_from(test_namespace)).to eq expected_classes
+        end
+
+        it 'raises error when not passed a Module' do
+          expect { subject.classes_from(empty_non_module) }.to raise_error(Occi::Core::Errors::RendererError)
+        end
+
+        it 'returns empty list for empty namespace' do
+          expect(subject.classes_from(empty_module)).to eq []
         end
       end
 

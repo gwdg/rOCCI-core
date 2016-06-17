@@ -84,7 +84,51 @@ module Occi
       #
       # @return [Array] list of renderer classes
       def renderer_classes
-        self.class.renderer_candidates(namespace).select { |cand| self.class.renderer?(cand, required_methods) }
+        self.class.classes_from(namespace).select { |cand| renderer? cand }
+      end
+
+      # Checks whether the given object can act as a renderer.
+      #
+      # @example
+      #   renderer? TextRenderer # => true
+      #   renderer? NilClass     # => false
+      #
+      # @param candidate [Object, Class] object or class to check
+      # @return [TrueClass, FalseClass] result (`true` for renderer, else `false`)
+      def renderer?(candidate)
+        begin
+          renderer_with_methods! candidate
+          renderer_with_formats! candidate
+        rescue Occi::Core::Errors::RendererError => ex
+          logger.warn "Renderer validation: #{ex.message}"
+          return false
+        end
+
+        candidate.renderer?
+      end
+
+      # Ensures that the renderer candidate passed as an argument
+      # exposes all required methods. If that is not the case,
+      # an `Occi::Core::Errors::RendererError` error is raised.
+      #
+      # @param candidate [Object, Class] object or class to check
+      def renderer_with_methods!(candidate)
+        required_methods.each do |method|
+          raise Occi::Core::Errors::RendererError, "#{candidate.inspect} " \
+                "does not respond to #{method.inspect}" unless candidate.respond_to?(method)
+        end
+      end
+
+      # Ensures that the renderer candidate passed as an argument
+      # exposes supported formats. If that is not the case,
+      # an `Occi::Core::Errors::RendererError` error is raised.
+      #
+      # @param candidate [Object, Class] object or class to check
+      def renderer_with_formats!(candidate)
+        raise Occi::Core::Errors::RendererError, "#{candidate.inspect} " \
+              "does not respond to 'formats'" unless candidate.respond_to?(:formats)
+        raise Occi::Core::Errors::RendererError, "#{candidate.inspect} " \
+              'does not expose any supported formats' if candidate.formats.blank?
       end
 
       class << self
@@ -102,29 +146,24 @@ module Occi
           NAMESPACE
         end
 
-        # Returns all renderer candidates from the given namespace. The list may contain
-        # other constants from the given namespace and needs to be refined further.
+        # Returns all constants from the given namespace. The list may contain
+        # constants other than classes, from the given namespace and needs to
+        # be refined further.
         #
-        # @param renderer_namespace [Module] base namespace
-        # @return [Array] list of candidates
-        def renderer_candidates(renderer_namespace)
-          renderer_namespace.constants.collect { |const| renderer_namespace.const_get(const) }
+        # @param namespace [Module] base namespace
+        # @return [Array] list of constants
+        def constants_from(namespace)
+          raise Occi::Core::Errors::RendererError, "#{namespace.inspect} " \
+                'is not a Module' unless namespace.is_a? Module
+          namespace.constants.collect { |const| namespace.const_get(const) }
         end
 
-        # Checks whether the given object can act as a renderer.
+        # Returns all classes from the given namespace.
         #
-        # @example
-        #   renderer? TextRenderer, [:render] # => true
-        #   renderer? NilClass, [:render] # => false
-        #
-        # @param candidate [Object] object to check
-        # @param required_methods [Array] list of required method symbols
-        # @return [TrueClass, FalseClass] renderer flag
-        def renderer?(candidate, required_methods)
-          return false unless candidate.is_a?(Class)
-
-          required_methods.each { |method| return false unless candidate.respond_to?(method) }
-          candidate.renderer? && candidate.formats
+        # @param namespace [Module] base namespace
+        # @return [Array] list of classes
+        def classes_from(namespace)
+          constants_from(namespace).select { |const| const.is_a? Class }
         end
       end
 
