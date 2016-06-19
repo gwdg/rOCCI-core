@@ -93,6 +93,10 @@ module Occi
         it 'returns non-empty list for non-root kind' do
           expect(kind.related.count).to eq 1
         end
+
+        it 'returns non-empty list for multi-predecessor kind' do
+          expect(successor_kind.related.count).to eq 2
+        end
       end
 
       describe 'directly_related' do
