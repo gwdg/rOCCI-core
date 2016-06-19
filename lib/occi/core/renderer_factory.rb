@@ -31,8 +31,17 @@ module Occi
         args.merge!(defaults) { |_, oldval, _| oldval }
         sufficient_args!(args)
 
+        logger.debug "RendererFactory: Initializing with #{args.inspect}"
         @required_methods = args.fetch(:required_methods)
         @namespace = args.fetch(:namespace)
+
+        reload!
+      end
+
+      #
+      def reload!
+        logger.debug "RendererFactory: Clearing cache for renderer reload"
+        @ravail_cache = nil
       end
 
       # Lists available rendering `format`s.
@@ -52,13 +61,15 @@ module Occi
       #
       # @return [Hash] map of available renderers, keyed by `format`
       def renderers
-        ravail = {}
+        return @ravail_cache if @ravail_cache
+        @ravail_cache = {}
 
         renderer_classes.each do |rndr_klass|
-          rndr_klass.formats.each { |rndr_klass_f| ravail[rndr_klass_f] = rndr_klass }
+          logger.debug "RendererFactory: Registering #{rndr_klass} for #{rndr_klass.formats}"
+          rndr_klass.formats.each { |rndr_klass_f| @ravail_cache[rndr_klass_f] = rndr_klass }
         end
 
-        ravail
+        @ravail_cache
       end
 
       # Returns a renderer corresponding with the given `format`.
@@ -100,7 +111,7 @@ module Occi
           renderer_with_methods! candidate
           renderer_with_formats! candidate
         rescue Occi::Core::Errors::RendererError => ex
-          logger.warn "Renderer validation: #{ex.message}"
+          logger.debug "RendererFactory: Renderer validation failed with #{ex.message}"
           return false
         end
 
@@ -155,6 +166,7 @@ module Occi
         def constants_from(namespace)
           raise Occi::Core::Errors::RendererError, "#{namespace.inspect} " \
                 'is not a Module' unless namespace.is_a? Module
+          logger.debug "RendererFactory: Looking for renderers in #{namespace}"
           namespace.constants.collect { |const| namespace.const_get(const) }
         end
 
