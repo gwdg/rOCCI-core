@@ -33,7 +33,7 @@ module Occi
       # @option args [String] :title (nil) category title
       # @option args [Hash] :attributes (Hash) category attributes
       def initialize(args = {})
-        pre_initialize
+        pre_initialize(args)
 
         args.merge!(defaults) { |_, oldval, _| oldval }
         sufficient_args!(args)
@@ -43,7 +43,7 @@ module Occi
         @title = args.fetch(:title)
         @attributes = args.fetch(:attributes)
 
-        post_initialize
+        post_initialize(args)
       end
 
       # Returns a full category identifier constructed from
@@ -93,10 +93,10 @@ module Occi
       end
 
       # :nodoc:
-      def pre_initialize; end
+      def pre_initialize(args); end
 
       # :nodoc:
-      def post_initialize; end
+      def post_initialize(args); end
     end
   end
 end
