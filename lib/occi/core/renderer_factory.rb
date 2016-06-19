@@ -40,7 +40,7 @@ module Occi
 
       #
       def reload!
-        logger.debug "RendererFactory: Clearing cache for renderer reload"
+        logger.debug 'RendererFactory: Clearing cache for renderer reload'
         @ravail_cache = nil
       end
 
