@@ -124,6 +124,42 @@ module Occi
             expect(Category.valid_identifier?(example_invalid_idf)).to be false
           end
         end
+
+        describe '::valid_term!' do
+          it 'recognizes valid term' do
+            expect { Category.valid_term!(subject.term) }.not_to raise_error
+          end
+
+          it 'fails on non-URI compliant term' do
+            expect { Category.valid_term!(example_invalid_term) }.to raise_error(
+              Occi::Core::Errors::CategoryValidationError
+            )
+          end
+        end
+
+        describe '::valid_schema!' do
+          it 'recognizes valid schema' do
+            expect { Category.valid_schema!(subject.schema) }.not_to raise_error
+          end
+
+          it 'fails on non-URI compliant schema' do
+            expect { Category.valid_schema!(example_invalid_schema) }.to raise_error(
+              URI::InvalidURIError
+            )
+          end
+        end
+
+        describe '::valid_identifier!' do
+          it 'recognizes valid identifier' do
+            expect { Category.valid_identifier!(subject.identifier) }.not_to raise_error
+          end
+
+          it 'fails on non-URI compliant identifier' do
+            expect { Category.valid_identifier!(example_invalid_idf) }.to raise_error(
+              URI::InvalidURIError
+            )
+          end
+        end
       end
     end
   end

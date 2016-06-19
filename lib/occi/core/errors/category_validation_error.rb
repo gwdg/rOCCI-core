@@ -4,10 +4,10 @@ module Occi
   module Core
     module Errors
       # Custom error class indicating validation failures on
-      # attribute values.
+      # category instances.
       #
       # @author Boris Parak <parak@cesnet.cz>
-      class AttributeValidationError < ValidationError; end
+      class CategoryValidationError < ValidationError; end
     end
   end
 end

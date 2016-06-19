@@ -88,7 +88,24 @@ module Occi
         # @param term [String] term candidate
         # @return [TrueClass, FalseClass] result
         def valid_term?(term)
-          !REGEXP_TERM.match(term).nil?
+          begin
+            valid_term! term
+          rescue Occi::Core::Errors::CategoryValidationError => ex
+            logger.warn "Category: Term validation failed with #{ex.message}"
+            return false
+          end
+
+          true
+        end
+
+        # Similar to `::valid_term?`, raises an `Occi::Core::Errors::CategoryValidationError`
+        # error in case of failure.
+        #
+        # @param term [String] term candidate
+        def valid_term!(term)
+          validation_result = REGEXP_TERM.match(term)
+          raise Occi::Core::Errors::CategoryValidationError,
+                "Term #{term.inspect} does not match #{REGEXP_TERM.inspect}" if validation_result.nil?
         end
 
         # Validates given `schema` against the restrictions imposed by the
@@ -102,7 +119,28 @@ module Occi
         # @param schema [String] schema candidate
         # @return [TrueClass, FalseClass] result
         def valid_schema?(schema)
-          !schema.blank? && valid_uri?(schema) && schema.include?('#') && !prohibited_chars?(schema)
+          begin
+            valid_schema! schema
+          rescue URI::InvalidURIError, Occi::Core::Errors::CategoryValidationError => ex
+            logger.warn "Category: Schema validation failed with #{ex.message}"
+            return false
+          end
+
+          true
+        end
+
+        # Similar to `::valid_schema?`, raises an `Occi::Core::Errors::CategoryValidationError`
+        # error in case of failure.
+        #
+        # @param schema [String] schema candidate
+        def valid_schema!(schema)
+          raise Occi::Core::Errors::CategoryValidationError,
+                "Schema #{schema.inspect} cannot be blank" if schema.blank?
+          raise Occi::Core::Errors::CategoryValidationError,
+                "Schema #{schema.inspect} must be terminated with '#'" unless schema.end_with?('#')
+
+          valid_uri! schema
+          prohibited_chars! schema
         end
 
         # Validates given `identifier` as a combination of rules for `term`
@@ -115,31 +153,41 @@ module Occi
         # @param identifier [String] identifier candidate
         # @return [TrueClass, FalseClass] result
         def valid_identifier?(identifier)
-          return false if identifier.blank?
-
-          elements = identifier.split('#')
-          return false if elements.count != 2
-
-          valid_schema?("#{elements.first}#") && valid_term?(elements.last)
-        end
-
-        private
-
-        # :nodoc:
-        def valid_uri?(uri)
           begin
-            URI.split(uri)
-          rescue URI::InvalidURIError => ex
-            logger.debug "URI validation: #{ex.message}"
+            valid_identifier! identifier
+          rescue URI::InvalidURIError, Occi::Core::Errors::CategoryValidationError => ex
+            logger.warn "Category: Identifier validation failed with #{ex.message}"
             return false
           end
 
           true
         end
 
+        # Similar to `::valid_identifier?`, raises an `Occi::Core::Errors::CategoryValidationError`
+        # error in case of failure.
+        #
+        # @param identifier [String] identifier candidate
+        def valid_identifier!(identifier)
+          elements = identifier.split('#')
+          raise Occi::Core::Errors::CategoryValidationError,
+                "Identifier #{identifier.inspect} is malformed" if elements.count != 2
+
+          valid_schema! "#{elements.first}#"
+          valid_term! elements.last
+        end
+
+        private
+
         # :nodoc:
-        def prohibited_chars?(schema)
-          PROHIBITED_SCHEMA_CHARS.collect { |char| schema.include?(char) }.reduce(:&)
+        def valid_uri!(uri)
+          URI.split uri
+        end
+
+        # :nodoc:
+        def prohibited_chars!(schema)
+          PROHIBITED_SCHEMA_CHARS.each do |char|
+            raise "Schema #{schema.inspect} contains prohibited character #{char.inspect}" if schema.include?(char)
+          end
         end
       end
 
