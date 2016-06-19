@@ -111,7 +111,7 @@ module Occi
       def generate_location
         raise Occi::Core::Errors::MandatoryArgumentError,
               'Cannot generate default location without a `term`' if term.blank?
-        "/#{term}/"
+        URI.parse "/#{term}/"
       end
     end
   end
