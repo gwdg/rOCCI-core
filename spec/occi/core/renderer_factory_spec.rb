@@ -96,12 +96,14 @@ module Occi
 
         let(:klass_non_renderer) do
           klass.define_singleton_method('renderer?', proc { false })
+          klass
         end
 
         let(:klass_renderer) do
           klass.define_singleton_method('renderer?', proc { true })
           klass.define_singleton_method('formats', proc { ['dummy'] })
           klass.define_singleton_method('render', proc { 'test' })
+          klass
         end
 
         it 'returns false for non-Class arguments' do
