@@ -121,19 +121,62 @@ module Occi
       end
 
       describe '#default' do
-        it 'sets default value when `nil`'
-        it 'does not set default value when not `nil`'
-        it 'raises error when definition is missing and value is `nil`'
-        it 'does not raise error when definition is missing and value is not `nil`'
-        it 'returns new value on change'
-        it 'returns `nil` when nothing changed'
+        it 'sets default value when `nil`' do
+          expect(noval_attribute.value).to eq nil
+          expect(noval_attribute.attribute_definition).to receive(:default).and_return('deftext')
+          expect { noval_attribute.default }.not_to raise_error
+          expect(noval_attribute.value).to eq 'deftext'
+        end
+
+        it 'does not set default value when not `nil`' do
+          expect(subject.value).to eq 'text'
+          expect(subject.attribute_definition).not_to receive(:default)
+          expect { subject.default }.not_to raise_error
+          expect(subject.value).to eq 'text'
+        end
+
+        it 'raises error when definition is missing and value is `nil`' do
+          expect { empty_attribute.default }.to raise_error(Occi::Core::Errors::AttributeDefinitionError)
+        end
+
+        it 'does not raise error when definition is missing and value is not `nil`' do
+          expect { nodef_attribute.default }.not_to raise_error
+        end
+
+        it 'returns new value on change' do
+          expect(noval_attribute.attribute_definition).to receive(:default).and_return('deftext')
+          expect(noval_attribute.default).to eq 'deftext'
+        end
+
+        it 'returns `nil` when nothing changed' do
+          expect(subject.attribute_definition).not_to receive(:default)
+          expect(subject.default).to be nil
+        end
       end
 
       describe '#default!' do
-        it 'sets default value when `nil`'
-        it 'sets default value when value not `nil`'
-        it 'raises error when definition is missing'
-        it 'returns new value'
+        it 'sets default value when `nil`' do
+          expect(noval_attribute.value).to eq nil
+          expect(noval_attribute.attribute_definition).to receive(:default).and_return('deftext')
+          expect { noval_attribute.default! }.not_to raise_error
+          expect(noval_attribute.value).to eq 'deftext'
+        end
+
+        it 'sets default value when value not `nil`' do
+          expect(subject.value).to eq 'text'
+          expect(subject.attribute_definition).to receive(:default).and_return('deftext')
+          expect { subject.default! }.not_to raise_error
+          expect(subject.value).to eq 'deftext'
+        end
+
+        it 'raises error when definition is missing' do
+          expect { nodef_attribute.default! }.to raise_error(Occi::Core::Errors::AttributeDefinitionError)
+        end
+
+        it 'returns new value' do
+          expect(noval_attribute.attribute_definition).to receive(:default).and_return('deftext')
+          expect(noval_attribute.default!).to eq 'deftext'
+        end
       end
 
       describe '#reset!' do
