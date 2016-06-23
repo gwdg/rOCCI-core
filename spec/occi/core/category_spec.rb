@@ -89,6 +89,19 @@ module Occi
           subject[example_attribute] = example_value
         end
       end
+
+      %w(identifier to_s).each do |mtd|
+        describe "##{mtd}" do
+          it 'returns category identifier as URI string' do
+            expect(subject.send(mtd)).to be_kind_of String
+            expect { URI.parse(subject.send(mtd)) }.not_to raise_error
+          end
+
+          it 'returns a join of schema and term' do
+            expect(subject.send(mtd)).to eq "#{subject.schema}#{subject.term}"
+          end
+        end
+      end
     end
   end
 end
