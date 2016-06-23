@@ -26,23 +26,63 @@ module Occi
       end
 
       describe '#valid?' do
-        it 'returns `true` when action and attributes valid'
-        it 'returns `false` when action invalid'
-        it 'returns `false` when action missing'
-        it 'returns `false` when attribute(s) invalid'
-        it 'returns `false` when attributes missing'
-        it 'returns `false` when both action and attributes invalid'
-        it 'returns `false` when both action and attributes missing'
+        it 'returns `true` when action and attributes valid' do
+          expect(subject.attributes['method']).to receive(:valid!)
+          expect(subject.valid?).to be true
+        end
+
+        it 'returns `false` when action missing' do
+          subject.action = nil
+          expect(subject.valid?).to be false
+        end
+
+        it 'returns `false` when attributes missing' do
+          subject.attributes = nil
+          expect(subject.valid?).to be false
+        end
+
+        it 'returns `false` when attribute is invalid' do
+          expect(subject.attributes['method']).to receive(:valid!).and_raise(
+            Occi::Core::Errors::AttributeValidationError
+          )
+          expect(subject.valid?).to be false
+        end
+
+        it 'returns `false` when both action and attributes missing' do
+          subject.attributes = nil
+          subject.action = nil
+          expect(subject.valid?).to be false
+        end
       end
 
       describe '#valid!' do
-        it 'does not raise error when action and attributes valid'
-        it 'raises error when action invalid'
-        it 'raises error when action missing'
-        it 'raises error when attribute(s) invalid'
-        it 'raises error when attributes missing'
-        it 'raises error when both action and attributes invalid'
-        it 'raises error when both action and attributes missing'
+        it 'does not raise error when action and attributes valid' do
+          expect(subject.attributes['method']).to receive(:valid!)
+          expect { subject.valid! }.not_to raise_error
+        end
+
+        it 'raises error when action missing' do
+          subject.action = nil
+          expect { subject.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
+        end
+
+        it 'raises error when attributes missing' do
+          subject.attributes = nil
+          expect { subject.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
+        end
+
+        it 'raises error when attribute is invalid' do
+          expect(subject.attributes['method']).to receive(:valid!).and_raise(
+            Occi::Core::Errors::AttributeValidationError
+          )
+          expect { subject.valid! }.to raise_error(Occi::Core::Errors::AttributeValidationError)
+        end
+
+        it 'raises error when both action and attributes missing' do
+          subject.action = nil
+          subject.attributes = nil
+          expect { subject.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
+        end
       end
     end
   end

@@ -54,7 +54,12 @@ module Occi
       # @raise [Errors::AttributeValidationError] if attribute(s) are invalid
       # @raise [Errors::AttributeDefinitionError] if attribute defs are missing
       # @raise [Occi::Core::Errors::InstanceValidationError] if this instance is invalid
-      def valid!; end
+      def valid!
+        raise Occi::Core::Errors::InstanceValidationError, 'Missing valid action object' unless action
+        raise Occi::Core::Errors::InstanceValidationError, 'Missing valid attributes object' unless attributes
+
+        attributes.each_pair { |name, attribute| valid_attribute!(name, attribute) }
+      end
 
       private
 
@@ -72,6 +77,13 @@ module Occi
           action: nil,
           attributes: {}
         }
+      end
+
+      # :nodoc:
+      def valid_attribute!(name, attribute)
+        attribute.valid!
+      rescue => ex
+        raise ex, "Attribute #{name.inspect} invalid: #{ex}", ex.backtrace
       end
     end
   end
