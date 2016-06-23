@@ -15,6 +15,16 @@ module Occi
         end
       end
 
+      it 'has logger' do
+        expect(subject).to respond_to(:logger)
+        expect(subject.class).to respond_to(:logger)
+      end
+
+      it 'is renderable' do
+        expect(subject).to be_kind_of(Helpers::Renderable)
+        expect(subject).to respond_to(:render)
+      end
+
       describe '#valid?' do
         it 'returns `true` when action and attributes valid'
         it 'returns `false` when action invalid'

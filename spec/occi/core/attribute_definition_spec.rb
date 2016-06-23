@@ -29,6 +29,11 @@ module Occi
         end
       end
 
+      it 'has logger' do
+        expect(subject).to respond_to(:logger)
+        expect(subject.class).to respond_to(:logger)
+      end
+
       describe '::new' do
         ATTR_DEF_ATTRS.each do |attr|
           it "assigns #{attr}" do

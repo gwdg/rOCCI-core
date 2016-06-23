@@ -32,6 +32,16 @@ module Occi
         is_expected.to have_attr_reader_only :identifier
       end
 
+      it 'has logger' do
+        expect(subject).to respond_to(:logger)
+        expect(subject.class).to respond_to(:logger)
+      end
+
+      it 'is renderable' do
+        expect(subject).to be_kind_of(Helpers::Renderable)
+        expect(subject).to respond_to(:render)
+      end
+
       describe '::new' do
         it 'fails without term' do
           expect { Category.new(term: nil, schema: example_schema) }.to raise_error(

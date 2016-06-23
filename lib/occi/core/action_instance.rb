@@ -39,7 +39,7 @@ module Occi
         begin
           valid!
         rescue *ERRORS => ex
-          logger.warn "Attribute invalid: #{ex.message}"
+          logger.warn "ActionInstance invalid: #{ex.message}"
           return false
         end
 

@@ -27,6 +27,11 @@ module Occi
         end
       end
 
+      it 'has logger' do
+        expect(subject).to respond_to(:logger)
+        expect(subject.class).to respond_to(:logger)
+      end
+
       describe '#valid?' do
         it 'returns `true` when valid' do
           expect(subject.attribute_definition).to receive(:valid!).with(subject.value)
