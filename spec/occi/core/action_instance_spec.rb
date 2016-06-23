@@ -25,6 +25,12 @@ module Occi
         expect(subject).to respond_to(:render)
       end
 
+      it 'has attributes value accessor' do
+        expect(subject).to be_kind_of(Helpers::AttributesAccessor)
+        expect(subject).to respond_to(:[])
+        expect(subject).to respond_to(:[]=)
+      end
+
       describe '#valid?' do
         it 'returns `true` when action and attributes valid' do
           expect(subject.attributes['method']).to receive(:valid!)

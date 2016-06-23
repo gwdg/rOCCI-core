@@ -8,9 +8,6 @@ module Occi
       let(:example_title) { 'Generic category' }
       let(:example_attributes) { instance_double('Hash') }
 
-      let(:example_attribute) { 'org.example.attribute' }
-      let(:example_value) { 'text' }
-
       let(:category) do
         Category.new(
           term: example_term,
@@ -40,6 +37,12 @@ module Occi
       it 'is renderable' do
         expect(subject).to be_kind_of(Helpers::Renderable)
         expect(subject).to respond_to(:render)
+      end
+
+      it 'has attributes value accessor' do
+        expect(subject).to be_kind_of(Helpers::AttributesAccessor)
+        expect(subject).to respond_to(:[])
+        expect(subject).to respond_to(:[]=)
       end
 
       describe '::new' do
@@ -83,20 +86,6 @@ module Occi
           it "assigns #{attr}" do
             expect(subject.send(attr)).to match send("example_#{attr}")
           end
-        end
-      end
-
-      describe '#[]' do
-        it 'delegates to attributes' do
-          expect(subject.attributes).to receive(:[]).with(example_attribute)
-          subject[example_attribute]
-        end
-      end
-
-      describe '#[]=' do
-        it 'delegates to attributes' do
-          expect(subject.attributes).to receive(:[]=).with(example_attribute, example_value)
-          subject[example_attribute] = example_value
         end
       end
 

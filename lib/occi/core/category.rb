@@ -17,6 +17,7 @@ module Occi
       include Yell::Loggable
       include Helpers::Renderable
       extend Helpers::IdentifierValidator
+      include Helpers::AttributesAccessor
 
       attr_accessor :term, :schema, :title, :attributes
 
@@ -60,16 +61,6 @@ module Occi
       # :nodoc:
       def to_s
         identifier
-      end
-
-      # :nodoc:
-      def [](key)
-        attributes[key]
-      end
-
-      # :nodoc:
-      def []=(key, val)
-        attributes[key] = val
       end
 
       protected
