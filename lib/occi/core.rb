@@ -42,6 +42,7 @@ module Occi
     autoload :Mixin, 'occi/core/mixin'
 
     autoload :Attribute, 'occi/core/attribute'
+    autoload :ActionInstance, 'occi/core/action_instance'
   end
 end
 
