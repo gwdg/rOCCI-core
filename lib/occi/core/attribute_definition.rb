@@ -17,6 +17,7 @@ module Occi
     # @author Boris Parak <parak@cesnet.cz>
     class AttributeDefinition
       include Yell::Loggable
+      include Helpers::ArgumentValidator
 
       attr_accessor :type, :required, :mutable,
                     :default, :description, :pattern
@@ -37,8 +38,7 @@ module Occi
       # @option args [String, NilClass] :description (nil) attribute description
       # @option args [Regexp, NilClass] :pattern (nil) value pattern
       def initialize(args = {})
-        args.merge!(defaults) { |_, oldval, _| oldval }
-        sufficient_args!(args)
+        default_args! args
 
         @type = args.fetch(:type)
         @required = args.fetch(:required)

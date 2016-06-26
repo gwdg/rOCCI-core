@@ -13,6 +13,7 @@ module Occi
       include Yell::Loggable
       include Helpers::Renderable
       include Helpers::AttributesAccessor
+      include Helpers::ArgumentValidator
 
       attr_accessor :action, :attributes
 
@@ -23,8 +24,7 @@ module Occi
       ].freeze
 
       def initialize(args = {})
-        args.merge!(defaults) { |_, oldval, _| oldval }
-        sufficient_args!(args)
+        default_args! args
 
         @action = args.fetch(:action)
         @attributes = args.fetch(:attributes)

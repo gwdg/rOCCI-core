@@ -11,6 +11,7 @@ module Occi
     class RendererFactory
       include Singleton
       include Yell::Loggable
+      include Helpers::ArgumentValidator
 
       # Methods expected on supported renderer classes
       REQUIRED_METHODS = [:renderer?, :formats, :render].freeze
@@ -28,8 +29,7 @@ module Occi
       # @option args [Array] :required_methods (`REQUIRED_METHODS`) list of required renderer methods
       # @option args [Module] :namespace (`NAMESPACE`) module containing renderer candidates
       def initialize(args = {})
-        args.merge!(defaults) { |_, oldval, _| oldval }
-        sufficient_args!(args)
+        default_args! args
 
         logger.debug "RendererFactory: Initializing with #{args.inspect}"
         @required_methods = args.fetch(:required_methods)

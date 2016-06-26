@@ -18,6 +18,7 @@ module Occi
       include Helpers::Renderable
       extend Helpers::IdentifierValidator
       include Helpers::AttributesAccessor
+      include Helpers::ArgumentValidator
 
       attr_accessor :term, :schema, :title, :attributes
 
@@ -35,9 +36,7 @@ module Occi
       # @option args [Hash] :attributes (Hash) category attributes
       def initialize(args = {})
         pre_initialize(args)
-
-        args.merge!(defaults) { |_, oldval, _| oldval }
-        sufficient_args!(args)
+        default_args! args
 
         @term = args.fetch(:term)
         @schema = args.fetch(:schema)
