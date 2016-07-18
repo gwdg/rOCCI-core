@@ -43,6 +43,7 @@ module Occi
 
     autoload :Attribute, 'occi/core/attribute'
     autoload :ActionInstance, 'occi/core/action_instance'
+    autoload :Entity, 'occi/core/entity'
   end
 end
 
