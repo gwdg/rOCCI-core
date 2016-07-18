@@ -67,6 +67,18 @@ module Occi
         parent.nil?
       end
 
+      # Returns the location of this kind instance. Set location
+      # is preferred over the generated one. If no location is known
+      # one is generated from `term`.
+      #
+      # @example
+      #   kind.location # => #<URI::Generic /compute/>
+      #
+      # @return [URI] kind instance location
+      def location
+        @location || generate_location
+      end
+
       protected
 
       # :nodoc:
@@ -94,8 +106,6 @@ module Occi
         @parent = args.fetch(:parent)
         @actions = args.fetch(:actions)
         @location = args.fetch(:location)
-
-        self.location ||= generate_location
       end
 
       private
@@ -105,9 +115,9 @@ module Occi
       #
       # @example
       #   kind.term              # => 'compute'
-      #   kind.generate_location # => '/compute/'
+      #   kind.generate_location # => #<URI::Generic /compute/>
       #
-      # @return [String] generated location string
+      # @return [URI] generated location
       def generate_location
         raise Occi::Core::Errors::MandatoryArgumentError,
               'Cannot generate default location without a `term`' if term.blank?

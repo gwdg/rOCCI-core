@@ -44,6 +44,18 @@ module Occi
         applies.include? kind
       end
 
+      # Returns the location of this mixin instance. Set location
+      # is preferred over the generated one. If no location is known
+      # one is generated from `term`.
+      #
+      # @example
+      #   mixin.location # => #<URI::Generic /compute/>
+      #
+      # @return [URI] mixin instance location
+      def location
+        @location || generate_location
+      end
+
       protected
 
       # :nodoc:
@@ -73,8 +85,6 @@ module Occi
         @depends = args.fetch(:depends)
         @applies = args.fetch(:applies)
         @location = args.fetch(:location)
-
-        self.location ||= generate_location
       end
 
       private
@@ -84,9 +94,9 @@ module Occi
       #
       # @example
       #   mixin.term              # => 'compute'
-      #   mixin.generate_location # => '/compute/'
+      #   mixin.generate_location # => #<URI::Generic /compute/>
       #
-      # @return [String] generated location string
+      # @return [URI] generated location string
       def generate_location
         raise Occi::Core::Errors::MandatoryArgumentError,
               'Cannot generate default location without a `term`' if term.blank?
