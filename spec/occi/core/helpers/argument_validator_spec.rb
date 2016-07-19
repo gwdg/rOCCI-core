@@ -6,7 +6,7 @@ module Occi
 
         let(:object_with_av) { RocciCoreSpec::ArgumentValidatorTestObject.new }
 
-        describe 'default_args!' do
+        describe '#default_args!' do
           let(:args) { { val: 'test' } }
           let(:no_val_args) { { text: 'mine' } }
           let(:empty_text_args) { { text: nil, val: '' } }
@@ -31,7 +31,7 @@ module Occi
           end
         end
 
-        describe 'sufficient_args!' do
+        describe '#sufficient_args!' do
           it 'does not fail with `val` set' do
             expect { subject.send(:sufficient_args!, val: 'something') }.not_to raise_error
           end
@@ -41,7 +41,7 @@ module Occi
           end
         end
 
-        describe 'defaults' do
+        describe '#defaults' do
           it 'returns a hash-like structure' do
             expect(subject.send(:defaults)).to be_kind_of(Hash)
           end

@@ -41,7 +41,7 @@ module Occi
         end
       end
 
-      describe 'related?' do
+      describe '#related?' do
         it 'returns `false` without `kind`' do
           expect(subject.related?(nil)).to be false
         end
@@ -59,7 +59,7 @@ module Occi
         end
       end
 
-      describe 'directly_related?' do
+      describe '#directly_related?' do
         subject { successor_kind }
 
         it 'returns `false` without `kind`' do
@@ -79,7 +79,7 @@ module Occi
         end
       end
 
-      describe 'related' do
+      describe '#related' do
         subject { root_kind.related }
 
         it 'returns enumerable list' do
@@ -99,7 +99,7 @@ module Occi
         end
       end
 
-      describe 'directly_related' do
+      describe '#directly_related' do
         subject { root_kind.directly_related }
 
         it 'returns enumerable list' do
@@ -121,7 +121,7 @@ module Occi
         end
       end
 
-      describe 'hierarchy_root?' do
+      describe '#hierarchy_root?' do
         it 'returns `false` for non-root kind' do
           expect(root_kind.hierarchy_root?).to be true
         end
