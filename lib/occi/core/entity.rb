@@ -18,6 +18,7 @@ module Occi
     class Entity
       include Yell::Loggable
       include Helpers::Renderable
+      include Helpers::Locatable
       include Helpers::AttributesAccessor
       include Helpers::ArgumentValidator
 
@@ -53,18 +54,6 @@ module Occi
         @actions = args.fetch(:actions)
 
         post_initialize(args)
-      end
-
-      # Returns the location of this entity instance. Set location
-      # is preferred over the generated one. If no location is known
-      # one is generated from `kind` location and the entity instance `id`.
-      #
-      # @example
-      #   entity.location # => #<URI::Generic /compute/1>
-      #
-      # @return [URI] entity instance location
-      def location
-        @location || generate_location
       end
 
       protected

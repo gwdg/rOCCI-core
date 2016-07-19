@@ -16,6 +16,8 @@ module Occi
     #
     # @author Boris Parak <parak@cesnet.cz>
     class Mixin < Category
+      include Helpers::Locatable
+
       attr_accessor :actions, :depends, :applies, :location
 
       # Checks whether the given mixin is in the dependency
@@ -42,18 +44,6 @@ module Occi
       def applies?(kind)
         return false unless applies && kind
         applies.include? kind
-      end
-
-      # Returns the location of this mixin instance. Set location
-      # is preferred over the generated one. If no location is known
-      # one is generated from `term`.
-      #
-      # @example
-      #   mixin.location # => #<URI::Generic /compute/>
-      #
-      # @return [URI] mixin instance location
-      def location
-        @location || generate_location
       end
 
       protected

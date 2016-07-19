@@ -15,6 +15,8 @@ module Occi
     #
     # @author Boris Parak <parak@cesnet.cz>
     class Kind < Category
+      include Helpers::Locatable
+
       attr_accessor :parent, :actions, :location
 
       # Checks whether the given `Kind` instance is related
@@ -65,18 +67,6 @@ module Occi
       # @return [TrueClass, FalseClass] result
       def hierarchy_root?
         parent.nil?
-      end
-
-      # Returns the location of this kind instance. Set location
-      # is preferred over the generated one. If no location is known
-      # one is generated from `term`.
-      #
-      # @example
-      #   kind.location # => #<URI::Generic /compute/>
-      #
-      # @return [URI] kind instance location
-      def location
-        @location || generate_location
       end
 
       protected
