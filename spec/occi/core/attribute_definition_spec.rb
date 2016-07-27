@@ -186,6 +186,7 @@ module Occi
         let(:example_value1) { 'String' }
         let(:example_value2) { 25.02 }
         let(:example_value3) { '' }
+        let(:example_value_nil) { nil }
         let(:example_strict_pattern) { /\S+/ }
 
         describe '#valid?' do
@@ -200,6 +201,11 @@ module Occi
           it 'returns `false` to indicate failure on pattern' do
             subject.pattern = example_strict_pattern
             expect(subject.valid?(example_value3)).to be false
+          end
+
+          it 'returns `false` for empty required attribute' do
+            subject.required = true
+            expect(subject.valid?(example_value_nil)).to be false
           end
 
           it 'returns `true` to indicate success without pattern' do
@@ -220,6 +226,11 @@ module Occi
           it 'raises error with message to indicate failure on pattern' do
             subject.pattern = example_strict_pattern
             expect { subject.valid!(example_value3) }.to raise_error(Occi::Core::Errors::AttributeValidationError)
+          end
+
+          it 'raises error for empty required attribute' do
+            subject.required = true
+            expect { subject.valid!(example_value_nil) }.to raise_error(Occi::Core::Errors::AttributeValidationError)
           end
 
           it 'does not raise error to indicate success without pattern' do

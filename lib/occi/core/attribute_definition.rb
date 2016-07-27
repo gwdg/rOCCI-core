@@ -174,6 +174,8 @@ module Occi
         raise Occi::Core::Errors::AttributeValidationError,
               'No type has been defined' unless type
         raise Occi::Core::Errors::AttributeValidationError,
+              'Value is required but not provided' if required? && value.nil?
+        raise Occi::Core::Errors::AttributeValidationError,
               "Type #{value.class} is incompatible with " \
               "defined type #{type}" unless type_ancestors.include?(value.class)
 
