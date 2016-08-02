@@ -21,6 +21,22 @@ module Occi
           is_expected.to have_attr_accessor attr.to_sym
         end
       end
+
+      it 'has attributes value accessor' do
+        expect(subject).to be_kind_of(Helpers::AttributesAccessor)
+        expect(subject).to respond_to(:[])
+        expect(subject).to respond_to(:[]=)
+      end
+
+      it 'has logger' do
+        expect(subject).to respond_to(:logger)
+        expect(subject.class).to respond_to(:logger)
+      end
+
+      it 'is renderable' do
+        expect(subject).to be_kind_of(Helpers::Renderable)
+        expect(subject).to respond_to(:render)
+      end
     end
   end
 end
