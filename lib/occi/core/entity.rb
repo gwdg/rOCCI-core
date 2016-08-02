@@ -24,6 +24,12 @@ module Occi
 
       attr_accessor :kind, :id, :location, :title, :attributes, :mixins, :actions
 
+      ERRORS = [
+        Occi::Core::Errors::AttributeValidationError,
+        Occi::Core::Errors::AttributeDefinitionError,
+        Occi::Core::Errors::InstanceValidationError
+      ].freeze
+
       # Constructs an instance with the given information. `kind` is a mandatory
       # argument, the rest will either default to appropriate values or remain
       # `nil`. The `id` attribute will default to a newly generated UUID, see
@@ -56,7 +62,111 @@ module Occi
         post_initialize(args)
       end
 
+      # Assigns new kind instance to this entity instance. This
+      # method will trigger a complete reset on all previously
+      # set attributes, for the sake of consistency.
+      #
+      # @param kind [Occi::Core::Kind] kind instance to be assigned
+      # @return [Occi::Core::Kind] assigned kind instance
+      def kind=(kind)
+        raise Occi::Core::Errors::InstanceValidationError,
+              'Missing valid kind' unless kind
+
+        @kind = kind
+        default_attrs!
+
+        kind
+      end
+
+      # Assigns new mixins instance to this entity instance. This
+      # method will trigger a complete reset on all previously
+      # set attributes, for the sake of consistency.
+      #
+      # @param kind [Hash] mixins instance to be assigned
+      # @return [Hash] mixins instance assigned
+      def mixins=(mixins)
+        raise Occi::Core::Errors::InstanceValidationError,
+              'Missing valid mixins' unless mixins
+
+        @mixins = mixins
+        default_attrs!
+
+        mixins
+      end
+
+      # Shorthand for assigning mixins and actions to entity
+      # instances. Unsupported `object` types will raise an
+      # error. `self` is always returned for chaining purposes.
+      #
+      # @example
+      #   entity << mixin   #=> #<Occi::Core::Entity>
+      #   entity << action  #=> #<Occi::Core::Entity>
+      #
+      # @param object [Occi::Core::Mixin, Occi::Core::Action] object to be added
+      # @return [Occi::Core::Entity] self
+      def <<(object)
+        case object
+        when Occi::Core::Mixin
+          mixins << object
+          default_attrs
+        when Occi::Core::Action
+          actions << object
+        else
+          raise ArgumentError, "Cannot automatically assign #{object.inspect}"
+        end
+
+        self
+      end
+
+      # Validates the content of this entity instance, including
+      # all previously defined OCCI attributes and other required
+      # elements. This method limits the information returned to
+      # a boolean response.
+      #
+      # @example
+      #   entity.valid? #=> false
+      #   entity.valid? #=> true
+      #
+      # @return [TrueClass] when entity instance is valid
+      # @return [FalseClass] when entity instance is invalid
+      def valid?
+        begin
+          valid!
+        rescue *ERRORS => ex
+          logger.warn "Entity invalid: #{ex.message}"
+          return false
+        end
+
+        true
+      end
+
+      # Validates the content of this entity instance, including
+      # all previously defined OCCI attributes and other required
+      # elements. This method provides additional information in
+      # messages of raised errors.
+      #
+      # @example
+      #   entity.valid! #=> #<Occi::Core::Errors::EntityValidationError>
+      #   entity.valid! #=> nil
+      #
+      # @return [NilClass] when entity instance is valid
+      def valid!
+        [:kind, :id, :location, :title, :attributes, :mixins, :actions].each do |attr|
+          raise Occi::Core::Errors::InstanceValidationError,
+                "Missing valid #{attr}" unless send(attr)
+        end
+
+        attributes.each_pair { |name, attribute| valid_attribute!(name, attribute) }
+      end
+
       protected
+
+      # :nodoc:
+      def valid_attribute!(name, attribute)
+        attribute.valid!
+      rescue => ex
+        raise ex, "Attribute #{name.inspect} invalid: #{ex}", ex.backtrace
+      end
 
       # :nodoc:
       def sufficient_args!(args)
@@ -83,7 +193,47 @@ module Occi
       def pre_initialize(args); end
 
       # :nodoc:
-      def post_initialize(args); end
+      def post_initialize(_args)
+        default_attrs
+      end
+
+      # Shorthand for running `default_attrs` with the `force` flag on.
+      # This method will force defaults from definitions in all available
+      # attributes.
+      def default_attrs!
+        default_attrs true
+      end
+
+      # Iterates over available attribute definitions (in `kind` and `mixins`) and
+      # sets corresponding fields in `attributes`. When using the `force` flag, all
+      # existing attribute values will be replaced by defaults from definitions or
+      # reset to `nil`.
+      #
+      # @param force [TrueClass, FalseClass] forcibly change attribute values to defaults
+      def default_attrs(force = false)
+        kind.attributes.each_pair { |name, definition| default_attr(name, definition, force) }
+
+        mixins.each do |mixin|
+          mixin.attributes.each_pair { |name, definition| default_attr(name, definition, force) }
+        end
+      end
+
+      # Sets corresponding attribute fields in `attributes`. When using the `force` flag, any
+      # existing attribute value will be replaced by the default from its definition or
+      # reset to `nil`.
+      #
+      # @param name [String] attribute name
+      # @param definition [AttributeDefinition] attribute definition
+      # @param force [TrueClass, FalseClass] forcibly change attribute value to default
+      def default_attr(name, definition, force)
+        if attributes[name]
+          attributes[name].attribute_definition = definition
+        else
+          attributes[name] = Attribute.new(nil, definition)
+        end
+
+        force ? attributes[name].default! : attributes[name].default
+      end
 
       # Generates default location based on the already configured
       # `kind.location` and `id` attribute. Fails if `id` is not present.
