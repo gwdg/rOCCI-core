@@ -13,7 +13,7 @@ module Occi
 
         # :nodoc:
         def attribute?(key)
-          attributes.key?(key)
+          !attributes[key].nil?
         end
 
         # :nodoc:
