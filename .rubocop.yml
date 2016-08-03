@@ -16,6 +16,9 @@ Metrics/ModuleLength:
 Metrics/LineLength:
   Max: 120
 
+ClassLength:
+  Max: 150
+
 Style/Documentation:
   Exclude:
   - 'spec/**/*'
