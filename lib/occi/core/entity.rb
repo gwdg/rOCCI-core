@@ -19,7 +19,7 @@ module Occi
       include Yell::Loggable
       include Helpers::Renderable
       include Helpers::Locatable
-      include Helpers::AttributesAccessor
+      include Helpers::InstanceAttributesAccessor
       include Helpers::ArgumentValidator
 
       attr_accessor :kind, :id, :location, :title, :attributes, :mixins, :actions

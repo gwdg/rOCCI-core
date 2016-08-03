@@ -23,9 +23,10 @@ module Occi
       end
 
       it 'has attributes value accessor' do
-        expect(subject).to be_kind_of(Helpers::AttributesAccessor)
+        expect(subject).to be_kind_of(Helpers::InstanceAttributesAccessor)
         expect(subject).to respond_to(:[])
         expect(subject).to respond_to(:[]=)
+        expect(subject).to respond_to(:attribute?)
       end
 
       it 'has logger' do

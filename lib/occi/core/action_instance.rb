@@ -12,7 +12,7 @@ module Occi
     class ActionInstance
       include Yell::Loggable
       include Helpers::Renderable
-      include Helpers::AttributesAccessor
+      include Helpers::InstanceAttributesAccessor
       include Helpers::ArgumentValidator
 
       attr_accessor :action, :attributes
