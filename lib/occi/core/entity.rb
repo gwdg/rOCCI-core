@@ -211,7 +211,7 @@ module Occi
       #
       # @return [Array] array with added attribute hashes
       def added_attributes
-        mixins.collect { |mixin| mixin.attributes }
+        mixins.collect(&:attributes)
       end
 
       # Generates default location based on the already configured

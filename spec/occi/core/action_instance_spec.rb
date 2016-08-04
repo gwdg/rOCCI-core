@@ -38,7 +38,9 @@ module Occi
 
       describe '#new' do
         it 'raises error when action not provided' do
-          expect { ActionInstance.new(action: nil, attributes: {}) }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+          expect do
+            ActionInstance.new(action: nil, attributes: {})
+          end.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
         end
       end
 
