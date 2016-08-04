@@ -21,6 +21,7 @@ module Occi
       include Helpers::Locatable
       include Helpers::InstanceAttributesAccessor
       include Helpers::ArgumentValidator
+      include Helpers::InstanceAttributeResetter
 
       attr_accessor :kind, :id, :location, :title, :attributes, :mixins, :actions
 
@@ -73,7 +74,7 @@ module Occi
               'Missing valid kind' unless kind
 
         @kind = kind
-        default_attrs!
+        reset_attributes!
 
         kind
       end
@@ -89,7 +90,7 @@ module Occi
               'Missing valid mixins' unless mixins
 
         @mixins = mixins
-        default_attrs!
+        reset_attributes!
 
         mixins
       end
@@ -108,7 +109,7 @@ module Occi
         case object
         when Occi::Core::Mixin
           mixins << object
-          default_attrs
+          reset_added_attributes
         when Occi::Core::Action
           actions << object
         else
@@ -194,45 +195,23 @@ module Occi
 
       # :nodoc:
       def post_initialize(_args)
-        default_attrs
+        reset_attributes
       end
 
-      # Shorthand for running `default_attrs` with the `force` flag on.
-      # This method will force defaults from definitions in all available
-      # attributes.
-      def default_attrs!
-        default_attrs true
-      end
-
-      # Iterates over available attribute definitions (in `kind` and `mixins`) and
-      # sets corresponding fields in `attributes`. When using the `force` flag, all
-      # existing attribute values will be replaced by defaults from definitions or
-      # reset to `nil`.
+      # Returns all base attributes for this instance in the
+      # form of the original hash.
       #
-      # @param force [TrueClass, FalseClass] forcibly change attribute values to defaults
-      def default_attrs(force = false)
-        kind.attributes.each_pair { |name, definition| default_attr(name, definition, force) }
-
-        mixins.each do |mixin|
-          mixin.attributes.each_pair { |name, definition| default_attr(name, definition, force) }
-        end
+      # @return [Hash] hash with base attributes
+      def base_attributes
+        kind.attributes
       end
 
-      # Sets corresponding attribute fields in `attributes`. When using the `force` flag, any
-      # existing attribute value will be replaced by the default from its definition or
-      # reset to `nil`.
+      # Collects all available additional attributes for this
+      # instance and returns them as an array.
       #
-      # @param name [String] attribute name
-      # @param definition [AttributeDefinition] attribute definition
-      # @param force [TrueClass, FalseClass] forcibly change attribute value to default
-      def default_attr(name, definition, force)
-        if attributes[name]
-          attributes[name].attribute_definition = definition
-        else
-          attributes[name] = Attribute.new(nil, definition)
-        end
-
-        force ? attributes[name].default! : attributes[name].default
+      # @return [Array] array with added attribute hashes
+      def added_attributes
+        mixins.collect { |mixin| mixin.attributes }
       end
 
       # Generates default location based on the already configured

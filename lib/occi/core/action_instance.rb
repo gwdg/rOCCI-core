@@ -14,6 +14,7 @@ module Occi
       include Helpers::Renderable
       include Helpers::InstanceAttributesAccessor
       include Helpers::ArgumentValidator
+      include Helpers::InstanceAttributeResetter
 
       attr_accessor :action, :attributes
 
@@ -28,6 +29,24 @@ module Occi
 
         @action = args.fetch(:action)
         @attributes = args.fetch(:attributes)
+
+        reset_attributes
+      end
+
+      # Assigns new action instance to this action instance. This
+      # method will trigger a complete reset on all previously
+      # set attributes, for the sake of consistency.
+      #
+      # @param action [Occi::Core::Action] action to be assigned
+      # @return [Occi::Core::Action] assigned action
+      def action=(action)
+        raise Occi::Core::Errors::InstanceValidationError,
+              'Missing valid action' unless action
+
+        @action = action
+        reset_attributes!
+
+        action
       end
 
       # Checks whether this action instance is valid. Validity
@@ -63,6 +82,22 @@ module Occi
       end
 
       private
+
+      # Returns all base attributes for this instance in the
+      # form of the original hash.
+      #
+      # @return [Hash] hash with base attributes
+      def base_attributes
+        action.attributes
+      end
+
+      # Collects all available additional attributes for this
+      # instance and returns them as an array.
+      #
+      # @return [Array] array with added attribute hashes
+      def added_attributes
+        []
+      end
 
       # :nodoc:
       def sufficient_args!(args)
