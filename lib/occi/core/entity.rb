@@ -90,7 +90,9 @@ module Occi
               'Missing valid mixins' unless mixins
 
         @mixins = mixins
-        reset_attributes!
+        reset_added_attributes!
+        remove_undef_attributes
+        # TODO: handle sync'ing actions
 
         mixins
       end
@@ -108,8 +110,7 @@ module Occi
       def <<(object)
         case object
         when Occi::Core::Mixin
-          mixins << object
-          reset_added_attributes
+          add_mixin object
         when Occi::Core::Action
           actions << object
         else
@@ -117,6 +118,39 @@ module Occi
         end
 
         self
+      end
+
+      # Adds the given mixin to this instance. Attributes defined in the mixin
+      # will be transfered to instance attributes.
+      #
+      # @param mixin [Occi::Core::Mixin] mixin to be added
+      def add_mixin(mixin)
+        # TODO: check attribute collisions
+        # TODO: handle adding actions
+        mixins << mixin
+        reset_added_attributes
+      end
+
+      # Removes the given mixin from this instance. Attributes defined in the
+      # mixin will be reset to their original definition or removed completely
+      # if not defined as part of `kind` attributes.
+      #
+      # @param mixin [Occi::Core::Mixin] mixin to be removed
+      def remove_mixin(mixin)
+        # TODO: handle removing actions
+        mixins.delete mixin
+        reset_attributes
+      end
+
+      # Replaces the given mixin in this instance with a new mixin provided.
+      # This is a shorthand for invoking `remove_mixin` and `add_mixin`.
+      #
+      # @param old_mixin [Occi::Core::Mixin] mixin to be removed
+      # @param new_mixin [Occi::Core::Mixin] mixin to be added
+      def replace_mixin(old_mixin, new_mixin)
+        # TODO: handle replacing actions
+        remove_mixin old_mixin
+        add_mixin new_mixin
       end
 
       # Validates the content of this entity instance, including

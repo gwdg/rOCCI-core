@@ -25,21 +25,21 @@ module Occi
 
         # Shorthand for running `reset_attributes` with the `force` flag on.
         # This method will force defaults from definitions in all available
-        # attributes.
+        # attributes. No longer defined attributes will be automatically removed.
         def reset_attributes!
           reset_attributes true
         end
 
         # Shorthand for running `reset_base_attributes` with the `force` flag on.
         # This method will force defaults from definitions in all available
-        # attributes.
+        # attributes. No longer defined attributes will be kept unchanged.
         def reset_base_attributes!
           reset_base_attributes true
         end
 
         # Shorthand for running `reset_added_attributes` with the `force` flag on.
         # This method will force defaults from definitions in all available
-        # attributes.
+        # attributes. No longer defined attributes will be kept unchanged.
         def reset_added_attributes!
           reset_added_attributes true
         end
@@ -47,18 +47,44 @@ module Occi
         # Iterates over available attribute definitions and
         # sets corresponding fields in `attributes`. When using the `force` flag, all
         # existing attribute values will be replaced by defaults from definitions or
-        # reset to `nil`.
+        # reset to `nil`. No longer defined attributes will be automatically removed.
         #
         # @param force [TrueClass, FalseClass] forcibly change attribute values to defaults
         def reset_attributes(force = false)
           reset_base_attributes force
           reset_added_attributes force
+          remove_undef_attributes
+        end
+
+        # Removes attributes (definition and value) if they are no longer defined
+        # for this instance. This is automatically called when invoking reset via
+        # `reset_attributes` or `reset_attributes!`, in all other cases it has to
+        # be triggered explicitly. Attributes without definitions will be removed
+        # as well.
+        #
+        # @return [Hash] updated attribute hash
+        def remove_undef_attributes
+          name_cache = attribute_names
+          attributes.keep_if { |key, value| name_cache.include?(key) && value && value.attribute_definition }
+        end
+
+        # Collects all available attribute names into a list. Without definitions
+        # or values.
+        #
+        # @return [Array] list available attribute names
+        def attribute_names
+          names = added_attributes.collect(&:keys)
+          names << base_attributes.keys
+          names.flatten!
+          names.compact!
+
+          names
         end
 
         # Iterates over available base attribute definitions and
         # sets corresponding fields in `attributes`. When using the `force` flag, all
         # existing attribute values will be replaced by defaults from definitions or
-        # reset to `nil`.
+        # reset to `nil`. No longer defined attributes will be kept unchanged.
         #
         # @param force [TrueClass, FalseClass] forcibly change attribute values to defaults
         def reset_base_attributes(force = false)
@@ -68,7 +94,7 @@ module Occi
         # Iterates over available added attribute definitions and
         # sets corresponding fields in `attributes`. When using the `force` flag, all
         # existing attribute values will be replaced by defaults from definitions or
-        # reset to `nil`.
+        # reset to `nil`. No longer defined attributes will be kept unchanged.
         #
         # @param force [TrueClass, FalseClass] forcibly change attribute values to defaults
         def reset_added_attributes(force = false)
