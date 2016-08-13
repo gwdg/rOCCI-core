@@ -23,7 +23,7 @@ module Occi
       include Helpers::ArgumentValidator
       include Helpers::InstanceAttributeResetter
 
-      attr_accessor :kind, :id, :location, :title, :attributes, :mixins, :actions
+      attr_accessor :kind, :location, :attributes, :mixins, :actions
 
       ERRORS = [
         Occi::Core::Errors::AttributeValidationError,
@@ -53,14 +53,32 @@ module Occi
         default_args! args
 
         @kind = args.fetch(:kind)
-        @id = args.fetch(:id)
         @location = args.fetch(:location)
-        @title = args.fetch(:title)
         @attributes = args.fetch(:attributes)
         @mixins = args.fetch(:mixins)
         @actions = args.fetch(:actions)
 
         post_initialize(args)
+      end
+
+      # @return [String] entity instance identifier, unique in the given domain
+      def id
+        self['occi.core.id']
+      end
+
+      # @param id [String] entity instance identifier, unique in the given domain
+      def id=(id)
+        self['occi.core.id'] = id
+      end
+
+      # @return [String] entity instance title
+      def title
+        self['occi.core.title']
+      end
+
+      # @param title [String] entity instance title
+      def title=(title)
+        self['occi.core.title'] = title
       end
 
       # Assigns new kind instance to this entity instance. This
@@ -228,8 +246,11 @@ module Occi
       def pre_initialize(args); end
 
       # :nodoc:
-      def post_initialize(_args)
+      def post_initialize(args)
         reset_attributes
+
+        self.id = args.fetch(:id) if attributes['occi.core.id']
+        self.title = args.fetch(:title) if attributes['occi.core.title']
       end
 
       # Returns all base attributes for this instance in the
