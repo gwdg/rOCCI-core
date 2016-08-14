@@ -7,7 +7,7 @@ module Occi
         let(:example_attribute) { 'org.example.attribute' }
         let(:example_value) { 'text' }
         let(:obj_w_attrs) do
-          object = RocciCoreSpec::ClassWAttributes.new
+          object = RocciCoreSpec::ClassWAttributes.clone.new
           object.attributes = instance_double('Hash')
           object.extend(AttributesAccessor)
         end
