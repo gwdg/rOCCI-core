@@ -87,8 +87,19 @@ module Occi
         # reset to `nil`. No longer defined attributes will be kept unchanged.
         #
         # @param force [TrueClass, FalseClass] forcibly change attribute values to defaults
+        # @return [Array] list of processed attribute names
         def reset_base_attributes(force = false)
-          base_attributes.each_pair { |name, definition| reset_attribute(name, definition, force) }
+          processed_attrs = []
+
+          base_attributes.each_pair do |name, definition|
+            raise Occi::Core::Errors::AttributeDefinitionError,
+                  "Overridden attribute definition for #{name.inspect} " \
+                  'in the base attribute set' if processed_attrs.include?(name)
+            processed_attrs << name
+            reset_attribute(name, definition, force)
+          end
+
+          processed_attrs
         end
 
         # Iterates over available added attribute definitions and
@@ -97,10 +108,20 @@ module Occi
         # reset to `nil`. No longer defined attributes will be kept unchanged.
         #
         # @param force [TrueClass, FalseClass] forcibly change attribute values to defaults
+        # @return [Array] list of processed attribute names
         def reset_added_attributes(force = false)
+          processed_attrs = []
+
           added_attributes.each do |attrs|
-            attrs.each_pair { |name, definition| reset_attribute(name, definition, force) }
+            attrs.each_pair do |name, definition|
+              raise Occi::Core::Errors::AttributeDefinitionError,
+                    "Attribute #{name.inspect} already modified by another mixin" if processed_attrs.include?(name)
+              processed_attrs << name
+              reset_attribute(name, definition, force)
+            end
           end
+
+          processed_attrs
         end
 
         # Sets corresponding attribute fields in `attributes`. When using the `force` flag, any
