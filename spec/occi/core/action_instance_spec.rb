@@ -8,37 +8,35 @@ module Occi
       let(:attributes) { { 'method' => instance_double('Occi::Core::Attribute') } }
       let(:action_instance) { ActionInstance.new(action: action, attributes: attributes) }
 
-      AI_ATTRS = [:action, :attributes].freeze
-
-      AI_ATTRS.each do |attr|
-        it "has #{attr} accessor" do
-          expect(action).to receive(:attributes).and_return({})
-          expect(action).to receive(:attributes).and_return({})
-          is_expected.to have_attr_accessor attr.to_sym
+      context '' do
+        before(:example) do
+          allow(action).to receive(:attributes).and_return({})
         end
-      end
 
-      it 'has logger' do
-        expect(action).to receive(:attributes).and_return({})
-        expect(action).to receive(:attributes).and_return({})
-        expect(subject).to respond_to(:logger)
-        expect(subject.class).to respond_to(:logger)
-      end
+        AI_ATTRS = [:action, :attributes].freeze
 
-      it 'is renderable' do
-        expect(action).to receive(:attributes).and_return({})
-        expect(action).to receive(:attributes).and_return({})
-        expect(subject).to be_kind_of(Helpers::Renderable)
-        expect(subject).to respond_to(:render)
-      end
+        AI_ATTRS.each do |attr|
+          it "has #{attr} accessor" do
+            is_expected.to have_attr_accessor attr.to_sym
+          end
+        end
 
-      it 'has attributes value accessor' do
-        expect(action).to receive(:attributes).and_return({})
-        expect(action).to receive(:attributes).and_return({})
-        expect(subject).to be_kind_of(Helpers::InstanceAttributesAccessor)
-        expect(subject).to respond_to(:[])
-        expect(subject).to respond_to(:[]=)
-        expect(subject).to respond_to(:attribute?)
+        it 'has logger' do
+          expect(subject).to respond_to(:logger)
+          expect(subject.class).to respond_to(:logger)
+        end
+
+        it 'is renderable' do
+          expect(subject).to be_kind_of(Helpers::Renderable)
+          expect(subject).to respond_to(:render)
+        end
+
+        it 'has attributes value accessor' do
+          expect(subject).to be_kind_of(Helpers::InstanceAttributesAccessor)
+          expect(subject).to respond_to(:[])
+          expect(subject).to respond_to(:[]=)
+          expect(subject).to respond_to(:attribute?)
+        end
       end
 
       describe '#new' do
@@ -50,29 +48,24 @@ module Occi
       end
 
       describe '#valid?' do
+        before(:example) do
+          allow(action).to receive(:attributes).and_return(action_attributes)
+          allow(attributes['method']).to receive(:attribute_definition=).with(action_attributes['method'])
+          allow(attributes['method']).to receive(:attribute_definition).and_return(action_attributes['method'])
+          allow(attributes['method']).to receive(:default)
+        end
+
         it 'returns `true` when action and attributes valid' do
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(attributes['method']).to receive(:attribute_definition=).with(action_attributes['method'])
-          expect(attributes['method']).to receive(:default)
-          expect(attributes['method']).to receive(:attribute_definition).and_return(action_attributes['method'])
           expect(attributes['method']).to receive(:valid!)
           expect(subject.valid?).to be true
         end
 
         it 'returns `false` when attributes missing' do
-          expect(action).to receive(:attributes).and_return({})
-          expect(action).to receive(:attributes).and_return({})
           subject.attributes = nil
           expect(subject.valid?).to be false
         end
 
         it 'returns `false` when attribute is invalid' do
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(attributes['method']).to receive(:attribute_definition=).with(action_attributes['method'])
-          expect(attributes['method']).to receive(:default)
-          expect(attributes['method']).to receive(:attribute_definition).and_return(action_attributes['method'])
           expect(subject.attributes['method']).to receive(:valid!).and_raise(
             Occi::Core::Errors::AttributeValidationError
           )
@@ -81,32 +74,24 @@ module Occi
       end
 
       describe '#valid!' do
+        before(:example) do
+          allow(action).to receive(:attributes).and_return(action_attributes)
+          allow(attributes['method']).to receive(:attribute_definition=).with(action_attributes['method'])
+          allow(attributes['method']).to receive(:attribute_definition).and_return(action_attributes['method'])
+          allow(attributes['method']).to receive(:default)
+        end
+
         it 'does not raise error when action and attributes valid' do
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(attributes['method']).to receive(:attribute_definition=).with(action_attributes['method'])
-          expect(attributes['method']).to receive(:default)
-          expect(attributes['method']).to receive(:attribute_definition).and_return(action_attributes['method'])
           expect(subject.attributes['method']).to receive(:valid!)
           expect { subject.valid! }.not_to raise_error
         end
 
         it 'raises error when attributes missing' do
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(attributes['method']).to receive(:attribute_definition=).with(action_attributes['method'])
-          expect(attributes['method']).to receive(:default)
-          expect(attributes['method']).to receive(:attribute_definition).and_return(action_attributes['method'])
           subject.attributes = nil
           expect { subject.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
         end
 
         it 'raises error when attribute is invalid' do
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(attributes['method']).to receive(:attribute_definition=).with(action_attributes['method'])
-          expect(attributes['method']).to receive(:default)
-          expect(attributes['method']).to receive(:attribute_definition).and_return(action_attributes['method'])
           expect(subject.attributes['method']).to receive(:valid!).and_raise(
             Occi::Core::Errors::AttributeValidationError
           )
@@ -115,17 +100,15 @@ module Occi
       end
 
       describe '#action=' do
+        before(:example) do
+          allow(action).to receive(:attributes).and_return(action_attributes)
+          allow(attributes['method']).to receive(:attribute_definition=).with(action_attributes['method'])
+          allow(attributes['method']).to receive(:attribute_definition).and_return(action_attributes['method'])
+          allow(attributes['method']).to receive(:default!)
+          allow(attributes['method']).to receive(:default)
+        end
+
         it 'assigns new action to instance' do
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(action).to receive(:attributes).and_return(action_attributes)
-          expect(attributes['method']).to receive(:attribute_definition=).with(action_attributes['method'])
-          expect(attributes['method']).to receive(:attribute_definition=).with(action_attributes['method'])
-          expect(attributes['method']).to receive(:default!)
-          expect(attributes['method']).to receive(:default)
-          expect(attributes['method']).to receive(:attribute_definition).and_return(action_attributes['method'])
-          expect(attributes['method']).to receive(:attribute_definition).and_return(action_attributes['method'])
           expect { subject.action = action }.not_to raise_error
         end
       end

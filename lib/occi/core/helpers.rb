@@ -9,4 +9,5 @@ module Occi
   end
 end
 
+require File.join(File.dirname(__FILE__), 'helpers', 'argument_validator')
 Dir[File.join(File.dirname(__FILE__), 'helpers', '*.rb')].each { |file| require file.gsub('.rb', '') }

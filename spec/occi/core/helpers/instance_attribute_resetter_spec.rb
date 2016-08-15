@@ -19,26 +19,6 @@ module Occi
           object.extend(InstanceAttributeResetter)
           object
         end
-
-        describe '#base_attributes' do
-          it 'raises error if not implemented' do
-            expect { pristine_obj.base_attributes }.to raise_error(RuntimeError)
-          end
-
-          it 'returns hash if implemented' do
-            expect(subject.base_attributes).to be_kind_of Hash
-          end
-        end
-
-        describe '#added_attributes' do
-          it 'raises error if not implemented' do
-            expect { pristine_obj.added_attributes }.to raise_error(RuntimeError)
-          end
-
-          it 'returns list if implemented' do
-            expect(subject.added_attributes).to be_kind_of Array
-          end
-        end
       end
     end
   end

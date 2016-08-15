@@ -4,25 +4,11 @@ module Occi
       # Introduces instance attribute resetting functionality to
       # the receiver. Provides methods for applying defaults and
       # adding attributes on top of existing base attributes.
+      # `base_attributes` and `added_attributes` must be implemented
+      # in the receiver.
       #
       # @author Boris Parak <parak@cesnet.cz>
       module InstanceAttributeResetter
-        # Returns all base attributes for this instance in the
-        # form of the original hash.
-        #
-        # @return [Hash] hash with base attributes
-        def base_attributes
-          raise 'Not Implemented! You have to implement this method in the receiver.'
-        end
-
-        # Collects all available additional attributes for this
-        # instance and returns them as an array.
-        #
-        # @return [Array] array with added attribute hashes
-        def added_attributes
-          raise 'Not Implemented! You have to implement this method in the receiver.'
-        end
-
         # Shorthand for running `reset_attributes` with the `force` flag on.
         # This method will force defaults from definitions in all available
         # attributes. No longer defined attributes will be automatically removed.
