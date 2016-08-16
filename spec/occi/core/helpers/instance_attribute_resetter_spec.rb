@@ -45,27 +45,46 @@ module Occi
 
         describe '#reset_attribute' do
           context 'when attribute exists' do
-            context 'when `force` is used'
-            context 'when `force` is not used'
+            let(:attributes) do
+              { base_attribute_name => instance_double('Occi::Core::Attribute') }
+            end
+
+            before(:example) do
+              allow(subject).to receive(:attributes).and_return(attributes)
+              allow(attributes[base_attribute_name]).to receive(:value).and_return('nope')
+              allow(attributes[base_attribute_name]).to receive(:attribute_definition)
+              allow(attributes[base_attribute_name]).to receive(:attribute_definition=).with(
+                instance_of(Occi::Core::AttributeDefinition)
+              )
+              allow(base_attributes[base_attribute_name]).to receive(:default).and_return('test')
+            end
+
+            context 'when `force` is used' do
+              it 'overwrites previous value'
+              it 'changes definition'
+            end
+
+            context 'when `force` is not used' do
+            end
           end
 
           context 'when attribute does not exist' do
             let(:attributes) { {} }
 
-            context 'when `force` is used' do
-              before(:example) do
-                allow(subject).to receive(:attributes).and_return(attributes)
-                allow(base_attributes[base_attribute_name]).to receive(:default).and_return('test')
-              end
+            before(:example) do
+              allow(subject).to receive(:attributes).and_return(attributes)
+              allow(base_attributes[base_attribute_name]).to receive(:default).and_return('test')
+            end
 
-              it 'attribute is created' do
+            context 'when `force` is used' do
+              it 'creates attribute' do
                 expect do
                   subject.reset_attribute(base_attribute_name, base_attributes[base_attribute_name], true)
                 end.not_to raise_error
                 expect(subject.attributes[base_attribute_name]).to be_kind_of Occi::Core::Attribute
               end
 
-              it 'attribute default is set as value' do
+              it 'sets default attribute value' do
                 expect do
                   subject.reset_attribute(base_attribute_name, base_attributes[base_attribute_name], true)
                 end.not_to raise_error
@@ -73,7 +92,21 @@ module Occi
               end
             end
 
-            context 'when `force` is not used'
+            context 'when `force` is not used' do
+              it 'creates attribute' do
+                expect do
+                  subject.reset_attribute(base_attribute_name, base_attributes[base_attribute_name], false)
+                end.not_to raise_error
+                expect(subject.attributes[base_attribute_name]).to be_kind_of Occi::Core::Attribute
+              end
+
+              it 'sets default attribute value' do
+                expect do
+                  subject.reset_attribute(base_attribute_name, base_attributes[base_attribute_name], false)
+                end.not_to raise_error
+                expect(subject.attributes[base_attribute_name].value).to eq 'test'
+              end
+            end
           end
         end
       end
