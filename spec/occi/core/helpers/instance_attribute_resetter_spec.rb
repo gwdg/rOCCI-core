@@ -33,9 +33,41 @@ module Occi
         describe '#remove_undef_attributes'
 
         describe '#attribute_names' do
-          context 'with attributes'
-          context 'without attributes'
-          context 'with nil attribute names'
+          context 'with attributes' do
+            it 'returns attribute names in list' do
+              expect(subject.attribute_names).to include(base_attribute_name)
+              expect(subject.attribute_names).to include(added_attribute_name)
+              expect(subject.attribute_names).to be_kind_of Array
+            end
+          end
+
+          context 'without attributes' do
+            before(:example) do
+              allow(subject).to receive(:base_attributes).and_return({})
+              allow(subject).to receive(:added_attributes).and_return([{}])
+            end
+
+            it 'returns empty list' do
+              expect(subject.attribute_names).to be_empty
+              expect(subject.attribute_names).to be_kind_of Array
+            end
+          end
+
+          context 'with nil attribute names' do
+            before(:example) do
+              allow(subject).to receive(:base_attributes).and_return(
+                { nil => instance_double('Occi::Core::AttributeDefinition') }
+              )
+              allow(subject).to receive(:added_attributes).and_return(
+                [{ nil => instance_double('Occi::Core::AttributeDefinition') }]
+              )
+            end
+
+            it 'returns empty list' do
+              expect(subject.attribute_names).to be_empty
+              expect(subject.attribute_names).to be_kind_of Array
+            end
+          end
         end
 
         describe '#reset_base_attributes'
@@ -53,18 +85,43 @@ module Occi
               allow(subject).to receive(:attributes).and_return(attributes)
               allow(attributes[base_attribute_name]).to receive(:value).and_return('nope')
               allow(attributes[base_attribute_name]).to receive(:attribute_definition)
-              allow(attributes[base_attribute_name]).to receive(:attribute_definition=).with(
-                instance_of(Occi::Core::AttributeDefinition)
-              )
               allow(base_attributes[base_attribute_name]).to receive(:default).and_return('test')
             end
 
             context 'when `force` is used' do
-              it 'overwrites previous value'
-              it 'changes definition'
+              it 'overwrites previous value' do
+                allow(attributes[base_attribute_name]).to receive(:attribute_definition=)
+                expect(subject.attributes[base_attribute_name]).to receive(:default!)
+                expect do
+                  subject.reset_attribute(base_attribute_name, base_attributes[base_attribute_name], true)
+                end.not_to raise_error
+              end
+
+              it 'changes definition' do
+                expect(attributes[base_attribute_name]).to receive(:attribute_definition=)
+                expect(subject.attributes[base_attribute_name]).to receive(:default!)
+                expect do
+                  subject.reset_attribute(base_attribute_name, base_attributes[base_attribute_name], true)
+                end.not_to raise_error
+              end
             end
 
             context 'when `force` is not used' do
+              it 'keeps previous value' do
+                allow(attributes[base_attribute_name]).to receive(:attribute_definition=)
+                expect(subject.attributes[base_attribute_name]).to receive(:default)
+                expect do
+                  subject.reset_attribute(base_attribute_name, base_attributes[base_attribute_name], false)
+                end.not_to raise_error
+              end
+
+              it 'changes definition' do
+                expect(attributes[base_attribute_name]).to receive(:attribute_definition=)
+                expect(subject.attributes[base_attribute_name]).to receive(:default)
+                expect do
+                  subject.reset_attribute(base_attribute_name, base_attributes[base_attribute_name], false)
+                end.not_to raise_error
+              end
             end
           end
 
