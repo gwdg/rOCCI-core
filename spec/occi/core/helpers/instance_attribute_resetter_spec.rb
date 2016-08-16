@@ -29,8 +29,6 @@ module Occi
         end
 
         describe '#reset_attributes!'
-        describe '#reset_base_attributes!'
-        describe '#reset_added_attributes!'
         describe '#reset_attributes'
         describe '#remove_undef_attributes'
 
@@ -42,12 +40,41 @@ module Occi
 
         describe '#reset_base_attributes'
         describe '#reset_added_attributes'
+        describe '#reset_base_attributes!'
+        describe '#reset_added_attributes!'
 
         describe '#reset_attribute' do
-          context 'when attribute exists'
-          context 'when attribute does not exist'
-          context 'when `force` is used'
-          context 'when `force` is not used'
+          context 'when attribute exists' do
+            context 'when `force` is used'
+            context 'when `force` is not used'
+          end
+
+          context 'when attribute does not exist' do
+            let(:attributes) { {} }
+
+            context 'when `force` is used' do
+              before(:example) do
+                allow(subject).to receive(:attributes).and_return(attributes)
+                allow(base_attributes[base_attribute_name]).to receive(:default).and_return('test')
+              end
+
+              it 'attribute is created' do
+                expect do
+                  subject.reset_attribute(base_attribute_name, base_attributes[base_attribute_name], true)
+                end.not_to raise_error
+                expect(subject.attributes[base_attribute_name]).to be_kind_of Occi::Core::Attribute
+              end
+
+              it 'attribute default is set as value' do
+                expect do
+                  subject.reset_attribute(base_attribute_name, base_attributes[base_attribute_name], true)
+                end.not_to raise_error
+                expect(subject.attributes[base_attribute_name].value).to eq 'test'
+              end
+            end
+
+            context 'when `force` is not used'
+          end
         end
       end
     end
