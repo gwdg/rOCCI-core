@@ -28,9 +28,139 @@ module Occi
           allow(subject).to receive(:added_attributes).and_return(added_attributes)
         end
 
-        describe '#reset_attributes!'
-        describe '#reset_attributes'
-        describe '#remove_undef_attributes'
+        describe '#reset_attributes!' do
+          it 'resets attributes with `force` flag' do
+            expect(subject).to receive(:reset_attributes).with(true)
+            expect { subject.reset_attributes! }.not_to raise_error
+          end
+        end
+
+        describe '#reset_base_attributes!' do
+          it 'resets base_attributes with `force` flag' do
+            expect(subject).to receive(:reset_base_attributes).with(true)
+            expect { subject.reset_base_attributes! }.not_to raise_error
+          end
+        end
+
+        describe '#reset_added_attributes!' do
+          it 'resets added_attributes with `force` flag' do
+            expect(subject).to receive(:reset_added_attributes).with(true)
+            expect { subject.reset_added_attributes! }.not_to raise_error
+          end
+        end
+
+        describe '#reset_attributes' do
+          before(:example) do
+            expect(subject).to receive(:reset_base_attributes).with(force)
+            expect(subject).to receive(:reset_added_attributes).with(force)
+            expect(subject).to receive(:remove_undef_attributes)
+          end
+
+          context 'with `force` flag' do
+            let(:force) { true }
+
+            it 'resets base and added attributes while removing undef ones' do
+              expect { subject.reset_attributes(force) }.not_to raise_error
+            end
+          end
+
+          context 'without `force` flag' do
+            let(:force) { false }
+
+            it 'resets base and added attributes while removing undef ones' do
+              expect { subject.reset_attributes(force) }.not_to raise_error
+            end
+          end
+        end
+
+        describe '#reset_base_attributes' do
+          before(:example) do
+            allow(subject).to receive(:reset_attribute)
+            expect(subject).to receive(:base_attributes).and_return(base_attributes)
+          end
+
+          context 'with `force` flag' do
+            let(:force) { true }
+
+            it 'iterates over existing base attributes' do
+              expect(subject.reset_base_attributes(force)).not_to be_empty
+              expect(subject.reset_base_attributes(force)).to eq base_attributes.keys
+            end
+          end
+
+          context 'with `force` flag' do
+            let(:force) { false }
+
+            it 'iterates over existing base attributes' do
+              expect(subject.reset_base_attributes(force)).not_to be_empty
+              expect(subject.reset_base_attributes(force)).to eq base_attributes.keys
+            end
+          end
+        end
+
+        describe '#reset_added_attributes' do
+          before(:example) do
+            allow(subject).to receive(:reset_attribute)
+            expect(subject).to receive(:added_attributes).and_return(added_attributes)
+          end
+
+          context 'with `force` flag' do
+            let(:force) { true }
+
+            it 'iterates over existing added attributes' do
+              expect(subject.reset_added_attributes(force)).not_to be_empty
+              expect(subject.reset_added_attributes(force)).to eq [added_attribute_name]
+            end
+          end
+
+          context 'with `force` flag' do
+            let(:force) { false }
+
+            it 'iterates over existing added attributes' do
+              expect(subject.reset_added_attributes(force)).not_to be_empty
+              expect(subject.reset_added_attributes(force)).to eq [added_attribute_name]
+            end
+          end
+
+          context 'with conflict' do
+            let(:added_attributes) do
+              [{
+                added_attribute_name => instance_double('Occi::Core::AttributeDefinition')
+              }, {
+                added_attribute_name => instance_double('Occi::Core::AttributeDefinition')
+              }]
+            end
+
+            it 'fails on duplicates' do
+              expect(subject.added_attributes.count).to eq 2
+              expect { subject.reset_added_attributes }.to raise_error(Occi::Core::Errors::AttributeDefinitionError)
+            end
+          end
+        end
+
+        describe '#remove_undef_attributes' do
+          let(:attribute_name) { 'test' }
+          let(:attributes) { { attribute_name => instance_double('Occi::Core::Attribute') } }
+
+          before(:example) do
+            allow(subject).to receive(:attributes).and_return(attributes)
+            allow(attributes[attribute_name]).to receive(:attribute_definition).and_return(
+              instance_double('Occi::Core::AttributeDefinition')
+            )
+          end
+
+          it 'removes no longer defined attributes' do
+            expect(subject).to receive(:attribute_names).and_return([])
+            expect { subject.remove_undef_attributes }.not_to raise_error
+            expect(subject.attributes).to be_empty
+          end
+
+          it 'keeps defined attributes' do
+            expect(subject).to receive(:attribute_names).and_return(attributes.keys)
+            expect { subject.remove_undef_attributes }.not_to raise_error
+            expect(subject.attributes).to eq attributes
+          end
+        end
 
         describe '#attribute_names' do
           context 'with attributes' do
@@ -56,7 +186,7 @@ module Occi
           context 'with nil attribute names' do
             before(:example) do
               allow(subject).to receive(:base_attributes).and_return(
-                { nil => instance_double('Occi::Core::AttributeDefinition') }
+                nil => instance_double('Occi::Core::AttributeDefinition')
               )
               allow(subject).to receive(:added_attributes).and_return(
                 [{ nil => instance_double('Occi::Core::AttributeDefinition') }]
@@ -69,11 +199,6 @@ module Occi
             end
           end
         end
-
-        describe '#reset_base_attributes'
-        describe '#reset_added_attributes'
-        describe '#reset_base_attributes!'
-        describe '#reset_added_attributes!'
 
         describe '#reset_attribute' do
           context 'when attribute exists' do

@@ -78,9 +78,6 @@ module Occi
           processed_attrs = []
 
           base_attributes.each_pair do |name, definition|
-            raise Occi::Core::Errors::AttributeDefinitionError,
-                  "Overridden attribute definition for #{name.inspect} " \
-                  'in the base attribute set' if processed_attrs.include?(name)
             processed_attrs << name
             reset_attribute(name, definition, force)
           end
