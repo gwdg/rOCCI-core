@@ -131,9 +131,33 @@ module Occi
         when Occi::Core::Mixin
           add_mixin object
         when Occi::Core::Action
-          actions << object
+          add_action object
         else
           raise ArgumentError, "Cannot automatically assign #{object.inspect}"
+        end
+
+        self
+      end
+      alias add <<
+
+      # Shorthand for removing mixins and actions from entity
+      # instances. Unsupported `object` types will raise an
+      # error. `self` is always returned for chaining purposes.
+      #
+      # @example
+      #   entity.remove mixin   #=> #<Occi::Core::Entity>
+      #   entity.remove action  #=> #<Occi::Core::Entity>
+      #
+      # @param object [Occi::Core::Mixin, Occi::Core::Action] object to be removed
+      # @return [Occi::Core::Entity] self
+      def remove(object)
+        case object
+        when Occi::Core::Mixin
+          remove_mixin object
+        when Occi::Core::Action
+          remove_action object
+        else
+          raise ArgumentError, "Cannot automatically remove #{object.inspect}"
         end
 
         self
@@ -144,7 +168,9 @@ module Occi
       #
       # @param mixin [Occi::Core::Mixin] mixin to be added
       def add_mixin(mixin)
-        # TODO: check attribute collisions
+        raise Occi::Core::Errors::MandatoryArgumentError,
+              'Cannot add a non-existent mixin' unless mixin
+
         # TODO: handle adding actions
         mixins << mixin
         reset_added_attributes
@@ -156,6 +182,9 @@ module Occi
       #
       # @param mixin [Occi::Core::Mixin] mixin to be removed
       def remove_mixin(mixin)
+        raise Occi::Core::Errors::MandatoryArgumentError,
+              'Cannot remove a non-existent mixin' unless mixin
+
         # TODO: handle removing actions
         mixins.delete mixin
         reset_attributes
@@ -170,6 +199,24 @@ module Occi
         # TODO: handle replacing actions
         remove_mixin old_mixin
         add_mixin new_mixin
+      end
+
+      # Adds the given action to this instance.
+      #
+      # @param action [Occi::Core::Action] action to be added
+      def add_action(action)
+        raise Occi::Core::Errors::MandatoryArgumentError,
+              'Cannot add a non-existent action' unless action
+        actions << action
+      end
+
+      # Removes the given action from this instance.
+      #
+      # @param action [Occi::Core::Action] action to be removed
+      def remove_action(action)
+        raise Occi::Core::Errors::MandatoryArgumentError,
+              'Cannot remove a non-existent action' unless action
+        actions.delete action
       end
 
       # Validates the content of this entity instance, including
@@ -200,7 +247,7 @@ module Occi
       # messages of raised errors.
       #
       # @example
-      #   entity.valid! #=> #<Occi::Core::Errors::EntityValidationError>
+      #   entity.valid! #=> #<Occi::Core::Errors::InstanceValidationError>
       #   entity.valid! #=> nil
       #
       # @return [NilClass] when entity instance is valid
@@ -211,6 +258,22 @@ module Occi
         end
 
         attributes.each_pair { |name, attribute| valid_attribute!(name, attribute) }
+      end
+
+      # Returns all base attributes for this instance in the
+      # form of the original hash.
+      #
+      # @return [Hash] hash with base attributes
+      def base_attributes
+        kind.attributes
+      end
+
+      # Collects all available additional attributes for this
+      # instance and returns them as an array.
+      #
+      # @return [Array] array with added attribute hashes
+      def added_attributes
+        mixins.collect(&:attributes)
       end
 
       protected
@@ -233,13 +296,8 @@ module Occi
       # :nodoc:
       def defaults
         {
-          kind: nil,
-          id: SecureRandom.uuid,
-          location: nil,
-          title: nil,
-          attributes: {},
-          mixins: Set.new,
-          actions: Set.new
+          kind: nil, id: SecureRandom.uuid, location: nil, title: nil,
+          attributes: {}, mixins: Set.new, actions: Set.new
         }
       end
 
@@ -252,22 +310,6 @@ module Occi
 
         self.id = args.fetch(:id) if attributes['occi.core.id']
         self.title = args.fetch(:title) if attributes['occi.core.title']
-      end
-
-      # Returns all base attributes for this instance in the
-      # form of the original hash.
-      #
-      # @return [Hash] hash with base attributes
-      def base_attributes
-        kind.attributes
-      end
-
-      # Collects all available additional attributes for this
-      # instance and returns them as an array.
-      #
-      # @return [Array] array with added attribute hashes
-      def added_attributes
-        mixins.collect(&:attributes)
       end
 
       # Generates default location based on the already configured
