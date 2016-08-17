@@ -61,6 +61,27 @@ module Occi
           expect(subject.applies?(kind_double)).to be true
         end
       end
+
+      describe '#location' do
+        context 'without term and location' do
+          before(:example) do
+            subject.term = nil
+            subject.location = nil
+          end
+
+          it 'fails' do
+            expect { subject.location }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+          end
+        end
+
+        context 'with term and without location' do
+          before(:example) { subject.location = nil }
+
+          it 'returns default' do
+            expect(subject.location).to be_kind_of URI
+          end
+        end
+      end
     end
   end
 end

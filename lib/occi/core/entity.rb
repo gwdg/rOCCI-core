@@ -23,7 +23,8 @@ module Occi
       include Helpers::ArgumentValidator
       include Helpers::InstanceAttributeResetter
 
-      attr_accessor :kind, :location, :attributes, :mixins, :actions
+      attr_accessor :kind, :actions, :attributes, :mixins
+      attr_writer :location
 
       ERRORS = [
         Occi::Core::Errors::AttributeValidationError,

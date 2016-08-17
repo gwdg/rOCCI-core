@@ -17,7 +17,8 @@ module Occi
     class Kind < Category
       include Helpers::Locatable
 
-      attr_accessor :parent, :actions, :location
+      attr_accessor :parent, :actions
+      attr_writer :location
 
       # Checks whether the given `Kind` instance is related
       # to this instance. The given `Kind` instance must be

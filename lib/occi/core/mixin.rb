@@ -18,7 +18,8 @@ module Occi
     class Mixin < Category
       include Helpers::Locatable
 
-      attr_accessor :actions, :depends, :applies, :location
+      attr_accessor :actions, :depends, :applies
+      attr_writer :location
 
       # Checks whether the given mixin is in the dependency
       # chains of this instance. Checking for dependencies
