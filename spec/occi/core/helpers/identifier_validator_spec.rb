@@ -2,7 +2,7 @@ module Occi
   module Core
     module Helpers
       describe IdentifierValidator do
-        subject { Class.new.extend(IdentifierValidator) }
+        subject(:validatable) { Class.new.extend(IdentifierValidator) }
 
         let(:example_term) { 'generic' }
         let(:example_schema) { 'http://schemas.org/schema#' }
@@ -14,41 +14,41 @@ module Occi
 
         describe '::valid_term?' do
           it 'recognizes valid term' do
-            expect(subject.valid_term?(example_term)).to be true
+            expect(validatable.valid_term?(example_term)).to be true
           end
 
           it 'fails on non-URI compliant term' do
-            expect(subject.valid_term?(example_invalid_term)).to be false
+            expect(validatable.valid_term?(example_invalid_term)).to be false
           end
         end
 
         describe '::valid_schema?' do
           it 'recognizes valid schema' do
-            expect(subject.valid_schema?(example_schema)).to be true
+            expect(validatable.valid_schema?(example_schema)).to be true
           end
 
           it 'fails on non-URI compliant schema' do
-            expect(subject.valid_schema?(example_invalid_schema)).to be false
+            expect(validatable.valid_schema?(example_invalid_schema)).to be false
           end
         end
 
         describe '::valid_identifier?' do
           it 'recognizes valid identifier' do
-            expect(subject.valid_identifier?(example_idf)).to be true
+            expect(validatable.valid_identifier?(example_idf)).to be true
           end
 
           it 'fails on non-URI compliant identifier' do
-            expect(subject.valid_identifier?(example_invalid_idf)).to be false
+            expect(validatable.valid_identifier?(example_invalid_idf)).to be false
           end
         end
 
         describe '::valid_term!' do
           it 'recognizes valid term' do
-            expect { subject.valid_term!(example_term) }.not_to raise_error
+            expect { validatable.valid_term!(example_term) }.not_to raise_error
           end
 
           it 'fails on non-URI compliant term' do
-            expect { subject.valid_term!(example_invalid_term) }.to raise_error(
+            expect { validatable.valid_term!(example_invalid_term) }.to raise_error(
               Occi::Core::Errors::CategoryValidationError
             )
           end
@@ -56,11 +56,11 @@ module Occi
 
         describe '::valid_schema!' do
           it 'recognizes valid schema' do
-            expect { subject.valid_schema!(example_schema) }.not_to raise_error
+            expect { validatable.valid_schema!(example_schema) }.not_to raise_error
           end
 
           it 'fails on non-URI compliant schema' do
-            expect { subject.valid_schema!(example_invalid_schema) }.to raise_error(
+            expect { validatable.valid_schema!(example_invalid_schema) }.to raise_error(
               URI::InvalidURIError
             )
           end
@@ -68,11 +68,11 @@ module Occi
 
         describe '::valid_identifier!' do
           it 'recognizes valid identifier' do
-            expect { subject.valid_identifier!(example_idf) }.not_to raise_error
+            expect { validatable.valid_identifier!(example_idf) }.not_to raise_error
           end
 
           it 'fails on non-URI compliant identifier' do
-            expect { subject.valid_identifier!(example_invalid_idf) }.to raise_error(
+            expect { validatable.valid_identifier!(example_invalid_idf) }.to raise_error(
               URI::InvalidURIError
             )
           end

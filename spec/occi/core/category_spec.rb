@@ -1,7 +1,7 @@
 module Occi
   module Core
     describe Category do
-      subject { category }
+      subject(:cat) { category }
 
       let(:example_term) { 'generic' }
       let(:example_schema) { 'http://schemas.org/schema#' }
@@ -30,19 +30,19 @@ module Occi
       end
 
       it 'has logger' do
-        expect(subject).to respond_to(:logger)
-        expect(subject.class).to respond_to(:logger)
+        expect(cat).to respond_to(:logger)
+        expect(cat.class).to respond_to(:logger)
       end
 
       it 'is renderable' do
-        expect(subject).to be_kind_of(Helpers::Renderable)
-        expect(subject).to respond_to(:render)
+        expect(cat).to be_kind_of(Helpers::Renderable)
+        expect(cat).to respond_to(:render)
       end
 
       it 'has attributes value accessor' do
-        expect(subject).to be_kind_of(Helpers::AttributesAccessor)
-        expect(subject).to respond_to(:[])
-        expect(subject).to respond_to(:[]=)
+        expect(cat).to be_kind_of(Helpers::AttributesAccessor)
+        expect(cat).to respond_to(:[])
+        expect(cat).to respond_to(:[]=)
       end
 
       describe '::new' do
@@ -84,7 +84,7 @@ module Occi
 
         CAT_ATTRS.each do |attr|
           it "assigns #{attr}" do
-            expect(subject.send(attr)).to match send("example_#{attr}")
+            expect(cat.send(attr)).to match send("example_#{attr}")
           end
         end
       end
@@ -92,12 +92,12 @@ module Occi
       %w(identifier to_s).each do |mtd|
         describe "##{mtd}" do
           it 'returns category identifier as URI string' do
-            expect(subject.send(mtd)).to be_kind_of String
-            expect { URI.parse(subject.send(mtd)) }.not_to raise_error
+            expect(cat.send(mtd)).to be_kind_of String
+            expect { URI.parse(cat.send(mtd)) }.not_to raise_error
           end
 
           it 'returns a join of schema and term' do
-            expect(subject.send(mtd)).to eq "#{subject.schema}#{subject.term}"
+            expect(cat.send(mtd)).to eq "#{cat.schema}#{cat.term}"
           end
         end
       end

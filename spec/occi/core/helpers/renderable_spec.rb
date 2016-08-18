@@ -2,7 +2,7 @@ module Occi
   module Core
     module Helpers
       describe Renderable do
-        subject { Renderable }
+        subject(:renderable_module) { Renderable }
 
         before(:each) do
           Singleton.__init__(Renderable::RENDERER_FACTORY_CLASS)
@@ -20,7 +20,7 @@ module Occi
 
         let(:renderable_object) do
           object = instance_double('RocciCoreSpec::TestObject')
-          object.extend(subject)
+          object.extend(renderable_module)
         end
 
         describe '#render' do
@@ -63,17 +63,17 @@ module Occi
 
         describe '::included' do
           it 'adds to_dummy method' do
-            subject.included(dummy_receiver_class)
+            renderable_module.included(dummy_receiver_class)
             expect(dummy_receiver_class.instance_methods).to include(:to_dummy)
           end
 
           it 'adds to_dummier_dummy method' do
-            subject.included(dummy_receiver_class)
+            renderable_module.included(dummy_receiver_class)
             expect(dummy_receiver_class.instance_methods).to include(:to_dummier_dummy)
           end
 
           it 'adds to_the_dummiest_dummy method' do
-            subject.included(dummy_receiver_class)
+            renderable_module.included(dummy_receiver_class)
             expect(dummy_receiver_class.instance_methods).to include(:to_the_dummiest_dummy)
           end
 
@@ -84,27 +84,27 @@ module Occi
 
         describe '::extended' do
           it 'raises exception when passed Class' do
-            expect { subject.extended(dummy_receiver_class) }.to raise_error(RuntimeError)
+            expect { renderable_module.extended(dummy_receiver_class) }.to raise_error(RuntimeError)
           end
 
           it 'executes ::included when passed instance' do
-            expect { subject.extended(dummy_receiver_instance) }.not_to raise_error
+            expect { renderable_module.extended(dummy_receiver_instance) }.not_to raise_error
           end
         end
 
         describe '::renderer_factory_class' do
           it 'returns existing class' do
-            expect(subject.renderer_factory_class).to be_kind_of(Class)
+            expect(renderable_module.renderer_factory_class).to be_kind_of(Class)
           end
 
           it 'returns singleton-like class' do
-            expect(subject.renderer_factory_class).to respond_to(:instance)
+            expect(renderable_module.renderer_factory_class).to respond_to(:instance)
           end
         end
 
         describe '::renderer_factory' do
           it 'returns an instance of renderer factory class' do
-            expect(subject.renderer_factory).to be_instance_of(Renderable::RENDERER_FACTORY_CLASS)
+            expect(renderable_module.renderer_factory).to be_instance_of(Renderable::RENDERER_FACTORY_CLASS)
           end
         end
       end

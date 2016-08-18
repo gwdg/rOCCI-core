@@ -1,7 +1,7 @@
 module Occi
   module Core
     describe AttributeDefinition do
-      subject { attribute_definition }
+      subject(:attr_def) { attribute_definition }
 
       let(:example_type) { String }
       let(:example_required) { false }
@@ -30,14 +30,14 @@ module Occi
       end
 
       it 'has logger' do
-        expect(subject).to respond_to(:logger)
-        expect(subject.class).to respond_to(:logger)
+        expect(attr_def).to respond_to(:logger)
+        expect(attr_def.class).to respond_to(:logger)
       end
 
       describe '::new' do
         ATTR_DEF_ATTRS.each do |attr|
           it "assigns #{attr}" do
-            expect(subject.send(attr)).to match send("example_#{attr}")
+            expect(attr_def.send(attr)).to match send("example_#{attr}")
           end
         end
 
@@ -56,129 +56,129 @@ module Occi
 
       describe '#required?' do
         it 'matches required attribute' do
-          expect(subject.required?).to match example_required
+          expect(attr_def.required?).to match example_required
         end
       end
 
       describe '#required!' do
         it 'does not change `true` required attribute' do
-          subject.required = true
-          subject.required!
-          expect(subject.required).to be true
+          attr_def.required = true
+          attr_def.required!
+          expect(attr_def.required).to be true
         end
 
         it 'changes `false` required attribute' do
-          subject.required = false
-          subject.required!
-          expect(subject.required).to be true
+          attr_def.required = false
+          attr_def.required!
+          expect(attr_def.required).to be true
         end
 
         it 'changes `nil` required attribute' do
-          subject.required = nil
-          subject.required!
-          expect(subject.required).to be true
+          attr_def.required = nil
+          attr_def.required!
+          expect(attr_def.required).to be true
         end
       end
 
       describe '#optional?' do
         it 'matches negated required attribute' do
-          expect(subject.optional?).to be !subject.required?
+          expect(attr_def.optional?).to be !attr_def.required?
         end
       end
 
       describe '#optional!' do
         it 'does not change `false` required attribute' do
-          subject.required = false
-          subject.optional!
-          expect(subject.required). to be false
+          attr_def.required = false
+          attr_def.optional!
+          expect(attr_def.required). to be false
         end
 
         it 'changes `true` required attribute' do
-          subject.required = true
-          subject.optional!
-          expect(subject.required).to be false
+          attr_def.required = true
+          attr_def.optional!
+          expect(attr_def.required).to be false
         end
 
         it 'changes `nil` required attribute' do
-          subject.required = nil
-          subject.optional!
-          expect(subject.required).to be false
+          attr_def.required = nil
+          attr_def.optional!
+          expect(attr_def.required).to be false
         end
       end
 
       describe '#mutable?' do
         it 'matches mutable attribute' do
-          expect(subject.mutable?).to match example_mutable
+          expect(attr_def.mutable?).to match example_mutable
         end
       end
 
       describe '#mutable!' do
         it 'does not change `true` mutable attribute' do
-          subject.mutable = true
-          subject.mutable!
-          expect(subject.mutable).to be true
+          attr_def.mutable = true
+          attr_def.mutable!
+          expect(attr_def.mutable).to be true
         end
 
         it 'changes `false` mutable attribute' do
-          subject.mutable = false
-          subject.mutable!
-          expect(subject.mutable).to be true
+          attr_def.mutable = false
+          attr_def.mutable!
+          expect(attr_def.mutable).to be true
         end
 
         it 'changes `nil` mutable attribute' do
-          subject.mutable = nil
-          subject.mutable!
-          expect(subject.mutable).to be true
+          attr_def.mutable = nil
+          attr_def.mutable!
+          expect(attr_def.mutable).to be true
         end
       end
 
       describe '#immutable?' do
         it 'matches negated mutable attribute' do
-          expect(subject.immutable?).to be !subject.mutable?
+          expect(attr_def.immutable?).to be !attr_def.mutable?
         end
       end
 
       describe '#immutable!' do
         it 'does not change `false` mutable attribute' do
-          subject.mutable = false
-          subject.immutable!
-          expect(subject.mutable).to be false
+          attr_def.mutable = false
+          attr_def.immutable!
+          expect(attr_def.mutable).to be false
         end
 
         it 'changes `true` mutable attribute' do
-          subject.mutable = true
-          subject.immutable!
-          expect(subject.mutable).to be false
+          attr_def.mutable = true
+          attr_def.immutable!
+          expect(attr_def.mutable).to be false
         end
 
         it 'changes `nil` mutable attribute' do
-          subject.mutable = nil
-          subject.immutable!
-          expect(subject.mutable).to be false
+          attr_def.mutable = nil
+          attr_def.immutable!
+          expect(attr_def.mutable).to be false
         end
       end
 
       describe '#default?' do
         it 'reports non-`nil` default value as `true`' do
-          subject.default = example_default
-          expect(subject.default?).to be true
+          attr_def.default = example_default
+          expect(attr_def.default?).to be true
         end
 
         it 'reports `nil` default value as `false`' do
-          subject.default = nil
-          expect(subject.default?).to be false
+          attr_def.default = nil
+          expect(attr_def.default?).to be false
         end
       end
 
       describe '#pattern?' do
         it 'reports non-`nil` pattern value as `true`' do
-          subject.pattern = example_pattern
-          expect(subject.pattern?).to be true
+          attr_def.pattern = example_pattern
+          expect(attr_def.pattern?).to be true
         end
 
         it 'reports `nil` pattern value as `false`' do
-          subject.pattern = nil
-          expect(subject.pattern?).to be false
+          attr_def.pattern = nil
+          expect(attr_def.pattern?).to be false
         end
       end
 
@@ -191,51 +191,51 @@ module Occi
 
         describe '#valid?' do
           it 'returns `true` to indicate success' do
-            expect(subject.valid?(example_value1)).to be true
+            expect(attr_def.valid?(example_value1)).to be true
           end
 
           it 'returns `false` to indicate failure on type' do
-            expect(subject.valid?(example_value2)).to be false
+            expect(attr_def.valid?(example_value2)).to be false
           end
 
           it 'returns `false` to indicate failure on pattern' do
-            subject.pattern = example_strict_pattern
-            expect(subject.valid?(example_value3)).to be false
+            attr_def.pattern = example_strict_pattern
+            expect(attr_def.valid?(example_value3)).to be false
           end
 
           it 'returns `false` for empty required attribute' do
-            subject.required = true
-            expect(subject.valid?(example_value_nil)).to be false
+            attr_def.required = true
+            expect(attr_def.valid?(example_value_nil)).to be false
           end
 
           it 'returns `true` to indicate success without pattern' do
-            subject.pattern = nil
-            expect(subject.valid?(example_value3)).to be true
+            attr_def.pattern = nil
+            expect(attr_def.valid?(example_value3)).to be true
           end
         end
 
         describe '#valid!' do
           it 'does not raise error to indicate success' do
-            expect { subject.valid!(example_value1) }.not_to raise_error
+            expect { attr_def.valid!(example_value1) }.not_to raise_error
           end
 
           it 'raises error with message to indicate failure on type' do
-            expect { subject.valid!(example_value2) }.to raise_error(Occi::Core::Errors::AttributeValidationError)
+            expect { attr_def.valid!(example_value2) }.to raise_error(Occi::Core::Errors::AttributeValidationError)
           end
 
           it 'raises error with message to indicate failure on pattern' do
-            subject.pattern = example_strict_pattern
-            expect { subject.valid!(example_value3) }.to raise_error(Occi::Core::Errors::AttributeValidationError)
+            attr_def.pattern = example_strict_pattern
+            expect { attr_def.valid!(example_value3) }.to raise_error(Occi::Core::Errors::AttributeValidationError)
           end
 
           it 'raises error for empty required attribute' do
-            subject.required = true
-            expect { subject.valid!(example_value_nil) }.to raise_error(Occi::Core::Errors::AttributeValidationError)
+            attr_def.required = true
+            expect { attr_def.valid!(example_value_nil) }.to raise_error(Occi::Core::Errors::AttributeValidationError)
           end
 
           it 'does not raise error to indicate success without pattern' do
-            subject.pattern = nil
-            expect { subject.valid!(example_value3) }.not_to raise_error
+            attr_def.pattern = nil
+            expect { attr_def.valid!(example_value3) }.not_to raise_error
           end
         end
       end

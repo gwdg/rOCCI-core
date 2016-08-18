@@ -2,7 +2,7 @@ module Occi
   module Core
     module Helpers
       describe AttributesAccessor do
-        subject { obj_w_attrs }
+        subject(:object_with_attributes) { obj_w_attrs }
 
         let(:example_attribute) { 'org.example.attribute' }
         let(:example_value) { 'text' }
@@ -14,15 +14,15 @@ module Occi
 
         describe '#[]' do
           it 'delegates to attributes' do
-            expect(subject.attributes).to receive(:[]).with(example_attribute)
-            subject[example_attribute]
+            expect(object_with_attributes.attributes).to receive(:[]).with(example_attribute)
+            object_with_attributes[example_attribute]
           end
         end
 
         describe '#[]=' do
           it 'delegates to attributes' do
-            expect(subject.attributes).to receive(:[]=).with(example_attribute, example_value)
-            subject[example_attribute] = example_value
+            expect(object_with_attributes.attributes).to receive(:[]=).with(example_attribute, example_value)
+            object_with_attributes[example_attribute] = example_value
           end
         end
       end

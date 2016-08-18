@@ -2,7 +2,7 @@ module Occi
   module Core
     module Helpers
       describe InstanceAttributesAccessor do
-        subject { obj_w_attrs }
+        subject(:object_with_attributes) { obj_w_attrs }
 
         let(:example_attribute) { 'org.example.attribute' }
         let(:example_value) { 'text' }
@@ -16,38 +16,40 @@ module Occi
 
         describe '#[]' do
           it 'delegates to attribute value' do
-            expect(subject.attributes[example_attribute]).to receive(:value)
-            subject[example_attribute]
+            expect(object_with_attributes.attributes[example_attribute]).to receive(:value)
+            object_with_attributes[example_attribute]
           end
 
           it 'returns `nil` for non-existent attribute' do
-            expect(subject['meeh.meh']).to be nil
+            expect(object_with_attributes['meeh.meh']).to be nil
           end
         end
 
         describe '#[]=' do
           it 'delegates to attribute value assignment' do
-            expect(subject.attributes[example_attribute]).to receive(:value=).with(example_value)
-            subject[example_attribute] = example_value
+            expect(object_with_attributes.attributes[example_attribute]).to receive(:value=).with(example_value)
+            object_with_attributes[example_attribute] = example_value
           end
 
           it 'raises error for non-existent attribute' do
-            expect { subject['meeh.meh'] = example_value }.to raise_error(Occi::Core::Errors::AttributeDefinitionError)
+            expect do
+              object_with_attributes['meeh.meh'] = example_value
+            end.to raise_error(Occi::Core::Errors::AttributeDefinitionError)
           end
         end
 
         describe '#attribute?' do
           it 'returns `true` when attribute is defined and not `nil`' do
-            expect(subject.attribute?(example_attribute)).to be true
+            expect(object_with_attributes.attribute?(example_attribute)).to be true
           end
 
           it 'returns `false` when attribute is not defined' do
-            expect(subject.attribute?('meeh.meh')).to be false
+            expect(object_with_attributes.attribute?('meeh.meh')).to be false
           end
 
           it 'returns `false` when attribute is `nil`' do
-            subject.attributes['test'] = nil
-            expect(subject.attribute?('test')).to be false
+            object_with_attributes.attributes['test'] = nil
+            expect(object_with_attributes.attribute?('test')).to be false
           end
         end
       end

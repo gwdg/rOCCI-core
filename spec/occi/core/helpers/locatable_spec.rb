@@ -2,11 +2,9 @@ module Occi
   module Core
     module Helpers
       describe Locatable do
-        subject { Locatable }
-
         let(:locatable_object) do
           object = instance_double('RocciCoreSpec::TestObject')
-          object.extend(subject)
+          object.extend(Locatable)
         end
         let(:test_location) { URI.parse('/test/') }
 

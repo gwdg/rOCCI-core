@@ -1,7 +1,7 @@
 module Occi
   module Core
     describe ActionInstance do
-      subject { action_instance }
+      subject(:ai) { action_instance }
 
       let(:action) { instance_double('Occi::Core::Action') }
       let(:action_attributes) { { 'method' => instance_double('Occi::Core::AttributeDefinition') } }
@@ -22,20 +22,20 @@ module Occi
         end
 
         it 'has logger' do
-          expect(subject).to respond_to(:logger)
-          expect(subject.class).to respond_to(:logger)
+          expect(ai).to respond_to(:logger)
+          expect(ai.class).to respond_to(:logger)
         end
 
         it 'is renderable' do
-          expect(subject).to be_kind_of(Helpers::Renderable)
-          expect(subject).to respond_to(:render)
+          expect(ai).to be_kind_of(Helpers::Renderable)
+          expect(ai).to respond_to(:render)
         end
 
         it 'has attributes value accessor' do
-          expect(subject).to be_kind_of(Helpers::InstanceAttributesAccessor)
-          expect(subject).to respond_to(:[])
-          expect(subject).to respond_to(:[]=)
-          expect(subject).to respond_to(:attribute?)
+          expect(ai).to be_kind_of(Helpers::InstanceAttributesAccessor)
+          expect(ai).to respond_to(:[])
+          expect(ai).to respond_to(:[]=)
+          expect(ai).to respond_to(:attribute?)
         end
       end
 
@@ -57,19 +57,19 @@ module Occi
 
         it 'returns `true` when action and attributes valid' do
           expect(attributes['method']).to receive(:valid!)
-          expect(subject.valid?).to be true
+          expect(ai.valid?).to be true
         end
 
         it 'returns `false` when attributes missing' do
-          subject.attributes = nil
-          expect(subject.valid?).to be false
+          ai.attributes = nil
+          expect(ai.valid?).to be false
         end
 
         it 'returns `false` when attribute is invalid' do
-          expect(subject.attributes['method']).to receive(:valid!).and_raise(
+          expect(ai.attributes['method']).to receive(:valid!).and_raise(
             Occi::Core::Errors::AttributeValidationError
           )
-          expect(subject.valid?).to be false
+          expect(ai.valid?).to be false
         end
       end
 
@@ -82,20 +82,20 @@ module Occi
         end
 
         it 'does not raise error when action and attributes valid' do
-          expect(subject.attributes['method']).to receive(:valid!)
-          expect { subject.valid! }.not_to raise_error
+          expect(ai.attributes['method']).to receive(:valid!)
+          expect { ai.valid! }.not_to raise_error
         end
 
         it 'raises error when attributes missing' do
-          subject.attributes = nil
-          expect { subject.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
+          ai.attributes = nil
+          expect { ai.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
         end
 
         it 'raises error when attribute is invalid' do
-          expect(subject.attributes['method']).to receive(:valid!).and_raise(
+          expect(ai.attributes['method']).to receive(:valid!).and_raise(
             Occi::Core::Errors::AttributeValidationError
           )
-          expect { subject.valid! }.to raise_error(Occi::Core::Errors::AttributeValidationError)
+          expect { ai.valid! }.to raise_error(Occi::Core::Errors::AttributeValidationError)
         end
       end
 
@@ -109,7 +109,7 @@ module Occi
         end
 
         it 'assigns new action to instance' do
-          expect { subject.action = action }.not_to raise_error
+          expect { ai.action = action }.not_to raise_error
         end
       end
     end

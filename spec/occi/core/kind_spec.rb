@@ -1,7 +1,7 @@
 module Occi
   module Core
     describe Kind do
-      subject { kind }
+      subject(:knd) { kind }
 
       let(:example_term) { 'kind' }
       let(:example_schema) { 'http://schemas.org/schema#' }
@@ -43,51 +43,51 @@ module Occi
 
       describe '#related?' do
         it 'returns `false` without `kind`' do
-          expect(subject.related?(nil)).to be false
+          expect(knd.related?(nil)).to be false
         end
 
         it 'returns `false` for not related' do
-          expect(subject.related?('wat?')).to be false
+          expect(knd.related?('wat?')).to be false
         end
 
         it 'returns `false` for successor kind' do
-          expect(subject.related?(successor_kind)).to be false
+          expect(knd.related?(successor_kind)).to be false
         end
 
         it 'returns `true` for related' do
-          expect(subject.related?(root_kind)).to be true
+          expect(knd.related?(root_kind)).to be true
         end
       end
 
       describe '#directly_related?' do
-        subject { successor_kind }
+        subject(:knd) { successor_kind }
 
         it 'returns `false` without `kind`' do
-          expect(subject.directly_related?(nil)).to be false
+          expect(knd.directly_related?(nil)).to be false
         end
 
         it 'returns `false` for not related' do
-          expect(subject.directly_related?('wat?')).to be false
+          expect(knd.directly_related?('wat?')).to be false
         end
 
         it 'returns `false` for not directly related' do
-          expect(subject.directly_related?(root_kind)).to be false
+          expect(knd.directly_related?(root_kind)).to be false
         end
 
         it 'returns `true` for directly related' do
-          expect(subject.directly_related?(kind)).to be true
+          expect(knd.directly_related?(kind)).to be true
         end
       end
 
       describe '#related' do
-        subject { root_kind.related }
+        subject(:knd) { root_kind.related }
 
         it 'returns enumerable list' do
-          expect(subject).to be_kind_of(Enumerable)
+          expect(knd).to be_kind_of(Enumerable)
         end
 
         it 'returns empty list for root' do
-          expect(subject).to be_empty
+          expect(knd).to be_empty
         end
 
         it 'returns non-empty list for non-root kind' do
@@ -100,14 +100,14 @@ module Occi
       end
 
       describe '#directly_related' do
-        subject { root_kind.directly_related }
+        subject(:knd) { root_kind.directly_related }
 
         it 'returns enumerable list' do
-          expect(subject).to be_kind_of(Enumerable)
+          expect(knd).to be_kind_of(Enumerable)
         end
 
         it 'returns empty list for root' do
-          expect(subject).to be_empty
+          expect(knd).to be_empty
         end
 
         it 'returns single-element list for single-predecessor kind' do
@@ -134,20 +134,20 @@ module Occi
       describe '#location' do
         context 'without term and location' do
           before(:example) do
-            subject.term = nil
-            subject.location = nil
+            knd.term = nil
+            knd.location = nil
           end
 
           it 'fails' do
-            expect { subject.location }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+            expect { knd.location }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
           end
         end
 
         context 'with term and without location' do
-          before(:example) { subject.location = nil }
+          before(:example) { knd.location = nil }
 
           it 'returns default' do
-            expect(subject.location).to be_kind_of URI
+            expect(knd.location).to be_kind_of URI
           end
         end
       end

@@ -1,8 +1,6 @@
 module Occi
   module Core
     describe Action do
-      subject { Action }
-
       let(:example_term) { 'action' }
       let(:example_schema) { 'http://schemas.org/schema#' }
       let(:example_title) { 'Generic action' }
@@ -10,7 +8,7 @@ module Occi
 
       it 'does not do anything special' do
         expect do
-          subject.new(
+          Action.new(
             schema: example_schema, term: example_term, title: example_title, attributes: example_attributes
           )
         end.not_to raise_error

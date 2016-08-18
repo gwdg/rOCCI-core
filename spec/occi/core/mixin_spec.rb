@@ -1,7 +1,7 @@
 module Occi
   module Core
     describe Mixin do
-      subject { mixin }
+      subject(:mxn) { mixin }
 
       let(:example_term) { 'mixin' }
       let(:example_schema) { 'http://schemas.org/schema#' }
@@ -36,7 +36,7 @@ module Occi
 
       describe '#depends?' do
         it 'returns `false` without passing a mixin' do
-          expect(subject.depends?(nil)).to be false
+          expect(mxn.depends?(nil)).to be false
         end
 
         it 'returns `false` without dependency' do
@@ -44,13 +44,13 @@ module Occi
         end
 
         it 'returns `true` with dependency' do
-          expect(subject.depends?(second_mixin)).to be true
+          expect(mxn.depends?(second_mixin)).to be true
         end
       end
 
       describe '#applies?' do
         it 'returns `false` without passing a kind' do
-          expect(subject.applies?(nil)).to be false
+          expect(mxn.applies?(nil)).to be false
         end
 
         it 'returns `false` without applicability' do
@@ -58,27 +58,27 @@ module Occi
         end
 
         it 'returns `true` with applicability' do
-          expect(subject.applies?(kind_double)).to be true
+          expect(mxn.applies?(kind_double)).to be true
         end
       end
 
       describe '#location' do
         context 'without term and location' do
           before(:example) do
-            subject.term = nil
-            subject.location = nil
+            mxn.term = nil
+            mxn.location = nil
           end
 
           it 'fails' do
-            expect { subject.location }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+            expect { mxn.location }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
           end
         end
 
         context 'with term and without location' do
-          before(:example) { subject.location = nil }
+          before(:example) { mxn.location = nil }
 
           it 'returns default' do
-            expect(subject.location).to be_kind_of URI
+            expect(mxn.location).to be_kind_of URI
           end
         end
       end

@@ -1,7 +1,7 @@
 module Occi
   module Core
     describe Attribute do
-      subject { attribute }
+      subject(:attrib) { attribute }
 
       let(:attribute) do
         Attribute.new('text', instance_double('Occi::Core::AttributeDefinition'))
@@ -28,14 +28,14 @@ module Occi
       end
 
       it 'has logger' do
-        expect(subject).to respond_to(:logger)
-        expect(subject.class).to respond_to(:logger)
+        expect(attrib).to respond_to(:logger)
+        expect(attrib.class).to respond_to(:logger)
       end
 
       describe '#valid?' do
         it 'returns `true` when valid' do
-          expect(subject.attribute_definition).to receive(:valid!).with(subject.value)
-          expect { subject.valid? }.not_to raise_error
+          expect(attrib.attribute_definition).to receive(:valid!).with(attrib.value)
+          expect { attrib.valid? }.not_to raise_error
         end
 
         it 'returns `false` when definition is missing' do
@@ -44,19 +44,19 @@ module Occi
         end
 
         it 'returns `false` when value does not match definition' do
-          expect(subject.attribute_definition).to receive(:valid!).with(
-            subject.value
+          expect(attrib.attribute_definition).to receive(:valid!).with(
+            attrib.value
           ).and_raise(Occi::Core::Errors::AttributeValidationError)
-          expect(subject.valid?).to be false
+          expect(attrib.valid?).to be false
         end
       end
 
       describe '#valid!' do
         it 'raises error when value does not match definition' do
-          expect(subject.attribute_definition).to receive(:valid!).with(
-            subject.value
+          expect(attrib.attribute_definition).to receive(:valid!).with(
+            attrib.value
           ).and_raise(Occi::Core::Errors::AttributeValidationError)
-          expect { subject.valid! }.to raise_error(Occi::Core::Errors::AttributeValidationError)
+          expect { attrib.valid! }.to raise_error(Occi::Core::Errors::AttributeValidationError)
         end
 
         it 'raises error when definition is missing' do
@@ -64,14 +64,14 @@ module Occi
         end
 
         it 'does not raise error when valid' do
-          expect(subject.attribute_definition).to receive(:valid!).with(subject.value)
-          expect { subject.valid! }.not_to raise_error
+          expect(attrib.attribute_definition).to receive(:valid!).with(attrib.value)
+          expect { attrib.valid! }.not_to raise_error
         end
       end
 
       describe '#definition?' do
         it 'returns `true` when definition is present' do
-          expect(subject.definition?).to be true
+          expect(attrib.definition?).to be true
         end
 
         it 'returns `false` when definition is missing' do
@@ -81,7 +81,7 @@ module Occi
 
       describe '#value?' do
         it 'returns `true` when value is present' do
-          expect(subject.value?).to be true
+          expect(attrib.value?).to be true
         end
 
         it 'returns `false` when value is missing' do
@@ -91,7 +91,7 @@ module Occi
 
       describe '#full?' do
         it 'returns `true` when definition and value are present' do
-          expect(subject.full?).to be true
+          expect(attrib.full?).to be true
         end
 
         it 'returns `false` when definition is missing' do
@@ -109,7 +109,7 @@ module Occi
 
       describe '#empty?' do
         it 'returns `false` when definition and value are present' do
-          expect(subject.empty?).to be false
+          expect(attrib.empty?).to be false
         end
 
         it 'returns `false` when just definition is missing' do
@@ -134,10 +134,10 @@ module Occi
         end
 
         it 'does not set default value when not `nil`' do
-          expect(subject.value).to eq 'text'
-          expect(subject.attribute_definition).not_to receive(:default)
-          expect { subject.default }.not_to raise_error
-          expect(subject.value).to eq 'text'
+          expect(attrib.value).to eq 'text'
+          expect(attrib.attribute_definition).not_to receive(:default)
+          expect { attrib.default }.not_to raise_error
+          expect(attrib.value).to eq 'text'
         end
 
         it 'raises error when definition is missing and value is `nil`' do
@@ -154,8 +154,8 @@ module Occi
         end
 
         it 'returns `nil` when nothing changed' do
-          expect(subject.attribute_definition).not_to receive(:default)
-          expect(subject.default).to be nil
+          expect(attrib.attribute_definition).not_to receive(:default)
+          expect(attrib.default).to be nil
         end
       end
 
@@ -168,10 +168,10 @@ module Occi
         end
 
         it 'sets default value when value not `nil`' do
-          expect(subject.value).to eq 'text'
-          expect(subject.attribute_definition).to receive(:default).and_return('deftext')
-          expect { subject.default! }.not_to raise_error
-          expect(subject.value).to eq 'deftext'
+          expect(attrib.value).to eq 'text'
+          expect(attrib.attribute_definition).to receive(:default).and_return('deftext')
+          expect { attrib.default! }.not_to raise_error
+          expect(attrib.value).to eq 'deftext'
         end
 
         it 'raises error when definition is missing' do
@@ -186,9 +186,9 @@ module Occi
 
       describe '#reset!' do
         it 'changes the attribute value to `nil`' do
-          expect(subject.value).not_to be nil
-          expect { subject.reset! }.not_to raise_error
-          expect(subject.value).to be nil
+          expect(attrib.value).not_to be nil
+          expect { attrib.reset! }.not_to raise_error
+          expect(attrib.value).to be nil
         end
       end
     end
