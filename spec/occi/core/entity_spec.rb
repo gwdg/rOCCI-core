@@ -136,12 +136,12 @@ module Occi
             ent.mixins = mixins
           end
 
-          it 'replaces mixin' # do
-          #   expect(ent.mixins).to include(mixin)
-          #   expect { ent.replace_mixin(mixin, mixin2) }
-          #   expect(ent.mixins).to include(mixin2)
-          #   expect(ent.mixins).not_to include(mixin)
-          # end
+          it 'replaces mixin' do
+            expect(ent.mixins).to include(mixin)
+            expect { ent.replace_mixin(mixin, mixin2) }.not_to raise_error
+            expect(ent.mixins).to include(mixin2)
+            expect(ent.mixins).not_to include(mixin)
+          end
         end
 
         context 'when mixin does not exist' do
