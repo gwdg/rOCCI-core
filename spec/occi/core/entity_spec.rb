@@ -7,6 +7,7 @@ module Occi
       let(:attribute_id) { 'occi.core.id' }
 
       let(:action) { instance_double('Occi::Core::Action') }
+      let(:action2) { instance_double('Occi::Core::Action') }
       let(:actions) { Set.new([action]) }
 
       let(:mixin) { instance_double('Occi::Core::Mixin') }
@@ -75,7 +76,63 @@ module Occi
       describe '#mixins='
 
       describe '#<<'
-      describe '#remove'
+
+      describe '#remove' do
+        before(:example) do
+        end
+
+        context 'with action' do
+          before(:example) do
+            ent.actions = actions
+          end
+
+          context 'assigned to entity' do
+            it 'removes given action' do
+              expect(ent.actions).not_to be_empty
+              ent.remove action
+              expect(ent.actions).to be_empty
+            end
+          end
+
+          context 'not assigned to entity' do
+            it 'silently ignores' do
+              expect(ent.actions).not_to be_empty
+              ent.remove action2
+              expect(ent.actions).to include(action)
+              expect(ent.actions).not_to include(action2)
+            end
+          end
+        end
+
+        context 'with mixin' do
+          before(:example) do
+            ent.mixins = mixins
+          end
+
+          context 'assigned to entity' do
+            it 'removes given mixin' do
+              expect(ent.mixins).not_to be_empty
+              ent.remove mixin
+              expect(ent.mixins).to be_empty
+            end
+          end
+
+          context 'not assigned to entity' do
+            it 'silently ignores' do
+              expect(ent.mixins).not_to be_empty
+              ent.remove mixin2
+              expect(ent.mixins).to include(mixin)
+              expect(ent.mixins).not_to include(mixin2)
+            end
+          end
+        end
+
+        context 'with unknown object' do
+          it 'raises error' do
+            expect { ent.remove(Object.new) }.to raise_error(ArgumentError)
+          end
+        end
+      end
 
       describe '#add_mixin' do
         context 'when mixin is new' do
