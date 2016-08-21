@@ -68,18 +68,111 @@ module Occi
 
       describe '::new'
 
-      describe '#id'
-      describe '#id='
-      describe '#title'
-      describe '#title='
+      describe '#id' do
+        it 'redirects to `occi.core.id`' do
+          expect(ent).to receive(:[]).with('occi.core.id')
+          expect { ent.id }.not_to raise_error
+        end
+      end
+
+      describe '#id=' do
+        it 'redirects to `occi.core.id`' do
+          expect(ent).to receive(:[]=).with('occi.core.id', 'adasda')
+          expect { ent.id = 'adasda' }.not_to raise_error
+        end
+      end
+
+      describe '#title' do
+        it 'redirects to `occi.core.title`' do
+          expect(ent).to receive(:[]).with('occi.core.title')
+          expect { ent.title }.not_to raise_error
+        end
+      end
+
+      describe '#title=' do
+        it 'redirects to `occi.core.title`' do
+          expect(ent).to receive(:[]=).with('occi.core.title', 'asdasd')
+          expect { ent.title = 'asdasd' }.not_to raise_error
+        end
+      end
+
       describe '#kind='
       describe '#mixins='
 
-      describe '#<<'
+      describe '#<<' do
+        let(:action) { Occi::Core::Action.new(term: 'action', schema: 'http://my.test.schema/test#') }
+        let(:action2) { Occi::Core::Action.new(term: 'action2', schema: 'http://my.test.schema/test#') }
+        let(:actions) { Set.new([action]) }
+
+        let(:mixin) { Occi::Core::Mixin.new(term: 'mixin', schema: 'http://my.test.schema/test#') }
+        let(:mixin2) { Occi::Core::Mixin.new(term: 'mixin2', schema: 'http://my.test.schema/test#') }
+        let(:mixins) { Set.new([mixin]) }
+
+        context 'with action' do
+          before(:example) do
+            ent.actions = actions
+          end
+
+          context 'assigned to entity' do
+            it 'silently ignores' do
+              expect(ent.actions.count).to eq 1
+              expect(ent.actions).to include(action)
+              ent << action
+              expect(ent.actions.count).to eq 1
+              expect(ent.actions).to include(action)
+            end
+          end
+
+          context 'not assigned to entity' do
+            it 'adds action to entity' do
+              expect(ent.actions).not_to be_empty
+              ent << action2
+              expect(ent.actions).to include(action)
+              expect(ent.actions).to include(action2)
+            end
+          end
+        end
+
+        context 'with mixin' do
+          before(:example) do
+            ent.mixins = mixins
+          end
+
+          context 'assigned to entity' do
+            it 'silently ignores' do
+              expect(ent.mixins.count).to eq 1
+              expect(ent.mixins).to include(mixin)
+              ent << mixin
+              expect(ent.mixins.count).to eq 1
+              expect(ent.mixins).to include(mixin)
+            end
+          end
+
+          context 'not assigned to entity' do
+            it 'adds mixin to entity' do
+              expect(ent.mixins).not_to be_empty
+              ent << mixin2
+              expect(ent.mixins).to include(mixin)
+              expect(ent.mixins).to include(mixin2)
+            end
+          end
+        end
+
+        context 'with unknown object' do
+          it 'raises error' do
+            expect { ent << Object.new }.to raise_error(ArgumentError)
+          end
+        end
+      end
 
       describe '#remove' do
-        before(:example) do
-        end
+        let(:action) { Occi::Core::Action.new(term: 'action', schema: 'http://my.test.schema/test#') }
+        let(:action2) { Occi::Core::Action.new(term: 'action2', schema: 'http://my.test.schema/test#') }
+        let(:actions) { Set.new([action]) }
+
+        let(:mixin) { Occi::Core::Mixin.new(term: 'mixin', schema: 'http://my.test.schema/test#') }
+        let(:mixin2) { Occi::Core::Mixin.new(term: 'mixin2', schema: 'http://my.test.schema/test#') }
+        let(:mixins) { Set.new([mixin]) }
 
         context 'with action' do
           before(:example) do
