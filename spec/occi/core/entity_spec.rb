@@ -66,7 +66,19 @@ module Occi
         expect(ent).to respond_to(:render)
       end
 
-      describe '::new'
+      describe '::new' do
+        context 'without required arguments' do
+          it 'raises error on missing `kind`' do
+            expect { Entity.new }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+          end
+        end
+
+        context 'with required arguments' do
+          it 'constructs instance' do
+            expect { Entity.new(kind: kind) }.not_to raise_error
+          end
+        end
+      end
 
       describe '#id' do
         it 'redirects to `occi.core.id`' do
@@ -96,8 +108,56 @@ module Occi
         end
       end
 
-      describe '#kind='
-      describe '#mixins='
+      describe '#kind=' do
+        context 'without kind' do
+          it 'raises error' do
+            expect { ent.kind = nil }.to raise_error(Occi::Core::Errors::InstanceValidationError)
+          end
+        end
+
+        context 'with kind' do
+          let(:new_kind) { instance_double('Occi::Core::Kind') }
+
+          before(:example) do
+            expect(ent).to receive(:reset_attributes!)
+          end
+
+          it 'sets kind' do
+            expect { ent.kind = new_kind }.not_to raise_error
+            expect(ent.kind).to eq new_kind
+          end
+
+          it 'triggers attribute reset' do
+            expect { ent.kind = new_kind }.not_to raise_error
+          end
+        end
+      end
+
+      describe '#mixins=' do
+        context 'without mixins' do
+          it 'raises error' do
+            expect { ent.mixins = nil }.to raise_error(Occi::Core::Errors::InstanceValidationError)
+          end
+        end
+
+        context 'with mixins' do
+          let(:new_mixins) { Set.new }
+
+          before(:example) do
+            expect(ent).to receive(:reset_added_attributes!)
+            expect(ent).to receive(:remove_undef_attributes)
+          end
+
+          it 'sets mixins' do
+            expect { ent.mixins = new_mixins }.not_to raise_error
+            expect(ent.mixins).to eq new_mixins
+          end
+
+          it 'triggers attribute reset' do
+            expect { ent.mixins = new_mixins }.not_to raise_error
+          end
+        end
+      end
 
       describe '#<<' do
         let(:action) { Occi::Core::Action.new(term: 'action', schema: 'http://my.test.schema/test#') }
