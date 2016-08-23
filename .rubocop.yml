@@ -28,3 +28,7 @@ Style/Documentation:
 Style/StructInheritance:
   Exclude:
   - 'lib/occi/core/attribute.rb'
+
+Style/NilComparison:
+  Exclude:
+  - 'spec/occi/core/category_spec.rb'

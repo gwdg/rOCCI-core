@@ -62,6 +62,22 @@ module Occi
         identifier
       end
 
+      # :nodoc:
+      def ==(other)
+        return false unless other && other.respond_to?(:identifier)
+        identifier == other.identifier
+      end
+
+      # :nodoc:
+      def eql?(other)
+        self == other
+      end
+
+      # :nodoc:
+      def hash
+        identifier.hash
+      end
+
       protected
 
       # :nodoc:
