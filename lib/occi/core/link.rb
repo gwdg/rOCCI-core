@@ -37,12 +37,8 @@ module Occi
       protected
 
       # :nodoc:
-      def sufficient_args!(args)
-        super
-        [:source, :target].each do |arg|
-          raise Occi::Core::Errors::MandatoryArgumentError,
-                "#{arg} is a mandatory argument for #{self.class}" if args[arg].nil?
-        end
+      def defaults
+        super.merge(source: nil, target: nil)
       end
 
       # :nodoc:
