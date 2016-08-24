@@ -23,13 +23,51 @@ module Occi
       def links=(links)
         raise Occi::Core::Errors::InstanceValidationError,
               'Missing valid links' unless links
-        @links = Set.new(links.collect { |link| link.source = self })
+        @links = links.map! { |link| link.source = self }
 
         links
       end
 
-      def link_to(other)
-        # TODO: implement after Occi::Core::Link
+      # :nodoc:
+      def <<(object)
+        case object
+        when Occi::Core::Link
+          add_link(object)
+          return self
+        end
+
+        super
+      end
+
+      # :nodoc:
+      def remove(object)
+        case object
+        when Occi::Core::Link
+          remove_link(object)
+          return self
+        end
+
+        super
+      end
+
+      # Adds the given link to this instance.
+      #
+      # @param link [Occi::Core::Link] link to be added
+      def add_link(link)
+        raise Occi::Core::Errors::MandatoryArgumentError,
+              'Cannot add a non-existent link' unless link
+        link.source = self
+        links << link
+      end
+
+      # Removes the given link from this instance.
+      #
+      # @param link [Occi::Core::Link] link to be removed
+      def remove_link(link)
+        raise Occi::Core::Errors::MandatoryArgumentError,
+              'Cannot remove a non-existent link' unless link
+        link.source = nil
+        links.delete link
       end
 
       protected
