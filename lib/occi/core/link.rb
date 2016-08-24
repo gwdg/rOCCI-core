@@ -31,7 +31,7 @@ module Occi
       # @return [Occi::Core::Kind] type of the target
       # @return [NilClass] target outside of the domain
       def rel
-        target.is_a?(Occi::Core::Resource) ? target.kind : nil
+        target.respond_to?(:kind) ? target.kind : nil
       end
 
       protected

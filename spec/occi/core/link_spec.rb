@@ -16,6 +16,8 @@ module Occi
         }
       end
 
+      let(:attribute_instance) { instance_double('Occi::Core::Attribute') }
+
       let(:kind) { instance_double('Occi::Core::Kind') }
 
       let(:link) { Link.new(kind: kind, title: 'My Link') }
@@ -50,11 +52,54 @@ module Occi
         expect(lnk).to respond_to(:render)
       end
 
-      describe '#source'
-      describe '#source='
-      describe '#target'
-      describe '#target='
-      describe '#rel'
+      describe '#source=' do
+        it 'redirects to `occi.core.source`' do
+          expect(lnk).to receive(:[]=).with('occi.core.source', attribute_instance)
+          expect { lnk.source = attribute_instance }.not_to raise_error
+        end
+      end
+
+      describe '#source' do
+        it 'redirects to `occi.core.source`' do
+          expect(lnk).to receive(:[]).with('occi.core.source')
+          expect { lnk.source }.not_to raise_error
+        end
+      end
+
+      describe '#target=' do
+        it 'redirects to `occi.core.target`' do
+          expect(lnk).to receive(:[]=).with('occi.core.target', attribute_instance)
+          expect { lnk.target = attribute_instance }.not_to raise_error
+        end
+      end
+
+      describe '#target' do
+        it 'redirects to `occi.core.target`' do
+          expect(lnk).to receive(:[]).with('occi.core.target')
+          expect { lnk.target }.not_to raise_error
+        end
+      end
+
+      describe '#rel' do
+        context 'without target' do
+          it 'returns `nil`' do
+            expect(lnk.rel).to be nil
+          end
+        end
+
+        context 'with target' do
+          let(:resource) { instance_double('Occi::Core::Resource') }
+
+          before(:example) do
+            lnk.target = resource
+          end
+
+          it 'returns target `kind`' do
+            expect(lnk.target).to receive(:kind).and_return(kind)
+            expect(lnk.rel).to be kind
+          end
+        end
+      end
     end
   end
 end
