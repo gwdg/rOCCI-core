@@ -74,13 +74,7 @@ module Occi
 
       # :nodoc:
       def defaults
-        category_defaults = super
-
-        category_defaults[:parent] = nil
-        category_defaults[:actions] = []
-        category_defaults[:location] = nil
-
-        category_defaults
+        super.merge(parent: nil, actions: [], location: nil)
       end
 
       # :nodoc:
@@ -94,6 +88,7 @@ module Occi
 
       # :nodoc:
       def post_initialize(args)
+        super
         @parent = args.fetch(:parent)
         @actions = args.fetch(:actions)
         @location = args.fetch(:location)

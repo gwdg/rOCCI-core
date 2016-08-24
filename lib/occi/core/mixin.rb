@@ -51,14 +51,7 @@ module Occi
 
       # :nodoc:
       def defaults
-        category_defaults = super
-
-        category_defaults[:actions] = []
-        category_defaults[:depends] = []
-        category_defaults[:applies] = []
-        category_defaults[:location] = nil
-
-        category_defaults
+        super.merge(actions: [], depends: [], applies: [], location: nil)
       end
 
       # :nodoc:
@@ -72,6 +65,7 @@ module Occi
 
       # :nodoc:
       def post_initialize(args)
+        super
         @actions = args.fetch(:actions)
         @depends = args.fetch(:depends)
         @applies = args.fetch(:applies)
