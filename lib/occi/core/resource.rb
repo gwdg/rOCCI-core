@@ -23,7 +23,8 @@ module Occi
       def links=(links)
         raise Occi::Core::Errors::InstanceValidationError,
               'Missing valid links' unless links
-        @links = links.map! { |link| link.source = self }
+        links.each { |link| link.source = self }
+        @links = links
 
         links
       end
