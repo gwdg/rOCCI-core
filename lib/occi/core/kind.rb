@@ -10,7 +10,7 @@ module Occi
     #            title: 'Compute'
     #
     # @attr parent [Kind] previous `Kind` in the OCCI kind hierarchy
-    # @attr actions [Array] list of `Action` instances applicable to this `Kind`
+    # @attr actions [Set] list of `Action` instances applicable to this `Kind`
     # @attr location [URI] protocol agnostic location of this `Kind` instance
     #
     # @author Boris Parak <parak@cesnet.cz>
@@ -74,7 +74,7 @@ module Occi
 
       # :nodoc:
       def defaults
-        super.merge(parent: nil, actions: [], location: nil)
+        super.merge(parent: nil, actions: Set.new, location: nil)
       end
 
       # :nodoc:

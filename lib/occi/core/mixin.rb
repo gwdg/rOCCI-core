@@ -9,9 +9,9 @@ module Occi
     # (see `#applies`). Some `Mixin` instances have special meaning
     # defined in OCCI Standard documents.
     #
-    # @attr actions [Array] list of `Action` instances attached to this mixin instance
-    # @attr depends [Array] list of `Mixin` instances on which this mixin depends
-    # @attr applies [Array] list of `Kind` instances to which this mixin can be applied
+    # @attr actions [Set] list of `Action` instances attached to this mixin instance
+    # @attr depends [Set] list of `Mixin` instances on which this mixin depends
+    # @attr applies [Set] list of `Kind` instances to which this mixin can be applied
     # @attr location [URI] protocol agnostic location of this mixin instance
     #
     # @author Boris Parak <parak@cesnet.cz>
@@ -51,7 +51,7 @@ module Occi
 
       # :nodoc:
       def defaults
-        super.merge(actions: [], depends: [], applies: [], location: nil)
+        super.merge(actions: Set.new, depends: Set.new, applies: Set.new, location: nil)
       end
 
       # :nodoc:
