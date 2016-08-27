@@ -48,6 +48,8 @@ module Occi
 
         action
       end
+      alias kind action
+      alias kind= action=
 
       # Checks whether this action instance is valid. Validity
       # is determined by the validity of the included action
