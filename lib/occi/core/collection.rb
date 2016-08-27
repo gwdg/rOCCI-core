@@ -53,34 +53,36 @@ module Occi
       end
 
       def find_by_location(location)
-        raise ArgumentError, 'Location is a mandatory argument' if location.blank?
-        Set.new(all.select { |elm| elm.respond_to?(:location) }.collect { |elm| elm.location == location })
+        filtered_set(
+          all.select { |elm| elm.respond_to?(:location) },
+          key: 'location', value: location
+        )
       end
 
       def find_by_kind(kind)
-        raise ArgumentError, 'Kind is a mandatory argument' unless kind
         raise ArgumentError, 'Kind must be an Occi::Core::Kind instance' unless kind.is_a?(Occi::Core::Kind)
-        Set.new(entities.collect { |elm| elm.kind == kind })
+        filtered_set(entities, key: 'kind', value: kind)
+      end
+
+      def find_by_action(action)
+        raise ArgumentError, 'Action must be an Occi::Core::Action instance' unless action.is_a?(Occi::Core::Action)
+        filtered_set(action_instances, key: 'action', value: action)
       end
 
       def find_by_id(id)
-        raise ArgumentError, 'ID is a mandatory argument' if id.blank?
-        Set.new(entities.collect { |elm| elm.id == id })
+        filtered_set(entities, key: 'id', value: id)
       end
 
       def find_by_identifier(identifier)
-        raise ArgumentError, 'Identifier is a mandatory argument' if identifier.blank?
-        Set.new(categories.collect { |elm| elm.identifier == identifier })
+        filtered_set(categories, key: 'identifier', value: identifier)
       end
 
       def find_by_term(term)
-        raise ArgumentError, 'Term is a mandatory argument' if term.blank?
-        Set.new(categories.collect { |elm| elm.term == term })
+        filtered_set(categories, key: 'term', value: term)
       end
 
       def find_by_schema(schema)
-        raise ArgumentError, 'Schema is a mandatory argument' if schema.blank?
-        Set.new(categories.collect { |elm| elm.schema == schema })
+        filtered_set(categories, key: 'schema', value: schema)
       end
 
       def <<(object)
@@ -115,11 +117,12 @@ module Occi
       end
 
       def valid?
-        all.collect(&:valid?).reduce(true, :&)
+        entities.collect(&:valid?).reduce(true, :&) && action_instances.collect(&:valid?).reduce(true, :&)
       end
 
       def valid!
-        all.each(&:valid!)
+        entities.each(&:valid!)
+        action_instances.each(&:valid!)
       end
 
       protected
@@ -147,8 +150,13 @@ module Occi
 
       private
 
-      def typed_set(source, filter)
-        Set.new(source.collect { |elm| elm.is_a?(filter) })
+      def typed_set(source, type)
+        Set.new(source.collect { |elm| elm.is_a?(type) })
+      end
+
+      def filtered_set(source, filter)
+        raise ArgumentError, 'Filtering key is a mandatory argument' if filter[:key].blank?
+        Set.new(source.collect { |elm| elm.send(filter[:key]) == filter[:value] })
       end
     end
   end
