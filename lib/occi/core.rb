@@ -46,6 +46,8 @@ module Occi
     autoload :Entity, 'occi/core/entity'
     autoload :Link, 'occi/core/link'
     autoload :Resource, 'occi/core/resource'
+
+    autoload :Collection, 'occi/core/collection'
   end
 end
 
