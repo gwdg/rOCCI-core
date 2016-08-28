@@ -72,7 +72,9 @@ module Occi
         links.delete link
       end
 
+      # See `#valid!` on `Occi::Core::Entity`.
       def valid!
+        # TODO: validate included links
         raise Occi::Core::Errors::InstanceValidationError,
               'Missing valid links' unless links
         super

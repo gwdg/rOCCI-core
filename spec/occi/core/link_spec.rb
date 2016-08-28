@@ -24,6 +24,7 @@ module Occi
 
       before(:example) do
         allow(kind).to receive(:attributes).and_return(attributes)
+        allow(kind).to receive(:location).and_return(URI.parse('/kind/'))
         attributes.keys.each { |attrib| allow(attributes[attrib]).to receive(:default) }
       end
 
@@ -97,6 +98,31 @@ module Occi
           it 'returns target `kind`' do
             expect(lnk.target).to receive(:kind).and_return(kind)
             expect(lnk.rel).to be kind
+          end
+        end
+      end
+
+      describe '#valid!' do
+        context 'with missing required attributes' do
+          before(:example) do
+            lnk.target = nil
+            lnk.source = nil
+          end
+
+          it 'raises error' do
+            expect { lnk.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
+          end
+        end
+
+        context 'with all required attributes' do
+          before(:example) do
+            lnk.target = attributes['occi.core.target']
+            lnk.source = attributes['occi.core.source']
+            attributes.values.each { |v| expect(v).to receive(:valid!) }
+          end
+
+          it 'passes without error' do
+            expect { lnk.valid! }.not_to raise_error
           end
         end
       end
