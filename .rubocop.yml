@@ -13,6 +13,9 @@ Metrics/ModuleLength:
   - 'spec/**/*'
   - 'test/**/*'
 
+Metrics/MethodLength:
+  Max: 12
+
 Metrics/LineLength:
   Max: 120
 
