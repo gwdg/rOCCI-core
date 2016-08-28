@@ -34,6 +34,16 @@ module Occi
         target.respond_to?(:kind) ? target.kind : nil
       end
 
+      # See `#valid!` on `Occi::Core::Entity`.
+      def valid!
+        [:source, :target].each do |attr|
+          raise Occi::Core::Errors::InstanceValidationError,
+                "Missing valid #{attr}" unless send(attr)
+        end
+
+        super
+      end
+
       protected
 
       # :nodoc:
@@ -44,8 +54,8 @@ module Occi
       # :nodoc:
       def post_initialize(args)
         super
-        self.source = args.fetch(:source)
-        self.target = args.fetch(:target)
+        self.source = args.fetch(:source) if attributes['occi.core.source']
+        self.target = args.fetch(:target) if attributes['occi.core.target']
       end
     end
   end

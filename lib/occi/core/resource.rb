@@ -4,6 +4,7 @@ module Occi
     # class can be used directly to create resource instances.
     #
     # @attr links [Set] set of links associated with this resource instance
+    # @attr summary [String] simple human-readable description of this resource instance
     #
     # @author Boris Parak <parak@cesnet.cz>
     class Resource < Entity
@@ -71,11 +72,17 @@ module Occi
         links.delete link
       end
 
+      def valid!
+        raise Occi::Core::Errors::InstanceValidationError,
+              'Missing valid links' unless links
+        super
+      end
+
       protected
 
       # :nodoc:
       def defaults
-        super.merge(links: Set.new)
+        super.merge(links: Set.new, summary: nil)
       end
 
       # :nodoc:
@@ -89,6 +96,7 @@ module Occi
       def post_initialize(args)
         super
         self.links = args.fetch(:links)
+        self.summary = args.fetch(:summary) if attributes['occi.core.summary']
       end
     end
   end
