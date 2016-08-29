@@ -33,6 +33,15 @@ module Occi
         reset_attributes
       end
 
+      # Short-hand for accessing the identifier of assigned `Action`
+      # instance.
+      #
+      # @return [String] identifier of the included `Action` instance
+      # @return [NilClass] if no action is present
+      def action_identifier
+        action ? action.identifier : nil
+      end
+
       # Assigns new action instance to this action instance. This
       # method will trigger a complete reset on all previously
       # set attributes, for the sake of consistency.

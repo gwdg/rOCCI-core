@@ -47,6 +47,17 @@ module Occi
         end
       end
 
+      describe '#action_identifier' do
+        before(:example) do
+          allow(action).to receive(:attributes).and_return({})
+        end
+
+        it 'returns action identifier' do
+          expect(action).to receive(:identifier).and_return('http://test.org/root#root')
+          expect(ai.action_identifier).to eq 'http://test.org/root#root'
+        end
+      end
+
       describe '#valid?' do
         before(:example) do
           allow(action).to receive(:attributes).and_return(action_attributes)

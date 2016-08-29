@@ -108,6 +108,12 @@ module Occi
         end
       end
 
+      describe '#kind_identifier' do
+        it 'returns kind identifier' do
+          expect(ent.kind_identifier).to eq 'http://test.org/root#root'
+        end
+      end
+
       describe '#kind=' do
         context 'without kind' do
           it 'raises error' do

@@ -82,6 +82,15 @@ module Occi
         self['occi.core.title'] = title
       end
 
+      # Short-hand for accessing the identifier of assigned `Kind`
+      # instance.
+      #
+      # @return [String] identifier of the included `Kind` instance
+      # @return [NilClass] if no kind is present
+      def kind_identifier
+        kind ? kind.identifier : nil
+      end
+
       # Assigns new kind instance to this entity instance. This
       # method will trigger a complete reset on all previously
       # set attributes, for the sake of consistency.
