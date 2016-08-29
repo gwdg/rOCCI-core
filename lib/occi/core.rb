@@ -35,7 +35,6 @@ module Occi
     autoload :RendererFactory, 'occi/core/renderer_factory'
 
     autoload :AttributeDefinition, 'occi/core/attribute_definition'
-
     autoload :Category, 'occi/core/category'
     autoload :Kind, 'occi/core/kind'
     autoload :Action, 'occi/core/action'
@@ -48,6 +47,7 @@ module Occi
     autoload :Resource, 'occi/core/resource'
 
     autoload :Collection, 'occi/core/collection'
+    autoload :Model, 'occi/core/model'
   end
 end
 
