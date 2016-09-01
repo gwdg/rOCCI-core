@@ -65,6 +65,9 @@ module Occi
           allow(attributes[attrib]).to receive(:default)
           allow(attributes[attrib]).to receive(:valid!)
         end
+
+        mdl << kind << action << mixin << root_kind
+        mdl << link << resource << action_instance
       end
 
       it 'has logger' do
@@ -79,11 +82,6 @@ module Occi
 
       describe '#valid!' do
         context 'with valid instances' do
-          before(:example) do
-            mdl << kind << action << mixin << root_kind
-            mdl << link << resource << action_instance
-          end
-
           it 'validates' do
             expect { mdl.valid! }.not_to raise_error
           end
@@ -91,21 +89,23 @@ module Occi
 
         context 'with invalid instances' do
           context 'without kind' do
-            before(:example) do
-              mdl << action << mixin << root_kind
-              mdl << link << resource << action_instance
-            end
+            before(:example) { mdl.remove(kind) }
 
             it 'fails on missing kind' do
               expect { mdl.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
             end
           end
 
+          context 'without parent kind' do
+            before(:example) { mdl.remove(root_kind) }
+
+            it 'fails on missing parent kind' # do
+            #   expect { mdl.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
+            # end
+          end
+
           context 'without action' do
-            before(:example) do
-              mdl << kind << mixin << root_kind
-              mdl << link << resource << action_instance
-            end
+            before(:example) { mdl.remove(action) }
 
             it 'fails on missing action' do
               expect { mdl.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
@@ -113,10 +113,7 @@ module Occi
           end
 
           context 'without mixin' do
-            before(:example) do
-              mdl << action << kind << root_kind
-              mdl << link << resource << action_instance
-            end
+            before(:example) { mdl.remove(mixin) }
 
             it 'fails on missing mixin' do
               expect { mdl.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
@@ -127,11 +124,6 @@ module Occi
 
       describe '#valid?' do
         context 'with valid instances' do
-          before(:example) do
-            mdl << kind << action << mixin << root_kind
-            mdl << link << resource << action_instance
-          end
-
           it 'validates' do
             expect(mdl.valid?).to be true
           end
@@ -139,21 +131,23 @@ module Occi
 
         context 'with invalid instances' do
           context 'without kind' do
-            before(:example) do
-              mdl << action << mixin << root_kind
-              mdl << link << resource << action_instance
-            end
+            before(:example) { mdl.remove(kind) }
 
             it 'fails on missing kind' do
               expect(mdl.valid?).to be false
             end
           end
 
+          context 'without parent kind' do
+            before(:example) { mdl.remove(root_kind) }
+
+            it 'fails on missing parent kind' # do
+            #   expect(mdl.valid?).to be false
+            # end
+          end
+
           context 'without action' do
-            before(:example) do
-              mdl << kind << mixin << root_kind
-              mdl << link << resource << action_instance
-            end
+            before(:example) { mdl.remove(action) }
 
             it 'fails on missing action' do
               expect(mdl.valid?).to be false
@@ -161,10 +155,7 @@ module Occi
           end
 
           context 'without mixin' do
-            before(:example) do
-              mdl << action << kind << root_kind
-              mdl << link << resource << action_instance
-            end
+            before(:example) { mdl.remove(mixin) }
 
             it 'fails on missing mixin' do
               expect(mdl.valid?).to be false

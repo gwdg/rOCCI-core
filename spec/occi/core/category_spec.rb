@@ -6,7 +6,7 @@ module Occi
       let(:example_term) { 'generic' }
       let(:example_schema) { 'http://schemas.org/schema#' }
       let(:example_title) { 'Generic category' }
-      let(:example_attributes) { instance_double('Hash') }
+      let(:example_attributes) { Hash.new }
 
       let(:category) do
         Category.new(
