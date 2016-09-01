@@ -29,6 +29,11 @@ module Occi
         expect(coll.class).to respond_to(:logger)
       end
 
+      it 'is renderable' do
+        expect(coll).to be_kind_of(Helpers::Renderable)
+        expect(coll).to respond_to(:render)
+      end
+
       before(:example) do
         coll.categories = categories
         coll.entities = entities

@@ -14,6 +14,7 @@ module Occi
     class Collection
       include Yell::Loggable
       include Helpers::ArgumentValidator
+      include Helpers::Renderable
 
       ALL_KEYS = [:categories, :entities, :action_instances].freeze
 

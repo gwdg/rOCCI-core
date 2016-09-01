@@ -1,12 +1,30 @@
+# Load class-specific rendering primitives
+Dir[File.join(File.dirname(__FILE__), 'text', '*.rb')].each { |file| require file.gsub('.rb', '') }
+
 module Occi
   module Core
     module Renderers
-      # TODO
+      # Implementes components necessary to render all required instance types
+      # to `text` or `text`-like format. Currently supported instance types
+      # can be queried via `::known_types`. Actual serialization happens in
+      # type-specific serializer classes which can be found in `Occi::Core::Renderers::Text`.
       #
       # @author Boris Parak <parak@cesnet.cz>
       class TextRenderer
+        include Yell::Loggable
+
         # Supported formats
         TEXT_FORMATS = %w(text text_plain text_occi headers).freeze
+
+        # Mapping from instance types to serializer classes
+        KNOWN = {
+          'Occi::Core::Category'       => Occi::Core::Renderers::Text::Category,
+          'Occi::Core::ActionInstance' => Occi::Core::Renderers::Text::ActionInstance,
+          'Occi::Core::Collection'     => Occi::Core::Renderers::Text::Collection,
+          'Occi::Core::Model'          => Occi::Core::Renderers::Text::Model,
+          'Occi::Core::Resource'       => Occi::Core::Renderers::Text::Resource,
+          'Occi::Core::Link'           => Occi::Core::Renderers::Text::Link
+        }.freeze
 
         class << self
           # Indicates this class is a renderer candidate.
@@ -33,7 +51,45 @@ module Occi
           # @option options [String] :format (nil) rendering (sub)type
           # @return [String] object rendering
           def render(object, options)
-            "#{object.inspect} with #{options.inspect}" # TODO: impl
+            logger.debug "#{self} rendering #{object.inspect} with #{options.inspect}"
+            candidate = rendering_candidate(object)
+            raise Occi::Core::Errors::RenderingError, "#{object.class} cannot be " \
+                  "rendered to #{options[:format]}" unless candidate
+
+            known[candidate].render(object, options)
+          end
+
+          # Returns the list of known (and supported) types for serialization.
+          # Every element in the list is a string representing a fully
+          # namespaced class name.
+          #
+          # @return [Array] list of known types
+          def known_types
+            KNOWN.keys
+          end
+
+          # Returns the list of known (and supported) serializer classes.
+          # Every element in the list is a fully namespaced classes.
+          #
+          # @return [Array] list of known serializers
+          def known_serializers
+            KNOWN.values
+          end
+
+          # Returns a frozen Hash providing mapping information between
+          # supported types and supported serializers.
+          #
+          # @return [Array] list of known type->serializer mappings
+          def known
+            KNOWN
+          end
+
+          private
+
+          # :nodoc:
+          def rendering_candidate(object)
+            object_ancestors = object.class.ancestors.collect(&:to_s)
+            object_ancestors.select { |klass| known.key?(klass) }.first
           end
         end
       end

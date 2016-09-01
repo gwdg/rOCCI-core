@@ -8,8 +8,6 @@ module Occi
     #
     # @author Boris Parak <parak@cesnet.cz>
     class Model < Collection
-      include Helpers::Renderable
-
       # Triggers validation on the underlying `Collection` instance. In addition,
       # validates all included entities and action instances against categories
       # defined in the model. Only the existence of categories is checked, no
