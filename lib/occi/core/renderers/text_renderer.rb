@@ -65,7 +65,7 @@ module Occi
           #
           # @return [Array] list of known types
           def known_types
-            KNOWN.keys
+            known.keys
           end
 
           # Returns the list of known (and supported) serializer classes.
@@ -73,7 +73,7 @@ module Occi
           #
           # @return [Array] list of known serializers
           def known_serializers
-            KNOWN.values
+            known.values
           end
 
           # Returns a frozen Hash providing mapping information between
@@ -89,7 +89,7 @@ module Occi
           # :nodoc:
           def rendering_candidate(object)
             object_ancestors = object.class.ancestors.collect(&:to_s)
-            object_ancestors.select { |klass| known.key?(klass) }.first
+            object_ancestors.select { |klass| known_types.include?(klass) }.first
           end
         end
       end
