@@ -3,6 +3,8 @@ module Occi
     module Renderers
       module Text
         class Base
+          include Yell::Loggable
+
           # Ruby 2.3 compatibility, with `$SAFE` changes
           RENDER_SAFE = (RUBY_VERSION >= '2.3') ? 1 : 3
 
@@ -29,7 +31,8 @@ module Occi
             when 'headers', 'text_occi'
               render_headers
             else
-              raise "Rendering to #{options[:format]} is not supported"
+              raise Occi::Core::Errors::RenderingError,
+                    "Rendering to #{options[:format]} is not supported"
             end
           end
 
@@ -40,6 +43,18 @@ module Occi
           def render_safe
             RENDER_SAFE
           end
+
+          # Renders `object` into plain text and returns the result
+          # as `String`.
+          #
+          # @return [String] textual representation of Object
+          def render_plain; end
+
+          # Renders `object` into text for headers and returns the result
+          # as `Hash`.
+          #
+          # @return [Hash] textual representation of Object for headers
+          def render_headers; end
         end
       end
     end
