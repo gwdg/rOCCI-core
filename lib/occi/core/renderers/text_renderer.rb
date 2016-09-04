@@ -1,3 +1,23 @@
+module Occi
+  module Core
+    module Renderers
+      # Contains all text-related classes and modules. This
+      # module houses functionality transforming various internal
+      # instances to a basic text-based rendering. In most
+      # cases, it is not intended to be called explicitly. Its
+      # instrumentation will be used automatically by selected
+      # instances when calling `render` or `to_text`/`to_headers`.
+      #
+      # This is also the place where additional supported instance types
+      # should be added. Please, refer to internal documentation
+      # for details on how to add a new instance type.
+      #
+      # @author Boris Parak <parak@cesnet.cz>
+      module Text; end
+    end
+  end
+end
+
 # Load class-specific rendering primitives
 Dir[File.join(File.dirname(__FILE__), 'text', '*.rb')].each { |file| require file.gsub('.rb', '') }
 

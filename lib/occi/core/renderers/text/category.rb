@@ -4,29 +4,45 @@ module Occi
   module Core
     module Renderers
       module Text
+        # Implements routines required to render `Occi::Core::Category` and
+        # its subclasses to a text-based representation. Supports rendering
+        # to plain and header-like formats. Internally, the rendering itself
+        # is done via ERB templates.
+        #
+        # @author Boris Parak <parak@cesnet.cz>
         class Category < Base
-          # @return [String] textual representation of Category
+          # Renders `object` into plain text and returns the result
+          # as `String`.
+          #
+          # @return [String] textual representation of Object
           def render_plain
             obj_data = object_data
             "Category: #{ERB.new(self.class.template, render_safe).result(binding)}"
           end
 
-          # @return [Hash] hash-like textual representation of Category
+          # Renders `object` into text for headers and returns the result
+          # as `Hash`.
+          #
+          # @return [Hash] textual representation of Object for headers
           def render_headers
             obj_data = object_data
             { 'X-OCCI-Category' => [ERB.new(self.class.template, render_safe).result(binding)] }
           end
 
+          private
+
+          # :nodoc:
           def object_data
             {
               term: object.term, schema: object.schema,
-              subclass: render_subclass, title: object.title,
-              rel: render_parent, location: render_location,
-              attributes: render_attributes, actions: render_actions
+              subclass: prepare_subclass, title: object.title,
+              rel: prepare_parent, location: prepare_location,
+              attributes: prepare_attributes, actions: prepare_actions
             }
           end
 
-          def render_parent
+          # :nodoc:
+          def prepare_parent
             cand = if object.respond_to?(:directly_related)
                      object.directly_related.first
                    elsif object.respond_to?(:depends)
@@ -35,27 +51,34 @@ module Occi
             cand ? cand.identifier : nil
           end
 
-          def render_subclass
+          # :nodoc:
+          def prepare_subclass
             object.class.name.demodulize.downcase
           end
 
-          def render_location
+          # :nodoc:
+          def prepare_location
             object.respond_to?(:location) ? object.location : nil
           end
 
-          def render_attributes
+          # :nodoc:
+          def prepare_attributes
             return unless object.respond_to?(:attributes)
             attrs = object.attributes.keys
             attrs.empty? ? nil : attrs.join(' ')
           end
 
-          def render_actions
+          # :nodoc:
+          def prepare_actions
             return unless object.respond_to?(:actions)
             acts = object.actions.collect(&:identifier)
             acts.empty? ? nil : acts.join(' ')
           end
 
           class << self
+            # Returns a static ERB template used to render `Category`-like
+            # instances to plain text.
+            #
             # @return [String] ERB template
             def template
               '<%= obj_data[:term] %>; ' \
