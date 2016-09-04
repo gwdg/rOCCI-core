@@ -24,7 +24,9 @@ module Occi
         describe '::render' do
           before(:example) do
             trc.known_serializers.each do |s|
-              allow(s).to receive(:render).with(kind_of(Object), instance_of(Hash))
+              id = instance_double(s.to_s)
+              allow(id).to receive(:render)
+              allow(s).to receive(:new).with(kind_of(Object), instance_of(Hash)).and_return(id)
             end
           end
 

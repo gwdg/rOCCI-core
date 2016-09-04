@@ -56,7 +56,7 @@ module Occi
             raise Occi::Core::Errors::RenderingError, "#{object.class} cannot be " \
                   "rendered to #{options[:format]}" unless candidate
 
-            known[candidate].render(object, options)
+            known[candidate].new(object, options).render
           end
 
           # Returns the list of known (and supported) types for serialization.
