@@ -20,7 +20,7 @@ Metrics/LineLength:
   Max: 120
 
 ClassLength:
-  Max: 150
+  Max: 180
 
 Style/Documentation:
   Exclude:
