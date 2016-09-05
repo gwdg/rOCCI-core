@@ -34,7 +34,7 @@ module Occi
 
           describe '#render' do
             context 'with unknown format' do
-              before(:example) do
+              before do
                 bse.options = { format: 'unknown' }
               end
 
@@ -50,7 +50,7 @@ module Occi
             end
 
             context 'with `headers` format' do
-              before(:example) do
+              before do
                 bse.options = { format: 'headers' }
               end
 

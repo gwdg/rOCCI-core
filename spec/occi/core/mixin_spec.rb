@@ -64,7 +64,7 @@ module Occi
 
       describe '#location' do
         context 'without term and location' do
-          before(:example) do
+          before do
             mxn.term = nil
             mxn.location = nil
           end
@@ -75,7 +75,7 @@ module Occi
         end
 
         context 'with term and without location' do
-          before(:example) { mxn.location = nil }
+          before { mxn.location = nil }
 
           it 'returns default' do
             expect(mxn.location).to be_kind_of URI

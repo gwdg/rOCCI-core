@@ -35,3 +35,17 @@ Style/StructInheritance:
 Style/NilComparison:
   Exclude:
   - 'spec/occi/core/category_spec.rb'
+
+RSpec/MultipleExpectations:
+  Max: 5
+
+RSpec/NestedGroups:
+  MaxNesting: 5
+
+RSpec/SubjectStub:
+  Exclude:
+    - 'spec/**/*'
+
+RSpec/MessageExpectation:
+  Exclude:
+    - 'spec/**/*'

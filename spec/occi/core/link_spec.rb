@@ -22,7 +22,7 @@ module Occi
 
       let(:link) { Link.new(kind: kind, title: 'My Link') }
 
-      before(:example) do
+      before do
         allow(kind).to receive(:attributes).and_return(attributes)
         allow(kind).to receive(:location).and_return(URI.parse('/kind/'))
         attributes.keys.each { |attrib| allow(attributes[attrib]).to receive(:default) }
@@ -91,7 +91,7 @@ module Occi
         context 'with target' do
           let(:resource) { instance_double('Occi::Core::Resource') }
 
-          before(:example) do
+          before do
             lnk.target = resource
           end
 
@@ -104,7 +104,7 @@ module Occi
 
       describe '#valid!' do
         context 'with missing required attributes' do
-          before(:example) do
+          before do
             lnk.target = nil
             lnk.source = nil
           end
@@ -115,7 +115,7 @@ module Occi
         end
 
         context 'with all required attributes' do
-          before(:example) do
+          before do
             lnk.target = attributes['occi.core.target']
             lnk.source = attributes['occi.core.source']
             attributes.values.each { |v| expect(v).to receive(:valid!) }

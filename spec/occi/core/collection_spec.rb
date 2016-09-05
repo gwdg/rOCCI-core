@@ -34,7 +34,7 @@ module Occi
         expect(coll).to respond_to(:render)
       end
 
-      before(:example) do
+      before do
         coll.categories = categories
         coll.entities = entities
         coll.action_instances = action_instances
@@ -131,7 +131,7 @@ module Occi
       end
 
       describe '#find_by_location' do
-        before(:example) do
+        before do
           [:kind, :mixin, :resource, :link].each do |elm|
             allow(send(elm)).to receive(:location).and_return(fake_location)
           end
@@ -237,7 +237,7 @@ module Occi
 
       describe '#<<' do
         context 'with category' do
-          before(:example) do
+          before do
             coll.categories = Set.new
           end
 
@@ -256,7 +256,7 @@ module Occi
         end
 
         context 'with entity' do
-          before(:example) do
+          before do
             coll.entities = Set.new
           end
 
@@ -274,7 +274,7 @@ module Occi
         end
 
         context 'with action instance' do
-          before(:example) do
+          before do
             coll.action_instances = Set.new
           end
 
@@ -298,7 +298,7 @@ module Occi
 
       describe '#remove' do
         context 'with category' do
-          before(:example) do
+          before do
             coll.categories = categories
           end
 
@@ -317,7 +317,7 @@ module Occi
         end
 
         context 'with entity' do
-          before(:example) do
+          before do
             coll.entities = entities
           end
 
@@ -335,7 +335,7 @@ module Occi
         end
 
         context 'with action instance' do
-          before(:example) do
+          before do
             coll.action_instances = action_instances
           end
 
@@ -359,7 +359,7 @@ module Occi
 
       describe '#valid?' do
         context 'with valid instances' do
-          before(:example) do
+          before do
             expect(resource).to receive(:valid?).and_return(true)
             expect(link).to receive(:valid?).and_return(true)
             expect(action_instance).to receive(:valid?).and_return(true)
@@ -371,7 +371,7 @@ module Occi
         end
 
         context 'with invalid instances' do
-          before(:example) do
+          before do
             allow(resource).to receive(:valid?).and_return(false)
             allow(link).to receive(:valid?).and_return(false)
             allow(action_instance).to receive(:valid?).and_return(false)
@@ -385,7 +385,7 @@ module Occi
 
       describe '#valid!' do
         context 'with valid instances' do
-          before(:example) do
+          before do
             expect(resource).to receive(:valid!)
             expect(link).to receive(:valid!)
             expect(action_instance).to receive(:valid!)
@@ -397,7 +397,7 @@ module Occi
         end
 
         context 'with invalid instances' do
-          before(:example) do
+          before do
             allow(resource).to receive(:valid!).and_raise(Occi::Core::Errors::ValidationError)
             allow(link).to receive(:valid!).and_raise(Occi::Core::Errors::ValidationError)
             allow(action_instance).to receive(:valid!).and_raise(Occi::Core::Errors::ValidationError)

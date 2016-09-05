@@ -23,7 +23,7 @@ module Occi
           }]
         end
 
-        before(:example) do
+        before do
           allow(resetable).to receive(:base_attributes).and_return(base_attributes)
           allow(resetable).to receive(:added_attributes).and_return(added_attributes)
         end
@@ -50,7 +50,7 @@ module Occi
         end
 
         describe '#reset_attributes' do
-          before(:example) do
+          before do
             expect(resetable).to receive(:reset_base_attributes).with(force)
             expect(resetable).to receive(:reset_added_attributes).with(force)
             expect(resetable).to receive(:remove_undef_attributes)
@@ -74,7 +74,7 @@ module Occi
         end
 
         describe '#reset_base_attributes' do
-          before(:example) do
+          before do
             allow(resetable).to receive(:reset_attribute)
             expect(resetable).to receive(:base_attributes).and_return(base_attributes)
           end
@@ -99,7 +99,7 @@ module Occi
         end
 
         describe '#reset_added_attributes' do
-          before(:example) do
+          before do
             allow(resetable).to receive(:reset_attribute)
             expect(resetable).to receive(:added_attributes).and_return(added_attributes)
           end
@@ -142,7 +142,7 @@ module Occi
           let(:attribute_name) { 'test' }
           let(:attributes) { { attribute_name => instance_double('Occi::Core::Attribute') } }
 
-          before(:example) do
+          before do
             allow(resetable).to receive(:attributes).and_return(attributes)
             allow(attributes[attribute_name]).to receive(:attribute_definition).and_return(
               instance_double('Occi::Core::AttributeDefinition')
@@ -172,7 +172,7 @@ module Occi
           end
 
           context 'without attributes' do
-            before(:example) do
+            before do
               allow(resetable).to receive(:base_attributes).and_return({})
               allow(resetable).to receive(:added_attributes).and_return([{}])
             end
@@ -184,7 +184,7 @@ module Occi
           end
 
           context 'with nil attribute names' do
-            before(:example) do
+            before do
               allow(resetable).to receive(:base_attributes).and_return(
                 nil => instance_double('Occi::Core::AttributeDefinition')
               )
@@ -206,7 +206,7 @@ module Occi
               { base_attribute_name => instance_double('Occi::Core::Attribute') }
             end
 
-            before(:example) do
+            before do
               allow(resetable).to receive(:attributes).and_return(attributes)
               allow(attributes[base_attribute_name]).to receive(:value).and_return('nope')
               allow(attributes[base_attribute_name]).to receive(:attribute_definition)
@@ -253,7 +253,7 @@ module Occi
           context 'when attribute does not exist' do
             let(:attributes) { {} }
 
-            before(:example) do
+            before do
               allow(resetable).to receive(:attributes).and_return(attributes)
               allow(base_attributes[base_attribute_name]).to receive(:default).and_return('test')
             end

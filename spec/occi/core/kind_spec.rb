@@ -133,7 +133,7 @@ module Occi
 
       describe '#location' do
         context 'without term and location' do
-          before(:example) do
+          before do
             knd.term = nil
             knd.location = nil
           end
@@ -144,7 +144,7 @@ module Occi
         end
 
         context 'with term and without location' do
-          before(:example) { knd.location = nil }
+          before { knd.location = nil }
 
           it 'returns default' do
             expect(knd.location).to be_kind_of URI

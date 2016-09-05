@@ -9,7 +9,7 @@ module Occi
       let(:action_instance) { ActionInstance.new(action: action, attributes: attributes) }
 
       context '' do
-        before(:example) do
+        before do
           allow(action).to receive(:attributes).and_return({})
         end
 
@@ -48,7 +48,7 @@ module Occi
       end
 
       describe '#action_identifier' do
-        before(:example) do
+        before do
           allow(action).to receive(:attributes).and_return({})
         end
 
@@ -59,7 +59,7 @@ module Occi
       end
 
       describe '#valid?' do
-        before(:example) do
+        before do
           allow(action).to receive(:attributes).and_return(action_attributes)
           allow(attributes['method']).to receive(:attribute_definition=).with(action_attributes['method'])
           allow(attributes['method']).to receive(:attribute_definition).and_return(action_attributes['method'])
@@ -85,7 +85,7 @@ module Occi
       end
 
       describe '#valid!' do
-        before(:example) do
+        before do
           allow(action).to receive(:attributes).and_return(action_attributes)
           allow(attributes['method']).to receive(:attribute_definition=).with(action_attributes['method'])
           allow(attributes['method']).to receive(:attribute_definition).and_return(action_attributes['method'])
@@ -111,7 +111,7 @@ module Occi
       end
 
       describe '#action=' do
-        before(:example) do
+        before do
           allow(action).to receive(:attributes).and_return(action_attributes)
           allow(attributes['method']).to receive(:attribute_definition=).with(action_attributes['method'])
           allow(attributes['method']).to receive(:attribute_definition).and_return(action_attributes['method'])

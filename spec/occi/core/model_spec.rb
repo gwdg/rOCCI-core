@@ -60,7 +60,7 @@ module Occi
       let(:resource) { Resource.new(kind: kind, title: 'My Resource', mixins: Set.new([mixin])) }
       let(:action_instance) { ActionInstance.new(action: action, attributes: {}) }
 
-      before(:example) do
+      before do
         attributes.keys.each do |attrib|
           allow(attributes[attrib]).to receive(:default)
           allow(attributes[attrib]).to receive(:valid!)
@@ -89,7 +89,7 @@ module Occi
 
         context 'with invalid instances' do
           context 'without kind' do
-            before(:example) { mdl.remove(kind) }
+            before { mdl.remove(kind) }
 
             it 'fails on missing kind' do
               expect { mdl.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
@@ -97,7 +97,7 @@ module Occi
           end
 
           context 'without parent kind' do
-            before(:example) { mdl.remove(root_kind) }
+            before { mdl.remove(root_kind) }
 
             it 'fails on missing parent kind' # do
             #   expect { mdl.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
@@ -105,7 +105,7 @@ module Occi
           end
 
           context 'without action' do
-            before(:example) { mdl.remove(action) }
+            before { mdl.remove(action) }
 
             it 'fails on missing action' do
               expect { mdl.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
@@ -113,7 +113,7 @@ module Occi
           end
 
           context 'without mixin' do
-            before(:example) { mdl.remove(mixin) }
+            before { mdl.remove(mixin) }
 
             it 'fails on missing mixin' do
               expect { mdl.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
@@ -131,7 +131,7 @@ module Occi
 
         context 'with invalid instances' do
           context 'without kind' do
-            before(:example) { mdl.remove(kind) }
+            before { mdl.remove(kind) }
 
             it 'fails on missing kind' do
               expect(mdl.valid?).to be false
@@ -139,7 +139,7 @@ module Occi
           end
 
           context 'without parent kind' do
-            before(:example) { mdl.remove(root_kind) }
+            before { mdl.remove(root_kind) }
 
             it 'fails on missing parent kind' # do
             #   expect(mdl.valid?).to be false
@@ -147,7 +147,7 @@ module Occi
           end
 
           context 'without action' do
-            before(:example) { mdl.remove(action) }
+            before { mdl.remove(action) }
 
             it 'fails on missing action' do
               expect(mdl.valid?).to be false
@@ -155,7 +155,7 @@ module Occi
           end
 
           context 'without mixin' do
-            before(:example) { mdl.remove(mixin) }
+            before { mdl.remove(mixin) }
 
             it 'fails on missing mixin' do
               expect(mdl.valid?).to be false

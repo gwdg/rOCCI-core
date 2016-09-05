@@ -7,12 +7,12 @@ module Occi
       let(:orig_namespace) { Occi::Core::Renderers }
       let(:dummy_renderer) { RocciCoreSpec::Renderers::DummyWorkingRenderer }
 
-      before(:each) do
+      before do
         Singleton.__init__(RendererFactory)
         stub_const('Occi::Core::RendererFactory::NAMESPACE', test_namespace)
       end
 
-      after(:each) do
+      after do
         Singleton.__init__(RendererFactory)
         stub_const('Occi::Core::RendererFactory::NAMESPACE', orig_namespace)
       end

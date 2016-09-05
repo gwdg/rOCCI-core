@@ -22,7 +22,7 @@ module Occi
         end
 
         describe '::render' do
-          before(:example) do
+          before do
             trc.known_serializers.each do |s|
               id = instance_double(s.to_s)
               allow(id).to receive(:render)

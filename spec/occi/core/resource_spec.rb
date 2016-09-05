@@ -32,13 +32,13 @@ module Occi
       let(:link) { Link.new(kind: link_kind, title: 'My Link') }
       let(:link1) { Link.new(kind: link_kind, title: 'My Link 1') }
 
-      before(:example) do
+      before do
         allow(link_kind).to receive(:attributes).and_return(link_attributes)
         allow(link_kind).to receive(:location).and_return(URI.parse('/kind/'))
         link_attributes.keys.each { |attrib| allow(link_attributes[attrib]).to receive(:default) }
       end
 
-      before(:example) do
+      before do
         allow(kind).to receive(:attributes).and_return(attributes)
         allow(kind).to receive(:location).and_return(URI.parse('/kind/'))
         attributes.keys.each { |attrib| allow(attributes[attrib]).to receive(:default) }
@@ -89,7 +89,7 @@ module Occi
         let(:links) { Set.new([link]) }
 
         context 'with links' do
-          before(:example) do
+          before do
             expect(link).to receive(:source=).with(res)
           end
 
@@ -147,7 +147,7 @@ module Occi
           context 'already assigned' do
             let(:links) { Set.new([link]) }
 
-            before(:example) do
+            before do
               expect { res.links = links }.not_to raise_error
             end
 
@@ -181,7 +181,7 @@ module Occi
           context 'already assigned' do
             let(:links) { Set.new([link]) }
 
-            before(:example) do
+            before do
               expect { res.links = links }.not_to raise_error
             end
 
@@ -210,7 +210,7 @@ module Occi
 
       describe '#valid!' do
         context 'with missing required attributes' do
-          before(:example) do
+          before do
             res.instance_variable_set(:@links, nil)
           end
 
@@ -220,7 +220,7 @@ module Occi
         end
 
         context 'with all required attributes' do
-          before(:example) do
+          before do
             attributes.values.each { |v| expect(v).to receive(:valid!) }
           end
 

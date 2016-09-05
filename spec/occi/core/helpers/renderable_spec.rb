@@ -4,12 +4,12 @@ module Occi
       describe Renderable do
         subject(:renderable_module) { Renderable }
 
-        before(:each) do
+        before do
           Singleton.__init__(Renderable::RENDERER_FACTORY_CLASS)
           stub_const('Occi::Core::RendererFactory::NAMESPACE', RocciCoreSpec::Renderers)
         end
 
-        after(:each) do
+        after do
           Singleton.__init__(Renderable::RENDERER_FACTORY_CLASS)
           stub_const('Occi::Core::RendererFactory::NAMESPACE', Occi::Core::RendererFactory)
         end

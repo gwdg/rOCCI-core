@@ -34,7 +34,7 @@ module Occi
         Entity.new(kind: kind, title: 'my_title')
       end
 
-      before(:example) do
+      before do
         allow(attributes[attribute_title]).to receive(:default)
         allow(attributes[attribute_id]).to receive(:default)
         allow(mixin).to receive(:attributes).and_return({})
@@ -124,7 +124,7 @@ module Occi
         context 'with kind' do
           let(:new_kind) { instance_double('Occi::Core::Kind') }
 
-          before(:example) do
+          before do
             expect(ent).to receive(:reset_attributes!)
           end
 
@@ -149,7 +149,7 @@ module Occi
         context 'with mixins' do
           let(:new_mixins) { Set.new }
 
-          before(:example) do
+          before do
             expect(ent).to receive(:reset_added_attributes!)
             expect(ent).to receive(:remove_undef_attributes)
           end
@@ -175,7 +175,7 @@ module Occi
         let(:mixins) { Set.new([mixin]) }
 
         context 'with action' do
-          before(:example) do
+          before do
             ent.actions = actions
           end
 
@@ -200,7 +200,7 @@ module Occi
         end
 
         context 'with mixin' do
-          before(:example) do
+          before do
             ent.mixins = mixins
           end
 
@@ -241,7 +241,7 @@ module Occi
         let(:mixins) { Set.new([mixin]) }
 
         context 'with action' do
-          before(:example) do
+          before do
             ent.actions = actions
           end
 
@@ -264,7 +264,7 @@ module Occi
         end
 
         context 'with mixin' do
-          before(:example) do
+          before do
             ent.mixins = mixins
           end
 
@@ -303,7 +303,7 @@ module Occi
         end
 
         context 'when mixin is already assigned' do
-          before(:example) do
+          before do
             ent.mixins = mixins
           end
 
@@ -323,7 +323,7 @@ module Occi
 
       describe '#remove_mixin' do
         context 'when mixin exists' do
-          before(:example) do
+          before do
             ent.mixins = mixins
           end
 
@@ -348,7 +348,7 @@ module Occi
 
       describe '#replace_mixin' do
         context 'when mixin exists' do
-          before(:example) do
+          before do
             ent.mixins = mixins
           end
 
@@ -385,7 +385,7 @@ module Occi
         end
 
         context 'when action is already assigned' do
-          before(:example) do
+          before do
             ent.actions = actions
           end
 
@@ -405,7 +405,7 @@ module Occi
 
       describe '#remove_action' do
         context 'when action exists' do
-          before(:example) do
+          before do
             ent.actions = actions
           end
 
@@ -446,7 +446,7 @@ module Occi
 
       describe '#valid!' do
         context 'with missing required attributes' do
-          before(:example) { ent.id = nil }
+          before { ent.id = nil }
 
           it 'raises error' do
             expect { ent.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
@@ -454,7 +454,7 @@ module Occi
         end
 
         context 'with all required attributes' do
-          before(:example) do
+          before do
             attributes.values.each { |v| expect(v).to receive(:valid!) }
           end
 
@@ -472,7 +472,7 @@ module Occi
 
       describe '#added_attributes' do
         context 'with mixin(s)' do
-          before(:example) do
+          before do
             allow(ent).to receive(:mixins).and_return(mixins)
             allow(mixin).to receive(:attributes).and_return(attributes)
           end
