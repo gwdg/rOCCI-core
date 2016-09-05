@@ -11,13 +11,17 @@ module Occi
         #
         # @author Boris Parak <parak@cesnet.cz>
         class Category < Base
+          # Category key constants
+          CATEGORY_KEY_PLAIN = 'Category'.freeze
+          CATEGORY_KEY_HEADERS = 'X-OCCI-Category'.freeze
+
           # Renders `object` into plain text and returns the result
           # as `String`.
           #
           # @return [String] textual representation of Object
           def render_plain
             obj_data = object_data
-            "Category: #{ERB.new(self.class.template, render_safe).result(binding)}"
+            "#{CATEGORY_KEY_PLAIN}: #{ERB.new(self.class.template, render_safe).result(binding)}"
           end
 
           # Renders `object` into text for headers and returns the result
@@ -26,10 +30,20 @@ module Occi
           # @return [Hash] textual representation of Object for headers
           def render_headers
             obj_data = object_data
-            { 'X-OCCI-Category' => [ERB.new(self.class.template, render_safe).result(binding)] }
+            { CATEGORY_KEY_HEADERS => [ERB.new(self.class.template, render_safe).result(binding)] }
           end
 
           private
+
+          # :nodoc:
+          def short?
+            options[:type] == 'short'
+          end
+
+          # :nodoc:
+          def long?
+            !short?
+          end
 
           # :nodoc:
           def object_data
@@ -46,8 +60,9 @@ module Occi
             cand = if object.respond_to?(:directly_related)
                      prepare_kind_rel
                    elsif object.respond_to?(:depends) && object.respond_to?(:applies)
-                     prepare_mixin_rel
+                     prepare_mixin_rel.to_a
                    end
+            cand.compact! if cand
 
             cand.blank? ? nil : cand.collect(&:identifier).join(' ')
           end
@@ -107,11 +122,11 @@ module Occi
               '<%= obj_data[:term] %>; ' \
               'scheme="<%= obj_data[:schema] %>"; ' \
               'class="<%= obj_data[:subclass] %>"' \
-              '<% if obj_data[:title] %>; title="<%= obj_data[:title] %>"<% end %>' \
-              '<% if obj_data[:rel] %>; rel="<%= obj_data[:rel] %>"<% end %>' \
-              '<% if obj_data[:location] %>; location="<%= obj_data[:location] %>"<% end %>' \
-              '<% if obj_data[:attributes] %>; attributes="<%= obj_data[:attributes] %>"<% end %>' \
-              '<% if obj_data[:actions] %>; actions="<%= obj_data[:actions] %>"<% end %>'
+              '<% if long? && obj_data[:title] %>; title="<%= obj_data[:title] %>"<% end %>' \
+              '<% if long? && obj_data[:rel] %>; rel="<%= obj_data[:rel] %>"<% end %>' \
+              '<% if long? && obj_data[:location] %>; location="<%= obj_data[:location] %>"<% end %>' \
+              '<% if long? && obj_data[:attributes] %>; attributes="<%= obj_data[:attributes] %>"<% end %>' \
+              '<% if long? && obj_data[:actions] %>; actions="<%= obj_data[:actions] %>"<% end %>'
             end
           end
         end
