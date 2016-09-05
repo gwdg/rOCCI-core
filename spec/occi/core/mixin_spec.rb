@@ -13,8 +13,8 @@ module Occi
           term: example_term,
           schema: example_schema,
           title: example_title,
-          depends: [second_mixin],
-          applies: [kind_double]
+          depends: Set.new([second_mixin]),
+          applies: Set.new([kind_double])
         )
       end
 

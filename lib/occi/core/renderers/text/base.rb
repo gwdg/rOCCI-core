@@ -11,7 +11,7 @@ module Occi
           include Yell::Loggable
 
           # Ruby 2.3 compatibility, with `$SAFE` changes
-          RENDER_SAFE = (RUBY_VERSION >= '2.3') ? 1 : 3
+          RENDER_SAFE = RUBY_VERSION >= '2.3' ? 1 : 3
 
           attr_accessor :object, :options
 

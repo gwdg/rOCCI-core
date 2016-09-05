@@ -44,11 +44,22 @@ module Occi
           # :nodoc:
           def prepare_parent
             cand = if object.respond_to?(:directly_related)
-                     object.directly_related.first
-                   elsif object.respond_to?(:depends)
-                     object.depends.first
+                     prepare_kind_rel
+                   elsif object.respond_to?(:depends) && object.respond_to?(:applies)
+                     prepare_mixin_rel
                    end
-            cand ? cand.identifier : nil
+
+            cand.blank? ? nil : cand.collect(&:identifier).join(' ')
+          end
+
+          # :nodoc:
+          def prepare_kind_rel
+            [object.directly_related.first]
+          end
+
+          # :nodoc:
+          def prepare_mixin_rel
+            object.depends + object.applies
           end
 
           # :nodoc:
@@ -64,8 +75,20 @@ module Occi
           # :nodoc:
           def prepare_attributes
             return unless object.respond_to?(:attributes)
-            attrs = object.attributes.keys
+            attrs = object.attributes.collect do |key, attr_def|
+              key + prepare_attribute_def(attr_def)
+            end
+
             attrs.empty? ? nil : attrs.join(' ')
+          end
+
+          # :nodoc:
+          def prepare_attribute_def(attr_def)
+            return '' unless attr_def.required? || attr_def.immutable?
+            defs = []
+            defs << 'required' if attr_def.required?
+            defs << 'immutable' if attr_def.immutable?
+            "{#{defs.join(' ')}}"
           end
 
           # :nodoc:
@@ -83,8 +106,8 @@ module Occi
             def template
               '<%= obj_data[:term] %>; ' \
               'scheme="<%= obj_data[:schema] %>"; ' \
-              'class="<%= obj_data[:subclass] %>"; ' \
-              'title="<%= obj_data[:title] %>"' \
+              'class="<%= obj_data[:subclass] %>"' \
+              '<% if obj_data[:title] %>; title="<%= obj_data[:title] %>"<% end %>' \
               '<% if obj_data[:rel] %>; rel="<%= obj_data[:rel] %>"<% end %>' \
               '<% if obj_data[:location] %>; location="<%= obj_data[:location] %>"<% end %>' \
               '<% if obj_data[:attributes] %>; attributes="<%= obj_data[:attributes] %>"<% end %>' \

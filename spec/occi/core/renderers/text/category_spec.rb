@@ -3,11 +3,15 @@ module Occi
     module Renderers
       module Text
         describe Category do
-          subject(:cat) { category_renderer }
+          subject(:cat) { kind_renderer }
 
           let(:example_term) { 'kind' }
           let(:example_schema) { 'http://schemas.org/schema#' }
           let(:example_title) { 'Generic kind' }
+
+          let(:attribute_name) { 'occi.core.test' }
+          let(:attribute_def) { Occi::Core::AttributeDefinition.new(required: true, mutable: false) }
+          let(:attributes) { { attribute_name => attribute_def } }
 
           let(:root_kind) do
             Kind.new(
@@ -22,12 +26,39 @@ module Occi
               term: example_term,
               schema: example_schema,
               title: example_title,
-              parent: root_kind
+              parent: root_kind,
+              attributes: attributes
             )
           end
 
           let(:options) { { format: 'text' } }
-          let(:category_renderer) { Category.new(kind, options) }
+          let(:kind_renderer) { Category.new(kind, options) }
+          let(:mixin_renderer) { Category.new(mixin, options) }
+          let(:action_renderer) { Category.new(action, options) }
+
+          let(:action) do
+            Occi::Core::Action.new(term: 'action', schema: example_schema)
+          end
+
+          let(:second_mixin) do
+            Mixin.new(
+              term: "mixin_#{example_term}2",
+              schema: example_schema,
+              title: example_title
+            )
+          end
+
+          let(:mixin) do
+            Mixin.new(
+              term: "mixin_#{example_term}1",
+              schema: example_schema,
+              title: example_title,
+              depends: Set.new([second_mixin]),
+              applies: Set.new([kind]),
+              actions: Set.new([action]),
+              attributes: attributes
+            )
+          end
 
           BASE_ATTRS = [:object, :options].freeze
 
@@ -66,6 +97,18 @@ module Occi
 
               it 'renders' do
                 expect { cat.render }.not_to raise_error
+              end
+            end
+
+            context 'with mixin' do
+              it 'renders' do
+                expect { mixin_renderer.render }.not_to raise_error
+              end
+            end
+
+            context 'with action' do
+              it 'renders' do
+                expect { action_renderer.render }.not_to raise_error
               end
             end
           end
