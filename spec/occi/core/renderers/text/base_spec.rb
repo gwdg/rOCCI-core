@@ -66,15 +66,9 @@ module Occi
             end
           end
 
-          describe '#render_plain' do
-            it 'does not do anything' do
-              expect(bse.render_plain).to be nil
-            end
-          end
-
-          describe '#render_headers' do
-            it 'does not do anything' do
-              expect(bse.render_headers).to be nil
+          describe '::render_safe' do
+            it 'returns integer' do
+              expect(Base.render_safe).to be_kind_of(Integer)
             end
           end
         end

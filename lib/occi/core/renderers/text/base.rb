@@ -49,6 +49,18 @@ module Occi
             RENDER_SAFE
           end
 
+          class << self
+            # Returns an acceptable value for the $SAFE env variable
+            # that should be enforced when evaluating templates.
+            #
+            # @return [Integer] SAFE level
+            def render_safe
+              RENDER_SAFE
+            end
+          end
+
+          protected
+
           # Renders `object` into plain text and returns the result
           # as `String`.
           #

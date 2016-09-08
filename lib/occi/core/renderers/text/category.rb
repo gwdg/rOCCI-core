@@ -21,7 +21,7 @@ module Occi
           # @return [String] textual representation of Object
           def render_plain
             obj_data = object_data
-            "#{CATEGORY_KEY_PLAIN}: #{ERB.new(self.class.template, render_safe).result(binding)}"
+            "#{CATEGORY_KEY_PLAIN}: #{erb_render(obj_data)}"
           end
 
           # Renders `object` into text for headers and returns the result
@@ -30,7 +30,37 @@ module Occi
           # @return [Hash] textual representation of Object for headers
           def render_headers
             obj_data = object_data
-            { CATEGORY_KEY_HEADERS => [ERB.new(self.class.template, render_safe).result(binding)] }
+            { CATEGORY_KEY_HEADERS => [erb_render(obj_data)] }
+          end
+
+          # Returns keyword used to prefix all categories rendered to plain text.
+          #
+          # @return [String] category keyword
+          def category_key_plain
+            CATEGORY_KEY_PLAIN
+          end
+
+          # Returns word used to key all categories rendered to headers.
+          #
+          # @return [String] category key
+          def category_key_headers
+            CATEGORY_KEY_HEADERS
+          end
+
+          class << self
+            # Returns keyword used to prefix all categories rendered to plain text.
+            #
+            # @return [String] category keyword
+            def category_key_plain
+              CATEGORY_KEY_PLAIN
+            end
+
+            # Returns word used to key all categories rendered to headers.
+            #
+            # @return [String] category key
+            def category_key_headers
+              CATEGORY_KEY_HEADERS
+            end
           end
 
           private
@@ -111,6 +141,11 @@ module Occi
             return unless object.respond_to?(:actions)
             acts = object.actions.collect(&:identifier)
             acts.empty? ? nil : acts.join(' ')
+          end
+
+          # :nodoc:
+          def erb_render(obj_data)
+            ERB.new(self.class.template, render_safe).result(binding)
           end
 
           class << self

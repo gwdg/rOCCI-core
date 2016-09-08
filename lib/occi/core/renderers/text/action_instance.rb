@@ -1,6 +1,5 @@
 require 'occi/core/renderers/text/base'
-require 'occi/core/renderers/text/category'
-require 'occi/core/renderers/text/attributes'
+require 'occi/core/renderers/text/instance'
 
 module Occi
   module Core
@@ -13,12 +12,14 @@ module Occi
         #
         # @author Boris Parak <parak@cesnet.cz>
         class ActionInstance < Base
+          include Instance
+
           # Renders `object` into plain text and returns the result
           # as `String`.
           #
           # @return [String] textual representation of Object
           def render_plain
-            short_category << "\n" << instance_attributes
+            short_category(object.action) << "\n" << instance_attributes
           end
 
           # Renders `object` into text for headers and returns the result
@@ -26,23 +27,7 @@ module Occi
           #
           # @return [Hash] textual representation of Object for headers
           def render_headers
-            short_category.merge(instance_attributes)
-          end
-
-          private
-
-          # :nodoc:
-          def short_category
-            Occi::Core::Renderers::Text::Category.new(
-              object.action, options.merge(type: 'short')
-            ).render
-          end
-
-          # :nodoc:
-          def instance_attributes
-            Occi::Core::Renderers::Text::Attributes.new(
-              object.attributes, options
-            ).render
+            short_category(object.action).merge(instance_attributes)
           end
         end
       end

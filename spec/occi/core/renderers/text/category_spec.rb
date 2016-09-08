@@ -73,6 +73,30 @@ module Occi
             expect(cat.class).to respond_to(:logger)
           end
 
+          describe '::category_key_plain' do
+            it 'returns a category string' do
+              expect(Category.category_key_plain).to eq 'Category'
+            end
+          end
+
+          describe '::category_key_headers' do
+            it 'returns a category string' do
+              expect(Category.category_key_headers).to eq 'X-OCCI-Category'
+            end
+          end
+
+          describe '#category_key_plain' do
+            it 'returns a category string' do
+              expect(cat.category_key_plain).to eq 'Category'
+            end
+          end
+
+          describe '#category_key_headers' do
+            it 'returns a category string' do
+              expect(cat.category_key_headers).to eq 'X-OCCI-Category'
+            end
+          end
+
           describe '#render' do
             context 'with unknown format' do
               before do
