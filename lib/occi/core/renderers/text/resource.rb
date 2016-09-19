@@ -13,6 +13,9 @@ module Occi
         class Resource < Base
           include Instance
 
+          # Link key constant
+          LINK_KEY = 'Link'.freeze
+
           # Renders `object` into plain text and returns the result
           # as `String`.
           #
@@ -20,7 +23,7 @@ module Occi
           def render_plain
             [
               short_category(object.kind), short_mixins_plain, instance_attributes,
-              # TODO: instance_links, instance_actions
+              instance_links, instance_actions
             ].flatten.join("\n")
           end
 
@@ -34,17 +37,52 @@ module Occi
               short_mixins_headers
             )
             headers.merge(instance_attributes)
+            headers.merge(header_links)
           end
 
-          # protected
+          protected
 
-          # # :nodoc:
-          # def instance_links
-          # end
+          # :nodoc:
+          def header_links
+            { LINK_KEY => instance_links(false).concat(instance_actions(false)) }
+          end
 
-          # # :nodoc:
-          # def instance_actions
-          # end
+          # :nodoc:
+          def instance_links(plain = true)
+            links = object.links.collect { |link| instance_link(link) }
+            plain ? links.map { |link| "#{LINK_KEY}: #{link}" } : links
+          end
+
+          # :nodoc:
+          def instance_link(link)
+            "<#{link.target.location}>; " \
+            "rel=\"#{link.target.kind}\"; " \
+            "self=\"#{link.location}\"; " \
+            "category=\"#{instance_link_categories(link)}\"; " \
+            "#{instance_link_attributes(link)}"
+          end
+
+          # :nodoc:
+          def instance_link_categories(link)
+            [link.kind.identifier, *link.mixins.collect(&:identifier)].join(' ')
+          end
+
+          # :nodoc:
+          def instance_link_attributes(link)
+            attr_hash = Attributes.new(link.attributes, format: 'headers').render
+            attr_hash.values.flatten.join('; ')
+          end
+
+          # :nodoc:
+          def instance_actions(plain = true)
+            actions = object.actions.collect { |action| instance_action(action) }
+            plain ? actions.map { |action| "#{LINK_KEY}: #{action}" } : actions
+          end
+
+          # :nodoc:
+          def instance_action(action)
+            "<#{object.location}?action=#{action.term}>; rel=\"#{action}\""
+          end
         end
       end
     end
