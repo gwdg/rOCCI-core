@@ -1,4 +1,5 @@
 require 'occi/core/renderers/text/base'
+require 'occi/core/renderers/text/instance'
 
 module Occi
   module Core
@@ -36,8 +37,10 @@ module Occi
             headers[Category.category_key_headers].concat(
               short_mixins_headers
             )
-            headers.merge(instance_attributes)
-            headers.merge(header_links)
+            headers.merge!(instance_attributes)
+            headers.merge!(header_links)
+
+            headers
           end
 
           protected
@@ -55,11 +58,10 @@ module Occi
 
           # :nodoc:
           def instance_link(link)
-            "<#{link.target.location}>; " \
-            "rel=\"#{link.target.kind}\"; " \
-            "self=\"#{link.location}\"; " \
-            "category=\"#{instance_link_categories(link)}\"; " \
-            "#{instance_link_attributes(link)}"
+            link_categories = instance_link_categories(link)
+            link_attributes = instance_link_attributes(link)
+
+            ERB.new(self.class.link_template, render_safe).result(binding)
           end
 
           # :nodoc:
@@ -81,7 +83,23 @@ module Occi
 
           # :nodoc:
           def instance_action(action)
-            "<#{object.location}?action=#{action.term}>; rel=\"#{action}\""
+            ERB.new(self.class.action_template, render_safe).result(binding)
+          end
+
+          class << self
+            # :nodoc:
+            def action_template
+              '<<%= object.location %>?action=<%= action.term %>>; rel="<%= action %>"'
+            end
+
+            # :nodoc:
+            def link_template
+              '<<%= link.target.location %>>; ' \
+              'rel="<%= link.target.kind %>"; ' \
+              'self="<%= link.location %>"; ' \
+              'category="<%= link_categories %>"; ' \
+              '<%= link_attributes %>'
+            end
           end
         end
       end
