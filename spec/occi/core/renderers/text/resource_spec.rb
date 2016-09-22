@@ -60,6 +60,8 @@ module Occi
 
           let(:link) { Occi::Core::Link.new(kind: lnk_kind, title: 'My Link', mixins: mixins) }
           let(:resource) { Occi::Core::Resource.new(kind: kind, title: 'My Resource', mixins: mixins) }
+          let(:resource2) { Occi::Core::Resource.new(kind: kind, title: 'My Resource 2', mixins: mixins) }
+          let(:action) { Occi::Core::Action.new(term: 'action', schema: example_schema) }
 
           context 'with text format' do
             let(:options) { { format: 'text' } }
@@ -75,6 +77,17 @@ module Occi
             it 'renders with attributes' do
               expect(trres.render).to include 'X-OCCI-Attribute'
             end
+
+            it 'renders with link' do
+              link.target = resource2
+              resource.links << link
+              expect(trres.render).to include 'Link'
+            end
+
+            it 'renders with action' do
+              resource.actions << action
+              expect(trres.render).to include 'Link'
+            end
           end
 
           context 'with headers format' do
@@ -86,6 +99,17 @@ module Occi
 
             it 'renders with attributes' do
               expect(trres.render).to include 'X-OCCI-Attribute'
+            end
+
+            it 'renders with link' do
+              link.target = resource2
+              resource.links << link
+              expect(trres.render).to include 'Link'
+            end
+
+            it 'renders with action' do
+              resource.actions << action
+              expect(trres.render).to include 'Link'
             end
           end
         end
