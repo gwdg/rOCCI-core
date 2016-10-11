@@ -187,11 +187,10 @@ module Occi
       # :nodoc:
       def match_pattern!(value)
         return unless type_ancestors.include?(String)
+        return unless pattern?
 
-        if pattern? && !pattern.match(value)
-          raise Occi::Core::Errors::AttributeValidationError,
-                "#{value.inspect} does not match pattern #{pattern.inspect}"
-        end
+        raise Occi::Core::Errors::AttributeValidationError,
+              "#{value.inspect} does not match pattern #{pattern.inspect}" unless pattern.match(value)
       end
 
       # :nodoc:
