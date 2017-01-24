@@ -36,9 +36,11 @@ module Occi
               category = category(line)
 
               if category.kind_of? Occi::Core::Kind
-                resource = Occi::Core::Resource.new(category.type_identifier)
+                resource = Occi::Core::Resource.new category.type_identifier
+                resource.id = nil
                 resource.kind = category
               end
+
               resource.mixins << category if category.kind_of? Occi::Core::Mixin
             when /^X-OCCI-Attribute:/
               resource.attributes.merge! attribute(line)
@@ -76,7 +78,13 @@ module Occi
             case line
             when /^Category:/
               category = category(line)
-              link.kind = category if category.kind_of? Occi::Core::Kind
+
+              if category.kind_of? Occi::Core::Kind
+                link = Occi::Core::Link.new category.type_identifier
+                link.id = nil
+                link.kind = category
+              end
+
               link.mixins << category if category.kind_of? Occi::Core::Mixin
             when /^X-OCCI-Attribute:/
               link.attributes.merge! attribute(line)
