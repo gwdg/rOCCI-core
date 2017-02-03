@@ -325,22 +325,24 @@ module Occi
       end
 
       def add_missing_attributes(attributes, definitions, set_defaults)
-        attributes ||= Occi::Core::Attributes.new
-
         definitions.each_key do |key|
           next if key =~ /^_/
 
           if definitions[key].kind_of? Occi::Core::Attributes
+            attributes[key] = Occi::Core::Attributes.new if attributes[key].nil?
             add_missing_attributes(attributes[key], definitions[key], set_defaults)
           elsif attributes[key].nil?
-
             if definitions[key].default.nil?
               raise Occi::Errors::AttributeMissingError,
                     "Required attribute #{key} not specified" if definitions[key].required
-            else
-              attributes[key] = definitions[key].default if definitions[key].required || set_defaults
+            elsif definitions[key].required || set_defaults
+              attributes[key] = definitions[key]
+              attributes[key] = definitions[key].default
             end
-
+          else
+            old_val = attributes[key]
+            attributes[key] = definitions[key]
+            attributes[key] = old_val
           end
         end
       end
