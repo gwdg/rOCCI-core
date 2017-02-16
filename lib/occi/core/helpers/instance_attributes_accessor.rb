@@ -18,8 +18,10 @@ module Occi
 
         # :nodoc:
         def []=(key, val)
-          raise Occi::Core::Errors::AttributeDefinitionError, 'Attribute named ' \
-                "#{key.inspect} has not been defined for #{self}" unless attribute?(key)
+          unless attribute?(key)
+            raise Occi::Core::Errors::AttributeDefinitionError, 'Attribute named ' \
+                  "#{key.inspect} has not been defined for #{self}"
+          end
           attributes[key].value = val
         end
       end

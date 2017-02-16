@@ -19,6 +19,12 @@ Metrics/MethodLength:
 Metrics/LineLength:
   Max: 120
 
+Metrics/BlockLength:
+  Exclude:
+  - 'spec/**/*'
+  - 'test/**/*'
+  - '*.gemspec'
+
 ClassLength:
   Max: 180
 
@@ -39,8 +45,8 @@ Style/NilComparison:
 RSpec/MultipleExpectations:
   Max: 5
 
-RSpec/NestedGroups:
-  MaxNesting: 5
+RSpec/MessageSpies:
+  EnforcedStyle: receive
 
 RSpec/SubjectStub:
   Exclude:

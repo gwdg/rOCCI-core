@@ -242,8 +242,10 @@ module Occi
       # :nodoc:
       def sufficient_args!(args)
         ALL_KEYS.each do |attr|
-          raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
-                "argument for #{self.class}" unless args[attr]
+          unless args[attr]
+            raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
+                  "argument for #{self.class}"
+          end
         end
       end
 

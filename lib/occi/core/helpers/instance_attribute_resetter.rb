@@ -97,8 +97,10 @@ module Occi
 
           added_attributes.each do |attrs|
             attrs.each_pair do |name, definition|
-              raise Occi::Core::Errors::AttributeDefinitionError,
-                    "Attribute #{name.inspect} already modified by another mixin" if processed_attrs.include?(name)
+              if processed_attrs.include?(name)
+                raise Occi::Core::Errors::AttributeDefinitionError,
+                      "Attribute #{name.inspect} already modified by another mixin"
+              end
               processed_attrs << name
               reset_attribute(name, definition, force)
             end

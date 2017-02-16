@@ -22,8 +22,10 @@ module Occi
 
       # @param links [Set] set of links
       def links=(links)
-        raise Occi::Core::Errors::InstanceValidationError,
-              'Missing valid links' unless links
+        unless links
+          raise Occi::Core::Errors::InstanceValidationError,
+                'Missing valid links'
+        end
         links.each { |link| link.source = self }
         @links = links
 
@@ -56,8 +58,10 @@ module Occi
       #
       # @param link [Occi::Core::Link] link to be added
       def add_link(link)
-        raise Occi::Core::Errors::MandatoryArgumentError,
-              'Cannot add a non-existent link' unless link
+        unless link
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot add a non-existent link'
+        end
         link.source = self
         links << link
       end
@@ -66,8 +70,10 @@ module Occi
       #
       # @param link [Occi::Core::Link] link to be removed
       def remove_link(link)
-        raise Occi::Core::Errors::MandatoryArgumentError,
-              'Cannot remove a non-existent link' unless link
+        unless link
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot remove a non-existent link'
+        end
         link.source = nil
         links.delete link
       end
@@ -75,8 +81,10 @@ module Occi
       # See `#valid!` on `Occi::Core::Entity`.
       def valid!
         # TODO: validate included links
-        raise Occi::Core::Errors::InstanceValidationError,
-              'Missing valid links' unless links
+        unless links
+          raise Occi::Core::Errors::InstanceValidationError,
+                'Missing valid links'
+        end
         super
       end
 
@@ -90,8 +98,10 @@ module Occi
       # :nodoc:
       def sufficient_args!(args)
         super
+
+        return unless args[:links].nil?
         raise Occi::Core::Errors::MandatoryArgumentError,
-              "Links is a mandatory argument for #{self.class}" if args[:links].nil?
+              "Links is a mandatory argument for #{self.class}"
       end
 
       # :nodoc:

@@ -58,8 +58,10 @@ module Occi
       def sufficient_args!(args)
         super
         [:actions, :depends, :applies].each do |attr|
-          raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
-                "argument for #{self.class}" if args[attr].nil?
+          if args[attr].nil?
+            raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
+                  "argument for #{self.class}"
+          end
         end
       end
 
@@ -83,8 +85,10 @@ module Occi
       #
       # @return [URI] generated location string
       def generate_location
-        raise Occi::Core::Errors::MandatoryArgumentError,
-              'Cannot generate default location without a `term`' if term.blank?
+        if term.blank?
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot generate default location without a `term`'
+        end
         URI.parse "/#{term}/"
       end
     end

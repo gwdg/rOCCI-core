@@ -43,10 +43,14 @@ module Occi
       # @raise [Occi::Core::Errors::AttributeDefinitionError] if there are problems with the definition
       # @raise [Occi::Core::Errors::AttributeValidationError] if this instance is not valid
       def valid!
-        raise Occi::Core::Errors::AttributeValidationError,
-              'Attribute is missing a definition' unless definition?
-        raise Occi::Core::Errors::AttributeDefinitionError,
-              'Attribute definition is not capable of validation' unless attribute_definition.respond_to?(:valid!)
+        unless definition?
+          raise Occi::Core::Errors::AttributeValidationError,
+                'Attribute is missing a definition'
+        end
+        unless attribute_definition.respond_to?(:valid!)
+          raise Occi::Core::Errors::AttributeDefinitionError,
+                'Attribute definition is not capable of validation'
+        end
 
         attribute_definition.valid! value
       end
@@ -105,8 +109,10 @@ module Occi
       # @raise [Occi::Core::Errors::AttributeDefinitionError] if there is no `attribute_definition`
       # @return [Object] new value
       def default!
-        raise Occi::Core::Errors::AttributeDefinitionError,
-              'There is no definition for this attribute' unless definition?
+        unless definition?
+          raise Occi::Core::Errors::AttributeDefinitionError,
+                'There is no definition for this attribute'
+        end
         self.value = attribute_definition.default
       end
 

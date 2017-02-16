@@ -47,9 +47,11 @@ module Occi
         cached_kinds = kinds
         cached_mixins = mixins
         entities.each do |ent|
-          raise Occi::Core::Errors::InstanceValidationError,
-                "Entity ID[#{ent.id}] contains undeclared " \
-                "kind #{ent.kind_identifier}" unless cached_kinds.include?(ent.kind)
+          unless cached_kinds.include?(ent.kind)
+            raise Occi::Core::Errors::InstanceValidationError,
+                  "Entity ID[#{ent.id}] contains undeclared " \
+                  "kind #{ent.kind_identifier}"
+          end
           valid_mixins!(ent, cached_mixins)
         end
       end
@@ -57,9 +59,10 @@ module Occi
       # :nodoc:
       def valid_mixins!(ent, cached_mixins)
         ent.mixins.each do |mxn|
+          next if cached_mixins.include?(mxn)
           raise Occi::Core::Errors::InstanceValidationError,
                 "Entity ID[#{ent.id}] contains undeclared " \
-                "mixin #{mxn.identifier}" unless cached_mixins.include?(mxn)
+                "mixin #{mxn.identifier}"
         end
       end
 
@@ -67,9 +70,10 @@ module Occi
       def valid_action_instances!
         cached_actions = actions
         action_instances.each do |ai|
+          next if cached_actions.include?(ai.action)
           raise Occi::Core::Errors::InstanceValidationError,
                 'Action instance contains undeclared ' \
-                "action #{ai.action_identifier}" unless cached_actions.include?(ai.action)
+                "action #{ai.action_identifier}"
         end
       end
     end

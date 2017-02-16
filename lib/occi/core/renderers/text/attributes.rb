@@ -41,14 +41,25 @@ module Occi
 
           # :nodoc:
           def prepare_instance_attribute(name, attribute)
-            raise Occi::Core::Errors::RenderingError, "Attribute #{name} does " \
-                  'not expose its definition' unless attribute.respond_to?(:attribute_definition)
-            raise Occi::Core::Errors::RenderingError, 'Cannot render attribute ' \
-                  "#{name} without a definition" unless attribute.attribute_definition
-            raise Occi::Core::Errors::RenderingError, 'Cannot render attribute ' \
-                  "#{name} without a type" unless attribute.attribute_definition.type
+            unless attribute.respond_to?(:attribute_definition)
+              raise Occi::Core::Errors::RenderingError, "Attribute #{name} does " \
+                    'not expose its definition'
+            end
+            valid_definition! name, attribute.attribute_definition
 
             prepare_instance_attribute_value(name, attribute.attribute_definition.type, attribute.value)
+          end
+
+          # :nodoc:
+          def valid_definition!(name, attribute_definition)
+            unless attribute_definition
+              raise Occi::Core::Errors::RenderingError, 'Cannot render attribute ' \
+                    "#{name} without a definition"
+            end
+
+            return if attribute_definition.type
+            raise Occi::Core::Errors::RenderingError, 'Cannot render attribute ' \
+                  "#{name} without a type"
           end
 
           # :nodoc:

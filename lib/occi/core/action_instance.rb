@@ -49,8 +49,10 @@ module Occi
       # @param action [Occi::Core::Action] action to be assigned
       # @return [Occi::Core::Action] assigned action
       def action=(action)
-        raise Occi::Core::Errors::InstanceValidationError,
-              'Missing valid action' unless action
+        unless action
+          raise Occi::Core::Errors::InstanceValidationError,
+                'Missing valid action'
+        end
 
         @action = action
         reset_attributes!
@@ -113,8 +115,10 @@ module Occi
       # :nodoc:
       def sufficient_args!(args)
         [:action, :attributes].each do |attr|
-          raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
-                "argument for #{self.class}" unless args[attr]
+          unless args[attr]
+            raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
+                  "argument for #{self.class}"
+          end
         end
       end
 

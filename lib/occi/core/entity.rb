@@ -98,8 +98,10 @@ module Occi
       # @param kind [Occi::Core::Kind] kind instance to be assigned
       # @return [Occi::Core::Kind] assigned kind instance
       def kind=(kind)
-        raise Occi::Core::Errors::InstanceValidationError,
-              'Missing valid kind' unless kind
+        unless kind
+          raise Occi::Core::Errors::InstanceValidationError,
+                'Missing valid kind'
+        end
 
         @kind = kind
         reset_attributes!
@@ -114,8 +116,10 @@ module Occi
       # @param kind [Hash] mixins instance to be assigned
       # @return [Hash] mixins instance assigned
       def mixins=(mixins)
-        raise Occi::Core::Errors::InstanceValidationError,
-              'Missing valid mixins' unless mixins
+        unless mixins
+          raise Occi::Core::Errors::InstanceValidationError,
+                'Missing valid mixins'
+        end
 
         @mixins = mixins
         reset_added_attributes!
@@ -177,8 +181,10 @@ module Occi
       #
       # @param mixin [Occi::Core::Mixin] mixin to be added
       def add_mixin(mixin)
-        raise Occi::Core::Errors::MandatoryArgumentError,
-              'Cannot add a non-existent mixin' unless mixin
+        unless mixin
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot add a non-existent mixin'
+        end
 
         # TODO: handle adding actions
         mixins << mixin
@@ -191,8 +197,10 @@ module Occi
       #
       # @param mixin [Occi::Core::Mixin] mixin to be removed
       def remove_mixin(mixin)
-        raise Occi::Core::Errors::MandatoryArgumentError,
-              'Cannot remove a non-existent mixin' unless mixin
+        unless mixin
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot remove a non-existent mixin'
+        end
 
         # TODO: handle removing actions
         mixins.delete mixin
@@ -214,8 +222,10 @@ module Occi
       #
       # @param action [Occi::Core::Action] action to be added
       def add_action(action)
-        raise Occi::Core::Errors::MandatoryArgumentError,
-              'Cannot add a non-existent action' unless action
+        unless action
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot add a non-existent action'
+        end
         actions << action
       end
 
@@ -223,8 +233,10 @@ module Occi
       #
       # @param action [Occi::Core::Action] action to be removed
       def remove_action(action)
-        raise Occi::Core::Errors::MandatoryArgumentError,
-              'Cannot remove a non-existent action' unless action
+        unless action
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot remove a non-existent action'
+        end
         actions.delete action
       end
 
@@ -262,8 +274,10 @@ module Occi
       # @return [NilClass] when entity instance is valid
       def valid!
         [:kind, :id, :location, :title, :attributes, :mixins, :actions].each do |attr|
-          raise Occi::Core::Errors::InstanceValidationError,
-                "Missing valid #{attr}" unless send(attr)
+          unless send(attr)
+            raise Occi::Core::Errors::InstanceValidationError,
+                  "Missing valid #{attr}"
+          end
         end
 
         attributes.each_pair { |name, attribute| valid_attribute!(name, attribute) }
@@ -297,8 +311,10 @@ module Occi
       # :nodoc:
       def sufficient_args!(args)
         [:kind, :attributes, :mixins, :actions].each do |attr|
-          raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
-                "argument for #{self.class}" unless args[attr]
+          unless args[attr]
+            raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
+                  "argument for #{self.class}"
+          end
         end
       end
 
@@ -329,8 +345,10 @@ module Occi
       #
       # @return [URI] generated location
       def generate_location
-        raise Occi::Core::Errors::MandatoryArgumentError,
-              'Cannot generate default location without an `id`' if id.blank?
+        if id.blank?
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot generate default location without an `id`'
+        end
         URI.parse "#{kind.location}#{id}"
       end
     end

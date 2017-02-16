@@ -38,8 +38,10 @@ module Occi
         # @param term [String] term candidate
         def valid_term!(term)
           validation_result = REGEXP_TERM.match(term)
+
+          return if validation_result
           raise Occi::Core::Errors::CategoryValidationError,
-                "Term #{term.inspect} does not match #{REGEXP_TERM.inspect}" if validation_result.nil?
+                "Term #{term.inspect} does not match #{REGEXP_TERM.inspect}"
         end
 
         # Validates given `schema` against the restrictions imposed by the
@@ -68,10 +70,14 @@ module Occi
         #
         # @param schema [String] schema candidate
         def valid_schema!(schema)
-          raise Occi::Core::Errors::CategoryValidationError,
-                "Schema #{schema.inspect} cannot be blank" if schema.blank?
-          raise Occi::Core::Errors::CategoryValidationError,
-                "Schema #{schema.inspect} must be terminated with '#'" unless schema.end_with?('#')
+          if schema.blank?
+            raise Occi::Core::Errors::CategoryValidationError,
+                  "Schema #{schema.inspect} cannot be blank"
+          end
+          unless schema.end_with?('#')
+            raise Occi::Core::Errors::CategoryValidationError,
+                  "Schema #{schema.inspect} must be terminated with '#'"
+          end
 
           valid_uri! schema
           prohibited_chars! schema
@@ -103,8 +109,10 @@ module Occi
         # @param identifier [String] identifier candidate
         def valid_identifier!(identifier)
           elements = identifier.split('#')
-          raise Occi::Core::Errors::CategoryValidationError,
-                "Identifier #{identifier.inspect} is malformed" if elements.count != 2
+          if elements.count != 2
+            raise Occi::Core::Errors::CategoryValidationError,
+                  "Identifier #{identifier.inspect} is malformed"
+          end
 
           valid_schema! "#{elements.first}#"
           valid_term! elements.last

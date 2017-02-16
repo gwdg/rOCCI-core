@@ -73,8 +73,10 @@ module Occi
           def render(object, options)
             logger.debug "#{self} rendering #{object.inspect} with #{options.inspect}"
             candidate = rendering_candidate(object)
-            raise Occi::Core::Errors::RenderingError, "#{object.class} cannot be " \
-                  "rendered to #{options[:format]}" unless candidate
+            unless candidate
+              raise Occi::Core::Errors::RenderingError, "#{object.class} cannot be " \
+                    "rendered to #{options[:format]}"
+            end
 
             known[candidate].new(object, options).render
           end

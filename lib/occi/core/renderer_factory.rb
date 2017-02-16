@@ -83,8 +83,10 @@ module Occi
       # @param format [String] over-the-wire format
       # @return [Class] factory renderer corresponding to `format`
       def renderer_for(format)
-        raise Occi::Core::Errors::RenderingError,
-              'Cannot return a renderer for an unspecified format' if format.blank?
+        if format.blank?
+          raise Occi::Core::Errors::RenderingError,
+                'Cannot return a renderer for an unspecified format'
+        end
         renderers[format] || raise(Occi::Core::Errors::RenderingError, "No renderer for #{format.inspect}")
       end
 
@@ -125,8 +127,10 @@ module Occi
       # @param candidate [Object, Class] object or class to check
       def renderer_with_methods!(candidate)
         required_methods.each do |method|
-          raise Occi::Core::Errors::RendererError, "#{candidate.inspect} " \
-                "does not respond to #{method.inspect}" unless candidate.respond_to?(method)
+          unless candidate.respond_to?(method)
+            raise Occi::Core::Errors::RendererError, "#{candidate.inspect} " \
+                  "does not respond to #{method.inspect}"
+          end
         end
       end
 
@@ -136,10 +140,14 @@ module Occi
       #
       # @param candidate [Object, Class] object or class to check
       def renderer_with_formats!(candidate)
+        unless candidate.respond_to?(:formats)
+          raise Occi::Core::Errors::RendererError, "#{candidate.inspect} " \
+                "does not respond to 'formats'"
+        end
+
+        return unless candidate.formats.blank?
         raise Occi::Core::Errors::RendererError, "#{candidate.inspect} " \
-              "does not respond to 'formats'" unless candidate.respond_to?(:formats)
-        raise Occi::Core::Errors::RendererError, "#{candidate.inspect} " \
-              'does not expose any supported formats' if candidate.formats.blank?
+              'does not expose any supported formats'
       end
 
       class << self
@@ -164,8 +172,10 @@ module Occi
         # @param namespace [Module] base namespace
         # @return [Array] list of constants
         def constants_from(namespace)
-          raise Occi::Core::Errors::RendererError, "#{namespace.inspect} " \
-                'is not a Module' unless namespace.is_a? Module
+          unless namespace.is_a? Module
+            raise Occi::Core::Errors::RendererError, "#{namespace.inspect} " \
+                  'is not a Module'
+          end
           logger.debug "RendererFactory: Looking for renderers in #{namespace}"
           namespace.constants.collect { |const| namespace.const_get(const) }
         end
@@ -192,8 +202,10 @@ module Occi
       # :nodoc:
       def sufficient_args!(args)
         [:required_methods, :namespace].each do |attr|
-          raise Occi::Core::Errors::MandatoryArgumentError,
-                "#{attr} is a mandatory argument for #{self.class}" if args[attr].blank?
+          if args[attr].blank?
+            raise Occi::Core::Errors::MandatoryArgumentError,
+                  "#{attr} is a mandatory argument for #{self.class}"
+          end
         end
       end
     end
