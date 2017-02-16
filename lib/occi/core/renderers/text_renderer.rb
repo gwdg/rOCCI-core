@@ -111,7 +111,7 @@ module Occi
           # :nodoc:
           def rendering_candidate(object)
             object_ancestors = object.class.ancestors.collect(&:to_s)
-            object_ancestors.select { |klass| known_types.include?(klass) }.first
+            object_ancestors.detect { |klass| known_types.include?(klass) }
           end
         end
       end
