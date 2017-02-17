@@ -192,7 +192,7 @@ module Occi
         end
         return if value.nil? && optional?
 
-        unless type_ancestors.include?(value.class)
+        unless value_ancestors(value).include?(type)
           raise Occi::Core::Errors::AttributeValidationError,
                 "Type #{value.class} is incompatible with " \
                 "defined type #{type}"
@@ -214,6 +214,11 @@ module Occi
       # :nodoc:
       def type_ancestors
         type.ancestors
+      end
+
+      # :nodoc:
+      def value_ancestors(value)
+        value.class.ancestors
       end
 
       # :nodoc:

@@ -220,6 +220,10 @@ module Occi
         end
 
         describe '#valid!' do
+          let(:example_type_ent) { Occi::Core::Entity }
+          let(:example_kind) { Occi::Core::Kind.new schema: 'http://my/test#', term: 'kind' }
+          let(:example_value_res) { Occi::Core::Resource.new kind: example_kind, id: SecureRandom.uuid }
+
           it 'does not raise error to indicate success' do
             expect { attr_def.valid!(example_value1) }.not_to raise_error
           end
@@ -246,6 +250,11 @@ module Occi
           it 'does not raise error to indicate success without pattern' do
             attr_def.pattern = nil
             expect { attr_def.valid!(example_value3) }.not_to raise_error
+          end
+
+          it 'does not raise error for sub-types of defined type' do
+            attr_def.type = example_type_ent
+            expect { attr_def.valid!(example_value_res) }.not_to raise_error
           end
         end
       end
