@@ -299,6 +299,14 @@ module Occi
         mixins.collect(&:attributes)
       end
 
+      # Returns entity instance identifier. If such identifier is not set,
+      # it will generate a pseudo-random UUID and assign/return it.
+      #
+      # @return [String] entity instance identifier
+      def identify!
+        self.id ||= SecureRandom.uuid
+      end
+
       protected
 
       # :nodoc:
@@ -321,7 +329,7 @@ module Occi
       # :nodoc:
       def defaults
         {
-          kind: nil, id: SecureRandom.uuid, location: nil, title: nil,
+          kind: nil, id: nil, location: nil, title: nil,
           attributes: {}, mixins: Set.new, actions: Set.new
         }
       end

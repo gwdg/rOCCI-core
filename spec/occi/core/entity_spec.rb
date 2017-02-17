@@ -31,7 +31,7 @@ module Occi
       end
 
       let(:entity) do
-        Entity.new(kind: kind, title: 'my_title')
+        Entity.new(kind: kind, title: 'my_title', id: SecureRandom.uuid)
       end
 
       before do
@@ -487,6 +487,21 @@ module Occi
             expect(ent.added_attributes).to be_empty
             expect(ent.added_attributes).to be_kind_of Array
           end
+        end
+      end
+
+      describe '#identify!' do
+        it 'sets and returns missing id' do
+          ent.id = nil
+          expect(ent.identify!).not_to be_nil
+          expect(ent.id).not_to be_nil
+        end
+
+        it 'returns existing id without changing it' do
+          old_id = ent.id
+          expect(ent.id).not_to be_nil
+          expect(ent.identify!).to be old_id
+          expect(ent.id).to be old_id
         end
       end
     end

@@ -58,9 +58,15 @@ module Occi
             )
           end
 
-          let(:link) { Occi::Core::Link.new(kind: lnk_kind, title: 'My Link', mixins: mixins) }
-          let(:resource) { Occi::Core::Resource.new(kind: kind, title: 'My Resource', mixins: mixins) }
-          let(:resource2) { Occi::Core::Resource.new(kind: kind, title: 'My Resource 2', mixins: mixins) }
+          let(:link) do
+            Occi::Core::Link.new(kind: lnk_kind, title: 'My Link', mixins: mixins, id: SecureRandom.uuid)
+          end
+          let(:resource) do
+            Occi::Core::Resource.new(kind: kind, title: 'My Resource', mixins: mixins, id: SecureRandom.uuid)
+          end
+          let(:resource2) do
+            Occi::Core::Resource.new(kind: kind, title: 'My Resource 2', mixins: mixins, id: SecureRandom.uuid)
+          end
           let(:action) { Occi::Core::Action.new(term: 'action', schema: example_schema) }
 
           context 'with text format' do

@@ -20,7 +20,7 @@ module Occi
 
       let(:kind) { instance_double('Occi::Core::Kind') }
 
-      let(:link) { Link.new(kind: kind, title: 'My Link') }
+      let(:link) { Link.new(kind: kind, title: 'My Link', id: SecureRandom.uuid) }
 
       before do
         allow(kind).to receive(:attributes).and_return(attributes)

@@ -133,7 +133,7 @@ module Occi
             end
 
             context 'as plain with entity attribute' do
-              let(:value) { Occi::Core::Resource.new(kind: kind) }
+              let(:value) { Occi::Core::Resource.new(kind: kind, id: SecureRandom.uuid) }
               let(:options) { { format: 'text' } }
 
               before do
@@ -245,7 +245,7 @@ module Occi
             end
 
             context 'as plain with entity attribute' do
-              let(:value) { Occi::Core::Resource.new(kind: kind) }
+              let(:value) { Occi::Core::Resource.new(kind: kind, id: SecureRandom.uuid) }
               let(:options) { { format: 'headers' } }
 
               before do

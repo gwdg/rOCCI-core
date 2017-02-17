@@ -56,8 +56,8 @@ module Occi
         )
       end
 
-      let(:link) { Link.new(kind: kind, title: 'My Link', source: resource, target: resource) }
-      let(:resource) { Resource.new(kind: kind, title: 'My Resource', mixins: Set.new([mixin])) }
+      let(:link) { Link.new(kind: kind, title: 'My Link', source: resource, target: resource, id: SecureRandom.uuid) }
+      let(:resource) { Resource.new(kind: kind, title: 'My Resource', id: SecureRandom.uuid, mixins: Set.new([mixin])) }
       let(:action_instance) { ActionInstance.new(action: action, attributes: {}) }
 
       before do

@@ -27,7 +27,7 @@ module Occi
       let(:kind) { instance_double('Occi::Core::Kind') }
       let(:link_kind) { instance_double('Occi::Core::Kind') }
 
-      let(:resource) { Resource.new(kind: kind, title: 'My Resource') }
+      let(:resource) { Resource.new(kind: kind, title: 'My Resource', id: SecureRandom.uuid) }
 
       let(:link) { Link.new(kind: link_kind, title: 'My Link') }
       let(:link1) { Link.new(kind: link_kind, title: 'My Link 1') }
