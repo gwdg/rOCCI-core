@@ -100,6 +100,22 @@ module Occi
               end
             end
 
+            context 'as plain with `nil` attribute' do
+              let(:value) { nil }
+              let(:options) { { format: 'text' } }
+
+              before do
+                attributes[attribute_name].value = value
+                attributes[attribute_name].attribute_definition = attr_def_string
+                tra.object = attributes
+                tra.options = options
+              end
+
+              it 'renders' do
+                expect(tra.render).to eq ''
+              end
+            end
+
             context 'as plain with category attribute' do
               let(:value) { kind }
               let(:options) { { format: 'text' } }
@@ -193,6 +209,22 @@ module Occi
 
               it 'renders' do
                 expect(tra.render).to eq('X-OCCI-Attribute' => ["#{attribute_name}=#{value}"])
+              end
+            end
+
+            context 'as plain with `nil` attribute' do
+              let(:value) { nil }
+              let(:options) { { format: 'headers' } }
+
+              before do
+                attributes[attribute_name].value = value
+                attributes[attribute_name].attribute_definition = attr_def_string
+                tra.object = attributes
+                tra.options = options
+              end
+
+              it 'renders' do
+                expect(tra.render).to eq('X-OCCI-Attribute' => [])
               end
             end
 

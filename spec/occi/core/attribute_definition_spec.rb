@@ -208,6 +208,11 @@ module Occi
             expect(attr_def.valid?(example_value_nil)).to be false
           end
 
+          it 'returns `true` for empty optional attribute' do
+            attr_def.required = false
+            expect(attr_def.valid?(example_value_nil)).to be true
+          end
+
           it 'returns `true` to indicate success without pattern' do
             attr_def.pattern = nil
             expect(attr_def.valid?(example_value3)).to be true
@@ -231,6 +236,11 @@ module Occi
           it 'raises error for empty required attribute' do
             attr_def.required = true
             expect { attr_def.valid!(example_value_nil) }.to raise_error(Occi::Core::Errors::AttributeValidationError)
+          end
+
+          it 'does not raise error for empty optional attribute' do
+            attr_def.required = false
+            expect { attr_def.valid!(example_value_nil) }.not_to raise_error
           end
 
           it 'does not raise error to indicate success without pattern' do
