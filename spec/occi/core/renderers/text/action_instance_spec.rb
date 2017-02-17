@@ -18,8 +18,9 @@ module Occi
             )
           end
 
+          let(:attrs) { { 'test' => Occi::Core::Attribute.new('my_test_attribute', nil) } }
           let(:ai) do
-            Occi::Core::ActionInstance.new(action: action)
+            Occi::Core::ActionInstance.new(action: action, attributes: attrs)
           end
 
           context 'with text format' do

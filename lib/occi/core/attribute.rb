@@ -122,6 +122,15 @@ module Occi
       def reset!
         self.value = nil
       end
+
+      # Reports whether attribute value is absent (`nil`) but the attribute is
+      # optional and this fact can be safely ignored. Helps with rendering
+      # decisions.
+      #
+      # @return [TrueClass, FalseClass] flag indicating "safe" valuelessness
+      def optionally_valueless?
+        !value? && definition? && attribute_definition.optional?
+      end
     end
   end
 end

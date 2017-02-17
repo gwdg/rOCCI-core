@@ -36,7 +36,8 @@ module Occi
 
           # :nodoc:
           def prepare_instance_attributes
-            object.collect { |name, value| "#{name}=#{prepare_instance_attribute(name, value)}" }
+            object.select { |_, attribute| attribute.value? }
+                  .collect { |name, attribute| "#{name}=#{prepare_instance_attribute(name, attribute)}" }
           end
 
           # :nodoc:
@@ -45,9 +46,10 @@ module Occi
               raise Occi::Core::Errors::RenderingError, "Attribute #{name} does " \
                     'not expose its definition'
             end
-            valid_definition! name, attribute.attribute_definition
+            attr_def = attribute.attribute_definition
+            valid_definition! name, attr_def
 
-            prepare_instance_attribute_value(name, attribute.attribute_definition.type, attribute.value)
+            prepare_instance_attribute_value(name, attr_def.type, attribute.value)
           end
 
           # :nodoc:
@@ -68,7 +70,7 @@ module Occi
               "\"#{value.location}\""
             elsif type.ancestors.include?(Occi::Core::Category)
               "\"#{value.identifier}\""
-            elsif PRIMITIVE_TYPES.include?(type)
+            elsif (PRIMITIVE_TYPES & type.ancestors).any?
               value.inspect
             else
               raise Occi::Core::Errors::RenderingError, "Value #{value.inspect} " \

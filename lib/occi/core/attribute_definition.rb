@@ -186,10 +186,11 @@ module Occi
 
       # :nodoc:
       def valid_value!(value)
-        if required? && value.nil?
+        if value.nil? && required?
           raise Occi::Core::Errors::AttributeValidationError,
                 'Value is required but not provided'
         end
+        return if value.nil? && optional?
 
         unless type_ancestors.include?(value.class)
           raise Occi::Core::Errors::AttributeValidationError,

@@ -191,6 +191,23 @@ module Occi
           expect(attrib.value).to be nil
         end
       end
+
+      describe '#optionally_valueless?' do
+        it 'returns `true` when value `nil` and attr is optional' do
+          expect(noval_attribute.attribute_definition).to receive(:optional?).and_return(true)
+          expect(noval_attribute.optionally_valueless?).to be true
+        end
+
+        it 'returns `false` when attr has value' do
+          expect(attribute.optionally_valueless?).to be false
+          expect(nodef_attribute.optionally_valueless?).to be false
+        end
+
+        it 'returns `false` when value `nil` and attr is required' do
+          expect(noval_attribute.attribute_definition).to receive(:optional?).and_return(false)
+          expect(noval_attribute.optionally_valueless?).to be false
+        end
+      end
     end
   end
 end
