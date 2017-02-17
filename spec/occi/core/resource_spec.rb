@@ -29,8 +29,8 @@ module Occi
 
       let(:resource) { Resource.new(kind: kind, title: 'My Resource', id: SecureRandom.uuid) }
 
-      let(:link) { Link.new(kind: link_kind, title: 'My Link') }
-      let(:link1) { Link.new(kind: link_kind, title: 'My Link 1') }
+      let(:link) { Link.new(kind: link_kind, title: 'My Link', id: SecureRandom.uuid) }
+      let(:link1) { Link.new(kind: link_kind, title: 'My Link 1', id: SecureRandom.uuid) }
 
       before do
         allow(link_kind).to receive(:attributes).and_return(link_attributes)
