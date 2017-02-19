@@ -43,6 +43,12 @@ module Occi
           allow(send(elm)).to receive(:is_a?).with(Class).and_return(false)
           allow(send(elm)).to receive(:is_a?).with(Occi::Core.const_get(elm.to_s.capitalize)).and_return(true)
         end
+
+        allow(resource).to receive(:kind).and_return(kind)
+        allow(resource).to receive(:mixins).and_return(Set.new([mixin]))
+        allow(link).to receive(:kind).and_return(kind)
+        allow(link).to receive(:mixins).and_return(Set.new([mixin]))
+        allow(action_instance).to receive(:action).and_return(action)
       end
 
       describe '#all' do

@@ -56,10 +56,6 @@ module Occi
         )
       end
 
-      let(:link) { Link.new(kind: kind, title: 'My Link', source: resource, target: resource, id: SecureRandom.uuid) }
-      let(:resource) { Resource.new(kind: kind, title: 'My Resource', id: SecureRandom.uuid, mixins: Set.new([mixin])) }
-      let(:action_instance) { ActionInstance.new(action: action, attributes: {}) }
-
       before do
         attributes.keys.each do |attrib|
           allow(attributes[attrib]).to receive(:default)
@@ -67,7 +63,6 @@ module Occi
         end
 
         mdl << kind << action << mixin << root_kind
-        mdl << link << resource << action_instance
       end
 
       it 'has logger' do
@@ -81,87 +76,11 @@ module Occi
       end
 
       describe '#valid!' do
-        context 'with valid instances' do
-          it 'validates' do
-            expect { mdl.valid! }.not_to raise_error
-          end
-        end
-
-        context 'with invalid instances' do
-          context 'without kind' do
-            before { mdl.remove(kind) }
-
-            it 'fails on missing kind' do
-              expect { mdl.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
-            end
-          end
-
-          context 'without parent kind' do
-            before { mdl.remove(root_kind) }
-
-            it 'fails on missing parent kind' # do
-            #   expect { mdl.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
-            # end
-          end
-
-          context 'without action' do
-            before { mdl.remove(action) }
-
-            it 'fails on missing action' do
-              expect { mdl.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
-            end
-          end
-
-          context 'without mixin' do
-            before { mdl.remove(mixin) }
-
-            it 'fails on missing mixin' do
-              expect { mdl.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
-            end
-          end
-        end
+        it 'does something'
       end
 
       describe '#valid?' do
-        context 'with valid instances' do
-          it 'validates' do
-            expect(mdl.valid?).to be true
-          end
-        end
-
-        context 'with invalid instances' do
-          context 'without kind' do
-            before { mdl.remove(kind) }
-
-            it 'fails on missing kind' do
-              expect(mdl.valid?).to be false
-            end
-          end
-
-          context 'without parent kind' do
-            before { mdl.remove(root_kind) }
-
-            it 'fails on missing parent kind' # do
-            #   expect(mdl.valid?).to be false
-            # end
-          end
-
-          context 'without action' do
-            before { mdl.remove(action) }
-
-            it 'fails on missing action' do
-              expect(mdl.valid?).to be false
-            end
-          end
-
-          context 'without mixin' do
-            before { mdl.remove(mixin) }
-
-            it 'fails on missing mixin' do
-              expect(mdl.valid?).to be false
-            end
-          end
-        end
+        it 'does something'
       end
     end
   end

@@ -2,73 +2,26 @@ module Occi
   module Core
     # Implements a generic envelope for all OCCI-related instances. This
     # class can be used directly for various reasons or, in a specific way,
-    # as an ancestor for custom classes providing `Model`-like functionality.
+    # as an ancestor for custom classes providing `Collection`-like functionality.
     # Its primary purpose is to provide a tool for working with multiple
     # sets of different instance types, aid with their transport and validation.
     #
-    # @attr categories [Set]
-    # @attr entities [Set]
-    # @attr action_instances [Set]
+    # @attr entities [Set] set of entities associated with this collection instance
+    # @attr action_instances [Set] set of action instances associated with this collection instance
     #
     # @author Boris Parak <parak@cesnet.cz>
-    class Collection
-      include Yell::Loggable
-      include Helpers::ArgumentValidator
-      include Helpers::Renderable
-
-      ALL_KEYS = [:categories, :entities, :action_instances].freeze
-
+    class Collection < Model
+      ALL_KEYS = [:entities, :action_instances].freeze
       attr_accessor(*ALL_KEYS)
-
-      # Constructs an instance with the given information. All arguments are
-      # optional and will default to empty `Set` instances if not provided.
-      #
-      # @example
-      #   my_coll = Occi::Core::Collection.new
-      #   my_coll << mixin << kind << entity
-      #
-      # @param args [Hash] arguments with collection instance information
-      # @option args [Set] :categories set of categories associated with this collection instance
-      # @option args [Set] :entities set of entities associated with this collection instance
-      # @option args [Set] :action_instances set of action instances associated with this collection instance
-      def initialize(args = {})
-        pre_initialize(args)
-        default_args! args
-
-        ALL_KEYS.each { |key| instance_variable_set("@#{key}", args.fetch(key)) }
-
-        post_initialize(args)
-      end
 
       # Collects everything present in this collection and merges it into
       # a single set. This will include categories, entities, and action instances.
       # The resulting set can be used, for example, in conjunction with the `<<`
       # operator to create an independent copy of the collection.
       #
-      # @return [Set] content of this collection merged into a single set
+      # @return [Set] content of this collection as a new `Set` instance
       def all
-        Set.new(ALL_KEYS.collect { |key| send(key).to_a }.flatten.compact)
-      end
-
-      # Collects all `Occi::Core::Kind` instances in this collection.
-      #
-      # @return [Set] all `Occi::Core::Kind` instances from this collection
-      def kinds
-        typed_set(categories, Occi::Core::Kind)
-      end
-
-      # Collects all `Occi::Core::Mixin` instances in this collection.
-      #
-      # @return [Set] all `Occi::Core::Mixin` instances from this collection
-      def mixins
-        typed_set(categories, Occi::Core::Mixin)
-      end
-
-      # Collects all `Occi::Core::Action` instances in this collection.
-      #
-      # @return [Set] all `Occi::Core::Action` instances from this collection
-      def actions
-        typed_set(categories, Occi::Core::Action)
+        super | entities | action_instances
       end
 
       # Collects all `Occi::Core::Resource` instances in this collection.
@@ -85,31 +38,11 @@ module Occi
         typed_set(entities, Occi::Core::Link)
       end
 
-      # Collects all `Occi::Core::Kind` instances related to the given instance.
-      #
-      # @param kind [Occi::Core::Kind] top-level kind
-      # @param options [Hash] look-up modifiers, currently only `directly: true`
-      # @return [Set] all instances related to the given instance
-      def find_related(kind, options = { directly: false })
-        raise ArgumentError, 'Kind is a mandatory argument' unless kind
-        method = options[:directly] ? :directly_related? : :related?
-        Set.new(kinds.select { |knd| knd.send(method, kind) })
-      end
-
-      # Collects all `Occi::Core::Mixin` instances dependent on the given instance.
-      #
-      # @param mixin [Occi::Core::Mixin] top-level mixin
-      # @return [Set] all instances dependent on the given instance
-      def find_dependent(mixin)
-        raise ArgumentError, 'Mixin is a mandatory argument' unless mixin
-        Set.new(mixins.select { |mxn| mxn.depends?(mixin) })
-      end
-
       # Collects all categories and entities with the given location.
       # This method looks for an explicit/full match on the location.
       #
       # @param location [URI] expected location
-      # @return [Set] set of results possibly containing a mix of instance types
+      # @return [Set] set of results possibly containing a mix of instance types and categories
       def find_by_location(location)
         filtered_set(
           all.select { |elm| elm.respond_to?(:location) },
@@ -153,30 +86,6 @@ module Occi
         filtered_set(entities, key: 'id', value: id)
       end
 
-      # Collects all `Occi::Core::Category` successors with the given identifier.
-      #
-      # @param identifier [String] expected identifier
-      # @return [Set] set of found categories
-      def find_by_identifier(identifier)
-        filtered_set(categories, key: 'identifier', value: identifier)
-      end
-
-      # Collects all `Occi::Core::Category` successors with the given term.
-      #
-      # @param term [String] expected term
-      # @return [Set] set of found categories
-      def find_by_term(term)
-        filtered_set(categories, key: 'term', value: term)
-      end
-
-      # Collects all `Occi::Core::Category` successors with the given schema.
-      #
-      # @param schema [String] expected schema
-      # @return [Set] set of found categories
-      def find_by_schema(schema)
-        filtered_set(categories, key: 'schema', value: schema)
-      end
-
       # Auto-assigns the given object to the appropriate internal set.
       # Unknown objects will result in an `ArgumentError` error.
       #
@@ -184,19 +93,16 @@ module Occi
       # @return [Occi::Core::Collection] self, for chaining purposes
       def <<(object)
         case object
-        when Occi::Core::Category
-          categories << object
         when Occi::Core::Entity
           entities << object
         when Occi::Core::ActionInstance
           action_instances << object
         else
-          raise ArgumentError, "Cannot automatically assign #{object.inspect}"
+          super
         end
 
         self
       end
-      alias add <<
 
       # Auto-removes the given object from the appropriate internal set.
       # Unknown objects will result in an `ArgumentError` error.
@@ -205,74 +111,113 @@ module Occi
       # @return [Occi::Core::Collection] self, for chaining purposes
       def remove(object)
         case object
-        when Occi::Core::Category
-          categories.delete object
         when Occi::Core::Entity
           entities.delete object
         when Occi::Core::ActionInstance
           action_instances.delete object
         else
-          raise ArgumentError, "Cannot automatically delete #{object.inspect}"
+          super
         end
 
         self
       end
 
-      # Validates entities and action instances stored in this collection.
-      # Validity of each instance is considered independently. If you are
-      # looking for a more aggressive version raising validation errors,
-      # see `#valid!`.
+      # Triggers validation on the underlying `Model` instance. In addition,
+      # validates all included entities and action instances against categories
+      # defined in the collection. Only the existence of categories is checked, no
+      # further checks are performed.
       #
-      # @return [TrueClass] on successful validation
-      # @return [FalseClass] on failed validation
-      def valid?
-        entities.collect(&:valid?).reduce(true, :&) && action_instances.collect(&:valid?).reduce(true, :&)
-      end
-
-      # Validates entities and action instances stored in this collection.
-      # Validity of each instance is considered independently. This method
-      # will raise an error on the first invalid instance.
+      # See `#valid!` on `Model` for details.
       def valid!
+        super
+        valid_entities!
+        valid_action_instances!
         entities.each(&:valid!)
         action_instances.each(&:valid!)
+      end
+
+      # Quietly validates the collection. This method does not raise exceptions with
+      # detailed descriptions of detected problems.
+      #
+      # See `#valid!` for details.
+      def valid?
+        super && \
+          valid_helper?(:valid_entities!) && \
+          valid_helper?(:valid_action_instances!) && \
+          entities.collect(&:valid?).reduce(true, :&) && \
+          action_instances.collect(&:valid?).reduce(true, :&)
       end
 
       protected
 
       # :nodoc:
+      def defaults
+        super.merge(entities: Set.new, action_instances: Set.new)
+      end
+
+      # :nodoc:
       def sufficient_args!(args)
+        super
         ALL_KEYS.each do |attr|
-          unless args[attr]
-            raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
-                  "argument for #{self.class}"
-          end
+          next if args[attr]
+          raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
+                "argument for #{self.class}"
         end
       end
 
       # :nodoc:
-      def defaults
-        hash = {}
-        ALL_KEYS.each { |key| hash[key] = Set.new }
-        hash
+      def post_initialize(args)
+        super
+        ALL_KEYS.each { |key| instance_variable_set("@#{key}", args.fetch(key)) }
       end
-
-      # :nodoc:
-      def pre_initialize(args); end
-
-      # :nodoc:
-      def post_initialize(args); end
 
       private
 
       # :nodoc:
-      def typed_set(source, type)
-        Set.new(source.select { |elm| elm.is_a?(type) })
+      def valid_helper?(method)
+        begin
+          send method
+        rescue Occi::Core::Errors::InstanceValidationError => ex
+          logger.warn "Entity invalid: #{ex.message}"
+          return false
+        end
+
+        true
       end
 
       # :nodoc:
-      def filtered_set(source, filter)
-        raise ArgumentError, 'Filtering key is a mandatory argument' if filter[:key].blank?
-        Set.new(source.select { |elm| elm.send(filter[:key]) == filter[:value] })
+      def valid_entities!
+        cached_kinds = kinds
+        cached_mixins = mixins
+        entities.each do |ent|
+          unless cached_kinds.include?(ent.kind)
+            raise Occi::Core::Errors::InstanceValidationError,
+                  "Entity ID[#{ent.id}] contains undeclared " \
+                  "kind #{ent.kind_identifier}"
+          end
+          valid_mixins!(ent, cached_mixins)
+        end
+      end
+
+      # :nodoc:
+      def valid_mixins!(ent, cached_mixins)
+        ent.mixins.each do |mxn|
+          next if cached_mixins.include?(mxn)
+          raise Occi::Core::Errors::InstanceValidationError,
+                "Entity ID[#{ent.id}] contains undeclared " \
+                "mixin #{mxn.identifier}"
+        end
+      end
+
+      # :nodoc:
+      def valid_action_instances!
+        cached_actions = actions
+        action_instances.each do |ai|
+          next if cached_actions.include?(ai.action)
+          raise Occi::Core::Errors::InstanceValidationError,
+                'Action instance contains undeclared ' \
+                "action #{ai.action_identifier}"
+        end
       end
     end
   end
