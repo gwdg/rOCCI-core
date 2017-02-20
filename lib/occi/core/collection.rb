@@ -178,7 +178,7 @@ module Occi
         begin
           send method
         rescue Occi::Core::Errors::InstanceValidationError => ex
-          logger.warn "Entity invalid: #{ex.message}"
+          logger.warn "Instance invalid: #{ex.message}"
           return false
         end
 

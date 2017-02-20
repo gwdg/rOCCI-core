@@ -162,7 +162,13 @@ module Occi
       # @return [TrueClass] on successful validation
       # @return [FalseClass] on failed validation
       def valid?
-        # TODO: meh
+        begin
+          valid!
+        rescue Occi::Core::Errors::CategoryValidationError => ex
+          logger.warn "Model invalid: #{ex.message}"
+          return false
+        end
+
         true
       end
 
@@ -170,7 +176,9 @@ module Occi
       # Validity of each category is considered with regard to other categories.
       # This method will raise an error on the first invalid instance.
       def valid!
-        # TODO: meh
+        # TODO: iterate over all kinds and verify the existence of parents
+        # TODO: iterate over all mixins and verify depends (strict) and applies (loose)
+        # TODO: is there a way to validate actions in any way?
       end
 
       protected
