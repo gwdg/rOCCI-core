@@ -57,30 +57,6 @@ module Occi
         end
       end
 
-      describe '#kinds' do
-        let(:kinds) { Set.new([kind]) }
-
-        it 'returns only kinds' do
-          expect(coll.kinds).to eq kinds
-        end
-      end
-
-      describe '#mixins' do
-        let(:mixins) { Set.new([mixin]) }
-
-        it 'returns only mixins' do
-          expect(coll.mixins).to eq mixins
-        end
-      end
-
-      describe '#actions' do
-        let(:actions) { Set.new([action]) }
-
-        it 'returns only actions' do
-          expect(coll.actions).to eq actions
-        end
-      end
-
       describe '#resources' do
         let(:resources) { Set.new([resource]) }
 
@@ -97,45 +73,6 @@ module Occi
         end
       end
 
-      describe '#find_related' do
-        context 'without kind' do
-          it 'raises error' do
-            expect { coll.find_related(nil) }.to raise_error(ArgumentError)
-          end
-        end
-
-        context 'with kind' do
-          let(:sample_kind) { instance_double('Occi::Core::Kind') }
-
-          it 'returns set of kinds by default' do
-            expect(kind).to receive(:related?).with(sample_kind).and_return(true)
-            expect(coll.find_related(sample_kind)).to eq Set.new([kind])
-          end
-
-          it 'returns set of directly related kinds' do
-            expect(kind).to receive(:directly_related?).with(sample_kind).and_return(true)
-            expect(coll.find_related(sample_kind, directly: true)).to eq Set.new([kind])
-          end
-        end
-      end
-
-      describe '#find_dependent' do
-        context 'without mixin' do
-          it 'raises error' do
-            expect { coll.find_dependent(nil) }.to raise_error(ArgumentError)
-          end
-        end
-
-        context 'with mixin' do
-          let(:sample_mixin) { instance_double('Occi::Core::Mixin') }
-
-          it 'returns set of mixins' do
-            expect(mixin).to receive(:depends?).with(sample_mixin).and_return(true)
-            expect(coll.find_dependent(sample_mixin)).to eq Set.new([mixin])
-          end
-        end
-      end
-
       describe '#find_by_location' do
         before do
           [:kind, :mixin, :resource, :link].each do |elm|
@@ -144,10 +81,15 @@ module Occi
         end
 
         let(:fake_location) { URI.parse('/fake/location/') }
+        let(:no_location) { URI.parse('/definitely/not/there/') }
         let(:locatable) { Set.new([kind, mixin, resource, link]) }
 
         it 'returns set of instances with matching location' do
           expect(coll.find_by_location(fake_location)).to eq locatable
+        end
+
+        it 'returns empty set when no location matches' do
+          expect(coll.find_by_location(no_location)).to be_empty
         end
       end
 
@@ -166,6 +108,12 @@ module Occi
             expect(link).to receive(:kind).and_return(sample_kind)
             expect(coll.find_by_kind(sample_kind)).to eq Set.new([resource, link])
           end
+
+          it 'returns empty set when no entities have given kind' do
+            expect(resource).to receive(:kind).and_return(kind)
+            expect(link).to receive(:kind).and_return(kind)
+            expect(coll.find_by_kind(sample_kind)).to be_empty
+          end
         end
       end
 
@@ -182,6 +130,11 @@ module Occi
           it 'returns set of AIs with the given action' do
             expect(action_instance).to receive(:action).and_return(sample_action)
             expect(coll.find_by_action(sample_action)).to eq action_instances
+          end
+
+          it 'returns empty set when no AI has given action' do
+            expect(action_instance).to receive(:action).and_return(action)
+            expect(coll.find_by_action(sample_action)).to be_empty
           end
         end
       end
@@ -201,6 +154,12 @@ module Occi
             expect(link).to receive(:mixins).and_return(Set.new([sample_mixin]))
             expect(coll.find_by_mixin(sample_mixin)).to eq Set.new([resource, link])
           end
+
+          it 'returns empty set when no entities have given mixin' do
+            expect(resource).to receive(:mixins).and_return(Set.new([mixin]))
+            expect(link).to receive(:mixins).and_return(Set.new([mixin]))
+            expect(coll.find_by_mixin(sample_mixin)).to be_empty
+          end
         end
       end
 
@@ -212,32 +171,11 @@ module Occi
           expect(link).to receive(:id).and_return(sample_id)
           expect(coll.find_by_id(sample_id)).to eq Set.new([resource, link])
         end
-      end
 
-      describe '#find_by_identifier' do
-        let(:sample_identifier) { 'http://my.schema.com/test#shutup' }
-
-        it 'returns set of categories with the given identifier' do
-          categories.each { |cat| expect(cat).to receive(:identifier).and_return(sample_identifier) }
-          expect(coll.find_by_identifier(sample_identifier)).to eq categories
-        end
-      end
-
-      describe '#find_by_term' do
-        let(:sample_term) { 'shutup' }
-
-        it 'returns set of categories with the given term' do
-          categories.each { |cat| expect(cat).to receive(:term).and_return(sample_term) }
-          expect(coll.find_by_term(sample_term)).to eq categories
-        end
-      end
-
-      describe '#find_by_schema' do
-        let(:sample_schema) { 'http://my.schema.com/test#' }
-
-        it 'returns set of categories with the given schema' do
-          categories.each { |cat| expect(cat).to receive(:schema).and_return(sample_schema) }
-          expect(coll.find_by_schema(sample_schema)).to eq categories
+        it 'returns empty set when no entities have given occi.core.id' do
+          expect(resource).to receive(:id).and_return('nah')
+          expect(link).to receive(:id).and_return('nahl')
+          expect(coll.find_by_id(sample_id)).to be_empty
         end
       end
 
