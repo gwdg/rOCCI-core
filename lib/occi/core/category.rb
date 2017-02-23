@@ -57,6 +57,33 @@ module Occi
         "#{schema}#{term}"
       end
 
+      # Performs internal validation of the category. Returns
+      # `true` or `false` depending on the result. Currently, only
+      # the category identifier is used in this process.
+      #
+      # @example
+      #   category.valid?  # => true
+      #
+      # @return [TrueClass] when valid
+      # @return [FalseClass] when invalid
+      def valid?
+        # TODO: validate attribute definitions?
+        self.class.valid_identifier? identifier
+      end
+
+      # Performs internal validation of the category. Raises error
+      # depending on the result. Currently, only the category
+      # identifier is used in this process.
+      #
+      # @example
+      #   category.valid!
+      #
+      # @raise [Occi::Core::Errors::CategoryValidationError] when invalid
+      def valid!
+        # TODO: validate attribute definitions?
+        self.class.valid_identifier! identifier
+      end
+
       # :nodoc:
       def to_s
         identifier

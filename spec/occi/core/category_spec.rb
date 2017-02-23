@@ -189,6 +189,40 @@ module Occi
           end
         end
       end
+
+      describe '#valid?' do
+        context 'when instance valid' do
+          it 'returns `true`' do
+            expect(cat.valid?).to be true
+          end
+        end
+
+        context 'when instance invalid' do
+          let(:invalid_term) { 'a b % !' }
+
+          it 'returns `false`' do
+            cat.term = invalid_term
+            expect(cat.valid?).to be false
+          end
+        end
+      end
+
+      describe '#valid!' do
+        context 'when instance valid' do
+          it 'raises nothing' do
+            expect { cat.valid! }.not_to raise_error
+          end
+        end
+
+        context 'when instance invalid' do
+          let(:invalid_term) { 'a b % !' }
+
+          it 'raises an error' do
+            cat.term = invalid_term
+            expect { cat.valid! }.to raise_error Occi::Core::Errors::CategoryValidationError
+          end
+        end
+      end
     end
   end
 end
