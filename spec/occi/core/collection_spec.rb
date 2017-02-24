@@ -302,11 +302,21 @@ module Occi
       end
 
       describe '#valid?' do
+        before do
+          [:kind, :mixin, :action].each do |dd|
+            allow(send(dd)).to receive(:valid!)
+            allow(send(dd)).to receive(:identifier).and_return('http://test/tes#term')
+          end
+          allow(kind).to receive(:parent).and_return(nil)
+          allow(mixin).to receive(:depends).and_return(Set.new)
+          allow(mixin).to receive(:applies).and_return(Set.new([kind]))
+        end
+
         context 'with valid instances' do
           before do
-            expect(resource).to receive(:valid?).and_return(true)
-            expect(link).to receive(:valid?).and_return(true)
-            expect(action_instance).to receive(:valid?).and_return(true)
+            expect(resource).to receive(:valid!)
+            expect(link).to receive(:valid!)
+            expect(action_instance).to receive(:valid!)
           end
 
           it 'calls `valid?` on entities and action instances' do
@@ -316,9 +326,9 @@ module Occi
 
         context 'with invalid instances' do
           before do
-            allow(resource).to receive(:valid?).and_return(false)
-            allow(link).to receive(:valid?).and_return(false)
-            allow(action_instance).to receive(:valid?).and_return(false)
+            allow(resource).to receive(:valid!).and_raise(Occi::Core::Errors::InstanceValidationError)
+            allow(link).to receive(:valid!).and_raise(Occi::Core::Errors::InstanceValidationError)
+            allow(action_instance).to receive(:valid!).and_raise(Occi::Core::Errors::InstanceValidationError)
           end
 
           it 'calls `valid?` on entities and action instances' do
@@ -328,6 +338,16 @@ module Occi
       end
 
       describe '#valid!' do
+        before do
+          [:kind, :mixin, :action].each do |dd|
+            allow(send(dd)).to receive(:valid!)
+            allow(send(dd)).to receive(:identifier).and_return('http://test/tes#term')
+          end
+          allow(kind).to receive(:parent).and_return(nil)
+          allow(mixin).to receive(:depends).and_return(Set.new)
+          allow(mixin).to receive(:applies).and_return(Set.new([kind]))
+        end
+
         context 'with valid instances' do
           before do
             expect(resource).to receive(:valid!)
@@ -342,13 +362,13 @@ module Occi
 
         context 'with invalid instances' do
           before do
-            allow(resource).to receive(:valid!).and_raise(Occi::Core::Errors::ValidationError)
-            allow(link).to receive(:valid!).and_raise(Occi::Core::Errors::ValidationError)
-            allow(action_instance).to receive(:valid!).and_raise(Occi::Core::Errors::ValidationError)
+            allow(resource).to receive(:valid!).and_raise(Occi::Core::Errors::InstanceValidationError)
+            allow(link).to receive(:valid!).and_raise(Occi::Core::Errors::InstanceValidationError)
+            allow(action_instance).to receive(:valid!).and_raise(Occi::Core::Errors::InstanceValidationError)
           end
 
           it 'calls `valid!` on entities and action instances' do
-            expect { coll.valid! }.to raise_error(Occi::Core::Errors::ValidationError)
+            expect { coll.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
           end
         end
       end

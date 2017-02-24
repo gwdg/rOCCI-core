@@ -141,11 +141,7 @@ module Occi
       #
       # See `#valid!` for details.
       def valid?
-        super && \
-          valid_helper?(:valid_entities!) && \
-          valid_helper?(:valid_action_instances!) && \
-          entities.collect(&:valid?).reduce(true, :&) && \
-          action_instances.collect(&:valid?).reduce(true, :&)
+        valid_helper? :valid!
       end
 
       protected
@@ -172,18 +168,6 @@ module Occi
       end
 
       private
-
-      # :nodoc:
-      def valid_helper?(method)
-        begin
-          send method
-        rescue Occi::Core::Errors::InstanceValidationError => ex
-          logger.warn "Instance invalid: #{ex.message}"
-          return false
-        end
-
-        true
-      end
 
       # :nodoc:
       def valid_entities!

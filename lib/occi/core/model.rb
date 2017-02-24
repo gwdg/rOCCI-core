@@ -51,6 +51,19 @@ module Occi
         typed_set(categories, Occi::Core::Kind)
       end
 
+      # Collects all `Occi::Core::Kind` instances specified
+      # as `parent` in one or more other kinds in this model.
+      # These instances may not appear in the model itself if
+      # it has not been successfully validated yet.
+      #
+      # @return [Set] parenting `Occi::Core::Kind` instances from this model
+      def parent_kinds
+        parents = kinds
+        parents.collect!(&:parent)
+        parents.reject!(&:nil?)
+        parents
+      end
+
       # Collects all `Occi::Core::Mixin` instances in this model.
       #
       # @return [Set] all `Occi::Core::Mixin` instances from this model
@@ -58,11 +71,40 @@ module Occi
         typed_set(categories, Occi::Core::Mixin)
       end
 
+      # Collects all `Occi::Core::Mixin` instances specified
+      # in `depends` in one or more other mixins in this model.
+      # These instances may not appear in the model itself if
+      # it has not been successfully validated yet.
+      #
+      # @return [Set] depended on `Occi::Core::Mixin` instances from this model
+      def depended_on_mixins
+        depended_on = mixins
+        depended_on.collect!(&:depends)
+        depended_on.flatten!
+        depended_on.reject!(&:nil?)
+        depended_on
+      end
+
       # Collects all `Occi::Core::Action` instances in this model.
       #
       # @return [Set] all `Occi::Core::Action` instances from this model
       def actions
         typed_set(categories, Occi::Core::Action)
+      end
+
+      # Collects all `Occi::Core::Action` instances specified
+      # in `actions` in one or more other mixins/kinds in this model.
+      # These instances may not appear in the model itself if
+      # it has not been successfully validated yet.
+      #
+      # @return [Set] associated `Occi::Core::Action` instances from this model
+      def associated_actions
+        associated = all
+        associated.keep_if { |elm| elm.respond_to?(:actions) }
+        associated.collect!(&:actions)
+        associated.flatten!
+        associated.reject!(&:nil?)
+        associated
       end
 
       # Collects all `Occi::Core::Kind` instances related to the given instance.
@@ -162,23 +204,18 @@ module Occi
       # @return [TrueClass] on successful validation
       # @return [FalseClass] on failed validation
       def valid?
-        begin
-          valid!
-        rescue Occi::Core::Errors::CategoryValidationError => ex
-          logger.warn "Model invalid: #{ex.message}"
-          return false
-        end
-
-        true
+        valid_helper? :valid!
       end
 
       # Validates kinds, mixins, and actions stored in this model.
       # Validity of each category is considered with regard to other categories.
       # This method will raise an error on the first invalid instance.
       def valid!
-        # TODO: iterate over all kinds and verify the existence of parents
-        # TODO: iterate over all mixins and verify depends (strict) and applies (loose)
-        # TODO: is there a way to validate actions in any way?
+        valid_categories! # checking all identifiers
+        valid_parents!    # parentage on kinds
+        valid_actions!    # associated actions
+        valid_depends!    # dependencies on mixins
+        valid_applies!    # applicability on mixins
       end
 
       protected
@@ -210,6 +247,60 @@ module Occi
       def filtered_set(source, filter)
         raise ArgumentError, 'Filtering key is a mandatory argument' if filter[:key].blank?
         Set.new(source.select { |elm| elm.send(filter[:key]) == filter[:value] })
+      end
+
+      # :nodoc:
+      def valid_helper?(method)
+        begin
+          send method
+        rescue Occi::Core::Errors::InstanceValidationError => ex
+          logger.warn "Instance invalid: #{ex.message}"
+          return false
+        rescue URI::InvalidURIError, Occi::Core::Errors::CategoryValidationError => ex
+          logger.warn "Category invalid: #{ex.message}"
+          return false
+        end
+
+        true
+      end
+
+      # :nodoc:
+      def valid_categories!
+        categories.each(&:valid!)
+      end
+
+      # :nodoc:
+      def valid_parents!
+        report_diff!('kinds') { parent_kinds - kinds }
+      end
+
+      # :nodoc:
+      def valid_depends!
+        report_diff!('mixins') { depended_on_mixins - mixins }
+      end
+
+      # :nodoc:
+      def valid_applies!
+        not_applicable = mixins.select { |mxn| mxn.applies.blank? }
+        return if not_applicable.empty?
+        logger.warn 'The following mixins are not applicable to any entity sub-type: ' \
+                    "#{not_applicable.collect(&:identifier).inspect}"
+      end
+
+      # :nodoc:
+      def valid_actions!
+        report_diff!('actions') { associated_actions - actions }
+      end
+
+      # :nodoc:
+      def report_diff!(type)
+        raise 'You have to provide a diff block!' unless block_given?
+        diff = yield
+        return if diff.empty?
+
+        raise Occi::Core::Errors::CategoryValidationError,
+              "The following #{type} have been referenced but not defined: " \
+              "#{diff.to_a.collect(&:identifier).inspect}"
       end
     end
   end

@@ -107,6 +107,62 @@ module Occi
         end
       end
 
+      describe '#parent_kinds' do
+        context 'with some parents' do
+          it 'returns `root_kind`' do
+            expect(model.parent_kinds).to eq Set.new([root_kind])
+          end
+        end
+
+        context 'without parents' do
+          before { kind.parent = nil }
+
+          it 'returns empty set' do
+            expect(model.parent_kinds).to be_empty
+          end
+        end
+      end
+
+      describe '#depended_on_mixins' do
+        context 'with some depended-on mixins' do
+          let(:root_mixin) do
+            Mixin.new(
+              term: 'root_mixin',
+              schema: example_schema,
+              title: 'Root Mixin',
+              applies: [kind]
+            )
+          end
+          before { mixin.depends << root_mixin }
+
+          it 'returns `depended-on` mixins' do
+            expect(model.depended_on_mixins).to eq Set.new([root_mixin])
+          end
+        end
+
+        context 'with no depended-on mixins' do
+          it 'returns empty set' do
+            expect(model.depended_on_mixins).to be_empty
+          end
+        end
+      end
+
+      describe '#associated_actions' do
+        context 'with some associated actions' do
+          before { kind.actions << action }
+
+          it 'returns associated actions' do
+            expect(model.associated_actions).to eq Set.new([action])
+          end
+        end
+
+        context 'with no associated actions' do
+          it 'returns empty set' do
+            expect(model.associated_actions).to be_empty
+          end
+        end
+      end
+
       describe '#find_related' do
         context 'without kind' do
           it 'raises error' do
@@ -198,11 +254,35 @@ module Occi
       end
 
       describe '#valid!' do
-        it 'does something'
+        context 'on valid model' do
+          it 'does not raise error' do
+            expect { model.valid! }.not_to raise_error
+          end
+        end
+
+        context 'on invalid model' do
+          before { model.remove root_kind }
+
+          it 'raises validation error' do
+            expect { model.valid! }.to raise_error(Occi::Core::Errors::CategoryValidationError)
+          end
+        end
       end
 
       describe '#valid?' do
-        it 'does something'
+        context 'on valid model' do
+          it 'returns `true`' do
+            expect(model.valid?).to be true
+          end
+        end
+
+        context 'on invalid model' do
+          before { model.remove root_kind }
+
+          it 'returns `false`' do
+            expect(model.valid?).to be false
+          end
+        end
       end
     end
   end
