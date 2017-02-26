@@ -372,6 +372,45 @@ module Occi
           end
         end
       end
+
+      describe '#empty?' do
+        context 'with some content' do
+          before { COLL_ATTRS.each { |a| coll.send("#{a}=", send(a)) } }
+
+          it 'returns `false`' do
+            expect(coll.empty?).to be false
+          end
+        end
+
+        context 'with no content' do
+          before { COLL_ATTRS.each { |a| coll.send("#{a}=", Set.new) } }
+
+          it 'return `true`' do
+            expect(coll.empty?).to be true
+          end
+        end
+      end
+
+      COLL_ATTRS.each do |attrb|
+        describe "#only_#{attrb}?" do
+          context "with only #{attrb}" do
+            before { COLL_ATTRS.each { |a| coll.send("#{a}=", Set.new) } }
+
+            it 'returns `true`' do
+              coll.send("#{attrb}=", send(attrb))
+              expect(coll.send("only_#{attrb}?")).to be true
+            end
+          end
+
+          context "with not only #{attrb}" do
+            before { COLL_ATTRS.each { |a| coll.send("#{a}=", send(a)) } }
+
+            it 'returns `false`' do
+              expect(coll.send("only_#{attrb}?")).to be false
+            end
+          end
+        end
+      end
     end
   end
 end

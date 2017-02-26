@@ -218,6 +218,15 @@ module Occi
         valid_applies!    # applicability on mixins
       end
 
+      # Reports emptiness of the model.
+      #
+      # @return [TrueClass] if there are no categories
+      # @return [FalseClass] if there are some categories
+      def empty?
+        categories.empty?
+      end
+      alias nothing? empty?
+
       protected
 
       # :nodoc:

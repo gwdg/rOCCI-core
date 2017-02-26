@@ -12,6 +12,8 @@ module Occi
     # @author Boris Parak <parak@cesnet.cz>
     class Collection < Model
       ALL_KEYS = [:entities, :action_instances].freeze
+      INTERNAL_COLLECTIONS = (ALL_KEYS + [:categories]).freeze
+
       attr_accessor(*ALL_KEYS)
 
       # Collects everything present in this collection and merges it into
@@ -144,6 +146,38 @@ module Occi
         valid_helper? :valid!
       end
 
+      # Reports emptiness of the collection.
+      #
+      # @return [TrueClass] if there are no categories, entities or action instances
+      # @return [FalseClass] if there are some categories, entities or action instances
+      def empty?
+        empties? INTERNAL_COLLECTIONS
+      end
+
+      # Reports content of the collection with regards to categories.
+      #
+      # @return [TrueClass] if there are only categories
+      # @return [FalseClass] if there are not only categories
+      def only_categories?
+        only? :categories
+      end
+
+      # Reports content of the collection with regards to entities.
+      #
+      # @return [TrueClass] if there are only entities
+      # @return [FalseClass] if there are not only entities
+      def only_entities?
+        only? :entities
+      end
+
+      # Reports content of the collection with regards to action instances.
+      #
+      # @return [TrueClass] if there are only action instances
+      # @return [FalseClass] if there are not only action instances
+      def only_action_instances?
+        only? :action_instances
+      end
+
       protected
 
       # :nodoc:
@@ -202,6 +236,21 @@ module Occi
                 'Action instance contains undeclared ' \
                 "action #{ai.action_identifier}"
         end
+      end
+
+      # :nodoc:
+      def only?(collection_sym)
+        raise 'You have to provide one collection symbol!' unless collection_sym
+        rest = INTERNAL_COLLECTIONS - [collection_sym]
+
+        send(collection_sym).any? && empties?(rest)
+      end
+
+      # :nodoc:
+      def empties?(collection_syms)
+        raise 'You have to provide enumerable with symbols!' unless collection_syms
+        collection_syms.collect { |c| send(c).empty? }
+                       .reduce(true, :&)
       end
     end
   end

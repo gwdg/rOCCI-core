@@ -284,6 +284,22 @@ module Occi
           end
         end
       end
+
+      describe '#empty?' do
+        context 'with some categories' do
+          it 'returns `false`' do
+            expect(model.empty?).to be false
+          end
+        end
+
+        context 'with no categories' do
+          before { model.categories = Set.new }
+
+          it 'return `true`' do
+            expect(model.empty?).to be true
+          end
+        end
+      end
     end
   end
 end
