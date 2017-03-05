@@ -16,6 +16,7 @@ module Occi
 
           # Link key constant
           LINK_KEY = 'Link'.freeze
+          LINK_KEY_HEADERS = 'X-OCCI-Link'.freeze
 
           # Renders `object` into plain text and returns the result
           # as `String`.
@@ -47,7 +48,7 @@ module Occi
 
           # :nodoc:
           def header_links
-            { LINK_KEY => instance_links(false).concat(instance_actions(false)) }
+            { LINK_KEY_HEADERS => instance_links(false).concat(instance_actions(false)) }
           end
 
           # :nodoc:

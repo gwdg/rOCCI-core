@@ -110,12 +110,12 @@ module Occi
             it 'renders with link' do
               link.target = resource2
               resource.links << link
-              expect(trres.render).to include 'Link'
+              expect(trres.render).to include 'X-OCCI-Link'
             end
 
             it 'renders with action' do
               resource.actions << action
-              expect(trres.render).to include 'Link'
+              expect(trres.render).to include 'X-OCCI-Link'
             end
           end
         end
