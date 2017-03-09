@@ -48,6 +48,7 @@ module Occi
 
     autoload :Collection, 'occi/core/collection'
     autoload :Model, 'occi/core/model'
+    autoload :AttributeDefinitionJar, 'occi/core/attribute_definition_jar'
   end
 end
 
