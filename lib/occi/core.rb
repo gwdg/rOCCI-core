@@ -1,6 +1,7 @@
 # external deps
 require 'active_support/all'
 require 'uri'
+require 'yaml'
 require 'singleton'
 require 'yell'
 
