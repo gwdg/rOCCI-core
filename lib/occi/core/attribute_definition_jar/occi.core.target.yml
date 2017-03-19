@@ -1,0 +1,7 @@
+---
+type: !ruby/class Occi::Core::Resource
+required: true
+mutable: true
+default: ~
+description: Target resource sub-type instance of this link sub-type instance.
+pattern: ~

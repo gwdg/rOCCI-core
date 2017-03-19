@@ -4,4 +4,4 @@ required: true
 mutable: false
 default: ~
 description: Identifier assigned to this entity sub-type instance.
-pattern: !ruby/regexp '/^.*$/'
+pattern: !ruby/regexp '/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/'
