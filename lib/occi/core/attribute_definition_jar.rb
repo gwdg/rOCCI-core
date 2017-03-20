@@ -132,7 +132,7 @@ module Occi
       def reload!
         self.attribute_definitions = {} unless attribute_definitions.empty?
 
-        files = paths.reduce([]) { |prod, path| prod.concat Dir[File.join(path, "*#{FILE_SUFFIX}")] }
+        files = paths.reduce([]) { |prod, path| prod.concat Dir[File.join(path, "*#{self.class::FILE_SUFFIX}")] }
         files.each { |path| put! attribute_name_from(path), attribute_definition_from(path) }
       end
 
@@ -148,12 +148,12 @@ module Occi
 
       # :nodoc:
       def attribute_name_from(path)
-        path.split(File::SEPARATOR).last.gsub(FILE_SUFFIX, '')
+        path.split(File::SEPARATOR).last.gsub(self.class::FILE_SUFFIX, '')
       end
 
       # :nodoc:
       def attribute_definition_from(path)
-        attr_def = YAML.safe_load(File.read(path), ALLOWED_YAML_CLASSES)
+        attr_def = YAML.safe_load(File.read(path), self.class::ALLOWED_YAML_CLASSES)
         attr_def.symbolize_keys!
         Occi::Core::AttributeDefinition.new attr_def
       end

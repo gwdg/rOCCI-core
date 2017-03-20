@@ -1,5 +1,6 @@
 # internal deps
 require 'occi/core'
+require 'ipaddr'
 
 # Contains all OCCI-related classes and modules. This module
 # does not provide any additional functionality aside from
@@ -20,6 +21,7 @@ module Occi
   module Infrastructure
     autoload :Kinds, 'occi/infrastructure/kinds'
     autoload :Mixins, 'occi/infrastructure/mixins'
+    autoload :Actions, 'occi/infrastructure/actions'
     autoload :AttributeDefinitionJar, 'occi/infrastructure/attribute_definition_jar'
   end
 end
