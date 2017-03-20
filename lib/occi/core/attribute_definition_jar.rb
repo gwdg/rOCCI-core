@@ -114,6 +114,19 @@ module Occi
         attribute_definitions.keys
       end
 
+      # Checks for existence of a particular attribute in the jar. By name.
+      #
+      # @example
+      #    include? 'occi.core.id' # => true
+      #    include? 'meh.maybe.id' # => false
+      #
+      # @param attribute_name [String] name of the attribute
+      # @return [TrueClass] if attribute is present
+      # @return [FalseClass] if attribute is not present
+      def include?(attribute_name)
+        attribute_names.include? attribute_name
+      end
+
       # Reloads the content of the jar from previously defined paths. This action
       # will drop all existing content.
       def reload!
