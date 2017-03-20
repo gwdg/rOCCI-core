@@ -141,7 +141,7 @@ module Occi
       #
       # @return [Array] list of paths
       def self.default_paths
-        DEFAULT_PATHS
+        self::DEFAULT_PATHS
       end
 
       protected
