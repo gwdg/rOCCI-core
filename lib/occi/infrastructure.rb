@@ -23,3 +23,6 @@ module Occi
     autoload :AttributeDefinitionJar, 'occi/infrastructure/attribute_definition_jar'
   end
 end
+
+# Explicitly pull in versioning information
+require 'occi/infrastructure/version'

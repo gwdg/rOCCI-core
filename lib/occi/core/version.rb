@@ -11,7 +11,7 @@ module Occi
         MINOR_VERSION,
         PATCH_VERSION,
         STAGE_VERSION
-      ].compact.join('.')
+      ].compact.join('.').freeze
     end
   end
 end
