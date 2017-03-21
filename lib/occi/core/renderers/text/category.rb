@@ -109,7 +109,18 @@ module Occi
 
           # :nodoc:
           def prepare_subclass
-            object.class.name.demodulize.downcase
+            kancest = object.class.ancestors
+
+            if kancest.include? Occi::Core::Action
+              'action'
+            elsif kancest.include? Occi::Core::Mixin
+              'mixin'
+            elsif kancest.include? Occi::Core::Kind
+              'kind'
+            else
+              raise Occi::Core::Errors::RenderingError,
+                    "Could not find known parent for #{object.inspect}"
+            end
           end
 
           # :nodoc:
