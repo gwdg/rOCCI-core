@@ -19,9 +19,7 @@ module Occi
   #
   # @author Boris Parak <parak@cesnet.cz>
   module Infrastructure
-    autoload :Kinds, 'occi/infrastructure/kinds'
     autoload :Mixins, 'occi/infrastructure/mixins'
-    autoload :Actions, 'occi/infrastructure/actions'
     autoload :AttributeDefinitionJar, 'occi/infrastructure/attribute_definition_jar'
   end
 end

@@ -81,7 +81,7 @@ module Occi
       #
       # @example
       #   mixin.term              # => 'compute'
-      #   mixin.generate_location # => #<URI::Generic /compute/>
+      #   mixin.generate_location # => #<URI::Generic /mixin/compute/>
       #
       # @return [URI] generated location string
       def generate_location
@@ -89,7 +89,7 @@ module Occi
           raise Occi::Core::Errors::MandatoryArgumentError,
                 'Cannot generate default location without a `term`'
         end
-        URI.parse "/#{term}/"
+        URI.parse "/mixin/#{term}/"
       end
     end
   end
