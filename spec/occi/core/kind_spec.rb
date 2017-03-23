@@ -41,6 +41,36 @@ module Occi
         end
       end
 
+      describe '::new' do
+        let(:attr_def) { instance_double(Occi::Core::AttributeDefinition) }
+        let(:new_attr_def) { instance_double(Occi::Core::AttributeDefinition) }
+        let(:root_kind) do
+          rkind = Kind.new(term: 'root', schema: 'http://test.org/root#', title: 'Root kind')
+          rkind.attributes['my.test.attr'] = attr_def
+          rkind
+        end
+        let(:successor_kind) do
+          Kind.new(
+            term: 'succ', schema: 'http://test.org/succ#', title: 'Succ kind', parent: kind,
+            attributes: { 'my.test.attr' => new_attr_def }
+          )
+        end
+
+        it 'inherits attributes from parent' do
+          expect(kind.attributes.keys).to include('my.test.attr')
+          expect(kind.attributes['my.test.attr']).to eq attr_def
+        end
+
+        it 'overwrites attributes on parent' do
+          expect(kind.attributes['my.test.attr']).to eq attr_def
+          expect(successor_kind.attributes['my.test.attr']).to eq new_attr_def
+        end
+
+        it 'works without parent' do
+          expect { Kind.new term: example_term, schema: example_schema }.not_to raise_error
+        end
+      end
+
       describe '#related?' do
         it 'returns `false` without `kind`' do
           expect(knd.related?(nil)).to be false

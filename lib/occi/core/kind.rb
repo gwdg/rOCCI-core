@@ -94,6 +94,8 @@ module Occi
         @parent = args.fetch(:parent)
         @actions = args.fetch(:actions)
         @location = args.fetch(:location)
+
+        attributes.merge!(parent.attributes) { |_, oldval, _| oldval } if parent
       end
 
       private
