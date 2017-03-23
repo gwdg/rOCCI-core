@@ -19,6 +19,7 @@ module Occi
       extend Helpers::IdentifierValidator
       include Helpers::AttributesAccessor
       include Helpers::ArgumentValidator
+      extend Helpers::YamlSummoner
 
       attr_accessor :term, :schema, :title, :attributes
 

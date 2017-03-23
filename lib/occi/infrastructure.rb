@@ -1,6 +1,5 @@
 # internal deps
 require 'occi/core'
-require 'ipaddr'
 
 # Contains all OCCI-related classes and modules. This module
 # does not provide any additional functionality aside from
@@ -20,7 +19,7 @@ module Occi
   # @author Boris Parak <parak@cesnet.cz>
   module Infrastructure
     autoload :Mixins, 'occi/infrastructure/mixins'
-    autoload :AttributeDefinitionJar, 'occi/infrastructure/attribute_definition_jar'
+    autoload :Warehouse, 'occi/infrastructure/warehouse'
   end
 end
 

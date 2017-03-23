@@ -18,6 +18,13 @@ module Occi
     class AttributeDefinition
       include Yell::Loggable
       include Helpers::ArgumentValidator
+      extend Helpers::YamlSummoner
+
+      # Allowed classes when parsing YAML in `from_yaml`
+      ALLOWED_YAML_CLASSES = [
+        String, Regexp, Occi::Core::Resource,
+        IPAddr, Integer, Float
+      ].freeze
 
       attr_accessor :type, :required, :mutable,
                     :default, :description, :pattern

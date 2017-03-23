@@ -2,6 +2,7 @@
 require 'active_support/all'
 require 'uri'
 require 'yaml'
+require 'ipaddr'
 require 'singleton'
 require 'yell'
 
@@ -49,9 +50,12 @@ module Occi
 
     autoload :Collection, 'occi/core/collection'
     autoload :Model, 'occi/core/model'
-    autoload :AttributeDefinitionJar, 'occi/core/attribute_definition_jar'
+    autoload :Warehouse, 'occi/core/warehouse'
   end
 end
+
+# Explicitly load monkey patches
+require 'occi/monkey_island/hash'
 
 # Explicitly pull in versioning information
 require 'occi/core/version'
