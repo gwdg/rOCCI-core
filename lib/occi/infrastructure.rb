@@ -19,6 +19,7 @@ module Occi
   # @author Boris Parak <parak@cesnet.cz>
   module Infrastructure
     autoload :Mixins, 'occi/infrastructure/mixins'
+    autoload :Model, 'occi/infrastructure/model'
     autoload :Warehouse, 'occi/infrastructure/warehouse'
   end
 end

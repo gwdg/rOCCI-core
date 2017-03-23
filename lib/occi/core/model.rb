@@ -227,6 +227,15 @@ module Occi
       end
       alias nothing? empty?
 
+      # Loads OGF's OCCI Core Standard from `Occi::Core::Warehouse`.
+      #
+      # @example
+      #    model = Occi::Core::Model.new
+      #    model.load_core!
+      def load_core!
+        Occi::Core::Warehouse.bootstrap! self
+      end
+
       protected
 
       # :nodoc:
