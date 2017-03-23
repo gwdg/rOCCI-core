@@ -42,13 +42,26 @@ module Occi
             self[:actions].map! { |action| dereference_via_model(action, model) }
             changed += self[:actions].count
           end
-
-          unless self[:attributes].blank?
-            self[:attributes].map! { |attribute| dereference_via_hash(attribute, attribute_definitions) }
-            changed += self[:attributes].count
-          end
+          changed += dereference_attribute_definitions_with!(attribute_definitions)
 
           changed
+        end
+
+        # Replaces all name-only references to existing attribute definitions with actual instances from
+        # from the given hash.
+        #
+        # @param attribute_definitions [Hash] hash with known attribute definitions for dereferencing
+        # @return [Integer] number of changes made when dereferencing
+        def dereference_attribute_definitions_with!(attribute_definitions)
+          return 0 if self[:attributes].blank?
+
+          new_attributes = {}
+          self[:attributes].each do |attribute|
+            new_attributes[attribute] = dereference_via_hash(attribute, attribute_definitions)
+          end
+          self[:attributes] = new_attributes
+
+          self[:attributes].count
         end
 
         # Replaces all references to existing categories with actual instances from
@@ -113,7 +126,7 @@ module Occi
         # @param model [Occi::Core::Model] model instance for dereferencing (category look-up)
         # @return [Occi::Core::Category] instance located in the model
         def dereference_via_model(identifier, model)
-          matched = model.get_by_identifier(identifier).first
+          matched = model.find_by_identifier(identifier).first
           raise "Category #{identifier.inspect} not found in the model" unless matched
           matched
         end

@@ -20,12 +20,6 @@ module Occi
       include Helpers::ArgumentValidator
       extend Helpers::YamlSummoner
 
-      # Allowed classes when parsing YAML in `from_yaml`
-      ALLOWED_YAML_CLASSES = [
-        String, Regexp, Occi::Core::Resource,
-        IPAddr, Integer, Float
-      ].freeze
-
       attr_accessor :type, :required, :mutable,
                     :default, :description, :pattern
 
@@ -261,6 +255,14 @@ module Occi
           description: nil,
           pattern: nil
         }
+      end
+
+      class << self
+        # :nodoc:
+        def allowed_yaml_classes
+          [String, Regexp, Occi::Core::Resource, IPAddr, Integer, Float].freeze
+        end
+        private :allowed_yaml_classes
       end
     end
   end

@@ -23,7 +23,7 @@ module Occi
         # @return [Object] instance of receiver class
         def from_yaml(path, model = nil, attribute_definitions = nil)
           raise 'This method cannot be invoked on instances' unless is_a? Class
-          allowed_classes = defined?(self::ALLOWED_YAML_CLASSES) ? self::ALLOWED_YAML_CLASSES : []
+          allowed_classes = respond_to?(:allowed_yaml_classes, true) ? allowed_yaml_classes : []
 
           object_args = YAML.safe_load(File.read(path), allowed_classes)
           object_args.symbolize_keys!
