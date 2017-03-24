@@ -219,7 +219,7 @@ module Occi
 
         context 'with all required attributes' do
           before do
-            attributes.values.each { |v| expect(v).to receive(:valid!) }
+            expect(attributes.values).to all(receive(:valid!))
           end
 
           it 'passes without error' do

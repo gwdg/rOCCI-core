@@ -6,6 +6,9 @@ module Occi
       let(:test_namespace) { RocciCoreSpec::Renderers }
       let(:orig_namespace) { Occi::Core::Renderers }
       let(:dummy_renderer) { RocciCoreSpec::Renderers::DummyWorkingRenderer }
+      let(:factory_instance) { RendererFactory.instance }
+      let(:dummy_formats) { %w(dummy dummier_dummy the_dummiest_dummy) }
+      let(:required_methods) { [:renderer?, :formats, :render] }
 
       before do
         Singleton.__init__(RendererFactory)
@@ -17,10 +20,6 @@ module Occi
         stub_const('Occi::Core::RendererFactory::NAMESPACE', orig_namespace)
       end
 
-      let(:factory_instance) { RendererFactory.instance }
-      let(:dummy_formats) { %w(dummy dummier_dummy the_dummiest_dummy) }
-      let(:required_methods) { [:renderer?, :formats, :render] }
-
       describe '#formats' do
         subject(:fif) { factory_instance.formats }
 
@@ -29,11 +28,11 @@ module Occi
         end
 
         it 'contains String-like items' do
-          fif.each { |it| expect(it).to be_kind_of(String) }
+          expect(fif).to all(be_kind_of(String))
         end
 
         it 'contains method-compliant names' do
-          fif.each { |it| expect(it).not_to include(' ') }
+          fif.each { |v| expect(v).not_to include(' ') }
         end
 
         it 'publishes all known formats' do
@@ -49,8 +48,8 @@ module Occi
         end
 
         it 'returns hash with String-like keys and Class-like values' do
-          fir.keys.each { |k| expect(k).to be_kind_of(String) }
-          fir.values.each { |v| expect(v).to be_kind_of(Class) }
+          expect(fir.keys).to all(be_kind_of(String))
+          expect(fir.values).to all(be_kind_of(Class))
         end
       end
 
@@ -80,11 +79,11 @@ module Occi
         end
 
         it 'returns list of classes' do
-          firc.each { |it| expect(it).to be_kind_of(Class) }
+          expect(firc).to all(be_kind_of(Class))
         end
 
         it 'returns list of valid renderer classes' do
-          firc.each { |it| expect(it).to respond_to(:render) }
+          expect(firc).to all(respond_to(:render))
         end
       end
 

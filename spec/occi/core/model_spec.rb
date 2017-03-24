@@ -2,6 +2,7 @@ module Occi
   module Core
     describe Model do
       subject(:mdl) { model }
+
       let(:model) { Model.new }
 
       let(:example_term) { 'kind' }
@@ -133,6 +134,7 @@ module Occi
               applies: [kind]
             )
           end
+
           before { mixin.depends << root_mixin }
 
           it 'returns `depended-on` mixins' do

@@ -179,7 +179,7 @@ module Occi
                 rlines = collection_renderer.render
                 expect(rlines).to be_kind_of String
                 expect(rlines.lines.count).to eq 5
-                rlines.lines.each { |rline| expect(rline).to start_with 'Category: ' }
+                expect(rlines.lines).to all(start_with('Category: '))
               end
             end
 

@@ -2,6 +2,7 @@ module Occi
   module Core
     describe Collection do
       subject(:coll) { collection }
+
       let(:collection) { Collection.new }
 
       let(:kind) { instance_double('Occi::Core::Kind') }

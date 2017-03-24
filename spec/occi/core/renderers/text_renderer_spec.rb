@@ -57,7 +57,7 @@ module Occi
           end
 
           it 'returns strings' do
-            trc.known_types.each { |type| expect(type).to be_kind_of(String) }
+            expect(trc.known_types).to all(be_kind_of(String))
           end
         end
 
@@ -71,7 +71,7 @@ module Occi
           end
 
           it 'returns classes' do
-            trc.known_serializers.each { |serializer| expect(serializer).to be_kind_of(Class) }
+            expect(trc.known_serializers).to all(be_kind_of(Class))
           end
         end
 

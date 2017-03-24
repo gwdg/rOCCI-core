@@ -118,7 +118,7 @@ module Occi
           before do
             lnk.target = attributes['occi.core.target']
             lnk.source = attributes['occi.core.source']
-            attributes.values.each { |v| expect(v).to receive(:valid!) }
+            expect(attributes.values).to all(receive(:valid!))
           end
 
           it 'passes without error' do
