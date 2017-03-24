@@ -1,0 +1,15 @@
+---
+term: storage
+schema: http://schemas.ogf.org/occi/infrastructure#
+title: OCCI Infrastructure Storage
+parent: http://schemas.ogf.org/occi/core#resource
+location: /storage/
+attributes:
+  - occi.storage.size
+  - occi.storage.state
+actions:
+  - http://schemas.ogf.org/occi/infrastructure/storage/action#online
+  - http://schemas.ogf.org/occi/infrastructure/storage/action#offline
+  - http://schemas.ogf.org/occi/infrastructure/storage/action#backup
+  - http://schemas.ogf.org/occi/infrastructure/storage/action#snapshot
+  - http://schemas.ogf.org/occi/infrastructure/storage/action#resize

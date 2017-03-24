@@ -11,6 +11,9 @@ module Occi
       #    model.load_infrastructure!
       def load_infrastructure!
         Occi::Infrastructure::Warehouse.bootstrap! self
+        self << Occi::Infrastructure::Mixins::OsTpl.new
+        self << Occi::Infrastructure::Mixins::ResourceTpl.new
+        nil
       end
     end
   end

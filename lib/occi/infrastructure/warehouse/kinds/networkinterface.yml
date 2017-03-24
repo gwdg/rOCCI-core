@@ -1,0 +1,13 @@
+---
+term: networkinterface
+schema: http://schemas.ogf.org/occi/infrastructure#
+title: OCCI Infrastructure NetworkInterface
+parent: http://schemas.ogf.org/occi/core#link
+location: /link/networkinterface/
+attributes:
+  - occi.networkinterface.interface
+  - occi.networkinterface.mac
+  - occi.networkinterface.state
+actions:
+  - http://schemas.ogf.org/occi/infrastructure/networkinterface/action#up
+  - http://schemas.ogf.org/occi/infrastructure/networkinterface/action#down
