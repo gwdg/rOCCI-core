@@ -36,16 +36,6 @@ module Occi
         # Supported formats
         TEXT_FORMATS = %w(text text_plain text_occi headers).freeze
 
-        # Mapping from instance types to serializer classes
-        KNOWN = {
-          'Occi::Core::Category'       => Occi::Core::Renderers::Text::Category,
-          'Occi::Core::ActionInstance' => Occi::Core::Renderers::Text::ActionInstance,
-          'Occi::Core::Collection'     => Occi::Core::Renderers::Text::Collection,
-          'Occi::Core::Model'          => Occi::Core::Renderers::Text::Model,
-          'Occi::Core::Resource'       => Occi::Core::Renderers::Text::Resource,
-          'Occi::Core::Link'           => Occi::Core::Renderers::Text::Link
-        }.freeze
-
         class << self
           # Indicates this class is a renderer candidate.
           #
@@ -103,7 +93,14 @@ module Occi
           #
           # @return [Array] list of known type->serializer mappings
           def known
-            KNOWN
+            {
+              'Occi::Core::Category'       => Occi::Core::Renderers::Text::Category,
+              'Occi::Core::ActionInstance' => Occi::Core::Renderers::Text::ActionInstance,
+              'Occi::Core::Collection'     => Occi::Core::Renderers::Text::Collection,
+              'Occi::Core::Model'          => Occi::Core::Renderers::Text::Model,
+              'Occi::Core::Resource'       => Occi::Core::Renderers::Text::Resource,
+              'Occi::Core::Link'           => Occi::Core::Renderers::Text::Link
+            }.freeze
           end
 
           private
