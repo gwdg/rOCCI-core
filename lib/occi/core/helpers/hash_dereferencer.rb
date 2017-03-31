@@ -108,7 +108,7 @@ module Occi
         def dereference_mixin_with!(model, attribute_definitions)
           changed = 0
 
-          [:depends, :applies].each do |symbol|
+          %i(depends applies).each do |symbol|
             unless self[symbol].blank?
               self[symbol].map! { |elm| dereference_via_model(elm, model) }
               changed += self[symbol].count

@@ -36,7 +36,7 @@ module Occi
 
       # See `#valid!` on `Occi::Core::Entity`.
       def valid!
-        [:source, :target].each do |attr|
+        %i(source target).each do |attr|
           unless send(attr)
             raise Occi::Core::Errors::InstanceValidationError,
                   "Missing valid #{attr}"

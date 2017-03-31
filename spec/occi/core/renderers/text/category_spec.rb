@@ -60,7 +60,7 @@ module Occi
             )
           end
 
-          BASE_ATTRS = [:object, :options].freeze
+          BASE_ATTRS = %i(object options).freeze
 
           BASE_ATTRS.each do |attr|
             it "has #{attr} accessor" do

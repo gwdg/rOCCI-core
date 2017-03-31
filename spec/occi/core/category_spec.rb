@@ -6,7 +6,7 @@ module Occi
       let(:example_term) { 'generic' }
       let(:example_schema) { 'http://schemas.org/schema#' }
       let(:example_title) { 'Generic category' }
-      let(:example_attributes) { Hash.new }
+      let(:example_attributes) { {} }
 
       let(:category) do
         Category.new(
@@ -35,7 +35,7 @@ module Occi
         )
       end
 
-      CAT_ATTRS = [:term, :schema, :title, :attributes].freeze
+      CAT_ATTRS = %i(term schema title attributes).freeze
 
       CAT_ATTRS.each do |attr|
         it "has #{attr} accessor" do

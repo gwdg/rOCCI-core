@@ -273,7 +273,7 @@ module Occi
       #
       # @return [NilClass] when entity instance is valid
       def valid!
-        [:kind, :id, :location, :title, :attributes, :mixins, :actions].each do |attr|
+        %i(kind id location title attributes mixins actions).each do |attr|
           unless send(attr)
             raise Occi::Core::Errors::InstanceValidationError,
                   "Missing valid #{attr}"
@@ -318,7 +318,7 @@ module Occi
 
       # :nodoc:
       def sufficient_args!(args)
-        [:kind, :attributes, :mixins, :actions].each do |attr|
+        %i(kind attributes mixins actions).each do |attr|
           unless args[attr]
             raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
                   "argument for #{self.class}"

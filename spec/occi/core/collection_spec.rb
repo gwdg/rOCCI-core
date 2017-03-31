@@ -17,7 +17,7 @@ module Occi
       let(:entities) { Set.new([resource, link]) }
       let(:action_instances) { Set.new([action_instance]) }
 
-      COLL_ATTRS = [:categories, :entities, :action_instances].freeze
+      COLL_ATTRS = %i(categories entities action_instances).freeze
 
       COLL_ATTRS.each do |attr|
         it "has #{attr} accessor" do
@@ -40,7 +40,7 @@ module Occi
         coll.entities = entities
         coll.action_instances = action_instances
 
-        [:kind, :mixin, :action, :resource, :link].each do |elm|
+        %i(kind mixin action resource link).each do |elm|
           allow(send(elm)).to receive(:is_a?).with(Class).and_return(false)
           allow(send(elm)).to receive(:is_a?).with(Occi::Core.const_get(elm.to_s.capitalize)).and_return(true)
         end
@@ -76,7 +76,7 @@ module Occi
 
       describe '#find_by_location' do
         before do
-          [:kind, :mixin, :resource, :link].each do |elm|
+          %i(kind mixin resource link).each do |elm|
             allow(send(elm)).to receive(:location).and_return(fake_location)
           end
         end
@@ -304,7 +304,7 @@ module Occi
 
       describe '#valid?' do
         before do
-          [:kind, :mixin, :action].each do |dd|
+          %i(kind mixin action).each do |dd|
             allow(send(dd)).to receive(:valid!)
             allow(send(dd)).to receive(:identifier).and_return('http://test/tes#term')
           end
@@ -340,7 +340,7 @@ module Occi
 
       describe '#valid!' do
         before do
-          [:kind, :mixin, :action].each do |dd|
+          %i(kind mixin action).each do |dd|
             allow(send(dd)).to receive(:valid!)
             allow(send(dd)).to receive(:identifier).and_return('http://test/tes#term')
           end

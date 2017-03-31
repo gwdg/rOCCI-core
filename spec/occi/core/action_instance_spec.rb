@@ -13,7 +13,7 @@ module Occi
           allow(action).to receive(:attributes).and_return({})
         end
 
-        AI_ATTRS = [:action, :attributes].freeze
+        AI_ATTRS = %i(action attributes).freeze
 
         AI_ATTRS.each do |attr|
           it "has #{attr} accessor" do

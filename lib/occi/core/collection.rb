@@ -11,7 +11,7 @@ module Occi
     #
     # @author Boris Parak <parak@cesnet.cz>
     class Collection < Model
-      ALL_KEYS = [:entities, :action_instances].freeze
+      ALL_KEYS = %i(entities action_instances).freeze
       INTERNAL_COLLECTIONS = (ALL_KEYS + [:categories]).freeze
 
       attr_accessor(*ALL_KEYS)

@@ -226,7 +226,7 @@ module Occi
       def sufficient_args!(args)
         sufficient_type! args[:type]
 
-        [:required, :mutable].each do |attr|
+        %i(required mutable).each do |attr|
           next unless args[attr].nil?
           raise Occi::Core::Errors::MandatoryArgumentError,
                 "#{attr} is a mandatory argument"

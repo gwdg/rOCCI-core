@@ -4,7 +4,7 @@ module Occi
       let(:example_term) { 'action' }
       let(:example_schema) { 'http://schemas.org/schema#' }
       let(:example_title) { 'Generic action' }
-      let(:example_attributes) { Hash.new }
+      let(:example_attributes) { {} }
 
       it 'does not do anything special' do
         expect do

@@ -26,7 +26,7 @@ module Occi
         )
       end
 
-      MIXIN_ATTRS = [:actions, :depends, :applies, :location].freeze
+      MIXIN_ATTRS = %i(actions depends applies location).freeze
 
       MIXIN_ATTRS.each do |attr|
         it "has #{attr} accessor" do
