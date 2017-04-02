@@ -2,6 +2,7 @@ module Occi
   module Infrastructure
     describe Warehouse do
       subject { warehouse }
+
       let(:c_warehouse) { Occi::Core::Warehouse }
       let(:warehouse) { Occi::Infrastructure::Warehouse }
       let(:model) { Occi::Infrastructure::Model.new }

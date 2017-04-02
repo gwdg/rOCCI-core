@@ -3,6 +3,7 @@ module Occi
     module Mixins
       describe ResourceTpl do
         subject { resource_tpl }
+
         let(:resource_tpl) { Occi::Infrastructure::Mixins::ResourceTpl.new }
 
         it 'has logger' do

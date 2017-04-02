@@ -2,6 +2,7 @@ module Occi
   module Infrastructure
     describe Model do
       subject { model }
+
       let(:model) { Occi::Infrastructure::Model.new }
 
       describe '#load_infrastructure!' do

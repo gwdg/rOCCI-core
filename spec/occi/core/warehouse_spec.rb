@@ -2,6 +2,7 @@ module Occi
   module Core
     describe Warehouse do
       subject { warehouse }
+
       let(:warehouse) { Occi::Core::Warehouse }
       let(:model) { Occi::Core::Model.new }
 

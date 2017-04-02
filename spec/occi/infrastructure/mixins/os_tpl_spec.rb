@@ -3,6 +3,7 @@ module Occi
     module Mixins
       describe OsTpl do
         subject { os_tpl }
+
         let(:os_tpl) { Occi::Infrastructure::Mixins::OsTpl.new }
 
         it 'has logger' do
