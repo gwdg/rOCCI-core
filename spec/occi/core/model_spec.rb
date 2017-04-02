@@ -302,6 +302,12 @@ module Occi
           end
         end
       end
+
+      describe '#load_core!' do
+        it 'loads Core specs' do
+          expect { model.load_core! }.not_to raise_error
+        end
+      end
     end
   end
 end
