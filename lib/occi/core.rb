@@ -30,6 +30,7 @@ module Occi
   #
   # @author Boris Parak <parak@cesnet.cz>
   module Core
+    autoload :Constants, 'occi/core/constants'
     autoload :Errors, 'occi/core/errors'
     autoload :Renderers, 'occi/core/renderers'
     autoload :Helpers, 'occi/core/helpers'
@@ -51,6 +52,7 @@ module Occi
     autoload :Collection, 'occi/core/collection'
     autoload :Model, 'occi/core/model'
     autoload :Warehouse, 'occi/core/warehouse'
+    autoload :InstanceBuilder, 'occi/core/instance_builder'
   end
 end
 

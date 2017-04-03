@@ -18,9 +18,11 @@ module Occi
   #
   # @author Boris Parak <parak@cesnet.cz>
   module Infrastructure
+    autoload :Constants, 'occi/infrastructure/constants'
     autoload :Mixins, 'occi/infrastructure/mixins'
     autoload :Model, 'occi/infrastructure/model'
     autoload :Warehouse, 'occi/infrastructure/warehouse'
+    autoload :InstanceBuilder, 'occi/infrastructure/instance_builder'
   end
 end
 
