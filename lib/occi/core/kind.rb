@@ -50,15 +50,16 @@ module Occi
       # @return [Array] list containing predecessors of this `Kind` instance
       def related
         return directly_related if hierarchy_root?
-        [parent, parent.related].flatten.compact
+        [self, parent.related].flatten.compact
       end
 
-      # For compatibility reasons, returns the parent instance of this `Kind` in
-      # a single-element `Array`.
+      # For compatibility reasons, returns self and the parent instance of this `Kind` in
+      # an `Array`. For hierarchy roots, returns only a single-element `Array` containing
+      # self.
       #
-      # @return [Array] a single-element list containing the parent `Kind` instance
+      # @return [Array] a list containing self and the parent `Kind` instance
       def directly_related
-        [parent].compact
+        [self, parent].compact
       end
 
       # Indicates whether this instance is the base of the OCCI kind
