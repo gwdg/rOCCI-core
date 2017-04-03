@@ -34,7 +34,7 @@ module Occi
         include Yell::Loggable
 
         # Supported formats
-        TEXT_FORMATS = %w(text text_plain text_occi headers).freeze
+        TEXT_FORMATS = %w[text text_plain text_occi headers].freeze
 
         class << self
           # Indicates this class is a renderer candidate.

@@ -7,7 +7,7 @@ module Occi
       # @author Boris Parak <parak@cesnet.cz>
       module IdentifierValidator
         # Characters prohibited in `schema` attribute
-        PROHIBITED_SCHEMA_CHARS = %w(% & ? ! \\).freeze
+        PROHIBITED_SCHEMA_CHARS = %w[% & ? ! \\].freeze
 
         # Definition of characters allowed in `term` attribute
         REGEXP_TERM = /^([[:alpha:]]|[[:digit:]])([[:alpha:]]|[[:digit:]]|-|_)*$/

@@ -19,7 +19,7 @@ module Occi
         Attribute.new(nil, nil)
       end
 
-      ATTR_ATTRS = %i(value attribute_definition).freeze
+      ATTR_ATTRS = %i[value attribute_definition].freeze
 
       ATTR_ATTRS.each do |attr|
         it "has #{attr} accessor" do

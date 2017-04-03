@@ -35,7 +35,7 @@ module Occi
         )
       end
 
-      CAT_ATTRS = %i(term schema title attributes).freeze
+      CAT_ATTRS = %i[term schema title attributes].freeze
 
       CAT_ATTRS.each do |attr|
         it "has #{attr} accessor" do
@@ -107,7 +107,7 @@ module Occi
         end
       end
 
-      %w(identifier to_s).each do |mtd|
+      %w[identifier to_s].each do |mtd|
         describe "##{mtd}" do
           it 'returns category identifier as URI string' do
             expect(cat.send(mtd)).to be_kind_of String

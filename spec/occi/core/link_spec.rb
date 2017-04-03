@@ -28,7 +28,7 @@ module Occi
         attributes.keys.each { |attrib| allow(attributes[attrib]).to receive(:default) }
       end
 
-      LNK_ATTRS = %i(source target).freeze
+      LNK_ATTRS = %i[source target].freeze
 
       LNK_ATTRS.each do |attr|
         it "has #{attr} accessor" do

@@ -114,7 +114,7 @@ module Occi
 
       # :nodoc:
       def sufficient_args!(args)
-        %i(action attributes).each do |attr|
+        %i[action attributes].each do |attr|
           unless args[attr]
             raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
                   "argument for #{self.class}"

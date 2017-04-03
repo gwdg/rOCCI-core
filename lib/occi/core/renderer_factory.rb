@@ -14,7 +14,7 @@ module Occi
       include Helpers::ArgumentValidator
 
       # Methods expected on supported renderer classes
-      REQUIRED_METHODS = %i(renderer? formats render).freeze
+      REQUIRED_METHODS = %i[renderer? formats render].freeze
       # Parent namespace of all supported renderer classes
       NAMESPACE = Occi::Core::Renderers
 
@@ -201,7 +201,7 @@ module Occi
 
       # :nodoc:
       def sufficient_args!(args)
-        %i(required_methods namespace).each do |attr|
+        %i[required_methods namespace].each do |attr|
           if args[attr].blank?
             raise Occi::Core::Errors::MandatoryArgumentError,
                   "#{attr} is a mandatory argument for #{self.class}"

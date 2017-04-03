@@ -21,7 +21,7 @@ module Occi
         )
       end
 
-      ATTR_DEF_ATTRS = %i(type required mutable default description pattern).freeze
+      ATTR_DEF_ATTRS = %i[type required mutable default description pattern].freeze
 
       ATTR_DEF_ATTRS.each do |attr|
         it "has #{attr} accessor" do

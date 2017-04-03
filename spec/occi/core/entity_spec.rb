@@ -41,7 +41,7 @@ module Occi
         allow(mixin2).to receive(:attributes).and_return({})
       end
 
-      ENTITY_ATTRS = %i(kind id location title attributes mixins actions).freeze
+      ENTITY_ATTRS = %i[kind id location title attributes mixins actions].freeze
 
       ENTITY_ATTRS.each do |attr|
         it "has #{attr} accessor" do

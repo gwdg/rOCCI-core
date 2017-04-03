@@ -55,7 +55,7 @@ module RocciCoreSpec
     class DummyWorkingRenderer < DummyTrueRenderRenderer
       class << self
         def formats
-          %w(dummy dummier_dummy the_dummiest_dummy).freeze
+          %w[dummy dummier_dummy the_dummiest_dummy].freeze
         end
 
         def render(_object, _options)

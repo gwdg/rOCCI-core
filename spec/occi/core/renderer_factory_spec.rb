@@ -7,8 +7,8 @@ module Occi
       let(:orig_namespace) { Occi::Core::Renderers }
       let(:dummy_renderer) { RocciCoreSpec::Renderers::DummyWorkingRenderer }
       let(:factory_instance) { RendererFactory.instance }
-      let(:dummy_formats) { %w(dummy dummier_dummy the_dummiest_dummy) }
-      let(:required_methods) { %i(renderer? formats render) }
+      let(:dummy_formats) { %w[dummy dummier_dummy the_dummiest_dummy] }
+      let(:required_methods) { %i[renderer? formats render] }
 
       before do
         Singleton.__init__(RendererFactory)

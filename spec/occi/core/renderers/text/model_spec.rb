@@ -59,7 +59,7 @@ module Occi
           let(:model_renderer) { Model.new(model, options) }
           let(:empty_model_renderer) { Model.new(empty_model, options) }
 
-          BASE_ATTRS = %i(object options).freeze
+          BASE_ATTRS = %i[object options].freeze
           BASE_ATTRS.each do |attr|
             it "has #{attr} accessor" do
               is_expected.to have_attr_accessor attr.to_sym

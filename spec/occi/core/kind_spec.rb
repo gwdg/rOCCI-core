@@ -33,7 +33,7 @@ module Occi
         )
       end
 
-      KIND_ATTRS = %i(parent location actions).freeze
+      KIND_ATTRS = %i[parent location actions].freeze
 
       KIND_ATTRS.each do |attr|
         it "has #{attr} accessor" do
