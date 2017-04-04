@@ -12,16 +12,27 @@ module Occi
       # compatibility reasons.
       #
       # @param identifier [String] identifier of the category
+      # @param last_ancestor [Class] expected ancestor
       # @return [Class] pre-defined class or given last ancestor
-      def klass(_identifier, last_ancestor)
-        # TODO: impl
-        last_ancestor
+      def klass(identifier, last_ancestor)
+        found_last_ancestor = self.class.klass_map[identifier]
+        if found_last_ancestor && !found_last_ancestor.ancestors.include?(last_ancestor)
+          raise Occi::Core::Errors::InstanceValidationError,
+                "#{found_last_ancestor.inspect} is not a sub-type of #{last_ancestor.inspect}"
+        end
+        found_last_ancestor || last_ancestor
       end
 
       class << self
         # :nodoc:
-        def whereami
-          File.expand_path(File.dirname(__FILE__))
+        def klass_map
+          {
+            Occi::Infrastructure::Constants::COMPUTE_KIND => Occi::Infrastructure::Compute,
+            Occi::Infrastructure::Constants::NETWORK_KIND => Occi::Infrastructure::Network,
+            Occi::Infrastructure::Constants::STORAGE_KIND => Occi::Infrastructure::Storage,
+            Occi::Infrastructure::Constants::NETWORKINTERFACE_KIND => Occi::Infrastructure::Networkinterface,
+            Occi::Infrastructure::Constants::STORAGELINK_KIND => Occi::Infrastructure::Storagelink
+          }
         end
       end
     end

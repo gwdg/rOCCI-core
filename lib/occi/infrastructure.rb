@@ -20,6 +20,13 @@ module Occi
   module Infrastructure
     autoload :Constants, 'occi/infrastructure/constants'
     autoload :Mixins, 'occi/infrastructure/mixins'
+
+    autoload :Compute, 'occi/infrastructure/compute'
+    autoload :Network, 'occi/infrastructure/network'
+    autoload :Storage, 'occi/infrastructure/storage'
+    autoload :Networkinterface, 'occi/infrastructure/networkinterface'
+    autoload :Storagelink, 'occi/infrastructure/storagelink'
+
     autoload :Model, 'occi/infrastructure/model'
     autoload :Warehouse, 'occi/infrastructure/warehouse'
     autoload :InstanceBuilder, 'occi/infrastructure/instance_builder'

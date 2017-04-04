@@ -14,10 +14,6 @@ module Occi
       include Yell::Loggable
       include Helpers::ArgumentValidator
 
-      # YAML DIR constants
-      BASE      = 'instance_builder'.freeze
-      YAML_GLOB = '*.yml'.freeze
-
       attr_accessor :model
 
       # TODO: docs
@@ -118,28 +114,6 @@ module Occi
         else
           raise Occi::Core::Errors::ModelLookupError,
                 "Could not identify #{kind.identifier.inspect} as a Link or Resource"
-        end
-      end
-
-      class << self
-        # :nodoc:
-        def whereami
-          File.expand_path(File.dirname(__FILE__))
-        end
-
-        # :nodoc:
-        def instance_builder_path
-          File.join(whereami, BASE)
-        end
-
-        # :nodoc:
-        def yamls_in(path)
-          Dir[File.join(path, YAML_GLOB)].sort
-        end
-
-        # :nodoc:
-        def known_subtypes
-          yamls_in instance_builder_path
         end
       end
 

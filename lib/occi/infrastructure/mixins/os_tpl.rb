@@ -6,13 +6,12 @@ module Occi
       #
       # @author Boris Parak <parak@cesnet.cz>
       class OsTpl < Occi::Core::Mixin
-        TERM   = 'os_tpl'.freeze
-        SCHEMA = 'http://schemas.ogf.org/occi/infrastructure#'.freeze
-        TITLE  = 'OS or Appliance template (parent mixin)'.freeze
+        TITLE = 'OS or Appliance template (parent mixin)'.freeze
 
         # See `Occi::Core::Mixin` and `Occi::Core::Category`
         def initialize
-          super term: TERM, schema: SCHEMA, title: TITLE
+          schema, term = Occi::Infrastructure::Constants::OS_TPL_MIXIN.split('#')
+          super term: term, schema: "#{schema}#", title: TITLE
         end
       end
     end

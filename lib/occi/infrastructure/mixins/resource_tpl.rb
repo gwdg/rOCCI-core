@@ -6,13 +6,12 @@ module Occi
       #
       # @author Boris Parak <parak@cesnet.cz>
       class ResourceTpl < Occi::Core::Mixin
-        TERM   = 'resource_tpl'.freeze
-        SCHEMA = 'http://schemas.ogf.org/occi/infrastructure#'.freeze
-        TITLE  = 'Resource template providing flavor/sizing information (parent mixin)'.freeze
+        TITLE = 'Resource template providing flavor/sizing information (parent mixin)'.freeze
 
         # See `Occi::Core::Mixin` and `Occi::Core::Category`
         def initialize
-          super term: TERM, schema: SCHEMA, title: TITLE
+          schema, term = Occi::Infrastructure::Constants::RESOURCE_TPL_MIXIN.split('#')
+          super term: term, schema: "#{schema}#", title: TITLE
         end
       end
     end
