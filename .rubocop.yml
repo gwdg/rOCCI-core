@@ -18,6 +18,8 @@ Metrics/MethodLength:
 
 Metrics/LineLength:
   Max: 120
+  Exclude:
+  - 'lib/occi/core/parsers/text/constants.rb'
 
 Metrics/BlockLength:
   Exclude:
