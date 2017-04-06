@@ -28,7 +28,12 @@ module Occi
         include Yell::Loggable
         include Helpers::ArgumentValidator
 
-        MEDIA_TYPES = %w[text/plain text/occi text/occi+plain text/uri-list].freeze
+        # Media type constants
+        URI_LIST_TYPES     = %w[text/uri-list].freeze
+        HEADERS_TEXT_TYPES = %w[text/occi].freeze
+        PLAIN_TEXT_TYPES   = %w[text/plain text/occi+plain].freeze
+        OCCI_TEXT_TYPES    = [HEADERS_TEXT_TYPES, PLAIN_TEXT_TYPES].flatten.freeze
+        MEDIA_TYPES        = [URI_LIST_TYPES, OCCI_TEXT_TYPES].flatten.freeze
 
         attr_accessor :model, :media_type
 
@@ -80,6 +85,16 @@ module Occi
           categories body, headers, Occi::Core::Action
         end
 
+        # Checks whether the given media type is supported by this
+        # parser instance.
+        #
+        # @param media_type [String] media type string as provided by the transport protocol
+        # @return [TrueClass] if supported
+        # @return [FalseClass] if not supported
+        def parses?(media_type)
+          self.media_type == media_type
+        end
+
         class << self
           # TODO: docs
           def model(body, headers, media_type); end
@@ -110,7 +125,7 @@ module Occi
         # :nodoc:
         def sufficient_args!(args)
           %i[model media_type].each do |attr|
-            unless self.class.send("valid_#{attr}?", args[attr])
+            unless args[attr]
               raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
                     "argument for #{self.class}"
             end
@@ -126,7 +141,11 @@ module Occi
         def pre_initialize(args); end
 
         # :nodoc:
-        def post_initialize(args); end
+        def post_initialize(args)
+          return if OCCI_TEXT_TYPES.include?(args[:media_type])
+          raise Occi::Core::Errors::ParserError, "Media type #{args[:media_type].inspect} is not supported " \
+                "by instances of this parser, only #{OCCI_TEXT_TYPES.inspect}"
+        end
       end
     end
   end
