@@ -36,12 +36,12 @@ module Occi
         MEDIA_TYPES        = [URI_LIST_TYPES, OCCI_TEXT_TYPES].flatten.freeze
 
         # Constants for OCCI keys
-        KEY_NAMES      = %w[LOCATION_KEYS CATEGORY_KEYS LINK_KEYS ATTRIBUTE_KEYS].freeze
-        LOCATION_KEYS  = %w[X-OCCI-Location X_occi_location X-occi-location Location].freeze
-        CATEGORY_KEYS  = %w[Category X-OCCI-Category X_occi_category X-occi-category].freeze
-        LINK_KEYS      = %w[Link X-OCCI-Link X_occi_link X-occi-link].freeze
-        ATTRIBUTE_KEYS = %w[X-OCCI-Attribute X_occi_attribute X-occi-attribute].freeze
-        OCCI_KEYS      = [LOCATION_KEYS, CATEGORY_KEYS, LINK_KEYS, ATTRIBUTE_KEYS].flatten.freeze
+        KEY_NAME_GROUPS = %w[LOCATION_KEYS CATEGORY_KEYS LINK_KEYS ATTRIBUTE_KEYS].freeze
+        LOCATION_KEYS   = %w[X-OCCI-Location X_occi_location X-occi-location Location].freeze
+        CATEGORY_KEYS   = %w[Category X-OCCI-Category X_occi_category X-occi-category].freeze
+        LINK_KEYS       = %w[Link X-OCCI-Link X_occi_link X-occi-link].freeze
+        ATTRIBUTE_KEYS  = %w[X-OCCI-Attribute X_occi_attribute X-occi-attribute].freeze
+        OCCI_KEYS       = [LOCATION_KEYS, CATEGORY_KEYS, LINK_KEYS, ATTRIBUTE_KEYS].flatten.freeze
 
         # Constants for header normalization
         HEADER_HTTP_PREFIX = 'HTTP_'.freeze
@@ -225,7 +225,7 @@ module Occi
           #
           # @return [Array] list of available key name groups
           def key_name_groups
-            KEY_NAMES.map { |kn| const_get kn }
+            KEY_NAME_GROUPS.map { |kn| const_get kn }
           end
         end
 
