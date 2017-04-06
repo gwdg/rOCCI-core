@@ -19,7 +19,7 @@ module Occi
                 matched = line.match(regexp)
                 unless matched
                   raise Occi::Core::Errors::ParsingError,
-                        "#{self}: #{line.inspect} does not match #{Constants::REGEXP_LOCATION.inspect}"
+                        "#{self} -> #{line.inspect} does not match 'X-OCCI-Location: URI'"
                 end
                 URI.parse matched[:location]
               end.compact
