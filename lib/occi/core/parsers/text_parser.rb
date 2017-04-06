@@ -110,8 +110,19 @@ module Occi
           # TODO: docs
           def model(body, headers, media_type); end
 
-          # TODO: docs
-          def locations(body, headers, media_type); end
+          # Extracts URI-like locations from body and headers. For details, see `Occi::Core::Parsers::Text::Location`.
+          #
+          # @param body [String] raw `String`-like body as provided by the transport protocol
+          # @param headers [Hash] raw headers as provided by the transport protocol
+          # @param media_type [String] media type string as provided by the transport protocol
+          # @return [Array] list of extracted URIs
+          def locations(body, headers, media_type)
+            if URI_LIST_TYPES.include? media_type
+              Text::Location.uri_list transform_body(body)
+            else
+              Text::Location.plain transform_body(body) + transform_headers(headers)
+            end
+          end
 
           # Returns a list of supported media types for this parser.
           #
@@ -136,7 +147,8 @@ module Occi
           # @param body [String] multi-line body
           # @return [Array] an array of lines
           def transform_body(body)
-            body.respond_to?(:lines) ? body.lines : body.split("\n")
+            lines = body.respond_to?(:lines) ? body.lines : body.split("\n")
+            lines.map(&:strip)
           end
 
           # Transforms a widely varied content of headers into a unified body-like
