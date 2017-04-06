@@ -190,7 +190,7 @@ module Occi
             canonical = {}
             headers.each_pair do |key, value|
               pref = key_name_groups.detect { |ka| ka.include?(key) }
-              canonical[pref] = [canonize_header_value(value)].flatten
+              canonical[pref.first] = [canonize_header_value(value)].flatten
             end
 
             canonical
