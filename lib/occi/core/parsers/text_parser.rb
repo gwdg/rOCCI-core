@@ -119,8 +119,10 @@ module Occi
           def locations(body, headers, media_type)
             if URI_LIST_TYPES.include? media_type
               Text::Location.uri_list transform_body(body)
+            elsif HEADERS_TEXT_TYPES.include? media_type
+              Text::Location.plain transform_headers(headers)
             else
-              Text::Location.plain transform_body(body) + transform_headers(headers)
+              Text::Location.plain transform_body(body)
             end
           end
 
