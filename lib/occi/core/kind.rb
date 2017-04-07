@@ -96,7 +96,12 @@ module Occi
         @actions = args.fetch(:actions)
         @location = args.fetch(:location)
 
-        attributes.merge!(parent.attributes) { |_, oldval, _| oldval } if parent
+        load_parent_attributes! if parent
+      end
+
+      # :nodoc:
+      def load_parent_attributes!
+        attributes.merge!(parent.attributes) { |_, oldval, _| oldval }
       end
 
       private
