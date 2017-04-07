@@ -29,6 +29,7 @@ module Occi
       # @return [TrueClass, FalseClass] result
       def related?(kind)
         return false unless kind
+        return true if kind == self
         related.include? kind
       end
 
@@ -41,6 +42,7 @@ module Occi
       # @return [TrueClass, FalseClass] result
       def directly_related?(kind)
         return false unless kind
+        return true if kind == self
         directly_related.include? kind
       end
 
@@ -50,16 +52,15 @@ module Occi
       # @return [Array] list containing predecessors of this `Kind` instance
       def related
         return directly_related if hierarchy_root?
-        [self, parent.related].flatten.compact
+        [parent, parent.related].flatten.compact
       end
 
-      # For compatibility reasons, returns self and the parent instance of this `Kind` in
-      # an `Array`. For hierarchy roots, returns only a single-element `Array` containing
-      # self.
+      # For compatibility reasons, returns the parent instance of this `Kind` in
+      # an `Array`. For hierarchy roots, returns only an empty `Array`.
       #
-      # @return [Array] a list containing self and the parent `Kind` instance
+      # @return [Array] a list containing the parent `Kind` instance, if any
       def directly_related
-        [self, parent].compact
+        [parent].compact
       end
 
       # Indicates whether this instance is the base of the OCCI kind

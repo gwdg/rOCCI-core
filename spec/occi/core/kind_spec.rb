@@ -116,22 +116,19 @@ module Occi
           expect(knd).to be_kind_of(Enumerable)
         end
 
-        it 'returns single-element list for root' do
-          expect(knd).to include(root_kind)
-          expect(knd.count).to be 1
+        it 'returns empty list for root' do
+          expect(knd).to be_empty
         end
 
         it 'returns non-empty list for non-root kind' do
-          expect(kind.related).to include(kind)
           expect(kind.related).to include(root_kind)
-          expect(kind.related.count).to be 2
+          expect(kind.related.count).to be 1
         end
 
         it 'returns non-empty list for multi-predecessor kind' do
-          expect(successor_kind.related).to include(successor_kind)
           expect(successor_kind.related).to include(kind)
           expect(successor_kind.related).to include(root_kind)
-          expect(successor_kind.related.count).to be 3
+          expect(successor_kind.related.count).to be 2
         end
       end
 
@@ -142,19 +139,17 @@ module Occi
           expect(knd).to be_kind_of(Enumerable)
         end
 
-        it 'returns non-empty list for root' do
-          expect(knd).not_to be_empty
-          expect(knd.count).to be 1
-          expect(knd).to include(root_kind)
+        it 'returns empty list for root' do
+          expect(knd).to be_empty
         end
 
-        it 'returns two-element list for single-predecessor kind' do
-          expect(kind.directly_related.count).to eq 2
+        it 'returns single-element list for single-predecessor kind' do
+          expect(kind.directly_related.count).to eq 1
           expect(kind.directly_related).to include(root_kind)
         end
 
-        it 'returns two-element list for multi-predecessor kind' do
-          expect(successor_kind.directly_related.count).to eq 2
+        it 'returns single-element list for multi-predecessor kind' do
+          expect(successor_kind.directly_related.count).to eq 1
           expect(successor_kind.directly_related).to include(kind)
         end
       end
