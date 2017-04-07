@@ -17,7 +17,7 @@ module Occi
             # @param lines [Array]
             # @return [Array]
             def plain(lines)
-              cats = lines.map { |line| plain_category(line, cat_regexp, attr_regexp) }.compact
+              cats = lines.map { |line| plain_category(line) }.compact
               dereference_identifiers cats
             end
 
@@ -50,9 +50,9 @@ module Occi
             # TODO: docs
             def plain_attribute(line)
               # TODO: find a better approach to fixing split
-              attribute.gsub!(/\{(immutable|required)_(required|immutable)\}/, '{\1 \2}')
+              line.gsub!(/\{(immutable|required)_(required|immutable)\}/, '{\1 \2}')
 
-              matched = attribute.match(ATTRIBUTE_REGEXP)
+              matched = line.match(ATTRIBUTE_REGEXP)
               unless matched && matched[1]
                 raise Occi::Core::Errors::ParsingError,
                       "#{self} -> #{line.inspect} does not match expectations for Attribute"
