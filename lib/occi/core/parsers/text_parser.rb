@@ -12,6 +12,7 @@ module Occi
 end
 
 # Load class-specific parsing primitives
+require File.join(File.dirname(__FILE__), 'text', 'constants')
 Dir[File.join(File.dirname(__FILE__), 'text', '*.rb')].each { |file| require file.gsub('.rb', '') }
 
 module Occi
@@ -107,8 +108,26 @@ module Occi
         end
 
         class << self
-          # TODO: docs
-          def model(body, headers, media_type); end
+          # Extracts categories from body and headers. For details, see `Occi::Core::Parsers::Text::Category`.
+          #
+          # @param body [String] raw `String`-like body as provided by the transport protocol
+          # @param headers [Hash] raw headers as provided by the transport protocol
+          # @param media_type [String] media type string as provided by the transport protocol
+          # @param empty_model [Occi::Core::Model] empty `Model`-like instance to be populated
+          # @return [Occi::Core::Model] model instance filled with parsed categories
+          def model(body, headers, media_type, empty_model)
+            cats = if HEADERS_TEXT_TYPES.include? media_type
+                     Text::Category.plain transform_headers(headers)
+                   elsif PLAIN_TEXT_TYPES.include? media_type
+                     Text::Category.plain transform_body(body)
+                   else
+                     raise Occi::Core::Errors::ParsingError,
+                           "#{self} -> model cannot be parsed from #{media_type.inspect}"
+                   end
+
+            cats.each { |cat| empty_model << cat }
+            empty_model
+          end
 
           # Extracts URI-like locations from body and headers. For details, see `Occi::Core::Parsers::Text::Location`.
           #
