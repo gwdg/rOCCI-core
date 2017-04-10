@@ -42,7 +42,7 @@ module Occi
           REGEXP_LINK_TYPE_STRICT = /#{REGEXP_TYPE_IDENTIFIER_STRICT}(\s+#{REGEXP_TYPE_IDENTIFIER_STRICT})*/
 
           # Regular expression for OCCI Categories
-          REGEXP_CATEGORY = "Category:\\s*(?<term>#{REGEXP_TERM})" << # term (mandatory)
+          REGEXP_CATEGORY = "^Category:\\s*(?<term>#{REGEXP_TERM})" << # term (mandatory)
                             ";\\s*scheme=\"(?<scheme>#{REGEXP_SCHEME})#{REGEXP_TERM}?\"" << # scheme (mandatory)
                             ";\\s*class=\"?(?<class>#{REGEXP_CLASS})\"?" << # class (mandatory)
                             "(;\\s*title=\"(?<title>#{REGEXP_QUOTED_STRING})\")?" << # title (optional)
@@ -50,8 +50,8 @@ module Occi
                             "(;\\s*location=\"(?<location>#{URI::URI_REF})\")?" << # location (optional)
                             "(;\\s*attributes=\"(?<attributes>#{REGEXP_ATTRIBUTE_LIST})\")?" << # attributes (optional)
                             "(;\\s*actions=\"(?<actions>#{REGEXP_ACTION_LIST})\")?" << # actions (optional)
-                            ';?' # additional semicolon at the end (not specified, for interoperability)
-          REGEXP_CATEGORY_STRICT = "Category:\\s*(?<term>#{REGEXP_TERM_STRICT})" << # term (mandatory)
+                            ';?$' # additional semicolon at the end (not specified, for interoperability)
+          REGEXP_CATEGORY_STRICT = "^Category:\\s*(?<term>#{REGEXP_TERM_STRICT})" << # term (mandatory)
                                    ";\\s*scheme=\"(?<scheme>#{REGEXP_SCHEME})\"" << # scheme (mandatory)
                                    ";\\s*class=\"(?<class>#{REGEXP_CLASS})\"" << # class (mandatory)
                                    "(;\\s*title=\"(?<title>#{REGEXP_QUOTED_STRING})\")?" << # title (optional)
@@ -59,29 +59,29 @@ module Occi
                                    "(;\\s*location=\"(?<location>#{URI::URI_REF})\")?" << # location (optional)
                                    "(;\\s*attributes=\"(?<attributes>#{REGEXP_ATTRIBUTE_LIST})\")?" << # attributes (optional)
                                    "(;\\s*actions=\"(?<actions>#{REGEXP_ACTION_LIST_STRICT})\")?" << # actions (optional)
-                                   ';?' # additional semicolon at the end (not specified, for interoperability)
+                                   ';?$' # additional semicolon at the end (not specified, for interoperability)
 
           # Regular expression for OCCI Link Instance References
-          REGEXP_LINK = "Link:\\s*\\<(?<uri>#{URI::URI_REF})\\>" << # uri (mandatory)
+          REGEXP_LINK = "^Link:\\s*\\<(?<uri>#{URI::URI_REF})\\>" << # uri (mandatory)
                         ";\\s*rel=\"(?<rel>#{REGEXP_RESOURCE_TYPE})\"" << # rel (mandatory)
                         "(;\\s*self=\"(?<self>#{REGEXP_LINK_INSTANCE})\")?" << # self (optional)
                         "(;\\s*category=\"(?<category>(;?\\s*(#{REGEXP_LINK_TYPE}))+)\")?" << # category (optional)
                         "(?<attributes>(;?\\s*(#{REGEXP_ATTRIBUTE_REPR}))*)" << # attributes (optional)
-                        ';?' # additional semicolon at the end (not specified, for interoperability)
-          REGEXP_LINK_STRICT = "Link:\\s*\\<(?<uri>#{URI::URI_REF})\\>" << # uri (mandatory)
+                        ';?$' # additional semicolon at the end (not specified, for interoperability)
+          REGEXP_LINK_STRICT = "^Link:\\s*\\<(?<uri>#{URI::URI_REF})\\>" << # uri (mandatory)
                                ";\\s*rel=\"(?<rel>#{REGEXP_RESOURCE_TYPE_STRICT})\"" << # rel (mandatory)
                                "(;\\s*self=\"(?<self>#{REGEXP_LINK_INSTANCE})\")?" << # self (optional)
                                "(;\\s*category=\"(?<category>(;?\\s*(#{REGEXP_LINK_TYPE_STRICT}))+)\")?" << # category (optional)
                                "(?<attributes>(;\\s*(#{REGEXP_ATTRIBUTE_REPR}))*)" << # attributes (optional)
-                               ';?' # additional semicolon at the end (not specified, for interoperability)
+                               ';?$' # additional semicolon at the end (not specified, for interoperability)
 
           # Regular expression for OCCI Entity Attributes
-          REGEXP_ATTRIBUTE = "X-OCCI-Attribute:\\s*(?<name>#{REGEXP_ATTRIBUTE_NAME})=(\"(?<string>#{REGEXP_QUOTED_STRING})\"|(?<number>#{REGEXP_NUMBER})|(?<bool>#{REGEXP_BOOL}))" \
-                             ';?'.freeze # additional semicolon at the end (not specified, for interoperability)
+          REGEXP_ATTRIBUTE = "^X-OCCI-Attribute:\\s*(?<name>#{REGEXP_ATTRIBUTE_NAME})=(\"(?<string>#{REGEXP_QUOTED_STRING})\"|(?<number>#{REGEXP_NUMBER})|(?<bool>#{REGEXP_BOOL}))" \
+                             ';?$'.freeze # additional semicolon at the end (not specified, for interoperability)
 
           # Regular expression for OCCI Location
-          REGEXP_LOCATION = "X-OCCI-Location:\\s*(?<location>#{URI::URI_REF})" \
-                            ';?'.freeze # additional semicolon at the end (not specified, for interoperability)
+          REGEXP_LOCATION = "^X-OCCI-Location:\\s*(?<location>#{URI::URI_REF})" \
+                            ';?$'.freeze # additional semicolon at the end (not specified, for interoperability)
         end
       end
     end
