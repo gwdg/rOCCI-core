@@ -7,6 +7,8 @@ module Occi
         #
         # @author Boris Parak <parak@cesnet.cz>
         class Category
+          include Yell::Loggable
+
           # Regexp constants
           CATEGORY_REGEXP  = /#{Constants::REGEXP_CATEGORY}/
           ATTRIBUTE_REGEXP = /#{Constants::REGEXP_ATTRIBUTE_DEF}/
