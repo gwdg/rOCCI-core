@@ -7,6 +7,8 @@ module Occi
         #
         # @author Boris Parak <parak@cesnet.cz>
         class Location
+          include Yell::Loggable
+
           class << self
             # Parses text/plain OCCI locations into `URI` instances suitable for futher processing.
             # Every location line is expected to begin with 'X-OCCI-Location'.
@@ -16,12 +18,13 @@ module Occi
             def plain(lines)
               regexp = Regexp.new(Constants::REGEXP_LOCATION)
               lines.map do |line|
+                next if line.blank?
                 matched = line.match(regexp)
                 unless matched
                   raise Occi::Core::Errors::ParsingError,
                         "#{self} -> #{line.inspect} does not match 'X-OCCI-Location: URI'"
                 end
-                URI.parse matched[:location]
+                URI.parse matched[:location].strip
               end.compact
             end
 
@@ -32,8 +35,8 @@ module Occi
             # @return [Array] list of locations (URIs)
             def uri_list(lines)
               lines.map do |line|
-                next if line.start_with? '#'
-                URI.parse line
+                next if line.start_with?('#') || line.blank?
+                URI.parse line.strip
               end.compact
             end
           end
