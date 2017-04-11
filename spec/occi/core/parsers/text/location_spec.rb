@@ -94,7 +94,7 @@ module Occi
               let(:invalid_uri) { ['blaba blaABLA ASLDKASD'] }
 
               it 'fails with InvalidURIError' do
-                expect { lc.uri_list(invalid_uri) }.to raise_error(URI::InvalidURIError)
+                expect { lc.uri_list(invalid_uri) }.to raise_error(Occi::Core::Errors::ParsingError)
               end
             end
           end

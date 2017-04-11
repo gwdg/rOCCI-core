@@ -8,6 +8,7 @@ module Occi
         # @author Boris Parak <parak@cesnet.cz>
         class Location
           include Yell::Loggable
+          include Helpers::ErrorHandler
 
           class << self
             # Parses text/plain OCCI locations into `URI` instances suitable for futher processing.
@@ -24,7 +25,7 @@ module Occi
                   raise Occi::Core::Errors::ParsingError,
                         "#{self} -> #{line.inspect} does not match 'X-OCCI-Location: URI'"
                 end
-                URI.parse matched[:location].strip
+                handle(Occi::Core::Errors::ParsingError) { URI.parse(matched[:location].strip) }
               end.compact
             end
 
@@ -35,8 +36,8 @@ module Occi
             # @return [Array] list of locations (URIs)
             def uri_list(lines)
               lines.map do |line|
-                next if line.start_with?('#') || line.blank?
-                URI.parse line.strip
+                next if line.blank? || line.start_with?('#')
+                handle(Occi::Core::Errors::ParsingError) { URI.parse(line.strip) }
               end.compact
             end
           end
