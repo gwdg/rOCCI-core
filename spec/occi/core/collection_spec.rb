@@ -180,6 +180,22 @@ module Occi
         end
       end
 
+      describe '#find_by_id!' do
+        let(:sample_id) { '64654f-6a5df4a6-df46ad4f' }
+
+        it 'returns entity with the given occi.core.id' do
+          allow(resource).to receive(:id).and_return(sample_id)
+          allow(link).to receive(:id).and_return(sample_id)
+          expect { coll.find_by_id!(sample_id) }.not_to raise_error
+        end
+
+        it 'raises error when no entities have given occi.core.id' do
+          expect(resource).to receive(:id).and_return('nah')
+          expect(link).to receive(:id).and_return('nahl')
+          expect { coll.find_by_id!(sample_id) }.to raise_error(Occi::Core::Errors::CollectionLookupError)
+        end
+      end
+
       describe '#<<' do
         context 'with category' do
           before do

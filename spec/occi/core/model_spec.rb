@@ -231,6 +231,18 @@ module Occi
         end
       end
 
+      describe '#find_by_identifier!' do
+        let(:sample_identifier) { 'http://definitely.not/there#yaas' }
+
+        it 'returns category with the given identifier' do
+          expect { model.find_by_identifier!(example_schema + example_term) }.not_to raise_error
+        end
+
+        it 'raises error when no identifier matches' do
+          expect { model.find_by_identifier!(sample_identifier) }.to raise_error(Occi::Core::Errors::ModelLookupError)
+        end
+      end
+
       describe '#find_by_term' do
         let(:sample_term) { 'yaas' }
 
@@ -306,6 +318,12 @@ module Occi
       describe '#load_core!' do
         it 'loads Core specs' do
           expect { model.load_core! }.not_to raise_error
+        end
+      end
+
+      describe '#instance_builder' do
+        it 'returns IB instance' do
+          expect(model.instance_builder).to be_kind_of Occi::Core::InstanceBuilder
         end
       end
     end

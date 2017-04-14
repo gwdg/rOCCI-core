@@ -15,6 +15,13 @@ module Occi
         self << Occi::Infrastructure::Mixins::ResourceTpl.new
         nil
       end
+
+      # Returns an instance of `Occi::Infrastructure::InstanceBuilder` associated with this model.
+      #
+      # @return [Occi::Infrastructure::InstanceBuilder] instance of IB
+      def instance_builder
+        Occi::Infrastructure::InstanceBuilder.new(model: self)
+      end
     end
   end
 end

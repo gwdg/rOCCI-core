@@ -40,18 +40,6 @@ module Occi
         typed_set(entities, Occi::Core::Link)
       end
 
-      # Collects all categories and entities with the given location.
-      # This method looks for an explicit/full match on the location.
-      #
-      # @param location [URI] expected location
-      # @return [Set] set of results possibly containing a mix of instance types and categories
-      def find_by_location(location)
-        filtered_set(
-          all.select { |elm| elm.respond_to?(:location) },
-          key: 'location', value: location
-        )
-      end
-
       # Collects all `Occi::Core::Entity` successors with the given
       # kind. The resulting set may contain mixed instance types.
       #
@@ -86,6 +74,16 @@ module Occi
       # @return [Set] set of found entities
       def find_by_id(id)
         filtered_set(entities, key: 'id', value: id)
+      end
+
+      # See `find_by_id`. Returns first found object or raises an error.
+      #
+      # @param id [String] expected ID
+      # @return [Object] found instance
+      def find_by_id!(id)
+        found = entities.detect { |elm| elm.id == id }
+        raise Occi::Core::Errors::CollectionLookupError, "Entity #{id.inspect} not found in the collection" unless found
+        found
       end
 
       # Auto-assigns the given object to the appropriate internal set.

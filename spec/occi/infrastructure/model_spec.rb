@@ -20,6 +20,12 @@ module Occi
           end
         end
       end
+
+      describe '#instance_builder' do
+        it 'returns IB instance' do
+          expect(model.instance_builder).to be_kind_of Occi::Infrastructure::InstanceBuilder
+        end
+      end
     end
   end
 end

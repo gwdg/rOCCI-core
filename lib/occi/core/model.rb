@@ -127,11 +127,11 @@ module Occi
         Set.new(mixins.select { |mxn| mxn.depends?(mixin) })
       end
 
-      # Collects all categories with the given location.
+      # Collects everything with the given location.
       # This method looks for an explicit/full match on the location.
       #
       # @param location [URI] expected location
-      # @return [Set] set of results possibly containing a mix of instance types
+      # @return [Set] set of results possibly containing a mix of types
       def find_by_location(location)
         filtered_set(
           all.select { |elm| elm.respond_to?(:location) },
@@ -145,6 +145,16 @@ module Occi
       # @return [Set] set of found categories
       def find_by_identifier(identifier)
         filtered_set(categories, key: 'identifier', value: identifier)
+      end
+
+      # See `find_by_identifier`. Returns first found object or raises an error.
+      #
+      # @param identifier [String] expected identifier
+      # @return [Object] found category
+      def find_by_identifier!(identifier)
+        found = categories.detect { |elm| elm.identifier == identifier }
+        raise Occi::Core::Errors::ModelLookupError, "Category #{identifier.inspect} not found in the model" unless found
+        found
       end
 
       # Collects all `Occi::Core::Category` successors with the given term.
@@ -234,6 +244,13 @@ module Occi
       #    model.load_core!
       def load_core!
         Occi::Core::Warehouse.bootstrap! self
+      end
+
+      # Returns an instance of `Occi::Core::InstanceBuilder` associated with this model.
+      #
+      # @return [Occi::Core::InstanceBuilder] instance of IB
+      def instance_builder
+        Occi::Core::InstanceBuilder.new(model: self)
       end
 
       protected
