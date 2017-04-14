@@ -30,8 +30,9 @@ module Occi
             # information for creating an instance.
             #
             # @param line [String] single-category line containing the definition
+            # @param full [TrueClass, FalseClass] parse full definition, defaults to `true`
             # @return [Hash] raw category hash for further processing
-            def plain_category(line)
+            def plain_category(line, full = true)
               matched = line.match(CATEGORY_REGEXP)
               unless matched
                 raise Occi::Core::Errors::ParsingError,
@@ -39,9 +40,12 @@ module Occi
               end
 
               cat = matchdata_to_hash(matched)
+              return cat unless full
+
               cat[:attributes] = plain_attributes(cat[:attributes]) if cat[:attributes]
               cat[:rel] = plain_identifiers(cat[:rel]) if cat[:rel]
               cat[:actions] = plain_identifiers(cat[:actions]) if cat[:actions]
+
               cat
             end
 

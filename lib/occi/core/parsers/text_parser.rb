@@ -28,6 +28,7 @@ module Occi
       class TextParser
         include Yell::Loggable
         include Helpers::ArgumentValidator
+        include Helpers::ErrorHandler
 
         # Media type constants
         URI_LIST_TYPES     = %w[text/uri-list].freeze
@@ -61,7 +62,10 @@ module Occi
         end
 
         # TODO: docs
-        def entities(body, headers, expectation); end
+        def entities(body, headers, expectation = nil)
+          expectation ||= Occi::Core::Entity
+          # TODO: use Text::Entity.plain
+        end
 
         # See `#entities`.
         def resources(body, headers)
@@ -79,8 +83,24 @@ module Occi
         # TODO: docs
         def attributes(body, headers); end
 
-        # TODO: docs
-        def categories(body, headers, expectation); end
+        # Parses categories from the given body/headers and returns corresponding instances
+        # from the known model.
+        #
+        # @param body [String] raw `String`-like body as provided by the transport protocol
+        # @param headers [Hash] raw headers as provided by the transport protocol
+        # @param expectation [Class] expected class of the returned instance(s)
+        # @return [Set] set of instances
+        def categories(body, headers, expectation = nil)
+          expectation ||= Occi::Core::Category
+          raw_cats = transform(body, headers).map { |line| Text::Category.plain_category(line, false) }
+          raw_cats.map! do |c|
+            id = "#{c[:scheme]}#{c[:term]}"
+            found = handle(Occi::Core::Errors::ParsingError) { model.find_by_identifier!(id) }
+            raise Occi::Core::Errors::ParsingError, "#{id.inspect} isn't #{expectation}" unless found.is_a?(expectation)
+            found
+          end
+          Set.new(raw_cats)
+        end
 
         # See `#categories`.
         def kinds(body, headers)
@@ -106,6 +126,18 @@ module Occi
         def parses?(media_type)
           self.media_type == media_type
         end
+
+        # Transforms `body` and `headers` into an array of lines parsable by 'text/plain'
+        # parser.
+        #
+        # @param body [String] raw `String`-like body as provided by the transport protocol
+        # @param headers [Hash] raw headers as provided by the transport protocol
+        # @return [Array] array with transformed lines
+        def transform(body, headers)
+          klass = self.class
+          HEADERS_TEXT_TYPES.include?(media_type) ? klass.transform_headers(headers) : klass.transform_body(body)
+        end
+        private :transform
 
         class << self
           # Extracts categories from body and headers. For details, see `Occi::Core::Parsers::Text::Category`.
