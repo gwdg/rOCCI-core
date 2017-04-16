@@ -30,7 +30,7 @@ module Occi
       # can construct instances of Entity sub-types.
       #
       # @example
-      #    build 'http://schemas.ogf.org/occi/core#resource', Occi::Core::Resource
+      #    build 'http://schemas.ogf.org/occi/core#resource'
       #      # => Occi::Core::Resource
       #
       # @param identifier [String] identifier of the category
