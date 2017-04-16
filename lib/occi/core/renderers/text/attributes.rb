@@ -14,7 +14,7 @@ module Occi
           ATTRIBUTE_KEY = 'X-OCCI-Attribute'.freeze
 
           # Known primitive attribute value types
-          PRIMITIVE_TYPES = [String, Numeric, Integer, Float, TrueClass, FalseClass].freeze
+          PRIMITIVE_TYPES = [String, Numeric, Integer, Float, Boolean].freeze
 
           # Renders `object` into plain text and returns the result
           # as `String`.

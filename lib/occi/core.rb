@@ -57,6 +57,7 @@ module Occi
 end
 
 # Explicitly load monkey patches
+require 'occi/monkey_island/boolean'
 require 'occi/monkey_island/hash'
 
 # Explicitly pull in versioning information

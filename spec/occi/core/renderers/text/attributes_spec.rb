@@ -24,7 +24,7 @@ module Occi
           end
 
           let(:attr_def_bool) do
-            Occi::Core::AttributeDefinition.new(type: TrueClass)
+            Occi::Core::AttributeDefinition.new(type: Boolean)
           end
 
           let(:attr_def_kind) do

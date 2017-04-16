@@ -240,9 +240,9 @@ module Occi
                 'type is a mandatory argument'
         end
 
-        return if type.is_a?(Class)
+        return if type.is_a?(Class) || type.is_a?(Module)
         raise Occi::Core::Errors::MandatoryArgumentError,
-              'type must be a class'
+              'type must be a class or module'
       end
 
       # :nodoc:
