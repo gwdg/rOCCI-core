@@ -61,10 +61,18 @@ module Occi
           post_initialize(args)
         end
 
-        # TODO: docs
+        # Parses entities from the given body/headers. Only kinds, mixins, and actions already declared
+        # in the model are allowed.
+        #
+        # @param body [String] raw `String`-like body as provided by the transport protocol
+        # @param headers [Hash] raw headers as provided by the transport protocol
+        # @param expectation [Class] expected class of the returned instance(s)
+        # @return [Set] set of instances
         def entities(body, headers, expectation = nil)
           expectation ||= Occi::Core::Entity
-          # TODO: use Text::Entity.plain
+          entity = Text::Entity.plain(transform(body, headers), model)
+          raise Occi::Core::Errors::ParsingError, "Given entity isn't #{expectation}" unless entity.is_a?(expectation)
+          Set.new([entity].compact)
         end
 
         # See `#entities`.
@@ -79,9 +87,6 @@ module Occi
 
         # TODO: docs
         def action_instances(body, headers); end
-
-        # TODO: docs
-        def attributes(body, headers); end
 
         # Parses categories from the given body/headers and returns corresponding instances
         # from the known model.

@@ -1,0 +1,16 @@
+Category: compute;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind";
+Category: small;scheme="http://fedcloud.egi.eu/occi/compute/flavour/1.0#";class="mixin";
+Category: uuid_egi_ubuntu_server_14_04_lts_fedcloud_warg_131;scheme="http://occi.localhost/occi/infrastructure/os_tpl#";class="mixin";
+Category: public_key;scheme="http://schemas.openstack.org/instance/credentials#";class="mixin";
+Category: user_data;scheme="http://schemas.openstack.org/compute/instance#";class="mixin";
+Category: uuid_fedcloud_warg_101;scheme="http://occi.localhost/occi/infrastructure/availability_zone#";class="mixin";
+X-OCCI-Attribute: occi.core.id="89728"
+X-OCCI-Attribute: occi.core.title="my_compute"
+X-OCCI-Attribute: occi.core.summary="Instantiated with rOCCI-server on Sun, 16 Apr 2017 17:36:28 +0200."
+X-OCCI-Attribute: occi.compute.cores=1
+X-OCCI-Attribute: occi.compute.memory=1.0
+X-OCCI-Attribute: occi.compute.state="active"
+X-OCCI-Attribute: org.openstack.credentials.publickey.data="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFy/sRQ4M0jYyiJyBRGpidQ6eJCdMRRZzzxuxQDidvxhcHPNFthrHT5/+9lfrQCorJy5YjMJEGBC22Y62kctQ//FCa2wICdxGZVgcXdOLnGar5ztgrt1txlCu2/80yc1e0u39LdlyzlEaCnjGUeD4C6tZdAISLfQwiWEvzsJKJR302MDZCqnir9BEo57rTORAVD853hmko/3lvZk2EwgM+5lcMr13Hy/mbwNSuWq0ik71BSXyB1bnJ2XfiXOzPfkG1sflhe0j488nwNLNU1NSBbHARJIRJcX8QRVH46Zq02AeTNJikXxCnbfdGG8VcG5H8eWOa36m0ZWHGNgqaa8Pt xparak@craban1.ics.muni.cz"
+X-OCCI-Attribute: org.openstack.compute.user_data="I2Nsb3VkLWNvbmZpZwojIHNlZSBodHRwczovL2hlbHAudWJ1bnR1LmNvbS9jb21tdW5pdHkvQ2xvdWRJbml0CgpydW5jbWQ6Ci0gL2Jpbi9lY2hvICdJbnN0YW5jZSBpcyByZWFkeSB0byB1c2UuJyB8IHdhbGwKCg=="
+Link: </storage/5401>;rel="http://schemas.ogf.org/occi/infrastructure#storage";self="/link/storagelink/compute_89728_disk_0";category="http://schemas.ogf.org/occi/infrastructure#storagelink";occi.core.id="compute_89728_disk_0";occi.core.title="38d42ca1-f4e9-5b5c-98de-37eb2d26301a";occi.core.target="/storage/5401";occi.core.source="/compute/89728";occi.storagelink.deviceid="/dev/vda";occi.storagelink.state="active"
+Link: </network/24>;rel="http://schemas.ogf.org/occi/infrastructure#network";self="/link/networkinterface/compute_89728_nic_0";category="http://schemas.ogf.org/occi/infrastructure#networkinterface http://schemas.ogf.org/occi/infrastructure/networkinterface#ipnetworkinterface";occi.core.id="compute_89728_nic_0";occi.core.title="public";occi.core.target="/network/24";occi.core.source="/compute/89728";occi.networkinterface.interface="eth0";occi.networkinterface.mac="02:00:93:e4:f2:77";occi.networkinterface.state="active";occi.networkinterface.address="172.16.0.1"
