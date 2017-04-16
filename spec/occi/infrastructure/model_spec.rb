@@ -8,7 +8,7 @@ module Occi
       describe '#load_infrastructure!' do
         context 'without Core specs' do
           it 'fails to load Infra specs' do
-            expect { model.load_infrastructure! }.to raise_error(RuntimeError)
+            expect { model.load_infrastructure! }.to raise_error(Occi::Core::Errors::ModelLookupError)
           end
         end
 

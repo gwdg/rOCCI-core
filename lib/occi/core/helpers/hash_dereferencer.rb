@@ -126,9 +126,7 @@ module Occi
         # @param model [Occi::Core::Model] model instance for dereferencing (category look-up)
         # @return [Occi::Core::Category] instance located in the model
         def dereference_via_model(identifier, model)
-          matched = model.find_by_identifier(identifier).first
-          raise "Category #{identifier.inspect} not found in the model" unless matched
-          matched
+          model.find_by_identifier!(identifier)
         end
 
         # Looks up the given attribute definition in the hash. Raises error if no

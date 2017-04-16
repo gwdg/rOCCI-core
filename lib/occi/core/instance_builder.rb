@@ -89,11 +89,7 @@ module Occi
       # @param identifier [String] identifier of the category
       # @return [Occi::Core::Kind] full category definition from the model
       def kind(identifier)
-        kind = model.find_by_identifier(identifier).first
-        unless kind
-          raise Occi::Core::Errors::ModelLookupError, 'Could not find ' \
-                "#{identifier.inspect} in the model"
-        end
+        kind = model.find_by_identifier!(identifier)
         unless kind.is_a? Occi::Core::Kind
           raise Occi::Core::Errors::CategoryValidationError, "#{identifier.inspect} " \
                 'is not a kind'

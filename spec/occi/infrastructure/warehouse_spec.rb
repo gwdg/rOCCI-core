@@ -18,7 +18,7 @@ module Occi
 
         context 'without Core specs loaded' do
           it 'fails to load Infra specs' do
-            expect { warehouse.bootstrap! model }.to raise_error(RuntimeError)
+            expect { warehouse.bootstrap! model }.to raise_error(Occi::Core::Errors::ModelLookupError)
           end
         end
       end
