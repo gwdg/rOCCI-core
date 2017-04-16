@@ -42,6 +42,7 @@ module Occi
             self[:actions].map! { |action| dereference_via_model(action, model) }
             changed += self[:actions].count
           end
+          self[:actions] = Set.new(self[:actions])
           changed += dereference_attribute_definitions_with!(attribute_definitions)
 
           changed
@@ -113,6 +114,7 @@ module Occi
               self[symbol].map! { |elm| dereference_via_model(elm, model) }
               changed += self[symbol].count
             end
+            self[symbol] = Set.new(self[symbol])
           end
           changed += dereference_category_with!(model, attribute_definitions)
 

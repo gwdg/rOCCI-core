@@ -99,8 +99,7 @@ module Occi
       #
       # @return [Set] associated `Occi::Core::Action` instances from this model
       def associated_actions
-        associated = all
-        associated.keep_if { |elm| elm.respond_to?(:actions) }
+        associated = kinds + mixins
         associated.collect!(&:actions)
         associated.flatten!
         associated.reject!(&:nil?)

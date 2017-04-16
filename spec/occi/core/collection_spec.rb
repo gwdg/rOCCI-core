@@ -325,7 +325,9 @@ module Occi
             allow(send(dd)).to receive(:identifier).and_return('http://test/tes#term')
           end
           allow(kind).to receive(:parent).and_return(nil)
+          allow(kind).to receive(:actions).and_return(Set.new)
           allow(mixin).to receive(:depends).and_return(Set.new)
+          allow(mixin).to receive(:actions).and_return(Set.new)
           allow(mixin).to receive(:applies).and_return(Set.new([kind]))
         end
 
@@ -361,7 +363,9 @@ module Occi
             allow(send(dd)).to receive(:identifier).and_return('http://test/tes#term')
           end
           allow(kind).to receive(:parent).and_return(nil)
+          allow(kind).to receive(:actions).and_return(Set.new)
           allow(mixin).to receive(:depends).and_return(Set.new)
+          allow(mixin).to receive(:actions).and_return(Set.new)
           allow(mixin).to receive(:applies).and_return(Set.new([kind]))
         end
 
