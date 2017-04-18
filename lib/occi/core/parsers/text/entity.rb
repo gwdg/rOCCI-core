@@ -45,8 +45,7 @@ module Occi
               cats.each { |cat| cat.is_a?(Occi::Core::Mixin) && entity << cat }
 
               plain_attributes! lines, entity.attributes, model
-              # TODO: links
-              # TODO: actions
+              plain_links! lines, entity, model
 
               entity
             end
@@ -97,16 +96,109 @@ module Occi
 
             # TODO: docs
             # @param lines [Array]
-            # @return [Array]
-            def plain_links(lines)
-              lines.map do |line|
+            # @param entity [Occi::Core::Entity]
+            # @param model [Occi::Core::Model]
+            # @return [Occi::Core::Entity]
+            def plain_links!(lines, entity, model)
+              lines.each do |line|
                 next unless line.start_with?(TextParser::LINK_KEYS.first)
                 matched = line.match(LINK_REGEXP)
                 unless matched
                   raise Occi::Core::Errors::ParsingError,
                         "#{self} -> #{line.inspect} does not match expectations for Link"
                 end
-              end.compact
+                plain_link! matched, entity, model
+              end
+              entity
+            end
+
+            # TODO: docs
+            # @param md [MatchData]
+            # @param entity [Occi::Core::Entity]
+            # @param model [Occi::Core::Model]
+            def plain_link!(md, entity, model)
+              md[:uri].include?('?action=') ? plain_action!(md, entity, model) : plain_oglink!(md, entity, model)
+            end
+
+            # TODO: docs
+            # @param md [MatchData]
+            # @param entity [Occi::Core::Entity]
+            # @param model [Occi::Core::Model]
+            def plain_action!(md, entity, model)
+              entity << model.find_by_identifier!(md[:rel])
+            end
+
+            # TODO: docs
+            # @param md [MatchData]
+            # @param entity [Occi::Core::Entity]
+            # @param model [Occi::Core::Model]
+            def plain_oglink!(md, entity, model)
+              unless entity.respond_to?(:links)
+                raise Occi::Core::Errors::ParsingError,
+                      "Cannot assign links to entity #{entity.id} which does not support them"
+              end
+
+              link = plain_oglink_instance(md, model)
+              link.location = URI.parse md[:self]
+              entity.links << link
+
+              plain_oglink_attributes! md, link, model
+
+              entity
+            end
+
+            # TODO: docs
+            # @param md [MatchData]
+            # @param model [Occi::Core::Model]
+            def plain_oglink_instance(md, model)
+              if md[:category].blank? || md[:self].blank?
+                raise Occi::Core::Errors::ParsingError,
+                      "Link #{md[:uri].inspect} is missing type and location information"
+              end
+
+              categories = md[:category].split
+              link = model.instance_builder.build(categories.shift)
+              categories.each { |mxn| link << model.find_by_identifier!(mxn) }
+
+              link
+            end
+
+            # TODO: docs
+            # @param md [MatchData]
+            # @param link [Occi::Core::Link]
+            # @param model [Occi::Core::Model]
+            def plain_oglink_attributes!(md, link, model)
+              if md[:attributes].blank?
+                raise Occi::Core::Errors::ParsingError,
+                      "Link #{link.id} is missing attribute information"
+              end
+
+              line = md[:attributes].strip.gsub(/^;\s*/, '')
+              attrs = line.split(';').map { |attrb| "#{TextParser::ATTRIBUTE_KEYS.first}: #{attrb}" }
+              plain_attributes! attrs, link.attributes, model
+              plain_oglink_st! md, link, model
+
+              link
+            end
+
+            # TODO: docs
+            # @param md [MatchData]
+            # @param link [Occi::Core::Link]
+            # @param model [Occi::Core::Model]
+            def plain_oglink_st!(md, link, model)
+              %w[occi.core.source occi.core.target].each do |attrb|
+                unless link[attrb]
+                  raise Occi::Core::Errors::ParsingError,
+                        "Link #{link.id} is missing attribute #{attrb.inspect}"
+                end
+
+                link[attrb] = model.instance_builder.build(
+                  md[:rel],
+                  id: link[attrb].id, location: link[attrb].location, title: link[attrb].title
+                )
+              end
+
+              link
             end
 
             # TODO: docs
