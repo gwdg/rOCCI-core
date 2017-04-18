@@ -104,6 +104,7 @@ module Occi
 
           # :nodoc:
           def prepare_mixin_rel
+            return Set.new if object.depends.blank?
             object.depends + object.applies
           end
 
