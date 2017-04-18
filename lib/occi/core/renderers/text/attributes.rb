@@ -70,6 +70,8 @@ module Occi
               "\"#{value.location}\""
             elsif type.ancestors.include?(Occi::Core::Category)
               "\"#{value.identifier}\""
+            elsif type.ancestors.include?(URI)
+              "\"#{value}\""
             elsif (PRIMITIVE_TYPES & type.ancestors).any?
               value.inspect
             else
