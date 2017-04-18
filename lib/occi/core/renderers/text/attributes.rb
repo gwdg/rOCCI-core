@@ -15,6 +15,7 @@ module Occi
 
           # Known primitive attribute value types
           PRIMITIVE_TYPES = [String, Numeric, Integer, Float, Boolean].freeze
+          QUOTABLE_TYPES  = [IPAddr, URI].freeze
 
           # Renders `object` into plain text and returns the result
           # as `String`.
@@ -70,7 +71,7 @@ module Occi
               "\"#{value.location}\""
             elsif type.ancestors.include?(Occi::Core::Category)
               "\"#{value.identifier}\""
-            elsif type.ancestors.include?(URI)
+            elsif (QUOTABLE_TYPES & type.ancestors).any?
               "\"#{value}\""
             elsif (PRIMITIVE_TYPES & type.ancestors).any?
               value.inspect
