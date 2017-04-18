@@ -18,7 +18,7 @@ module Occi
           RESOURCE_LAMBDA = lambda do |val, model|
             model.instance_builder.build(
               Occi::Core::Constants::RESOURCE_KIND,
-              id: val.split('/').last, location: val, title: 'Generated resource'
+              id: val.split('/').last, location: URI.parse(val), title: 'Generated resource'
             )
           end
           CATEGORY_LAMBDA = ->(val, model) { model.find_by_identifier! val }
