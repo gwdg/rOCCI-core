@@ -51,6 +51,8 @@ module Occi
         attr_accessor :model, :media_type
 
         # TODO: docs
+        #
+        # @param args [Hash]
         def initialize(args = {})
           pre_initialize(args)
           default_args! args
@@ -70,8 +72,13 @@ module Occi
         # @return [Set] set of instances
         def entities(body, headers, expectation = nil)
           expectation ||= Occi::Core::Entity
-          entity = Text::Entity.plain(transform(body, headers), model)
-          raise Occi::Core::Errors::ParsingError, "Given entity isn't #{expectation}" unless entity.is_a?(expectation)
+
+          entity_parser = Text::Entity.new(model: model)
+          entity = entity_parser.plain transform(body, headers)
+          unless entity.is_a?(expectation)
+            raise Occi::Core::Errors::ParsingError, "#{self.class} -> Given entity isn't #{expectation}"
+          end
+
           Set.new([entity].compact)
         end
 
@@ -97,14 +104,11 @@ module Occi
         # @return [Set] set of instances
         def categories(body, headers, expectation = nil)
           expectation ||= Occi::Core::Category
-          raw_cats = transform(body, headers).map { |line| Text::Category.plain_category(line, false) }
-          raw_cats.map! do |c|
-            id = "#{c[:scheme]}#{c[:term]}"
-            found = handle(Occi::Core::Errors::ParsingError) { model.find_by_identifier!(id) }
-            raise Occi::Core::Errors::ParsingError, "#{id.inspect} isn't #{expectation}" unless found.is_a?(expectation)
-            found
+          cats = transform(body, headers).map do |line|
+            cat = Text::Category.plain_category(line, false)
+            lookup "#{cat[:scheme]}#{cat[:term]}", expectation
           end
-          Set.new(raw_cats)
+          Set.new(cats)
         end
 
         # See `#categories`.
@@ -142,7 +146,22 @@ module Occi
           klass = self.class
           HEADERS_TEXT_TYPES.include?(media_type) ? klass.transform_headers(headers) : klass.transform_body(body)
         end
-        private :transform
+
+        # Looks up the given category identifier in the model. Unsuccessfull lookup will raise an error, as will an
+        # unexpected class of the found instance.
+        #
+        # @param identifier [String] category identifier to look up in the model
+        # @param klass [Class] expected class (raises error otherwise)
+        # @return [Object] found instance
+        def lookup(identifier, klass)
+          found = handle(Occi::Core::Errors::ParsingError) { model.find_by_identifier!(identifier) }
+          unless found.is_a?(klass)
+            raise Occi::Core::Errors::ParsingError, "#{self.class} -> #{identifier.inspect} isn't #{klass}"
+          end
+          found
+        end
+
+        private :transform, :lookup
 
         class << self
           # Extracts categories from body and headers. For details, see `Occi::Core::Parsers::Text::Category`.
@@ -288,7 +307,7 @@ module Occi
             return unless key_name_groups.any? { |elm| (headers_keys & elm).count > 1 }
 
             raise Occi::Core::Errors::ParsingError,
-                  "Headers #{headers_keys.inspect} contain mixed key notations"
+                  "#{self} -> Headers #{headers_keys.inspect} contain mixed key notations"
           end
 
           # Returns a list of available key name groups accessible as constants by name on this class.
