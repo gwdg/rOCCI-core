@@ -12,10 +12,9 @@ module Occi
           let(:attribute_name_id) { 'occi.core.id' }
           let(:attribute_name_title) { 'occi.core.title' }
           let(:attribute_def) { Occi::Core::AttributeDefinition.new(required: true, mutable: true) }
-          let(:rattribute_def) { Occi::Core::AttributeDefinition.new(required: true, type: Occi::Core::Resource) }
           let(:attributes) { { attribute_name_id => attribute_def, attribute_name_title => attribute_def } }
           let(:lattributes) do
-            attributes['occi.core.source'] = rattribute_def
+            attributes['occi.core.source'] = attribute_def
             attributes['occi.core.target'] = attribute_def
             attributes
           end

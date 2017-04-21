@@ -67,11 +67,7 @@ module Occi
 
           # :nodoc:
           def prepare_instance_attribute_value(name, type, value)
-            if type.ancestors.include?(Occi::Core::Entity)
-              "\"#{value.location}\""
-            elsif type.ancestors.include?(Occi::Core::Category)
-              "\"#{value.identifier}\""
-            elsif (QUOTABLE_TYPES & type.ancestors).any?
+            if (QUOTABLE_TYPES & type.ancestors).any?
               "\"#{value}\""
             elsif (PRIMITIVE_TYPES & type.ancestors).any?
               value.inspect

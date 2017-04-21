@@ -17,24 +17,14 @@ module Occi
           ATTRIBUTE_REGEXP = /#{Constants::REGEXP_ATTRIBUTE}/
           LINK_REGEXP      = /#{Constants::REGEXP_LINK}/
 
-          # Names of attributes requiring additional conversion
-          RESOURCE_ATTRIBUTE_NAMES = %w[occi.core.source occi.core.target].freeze
-
           # Typecasting lambdas
-          RESOURCE_LAMBDA = lambda do |val, model|
-            model.instance_builder.build(
-              Occi::Core::Constants::RESOURCE_KIND,
-              id: val.split('/').last, location: URI.parse(val), title: 'Generated resource'
-            )
-          end
-          CATEGORY_LAMBDA = ->(val, model) { model.find_by_identifier! val }
-          IPADDR_LAMBDA   = ->(val, _) { IPAddr.new val }
-          URI_LAMBDA      = ->(val, _) { URI.parse val }
-          FLOAT_LAMBDA    = ->(val, _) { val.to_f }
-          INTEGER_LAMBDA  = ->(val, _) { val.to_i }
-          BOOLEAN_LAMBDA  = ->(val, _) { val.casecmp('true') || val.casecmp('yes') }
-          STRING_LAMBDA   = ->(val, _) { val }
-          DEFAULT_LAMBDA  = ->(val, _) { raise "#{self} -> Cannot typecast #{val.inspect} to an unknown type" }
+          IPADDR_LAMBDA   = ->(val) { IPAddr.new val }
+          URI_LAMBDA      = ->(val) { URI.parse val }
+          FLOAT_LAMBDA    = ->(val) { val.to_f }
+          INTEGER_LAMBDA  = ->(val) { val.to_i }
+          BOOLEAN_LAMBDA  = ->(val) { val.casecmp('true') || val.casecmp('yes') }
+          STRING_LAMBDA   = ->(val) { val }
+          DEFAULT_LAMBDA  = ->(val) { raise "#{self} -> Cannot typecast #{val.inspect} to an unknown type" }
 
           attr_reader :model
 
@@ -176,7 +166,7 @@ module Occi
             end
 
             categories = md[:category].split
-            link = @_ib.build(categories.shift)
+            link = @_ib.build(categories.shift, rel: md[:rel])
             categories.each { |mxn| link << model.find_by_identifier!(mxn) }
 
             link
@@ -195,27 +185,6 @@ module Occi
             line = md[:attributes].strip.gsub(/^;\s*/, '')
             attrs = line.split(';').map { |attrb| "#{TextParser::ATTRIBUTE_KEYS.first}: #{attrb}" }
             plain_attributes! attrs, link.attributes
-            plain_oglink_st! md, link
-
-            link
-          end
-
-          # TODO: docs
-          #
-          # @param md [MatchData]
-          # @param link [Occi::Core::Link]
-          def plain_oglink_st!(md, link)
-            RESOURCE_ATTRIBUTE_NAMES.each do |attrb|
-              unless link[attrb]
-                raise Occi::Core::Errors::ParsingError,
-                      "#{self.class} -> Link #{link.id} is missing attribute #{attrb.inspect}"
-              end
-
-              link[attrb] = @_ib.build(
-                md[:rel],
-                id: link[attrb].id, location: link[attrb].location, title: link[attrb].title
-              )
-            end
 
             link
           end
@@ -231,7 +200,7 @@ module Occi
                     "#{self.class} -> Cannot typecast (un)set value to (un)set type"
             end
 
-            self.class.typecaster[type].call(value, model)
+            self.class.typecaster[type].call(value)
           end
 
           class << self
@@ -240,8 +209,6 @@ module Occi
             # @return [Hash] typecaster hash with conversion lambdas
             def typecaster
               typecaster_hash = Hash.new(DEFAULT_LAMBDA)
-              typecaster_hash[Occi::Core::Resource] = RESOURCE_LAMBDA
-              typecaster_hash[Occi::Core::Category] = CATEGORY_LAMBDA
               typecaster_hash[IPAddr] = IPADDR_LAMBDA
               typecaster_hash[URI] = URI_LAMBDA
               typecaster_hash[String] = STRING_LAMBDA

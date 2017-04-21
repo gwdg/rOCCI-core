@@ -3,35 +3,32 @@ module Occi
     # Implements the base class for all OCCI links, this
     # class can be used directly to create link instances.
     #
-    # @attr source [Occi::Core::Resource] link source, always a valid `Resource` instance
-    # @attr target [Occi::Core::Resource, String] link target, may point outside of this domain
+    # @attr source [URI] link source, always a valid `Resource` instance
+    # @attr target [URI] link target, may point outside of this domain
+    # @attr rel [Occi::Core::Kind, NilClass] Kind of the `target` or `nil` if ourside the domain
     #
     # @author Boris Parak <parak@cesnet.cz>
     class Link < Entity
-      # @return [Occi::Core::Resource] link source
+      attr_accessor :rel
+
+      # @return [URI] link source
       def source
         self['occi.core.source']
       end
 
-      # @param source [Occi::Core::Resource] link source
+      # @param source [URI] link source
       def source=(source)
         self['occi.core.source'] = source
       end
 
-      # @return [Occi::Core::Resource, String] link target
+      # @return [URI] link target
       def target
         self['occi.core.target']
       end
 
-      # @param target [Occi::Core::Resource, String] link target
+      # @param target [URI] link target
       def target=(target)
         self['occi.core.target'] = target
-      end
-
-      # @return [Occi::Core::Kind] type of the target
-      # @return [NilClass] target outside of the domain
-      def rel
-        target.respond_to?(:kind) ? target.kind : nil
       end
 
       # See `#valid!` on `Occi::Core::Entity`.
@@ -50,7 +47,7 @@ module Occi
 
       # :nodoc:
       def defaults
-        super.merge(source: nil, target: nil)
+        super.merge(source: nil, target: nil, rel: nil)
       end
 
       # :nodoc:
@@ -58,6 +55,7 @@ module Occi
         super
         self.source = args.fetch(:source) if attributes['occi.core.source']
         self.target = args.fetch(:target) if attributes['occi.core.target']
+        @rel = args.fetch(:rel)
       end
     end
   end

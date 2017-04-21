@@ -9,7 +9,7 @@ module Occi
         # :nodoc:
         def allowed_yaml_classes
           # TODO: get rid of this with referenced (name-only) attributes in Action YAMLs
-          [String, Regexp, Occi::Core::Resource, IPAddr, Integer, Float].freeze
+          [String, Regexp, URI, IPAddr, Integer, Float].freeze
         end
         private :allowed_yaml_classes
       end

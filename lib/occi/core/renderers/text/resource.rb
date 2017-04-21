@@ -95,8 +95,8 @@ module Occi
 
             # :nodoc:
             def link_template
-              '<<%= link.target.location %>>; ' \
-              'rel="<%= link.target.kind %>"; ' \
+              '<<%= link.target %>>; ' \
+              'rel="<%= link.rel %>"; ' \
               'self="<%= link.location %>"; ' \
               'category="<%= link_categories %>"; ' \
               '<%= link_attributes %>'

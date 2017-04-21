@@ -1,5 +1,5 @@
 ---
-type: !ruby/class Occi::Core::Resource
+type: !ruby/module URI
 required: true
 mutable: true
 default: ~

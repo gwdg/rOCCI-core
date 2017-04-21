@@ -27,14 +27,6 @@ module Occi
             Occi::Core::AttributeDefinition.new(type: Boolean)
           end
 
-          let(:attr_def_kind) do
-            Occi::Core::AttributeDefinition.new(type: Occi::Core::Kind)
-          end
-
-          let(:attr_def_res) do
-            Occi::Core::AttributeDefinition.new(type: Occi::Core::Resource)
-          end
-
           let(:attr_def_unkn) do
             Occi::Core::AttributeDefinition.new(type: Array)
           end
@@ -116,38 +108,6 @@ module Occi
               end
             end
 
-            context 'as plain with category attribute' do
-              let(:value) { kind }
-              let(:options) { { format: 'text' } }
-
-              before do
-                attributes[attribute_name].value = value
-                attributes[attribute_name].attribute_definition = attr_def_kind
-                tra.object = attributes
-                tra.options = options
-              end
-
-              it 'renders' do
-                expect(tra.render).to eq "X-OCCI-Attribute: #{attribute_name}=\"#{value.identifier}\""
-              end
-            end
-
-            context 'as plain with entity attribute' do
-              let(:value) { Occi::Core::Resource.new(kind: kind, id: SecureRandom.uuid) }
-              let(:options) { { format: 'text' } }
-
-              before do
-                attributes[attribute_name].value = value
-                attributes[attribute_name].attribute_definition = attr_def_res
-                tra.object = attributes
-                tra.options = options
-              end
-
-              it 'renders' do
-                expect(tra.render).to eq "X-OCCI-Attribute: #{attribute_name}=\"#{value.location}\""
-              end
-            end
-
             context 'as plain with unknown attribute' do
               let(:value) { [] }
               let(:options) { { format: 'text' } }
@@ -225,38 +185,6 @@ module Occi
 
               it 'renders' do
                 expect(tra.render).to eq('X-OCCI-Attribute' => [])
-              end
-            end
-
-            context 'as plain with category attribute' do
-              let(:value) { kind }
-              let(:options) { { format: 'headers' } }
-
-              before do
-                attributes[attribute_name].value = value
-                attributes[attribute_name].attribute_definition = attr_def_kind
-                tra.object = attributes
-                tra.options = options
-              end
-
-              it 'renders' do
-                expect(tra.render).to eq('X-OCCI-Attribute' => ["#{attribute_name}=\"#{value.identifier}\""])
-              end
-            end
-
-            context 'as plain with entity attribute' do
-              let(:value) { Occi::Core::Resource.new(kind: kind, id: SecureRandom.uuid) }
-              let(:options) { { format: 'headers' } }
-
-              before do
-                attributes[attribute_name].value = value
-                attributes[attribute_name].attribute_definition = attr_def_res
-                tra.object = attributes
-                tra.options = options
-              end
-
-              it 'renders' do
-                expect(tra.render).to eq('X-OCCI-Attribute' => ["#{attribute_name}=\"#{value.location}\""])
               end
             end
 

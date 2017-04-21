@@ -137,6 +137,7 @@ module Occi
       def args_with_kind(identifier, args)
         k_args = args.clone
         k_args[:kind] = kind(identifier)
+        k_args[:rel] = kind(k_args[:rel]) if k_args[:rel]
         k_args
       end
     end

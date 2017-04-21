@@ -28,7 +28,7 @@ module Occi
         attributes.keys.each { |attrib| allow(attributes[attrib]).to receive(:default) }
       end
 
-      LNK_ATTRS = %i[source target].freeze
+      LNK_ATTRS = %i[source target rel].freeze
 
       LNK_ATTRS.each do |attr|
         it "has #{attr} accessor" do
@@ -78,27 +78,6 @@ module Occi
         it 'redirects to `occi.core.target`' do
           expect(lnk).to receive(:[]).with('occi.core.target')
           expect { lnk.target }.not_to raise_error
-        end
-      end
-
-      describe '#rel' do
-        context 'without target' do
-          it 'returns `nil`' do
-            expect(lnk.rel).to be nil
-          end
-        end
-
-        context 'with target' do
-          let(:resource) { instance_double('Occi::Core::Resource') }
-
-          before do
-            lnk.target = resource
-          end
-
-          it 'returns target `kind`' do
-            expect(lnk.target).to receive(:kind).and_return(kind)
-            expect(lnk.rel).to be kind
-          end
         end
       end
 
