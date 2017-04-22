@@ -93,7 +93,22 @@ module Occi
         end
 
         # TODO: docs
-        def action_instances(body, headers); end
+        #
+        # @param body [String]
+        # @param headers [Hash]
+        # @return [Set]
+        def action_instances(body, headers)
+          entity_parser = Text::Entity.new(model: model)
+          tformed = transform(body, headers)
+
+          cats = entity_parser.plain_categories tformed
+          action = cats.detect { |c| c.is_a? Occi::Core::Action }
+          raise Occi::Core::Errors::ParsingError, "#{self.class} -> AI does not specify action" unless action
+
+          ai = Occi::Core::ActionInstance.new(action: action)
+          entity_parser.plain_attributes! tformed, ai.attributes
+          Set.new([ai].compact)
+        end
 
         # Parses categories from the given body/headers and returns corresponding instances
         # from the known model.
