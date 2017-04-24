@@ -16,6 +16,10 @@ Metrics/ModuleLength:
 Metrics/MethodLength:
   Max: 12
 
+Metrics/AbcSize:
+  Exclude:
+  - 'lib/occi/core/parsers/text/*'
+
 Metrics/LineLength:
   Max: 120
   Exclude:
