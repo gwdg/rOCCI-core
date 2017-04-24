@@ -15,15 +15,23 @@ module Occi
 
           class << self
             # Parses category lines into instances of subtypes of `Occi::Core::Category`. Internal references
-            # between objects are converted from strings to actual objects.
+            # between objects are converted from strings to actual objects. Categories provided in the model
+            # will be reused but have to be declared in the parsed model as well. This mechanism can be used to
+            # introduce properly typed attribute definitions to 'plain/text'-based models.
             #
             # @param lines [Array] list of single-category lines
-            # @return [Array] list of category instances
-            def plain(lines)
-              raw_categories = lines.map { |line| plain_category(line) }.compact
-              instances = raw_categories.map { |cat| construct_instance(cat) }
-              dereference_identifiers! instances, raw_categories
-              instances
+            # @param model [Occi::Core::Model] model with existing categories
+            # @return [Occi::Core::Model] model with all known category instances
+            def plain(lines, model)
+              raw_categories = []
+
+              lines.each do |line|
+                raw_categories << plain_category(line)
+                model << construct_instance(raw_categories.last)
+              end
+              dereference_identifiers! model.categories, raw_categories
+
+              model
             end
 
             # Parses a single-category line into a raw category hash containing all the necessary
@@ -158,7 +166,7 @@ module Occi
             # @param parsed [Array] list of original parsed category structures
             def lookup_references!(cat, derefd, parsed)
               parsed_cat = parsed.detect { |pcat| "#{pcat[:scheme]}#{pcat[:term]}" == cat.identifier }
-
+              raise Occi::Core::Errors::ParsingError, "#{self} -> #{cat.identifier} not in the model" unless parsed_cat
               lookup_action_references!(cat, derefd, parsed_cat[:actions])
 
               if cat.is_a?(Occi::Core::Mixin)
@@ -182,7 +190,7 @@ module Occi
             # @param derefd [Array] list of all available category instances
             # @param parsed_rel [Array] textual representation of needed parent(s)
             def lookup_parent_references!(kind, derefd, parsed_rel)
-              return if parsed_rel.blank?
+              return if parsed_rel.blank? || kind.parent.is_a?(Occi::Core::Kind)
               if parsed_rel.count > 1
                 raise Occi::Core::Errors::ParsingError,
                       "#{self} -> Kind #{kind} with multiple parents #{parsed_rel.inspect}"

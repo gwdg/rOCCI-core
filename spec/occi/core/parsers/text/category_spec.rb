@@ -183,17 +183,17 @@ module Occi
               'location="/entity/";attributes="occi.core.id{immutable required} occi.core.title"'
             end
             let(:model) { File.read('examples/rendering/model.txt').lines }
+            let(:empty_model) { Occi::Core::Model.new }
 
             it 'parses valid category' do
-              cati = nil
-              expect { cati = cat.plain([category]).first }.not_to raise_error
-              expect(cati).to be_kind_of(Occi::Core::Kind)
-              expect(cati.identifier).to eq 'http://schemas.ogf.org/occi/core#entity'
-              expect(cati.attributes).to include('occi.core.id', 'occi.core.title')
+              expect { cat.plain([category], empty_model) }.not_to raise_error
+              expect(empty_model.categories.first).to be_kind_of(Occi::Core::Kind)
+              expect(empty_model.categories.first.identifier).to eq 'http://schemas.ogf.org/occi/core#entity'
+              expect(empty_model.categories.first.attributes).to include('occi.core.id', 'occi.core.title')
             end
 
             it 'parses model example' do
-              expect { cat.plain(model) }.not_to raise_error
+              expect { cat.plain(model, empty_model) }.not_to raise_error
             end
           end
         end
