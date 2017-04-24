@@ -197,7 +197,7 @@ module Occi
             # @param parsed_rel [Array] textual representations of needed applicability targets
             def lookup_applies_references!(mixin, derefd, parsed_rel)
               return if parsed_rel.blank? || parsed_rel.count == 1 # only depends here
-              parsed_rel.drop.each { |kind| mixin.applies << first_or_die(derefd, kind) }
+              parsed_rel.drop(1).each { |kind| mixin.applies << first_or_die(derefd, kind) }
             end
 
             # @param mixin [Occi::Core::Mixin] mixin instance needing dependency dereferencing
