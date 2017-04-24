@@ -28,9 +28,10 @@ module Occi
 
           attr_reader :model
 
-          # TODO: docs
+          # Constructs an instance of the entity parser. Only entities (their kinds) defined by the model are allowed.
           #
-          # @param args [Hash]
+          # @param args [Hash] constructor arguments in a Hash
+          # @option args [Occi::Core::Model] :model model to use as a primary reference point
           def initialize(args = {})
             pre_initialize(args)
             default_args! args
@@ -40,10 +41,10 @@ module Occi
             post_initialize(args)
           end
 
-          # TODO: docs
+          # Builds an entity instances from the lines provided as input.
           #
-          # @param lines [Array]
-          # @return [Occi::Core::Entity]
+          # @param lines [Array] list of lines containing a single entity rendering
+          # @return [Occi::Core::Entity] constructed instance
           def plain(lines)
             cats = plain_categories(lines)
             kind = cats.detect { |c| c.is_a?(Occi::Core::Kind) }
@@ -58,10 +59,10 @@ module Occi
             entity
           end
 
-          # TODO: docs
+          # Parses categories from entity lines. Every category is looked up in the model.
           #
-          # @param lines [Array]
-          # @return [Array]
+          # @param lines [Array] list of lines containing a single entity rendering
+          # @return [Array] list of identified category instances
           def plain_categories(lines)
             lines.map do |line|
               next unless line.start_with?(TextParser::CATEGORY_KEYS.first)
@@ -70,11 +71,12 @@ module Occi
             end.compact
           end
 
-          # TODO: docs
+          # Parses attributes from entity lines. Every attribute value is typed according to the attribute
+          # specification provided by the model (in the defined kind).
           #
-          # @param lines [Array]
-          # @param attributes [Hash]
-          # @return [Hash]
+          # @param lines [Array] list of lines containing a single entity rendering
+          # @param attributes [Hash] defined attributes
+          # @return [Hash] parsed and typed attributes
           def plain_attributes!(lines, attributes)
             lines.each do |line|
               next unless line.start_with?(TextParser::ATTRIBUTE_KEYS.first)
@@ -90,10 +92,10 @@ module Occi
             attributes
           end
 
-          # TODO: docs
+          # Parses a single attribute line to identify name and value.
           #
-          # @param line [String]
-          # @return [Array]
+          # @param line [String] line containing a single entity attribute
+          # @return [Array] two-element array with name and value of the attribute
           def raw_attribute(line)
             matched = line.match(ATTRIBUTE_REGEXP)
             unless matched
@@ -103,11 +105,12 @@ module Occi
             [matched[:name], matched[:string] || matched[:number] || matched[:bool]]
           end
 
-          # TODO: docs
+          # Parses links attached to the entity instance. This includes both action "links" and ordinary
+          # OCCI links between resources.
           #
-          # @param lines [Array]
-          # @param entity [Occi::Core::Entity]
-          # @return [Occi::Core::Entity]
+          # @param lines [Array] list of lines containing a single entity rendering
+          # @param entity [Occi::Core::Entity] partially constructed entity instance to be updated
+          # @return [Occi::Core::Entity] updated entity instance
           def plain_links!(lines, entity)
             lines.each do |line|
               next unless line.start_with?(TextParser::LINK_KEYS.first)
@@ -121,26 +124,27 @@ module Occi
             entity
           end
 
-          # TODO: docs
+          # Constructs a single link instance. This includes both action "links" and ordinary OCCI links.
           #
-          # @param md [MatchData]
-          # @param entity [Occi::Core::Entity]
+          # @param md [MatchData] Hash-like structure with matched parts of the link
+          # @param entity [Occi::Core::Entity] partially constructed entity instance to be updated
           def plain_link!(md, entity)
             md[:uri].include?('?action=') ? plain_action!(md, entity) : plain_oglink!(md, entity)
           end
 
-          # TODO: docs
+          # Looks up the action mentioned in the given action "link" and assigns it to the given partially
+          # constructed entity instance.
           #
-          # @param md [MatchData]
-          # @param entity [Occi::Core::Entity]
+          # @param md [MatchData] Hash-like structure with matched parts of the link
+          # @param entity [Occi::Core::Entity] partially constructed entity instance to be updated
           def plain_action!(md, entity)
             entity << model.find_by_identifier!(md[:rel])
           end
 
-          # TODO: docs
+          # Constructs a single link instance. Supports only ordinary OCCI links between resources.
           #
-          # @param md [MatchData]
-          # @param entity [Occi::Core::Entity]
+          # @param md [MatchData] Hash-like structure with matched parts of the link
+          # @param entity [Occi::Core::Entity] partially constructed entity instance to be updated
           def plain_oglink!(md, entity)
             unless entity.respond_to?(:links)
               raise Occi::Core::Errors::ParsingError,
@@ -156,9 +160,11 @@ module Occi
             entity
           end
 
-          # TODO: docs
+          # Constructs a single link instance based on the provided data. The returned instance does include contain
+          # action instance attributes!
           #
-          # @param md [MatchData]
+          # @param md [MatchData] Hash-like structure with matched parts of the link
+          # @return [Occi::Core::Link] constructed link instance
           def plain_oglink_instance(md)
             if md[:category].blank? || md[:self].blank?
               raise Occi::Core::Errors::ParsingError,
@@ -172,10 +178,10 @@ module Occi
             link
           end
 
-          # TODO: docs
+          # Attaches attributes to an existing link instance.
           #
-          # @param md [MatchData]
-          # @param link [Occi::Core::Link]
+          # @param md [MatchData] Hash-like structure with matched parts of the link
+          # @param link [Occi::Core::Link] partially constructed link instance to be updated
           def plain_oglink_attributes!(md, link)
             if md[:attributes].blank?
               raise Occi::Core::Errors::ParsingError,
@@ -189,11 +195,11 @@ module Occi
             link
           end
 
-          # TODO: docs
+          # Typecasts attribute values from String to the desired type.
           #
-          # @param value [String]
-          # @param type [Class,Module]
-          # @return [Object]
+          # @param value [String] attribute value
+          # @param type [Class,Module] desired attribute type
+          # @return [Object] typecasted value
           def typecast(value, type)
             if value.nil? || type.nil?
               raise Occi::Core::Errors::ParsingError,

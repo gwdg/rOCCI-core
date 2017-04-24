@@ -50,9 +50,13 @@ module Occi
 
         attr_accessor :model, :media_type
 
-        # TODO: docs
+        # Constructs an instance of the parser that will use a particular model as the reference for every
+        # parsed instance. Only instances allowed by the model will be successfuly parsed. In case of `Occi::Core::Category`
+        # instances, only identifiers are parsed and existing instances from the model are returned.
         #
-        # @param args [Hash]
+        # @param args [Hash] constructor arguments in a Hash
+        # @option args [Occi::Core::Model] :model model to use as a primary reference point
+        # @option args [String] :media_type type of content to parse
         def initialize(args = {})
           pre_initialize(args)
           default_args! args
@@ -92,11 +96,12 @@ module Occi
           entities body, headers, Occi::Core::Link
         end
 
-        # TODO: docs
+        # Parses action instances from the given body/headers. Only actions already declared in the model are
+        # allowed.
         #
-        # @param body [String]
-        # @param headers [Hash]
-        # @return [Set]
+        # @param body [String] raw `String`-like body as provided by the transport protocol
+        # @param headers [Hash] raw headers as provided by the transport protocol
+        # @return [Set] set of parsed instances
         def action_instances(body, headers)
           entity_parser = Text::Entity.new(model: model)
           tformed = transform(body, headers)
