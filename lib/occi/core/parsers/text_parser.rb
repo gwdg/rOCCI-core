@@ -51,8 +51,9 @@ module Occi
         attr_accessor :model, :media_type
 
         # Constructs an instance of the parser that will use a particular model as the reference for every
-        # parsed instance. Only instances allowed by the model will be successfuly parsed. In case of `Occi::Core::Category`
-        # instances, only identifiers are parsed and existing instances from the model are returned.
+        # parsed instance. Only instances allowed by the model will be successfuly parsed. In case of
+        # `Occi::Core::Category` instances, only identifiers are parsed and existing instances from the model
+        # are returned.
         #
         # @param args [Hash] constructor arguments in a Hash
         # @option args [Occi::Core::Model] :model model to use as a primary reference point
