@@ -14,4 +14,5 @@ module Occi
   end
 end
 
+require File.join(File.dirname(__FILE__), 'parsers', 'base_parser')
 Dir[File.join(File.dirname(__FILE__), 'parsers', '*.rb')].each { |file| require file.gsub('.rb', '') }

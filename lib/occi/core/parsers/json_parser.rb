@@ -20,19 +20,75 @@ module Occi
       # Implementes components necessary to parse all required instance types
       # from `JSON` or `JSON`-like format.
       #
-      # @attr model [Occi::Core::Model, Occi::Infrastructure::Model] model to use as a primary reference point
-      # @attr media_type [String] type of content to parse
-      #
       # @author Boris Parak <parak@cesnet.cz>
-      class JsonParser
-        include Yell::Loggable
-        include Helpers::ArgumentValidator
-        include Helpers::ErrorHandler
-
+      class JsonParser < BaseParser
         # Media type constants
         MEDIA_TYPES = %w[application/occi+json application/json].freeze
 
-        attr_accessor :model, :media_type
+        # Parses entities from the given body/headers. Only kinds, mixins, and actions already declared
+        # in the model are allowed.
+        #
+        # @param body [String] raw `String`-like body as provided by the transport protocol
+        # @param headers [Hash] raw headers as provided by the transport protocol
+        # @param expectation [Class] expected class of the returned instance(s)
+        # @return [Set] set of instances
+        def entities(_body, _headers = nil, _expectation = nil)
+          # expectation ||= Occi::Core::Entity
+          Set.new([])
+        end
+
+        # Parses action instances from the given body/headers. Only actions already declared in the model are
+        # allowed.
+        #
+        # @param body [String] raw `String`-like body as provided by the transport protocol
+        # @param headers [Hash] raw headers as provided by the transport protocol
+        # @return [Set] set of parsed instances
+        def action_instances(_body, _headers = nil)
+          Set.new([])
+        end
+
+        # Parses categories from the given body/headers and returns corresponding instances
+        # from the known model.
+        #
+        # @param body [String] raw `String`-like body as provided by the transport protocol
+        # @param headers [Hash] raw headers as provided by the transport protocol
+        # @param expectation [Class] expected class of the returned instance(s)
+        # @return [Set] set of instances
+        def categories(_body, _headers = nil, _expectation = nil)
+          # expectation ||= Occi::Core::Category
+          Set.new([])
+        end
+
+        class << self
+          # Extracts categories from body and headers. For details, see `Occi::Core::Parsers::Json::Category`.
+          #
+          # @param body [String] raw `String`-like body as provided by the transport protocol
+          # @param headers [Hash] raw headers as provided by the transport protocol
+          # @param media_type [String] media type string as provided by the transport protocol
+          # @param model [Occi::Core::Model] `Model`-like instance to be populated (may contain existing categories)
+          # @return [Occi::Core::Model] model instance filled with parsed categories
+          def model(_body, _headers, media_type, model)
+            unless media_types.include?(media_type)
+              raise Occi::Core::Errors::ParsingError,
+                    "#{self} -> model cannot be parsed from #{media_type.inspect}"
+            end
+            model
+          end
+
+          # Extracts URI-like locations from body and headers. For details, see `Occi::Core::Parsers::Json::Location`.
+          #
+          # @param body [String] raw `String`-like body as provided by the transport protocol
+          # @param headers [Hash] raw headers as provided by the transport protocol
+          # @param media_type [String] media type string as provided by the transport protocol
+          # @return [Array] list of extracted URIs
+          def locations(_body, _headers, media_type)
+            unless media_types.include?(media_type)
+              raise Occi::Core::Errors::ParsingError,
+                    "#{self} -> locations cannot be parsed from #{media_type.inspect}"
+            end
+            []
+          end
+        end
       end
     end
   end
