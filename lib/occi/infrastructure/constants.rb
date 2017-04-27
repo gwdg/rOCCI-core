@@ -7,19 +7,23 @@ module Occi
     # @author Boris Parak <parak@cesnet.cz>
     module Constants
       # Resource sub-types
-      COMPUTE_KIND = 'http://schemas.ogf.org/occi/infrastructure#compute'.freeze
-      NETWORK_KIND = 'http://schemas.ogf.org/occi/infrastructure#network'.freeze
-      STORAGE_KIND = 'http://schemas.ogf.org/occi/infrastructure#storage'.freeze
+      COMPUTE_KIND        = 'http://schemas.ogf.org/occi/infrastructure#compute'.freeze
+      NETWORK_KIND        = 'http://schemas.ogf.org/occi/infrastructure#network'.freeze
+      STORAGE_KIND        = 'http://schemas.ogf.org/occi/infrastructure#storage'.freeze
+      SECURITY_GROUP_KIND = 'http://schemas.ogf.org/occi/infrastructure#securitygroup'.freeze
+      IPRESERVATION_KIND  = 'http://schemas.ogf.org/occi/infrastructure#ipreservation'.freeze
 
       # Link sub-types
-      NETWORKINTERFACE_KIND = 'http://schemas.ogf.org/occi/infrastructure#networkinterface'.freeze
-      STORAGELINK_KIND      = 'http://schemas.ogf.org/occi/infrastructure#storagelink'.freeze
+      NETWORKINTERFACE_KIND    = 'http://schemas.ogf.org/occi/infrastructure#networkinterface'.freeze
+      STORAGELINK_KIND         = 'http://schemas.ogf.org/occi/infrastructure#storagelink'.freeze
+      SECURITY_GROUP_LINK_KIND = 'http://schemas.ogf.org/occi/infrastructure#securitygrouplink'.freeze
 
       # Mixins
       IPNETWORK_MIXIN          = 'http://schemas.ogf.org/occi/infrastructure/network#ipnetwork'.freeze
       IPNETWORKINTERFACE_MIXIN = 'http://schemas.ogf.org/occi/infrastructure/networkinterface#ipnetworkinterface'.freeze
       OS_TPL_MIXIN             = 'http://schemas.ogf.org/occi/infrastructure#os_tpl'.freeze
       RESOURCE_TPL_MIXIN       = 'http://schemas.ogf.org/occi/infrastructure#resource_tpl'.freeze
+      AVAILABILITY_ZONE_MIXIN  = 'http://schemas.ogf.org/occi/infrastructure#availabilityzone'.freeze
     end
   end
 end

@@ -30,8 +30,11 @@ module Occi
             Occi::Infrastructure::Constants::COMPUTE_KIND => Occi::Infrastructure::Compute,
             Occi::Infrastructure::Constants::NETWORK_KIND => Occi::Infrastructure::Network,
             Occi::Infrastructure::Constants::STORAGE_KIND => Occi::Infrastructure::Storage,
+            Occi::Infrastructure::Constants::SECURITY_GROUP_KIND => Occi::Infrastructure::SecurityGroup,
+            Occi::Infrastructure::Constants::IPRESERVATION_KIND => Occi::Infrastructure::IPReservation,
             Occi::Infrastructure::Constants::NETWORKINTERFACE_KIND => Occi::Infrastructure::Networkinterface,
-            Occi::Infrastructure::Constants::STORAGELINK_KIND => Occi::Infrastructure::Storagelink
+            Occi::Infrastructure::Constants::STORAGELINK_KIND => Occi::Infrastructure::Storagelink,
+            Occi::Infrastructure::Constants::SECURITY_GROUP_LINK_KIND => Occi::Infrastructure::SecurityGroupLink
           }
         end
       end

@@ -24,8 +24,11 @@ module Occi
     autoload :Compute, 'occi/infrastructure/compute'
     autoload :Network, 'occi/infrastructure/network'
     autoload :Storage, 'occi/infrastructure/storage'
+    autoload :SecurityGroup, 'occi/infrastructure/securitygroup'
+    autoload :IPReservation, 'occi/infrastructure/ipreservation'
     autoload :Networkinterface, 'occi/infrastructure/networkinterface'
     autoload :Storagelink, 'occi/infrastructure/storagelink'
+    autoload :SecurityGroupLink, 'occi/infrastructure/securitygrouplink'
 
     autoload :Model, 'occi/infrastructure/model'
     autoload :Warehouse, 'occi/infrastructure/warehouse'

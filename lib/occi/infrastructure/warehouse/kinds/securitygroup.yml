@@ -1,0 +1,9 @@
+---
+term: securitygroup
+schema: http://schemas.ogf.org/occi/infrastructure#
+title: OCCI Infrastructure Security Group
+parent: http://schemas.ogf.org/occi/core#resource
+location: /securitygroup/
+attributes:
+  - occi.securitygroup.rules
+  - occi.securitygroup.state

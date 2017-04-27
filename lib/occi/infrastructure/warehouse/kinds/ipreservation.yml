@@ -1,0 +1,10 @@
+---
+term: ipreservation
+schema: http://schemas.ogf.org/occi/infrastructure#
+title: OCCI Infrastructure IP Reservation
+parent: http://schemas.ogf.org/occi/core#resource
+location: /ipreservation/
+attributes:
+  - occi.ipreservation.address
+  - occi.ipreservation.used
+  - occi.ipreservation.state
