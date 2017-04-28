@@ -23,7 +23,7 @@ module Occi
       IPNETWORKINTERFACE_MIXIN = 'http://schemas.ogf.org/occi/infrastructure/networkinterface#ipnetworkinterface'.freeze
       OS_TPL_MIXIN             = 'http://schemas.ogf.org/occi/infrastructure#os_tpl'.freeze
       RESOURCE_TPL_MIXIN       = 'http://schemas.ogf.org/occi/infrastructure#resource_tpl'.freeze
-      AVAILABILITY_ZONE_MIXIN  = 'http://schemas.ogf.org/occi/infrastructure#availabilityzone'.freeze
+      AVAILABILITY_ZONE_MIXIN  = 'http://schemas.ogf.org/occi/infrastructure#availability_zone'.freeze
     end
   end
 end
