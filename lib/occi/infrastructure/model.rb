@@ -13,7 +13,6 @@ module Occi
         Occi::Infrastructure::Warehouse.bootstrap! self
         self << Occi::Infrastructure::Mixins::OsTpl.new
         self << Occi::Infrastructure::Mixins::ResourceTpl.new
-        self << Occi::Infrastructure::Mixins::AvailabilityZone.new
         nil
       end
 

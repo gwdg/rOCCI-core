@@ -16,7 +16,11 @@ module Occi
 
       attr_accessor :model
 
-      # TODO: docs
+      # Constructs and instance of the InstanceBuilder. It can be used to quickly and easily get
+      # get instances of various `Occi::Core::Entity` sub-types based on their kind identifier.
+      #
+      # @param args [Hash] constructor arguments
+      # @option args [Occi::Core::Model] :model model filled with known category definitions
       def initialize(args = {})
         pre_initialize(args)
         default_args! args
@@ -77,9 +81,15 @@ module Occi
       # compatibility reasons.
       #
       # @param identifier [String] identifier of the category
+      # @param last_ancestor [Class] expected ancestor
       # @return [Class] pre-defined class or given last ancestor
-      def klass(_identifier, last_ancestor)
-        last_ancestor
+      def klass(identifier, last_ancestor)
+        found_last_ancestor = self.class.klass_map[identifier]
+        if found_last_ancestor && !found_last_ancestor.ancestors.include?(last_ancestor)
+          raise Occi::Core::Errors::InstanceValidationError,
+                "#{found_last_ancestor.inspect} is not a sub-type of #{last_ancestor.inspect}"
+        end
+        found_last_ancestor || last_ancestor
       end
 
       # Looks up the given identifier in the model. Returns `Occi::Core::Kind` instance if
@@ -110,6 +120,13 @@ module Occi
         else
           raise Occi::Core::Errors::ModelLookupError,
                 "Could not identify #{kind.identifier.inspect} as a Link or Resource"
+        end
+      end
+
+      class << self
+        # :nodoc:
+        def klass_map
+          {}
         end
       end
 

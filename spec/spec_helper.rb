@@ -10,6 +10,7 @@ end
 
 require 'occi/core'
 require 'occi/infrastructure'
+require 'occi/infrastructure-ext'
 
 Dir["#{File.dirname(__FILE__)}/helpers/*.rb"].each { |file| require file }
 

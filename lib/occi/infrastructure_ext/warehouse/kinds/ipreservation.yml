@@ -2,9 +2,12 @@
 term: ipreservation
 schema: http://schemas.ogf.org/occi/infrastructure#
 title: OCCI Infrastructure IP Reservation
-parent: http://schemas.ogf.org/occi/core#resource
+parent: http://schemas.ogf.org/occi/infrastructure#network
 location: /ipreservation/
 attributes:
   - occi.ipreservation.address
   - occi.ipreservation.used
   - occi.ipreservation.state
+actions:
+  - http://schemas.ogf.org/occi/infrastructure/ipreservation/action#up
+  - http://schemas.ogf.org/occi/infrastructure/ipreservation/action#down

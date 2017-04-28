@@ -48,6 +48,10 @@ Style/NilComparison:
   Exclude:
   - 'spec/occi/core/category_spec.rb'
 
+Style/FileName:
+  Exclude:
+  - 'lib/occi/infrastructure-ext.rb'
+
 RSpec/MultipleExpectations:
   Max: 5
 

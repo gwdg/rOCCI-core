@@ -1,7 +1,7 @@
 module Occi
-  module Infrastructure
+  module InfrastructureExt
     module Mixins
-      # A helper class for manipulation with `availabilityzone` parent mixin. Doesn't
+      # A helper class for manipulation with `availability_zone` parent mixin. Doesn't
       # provide any additional functionality aside from the class name.
       #
       # @author Boris Parak <parak@cesnet.cz>
@@ -10,7 +10,7 @@ module Occi
 
         # See `Occi::Core::Mixin` and `Occi::Core::Category`
         def initialize
-          schema, term = Occi::Infrastructure::Constants::AVAILABILITY_ZONE_MIXIN.split('#')
+          schema, term = Occi::InfrastructureExt::Constants::AVAILABILITY_ZONE_MIXIN.split('#')
           super term: term, schema: "#{schema}#", title: TITLE
         end
       end

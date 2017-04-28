@@ -1,5 +1,5 @@
 module Occi
-  module Infrastructure
+  module InfrastructureExt
     # Dummy sub-class of `Occi::Core::Link` meant to simplify handling
     # of known instances of the given sub-class. Does not contain any functionality.
     #
