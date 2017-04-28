@@ -1,7 +1,7 @@
 module Occi
   module Core
     module Parsers
-      # Implementes base components necessary to parse all renderings. This
+      # Implementes base components necessary to parse all renderings.
       #
       # @attr model [Occi::Core::Model, Occi::Infrastructure::Model] model to use as a primary reference point
       # @attr media_type [String] type of content to parse

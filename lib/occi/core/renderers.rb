@@ -16,4 +16,5 @@ module Occi
   end
 end
 
+require File.join(File.dirname(__FILE__), 'renderers', 'base_renderer')
 Dir[File.join(File.dirname(__FILE__), 'renderers', '*.rb')].each { |file| require file.gsub('.rb', '') }
