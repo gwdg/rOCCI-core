@@ -18,13 +18,22 @@ module Occi
           LINK_REGEXP      = /#{Constants::REGEXP_LINK}/
 
           # Typecasting lambdas
-          IPADDR_LAMBDA   = ->(val) { IPAddr.new val }
-          URI_LAMBDA      = ->(val) { URI.parse val }
-          FLOAT_LAMBDA    = ->(val) { val.to_f }
-          INTEGER_LAMBDA  = ->(val) { val.to_i }
-          BOOLEAN_LAMBDA  = ->(val) { val.casecmp('true') || val.casecmp('yes') }
-          STRING_LAMBDA   = ->(val) { val }
           DEFAULT_LAMBDA  = ->(val) { raise "#{self} -> Cannot typecast #{val.inspect} to an unknown type" }
+
+          FLOAT_LAMBDA    = ->(val) { val.to_f }
+          JSON_LAMBDA     = ->(val) { JSON.parse(val) }
+
+          TYPECASTER_HASH = {
+            IPAddr  => ->(val) { IPAddr.new val },
+            URI     => ->(val) { URI.parse val },
+            String  => ->(val) { val },
+            Float   => FLOAT_LAMBDA,
+            Numeric => FLOAT_LAMBDA,
+            Integer => ->(val) { val.to_i },
+            Boolean => ->(val) { val.casecmp('true') || val.casecmp('yes') },
+            Array   => JSON_LAMBDA,
+            Hash    => JSON_LAMBDA
+          }.freeze
 
           attr_reader :model
 
@@ -214,15 +223,7 @@ module Occi
             #
             # @return [Hash] typecaster hash with conversion lambdas
             def typecaster
-              typecaster_hash = Hash.new(DEFAULT_LAMBDA)
-              typecaster_hash[IPAddr] = IPADDR_LAMBDA
-              typecaster_hash[URI] = URI_LAMBDA
-              typecaster_hash[String] = STRING_LAMBDA
-              typecaster_hash[Float] = FLOAT_LAMBDA
-              typecaster_hash[Numeric] = FLOAT_LAMBDA
-              typecaster_hash[Integer] = INTEGER_LAMBDA
-              typecaster_hash[Boolean] = BOOLEAN_LAMBDA
-              typecaster_hash
+              Hash.new(DEFAULT_LAMBDA).merge(TYPECASTER_HASH)
             end
           end
 

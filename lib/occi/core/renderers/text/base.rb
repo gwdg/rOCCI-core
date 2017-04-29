@@ -6,6 +6,9 @@ module Occi
         # is not meant to be used directly, only as a parent to other type-specific
         # rendering classes.
         #
+        # @attr object [Object] instance to be rendered
+        # @attr options [Hash] additional rendering options
+        #
         # @author Boris Parak <parak@cesnet.cz
         class Base
           include Yell::Loggable
