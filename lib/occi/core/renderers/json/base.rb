@@ -6,9 +6,29 @@ module Occi
         # is not meant to be used directly, only as a parent to other type-specific
         # rendering classes.
         #
+        # @attr object [Object] instance to be rendered
+        # @attr options [Hash] additional rendering options
+        #
         # @author Boris Parak <parak@cesnet.cz
         class Base
           include Yell::Loggable
+
+          attr_accessor :object, :options
+
+          # Constructs a renderer instance for the given
+          # object.
+          #
+          # @param object [Object] instance to be rendered
+          # @param options [Hash] additional options
+          def initialize(object, options)
+            @object = object
+            @options = options
+          end
+
+          # Renders the given object to `JSON`.
+          #
+          # @return [String] object rendering as JSON
+          def render; end
         end
       end
     end
