@@ -18,7 +18,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
 
   gem.add_runtime_dependency 'ox', '>= 2.4', '< 3'
-  gem.add_runtime_dependency 'oj', '>= 2.15', '< 3'
+  gem.add_runtime_dependency 'json', '>= 1.8', '< 3'
   gem.add_runtime_dependency 'activesupport', '>= 4.0', '< 6'
   gem.add_runtime_dependency 'json-schema', '>= 2.5', '< 3'
   gem.add_runtime_dependency 'yell', '>= 2.0', '< 3'
