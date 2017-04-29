@@ -5,6 +5,8 @@ require 'yaml'
 require 'ipaddr'
 require 'singleton'
 require 'yell'
+require 'json'
+require 'json-schema'
 
 # Contains all OCCI-related classes and modules. This module
 # does not provide any additional functionality aside from
