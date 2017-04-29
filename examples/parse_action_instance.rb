@@ -1,6 +1,6 @@
 require 'occi/infrastructure'
 
-Yell.new :stdout, name: Object
+Yell.new '/dev/null', name: Object
 
 model = Occi::Infrastructure::Model.new
 model.load_core!
