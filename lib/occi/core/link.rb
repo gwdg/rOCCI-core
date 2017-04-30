@@ -3,7 +3,7 @@ module Occi
     # Implements the base class for all OCCI links, this
     # class can be used directly to create link instances.
     #
-    # @attr source [URI] link source, always a valid `Resource` instance
+    # @attr source [URI] link source as URI
     # @attr target [URI] link target, may point outside of this domain
     # @attr rel [Occi::Core::Kind, NilClass] Kind of the `target` or `nil` if ourside the domain
     #
