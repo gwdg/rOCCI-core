@@ -260,7 +260,7 @@ module Occi
       class << self
         # :nodoc:
         def allowed_yaml_classes
-          [String, Regexp, URI, IPAddr, Integer, Float, Boolean, Array].freeze
+          [String, Regexp, URI, IPAddr, Integer, Float, Boolean, Array, Hash].freeze
         end
         private :allowed_yaml_classes
       end
