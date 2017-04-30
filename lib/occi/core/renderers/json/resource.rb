@@ -1,4 +1,5 @@
 require 'occi/core/renderers/json/base'
+require 'occi/core/renderers/json/instance'
 require 'occi/core/renderers/json/link'
 
 module Occi
