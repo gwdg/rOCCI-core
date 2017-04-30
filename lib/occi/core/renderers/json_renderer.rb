@@ -57,8 +57,12 @@ module Occi
           # @return [Array] list of known type->serializer mappings
           def known
             {
-              'Occi::Core::Category' => Occi::Core::Renderers::Json::Category,
-              'Occi::Core::Model'    => Occi::Core::Renderers::Json::Model
+              'Occi::Core::Category'       => Occi::Core::Renderers::Json::Category,
+              'Occi::Core::ActionInstance' => Occi::Core::Renderers::Json::ActionInstance,
+              'Occi::Core::Collection'     => Occi::Core::Renderers::Json::Collection,
+              'Occi::Core::Model'          => Occi::Core::Renderers::Json::Model,
+              'Occi::Core::Resource'       => Occi::Core::Renderers::Json::Resource,
+              'Occi::Core::Link'           => Occi::Core::Renderers::Json::Link
             }
           end
         end

@@ -10,16 +10,14 @@ module Occi
         #
         # @author Boris Parak <parak@cesnet.cz>
         class Model < Base
-          # Renders the given object to `JSON`.
-          #
-          # @return [String] object rendering as JSON
-          def render
-            hs = {}
+          # :nodoc:
+          def render_hash
+            hsh = {}
             %i[actions kinds mixins].each do |symbol|
-              next if object.send(symbol).blank?
-              hs[symbol] = object.send(symbol).collect { |k| Category.new(k, options).render_hash }
+              next if object_send(symbol).blank?
+              hsh[symbol] = object_send(symbol).collect { |k| Category.new(k, options).render_hash }
             end
-            hs.to_json
+            hsh
           end
         end
       end

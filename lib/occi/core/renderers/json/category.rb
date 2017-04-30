@@ -23,21 +23,12 @@ module Occi
             Boolean => BOOLEAN, Array => ARRAY, Hash => OBJECT
           }.freeze
 
-          # Renders the given object to `JSON`.
-          #
-          # @return [String] object rendering as JSON
-          def render
-            render_hash.to_json
-          end
-
           # :nodoc:
           def render_hash
             hash = {}
-
             add_basics! hash
             add_extended! hash
             add_attributes! hash
-
             hash
           end
 
@@ -81,26 +72,6 @@ module Occi
             hattr[:description] = attr_defn.description if attr_defn.description
 
             hattr
-          end
-
-          # :nodoc:
-          def object_respond_to?(symbol)
-            object.respond_to? symbol
-          end
-
-          # :nodoc:
-          def object_send(symbol)
-            object.send symbol
-          end
-
-          # :nodoc:
-          def object_parent
-            object.parent
-          end
-
-          # :nodoc:
-          def object_attributes
-            object.attributes
           end
 
           # :nodoc:

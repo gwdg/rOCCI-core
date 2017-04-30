@@ -15,6 +15,14 @@ module Occi
 
           attr_accessor :object, :options
 
+          # Shortcuts to interesting object attributes, always prefixed with `object_`
+          DELEGATED = %i[
+            respond_to? send id title source target summary kind parent action
+            attributes actions mixins depends applies links rel empty? resources
+            links action_instances
+          ].freeze
+          delegate(*DELEGATED, to: :object, prefix: true)
+
           # Constructs a renderer instance for the given
           # object.
           #
@@ -28,7 +36,9 @@ module Occi
           # Renders the given object to `JSON`.
           #
           # @return [String] object rendering as JSON
-          def render; end
+          def render
+            render_hash.to_json
+          end
         end
       end
     end
