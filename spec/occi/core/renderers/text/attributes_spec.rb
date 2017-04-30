@@ -27,8 +27,16 @@ module Occi
             Occi::Core::AttributeDefinition.new(type: Boolean)
           end
 
-          let(:attr_def_unkn) do
+          let(:attr_def_ary) do
             Occi::Core::AttributeDefinition.new(type: Array)
+          end
+
+          let(:attr_def_hsh) do
+            Occi::Core::AttributeDefinition.new(type: Hash)
+          end
+
+          let(:attr_def_unkn) do
+            Occi::Core::AttributeDefinition.new(type: Object)
           end
 
           let(:attribute_name) { 'test' }
@@ -108,8 +116,40 @@ module Occi
               end
             end
 
-            context 'as plain with unknown attribute' do
+            context 'as plain with array attribute' do
               let(:value) { [] }
+              let(:options) { { format: 'text' } }
+
+              before do
+                attributes[attribute_name].value = value
+                attributes[attribute_name].attribute_definition = attr_def_ary
+                tra.object = attributes
+                tra.options = options
+              end
+
+              it 'renders' do
+                expect(tra.render).to eq "X-OCCI-Attribute: #{attribute_name}=\"#{value}\""
+              end
+            end
+
+            context 'as plain with hash attribute' do
+              let(:value) { {} }
+              let(:options) { { format: 'text' } }
+
+              before do
+                attributes[attribute_name].value = value
+                attributes[attribute_name].attribute_definition = attr_def_hsh
+                tra.object = attributes
+                tra.options = options
+              end
+
+              it 'renders' do
+                expect(tra.render).to eq "X-OCCI-Attribute: #{attribute_name}=\"#{value}\""
+              end
+            end
+
+            context 'as plain with unknown attribute' do
+              let(:value) { Object.new }
               let(:options) { { format: 'text' } }
 
               before do
@@ -188,8 +228,40 @@ module Occi
               end
             end
 
-            context 'as plain with unknown attribute' do
+            context 'as plain with array attribute' do
               let(:value) { [] }
+              let(:options) { { format: 'headers' } }
+
+              before do
+                attributes[attribute_name].value = value
+                attributes[attribute_name].attribute_definition = attr_def_ary
+                tra.object = attributes
+                tra.options = options
+              end
+
+              it 'renders' do
+                expect(tra.render).to eq('X-OCCI-Attribute' => ["#{attribute_name}=\"#{value}\""])
+              end
+            end
+
+            context 'as plain with hash attribute' do
+              let(:value) { {} }
+              let(:options) { { format: 'headers' } }
+
+              before do
+                attributes[attribute_name].value = value
+                attributes[attribute_name].attribute_definition = attr_def_hsh
+                tra.object = attributes
+                tra.options = options
+              end
+
+              it 'renders' do
+                expect(tra.render).to eq('X-OCCI-Attribute' => ["#{attribute_name}=\"#{value}\""])
+              end
+            end
+
+            context 'as plain with unknown attribute' do
+              let(:value) { Object.new }
               let(:options) { { format: 'headers' } }
 
               before do

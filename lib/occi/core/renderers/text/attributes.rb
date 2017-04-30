@@ -16,6 +16,7 @@ module Occi
           # Known primitive attribute value types
           PRIMITIVE_TYPES = [String, Numeric, Integer, Float, Boolean].freeze
           QUOTABLE_TYPES  = [IPAddr, URI].freeze
+          JSONABLE_TYPES  = [Array, Hash].freeze
 
           # Renders `object` into plain text and returns the result
           # as `String`.
@@ -67,9 +68,12 @@ module Occi
 
           # :nodoc:
           def prepare_instance_attribute_value(name, type, value)
-            if (QUOTABLE_TYPES & type.ancestors).any?
+            type_ancestors = type.ancestors
+            if (QUOTABLE_TYPES & type_ancestors).any?
               "\"#{value}\""
-            elsif (PRIMITIVE_TYPES & type.ancestors).any?
+            elsif (JSONABLE_TYPES & type_ancestors).any?
+              "\"#{value.to_json}\""
+            elsif (PRIMITIVE_TYPES & type_ancestors).any?
               value.inspect
             else
               raise Occi::Core::Errors::RenderingError, "Value #{value.inspect} " \
