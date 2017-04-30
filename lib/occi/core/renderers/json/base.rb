@@ -17,7 +17,7 @@ module Occi
 
           # Shortcuts to interesting object attributes, always prefixed with `object_`
           DELEGATED = %i[
-            respond_to? send id title source target summary kind parent action
+            respond_to? send source target summary kind parent action
             attributes actions mixins depends applies links rel empty? resources
             links action_instances
           ].freeze
