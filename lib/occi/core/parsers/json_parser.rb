@@ -67,11 +67,13 @@ module Occi
           # @param media_type [String] media type string as provided by the transport protocol
           # @param model [Occi::Core::Model] `Model`-like instance to be populated (may contain existing categories)
           # @return [Occi::Core::Model] model instance filled with parsed categories
-          def model(_body, _headers, media_type, model)
+          def model(body, _headers, media_type, model)
             unless media_types.include?(media_type)
               raise Occi::Core::Errors::ParsingError,
                     "#{self} -> model cannot be parsed from #{media_type.inspect}"
             end
+            Json::Validator.validate_model! body
+            Json::Category.json body, model
             model
           end
 

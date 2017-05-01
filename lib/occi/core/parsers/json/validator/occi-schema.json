@@ -1,6 +1,6 @@
 {
 	"id": "occi-schema.json",
-	"$schema": "draft04-schema.json",
+	"$schema": "http://json-schema.org/draft-04/schema#",
 	"title": "OCCI v1.2 JSON Rendering Schema",
 	"definitions": {
 		"kinded_uri": {
@@ -20,15 +20,15 @@
 			"additionalProperties": false,
 			"properties": {
 				"kind": { "type": "string" },
-				"mixins": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"mixins": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
 				"attributes": { "$ref": "#/definitions/attributes" },
-				"actions": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"actions": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
 				"id": { "type": "string" },
 				"links": {
 					"type": "array",
 					"minItems": 1,
 					"items": {
-						"$ref": "#definitions/link"
+						"$ref": "#/definitions/link"
 					}
 				},
 				"summary": { "type": "string" },
@@ -52,9 +52,9 @@
 			"additionalProperties": false,
 			"properties": {
 				"kind": { "type": "string" },
-				"mixins": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"mixins": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
 				"attributes": { "$ref": "#/definitions/attributes" },
-				"actions": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"actions": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
 				"id": { "type": "string" },
 				"source": { "$ref": "#/definitions/kinded_uri" },
 				"target": { "$ref": "#/definitions/kinded_uri" },
@@ -71,7 +71,7 @@
 				"scheme": { "type": "string" },
 				"title": { "type": "string" },
 				"attributes": { "$ref": "#/definitions/attribute_definitions" },
-				"actions": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"actions": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
 				"parent": { "type": "string" },
 				"location": { "type": "string" }
 			}
@@ -86,9 +86,9 @@
 				"scheme": { "type": "string" },
 				"title": { "type": "string" },
 				"attributes": { "$ref": "#/definitions/attribute_definitions" },
-				"actions": { "$ref": "draft04-schema.json#/definitions/stringArray" },
-				"depends": { "$ref": "draft04-schema.json#/definitions/stringArray" },
-				"applies": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"actions": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
+				"depends": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
+				"applies": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
 				"location": { "type": "string" }
 			}
 		},
@@ -114,7 +114,7 @@
 					"type": "array",
 					"minItems": 1,
 					"items": {
-						"$ref": "#definitions/resource"
+						"$ref": "#/definitions/resource"
 					}
 				}
 			}
@@ -129,7 +129,7 @@
 					"type": "array",
 					"minItems": 1,
 					"items": {
-						"$ref": "#definitions/link"
+						"$ref": "#/definitions/link"
 					}
 				}
 			}
@@ -143,14 +143,14 @@
 					"type": "array",
 					"minItems": 1,
 					"items": {
-						"$ref": "#definitions/resource"
+						"$ref": "#/definitions/resource"
 					}
 				},
 				"links": {
 					"type": "array",
 					"minItems": 1,
 					"items": {
-						"$ref": "#definitions/link"
+						"$ref": "#/definitions/link"
 					}
 				},
 			}
@@ -165,7 +165,7 @@
 					"type": "array",
 					"minItems": 1,
 					"items": {
-						"$ref": "#definitions/kind"
+						"$ref": "#/definitions/kind"
 					}
 				}
 			}
@@ -180,7 +180,7 @@
 					"type": "array",
 					"minItems": 1,
 					"items": {
-						"$ref": "#definitions/mixin"
+						"$ref": "#/definitions/mixin"
 					}
 				}
 			}
@@ -195,7 +195,7 @@
 					"type": "array",
 					"minItems": 1,
 					"items": {
-						"$ref": "#definitions/action"
+						"$ref": "#/definitions/action"
 					}
 				}
 			}
@@ -254,21 +254,21 @@
 					"type": "array",
 					"minItems": 1,
 					"items": {
-						"$ref": "#definitions/mixin"
+						"$ref": "#/definitions/mixin"
 					}
 				},
 				"kinds": {
 					"type": "array",
 					"minItems": 1,
 					"items": {
-						"$ref": "#definitions/kind"
+						"$ref": "#/definitions/kind"
 					}
 				},
 				"actions": {
 					"type": "array",
 					"minItems": 1,
 					"items": {
-						"$ref": "#definitions/action"
+						"$ref": "#/definitions/action"
 					}
 				}
 			}
