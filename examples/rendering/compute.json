@@ -1,0 +1,13 @@
+{
+  "kind": "http://schemas.ogf.org/occi/infrastructure#compute",
+  "attributes": {
+    "occi.compute.architecture": "x64",
+    "occi.compute.cores": 4,
+    "occi.compute.memory": 2,
+    "occi.compute.state": "inactive",
+    "occi.core.id": "488f6764-d4e3-4668-8cbb-1aaa06e92d5f",
+    "occi.core.title": "My Compute Instance"
+  },
+  "id": "488f6764-d4e3-4668-8cbb-1aaa06e92d5f",
+  "title": "My Compute Instance"
+}

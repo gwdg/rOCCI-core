@@ -8,3 +8,5 @@ model.load_infrastructure!
 model.load_infrastructure_ext!
 
 model.valid!
+
+puts model.to_json

@@ -13,5 +13,3 @@ aif = File.read File.join(File.dirname(__FILE__), 'rendering', 'action_instance.
 
 ai = parser.action_instances(aif, {}).first
 ai.valid!
-
-puts ai.to_text

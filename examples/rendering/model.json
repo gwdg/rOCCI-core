@@ -1,0 +1,786 @@
+{
+  "actions": [
+    {
+      "term": "restart",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/compute/action#",
+      "title": "Restart compute via the specified method",
+      "attributes": {
+        "method": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^(graceful|warm|cold)$)",
+          "default": "cold",
+          "description": "Restart method"
+        }
+      }
+    },
+    {
+      "term": "save",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/compute/action#",
+      "title": "Makes an independent copy of the compute instance",
+      "attributes": {
+        "method": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^(hot|deffered)$)",
+          "default": "deffered",
+          "description": "Save method"
+        },
+        "name": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]+$)",
+          "description": "Name of the copy"
+        }
+      }
+    },
+    {
+      "term": "start",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/compute/action#",
+      "title": "Change compute status to active"
+    },
+    {
+      "term": "stop",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/compute/action#",
+      "title": "Change compute status to inactive",
+      "attributes": {
+        "method": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^(graceful|acpioff|poweroff)$)",
+          "default": "poweroff",
+          "description": "Stop method"
+        }
+      }
+    },
+    {
+      "term": "suspend",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/compute/action#",
+      "title": "Change compute status to suspended",
+      "attributes": {
+        "method": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^(hibernate|suspend)$)",
+          "default": "suspend",
+          "description": "Suspend method"
+        }
+      }
+    },
+    {
+      "term": "down",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/network/action#",
+      "title": "Change network status to inactive"
+    },
+    {
+      "term": "up",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/network/action#",
+      "title": "Change network status to active"
+    },
+    {
+      "term": "down",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/networkinterface/action#",
+      "title": "Change networkinterface status to inactive"
+    },
+    {
+      "term": "up",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/networkinterface/action#",
+      "title": "Change networkinterface status to active"
+    },
+    {
+      "term": "backup",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/storage/action#",
+      "title": "Make a backup of the storage instance"
+    },
+    {
+      "term": "offline",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/storage/action#",
+      "title": "Change storage status to offline"
+    },
+    {
+      "term": "online",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/storage/action#",
+      "title": "Change storage status to online"
+    },
+    {
+      "term": "resize",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/storage/action#",
+      "title": "Change the resize of the storage instance",
+      "attributes": {
+        "size": {
+          "mutable": true,
+          "required": true,
+          "type": "number",
+          "description": "Amount of storage in GBs."
+        }
+      }
+    },
+    {
+      "term": "snapshot",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/storage/action#",
+      "title": "Make a snapshot of the storage instance"
+    },
+    {
+      "term": "offline",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/storagelink/action#",
+      "title": "Change storagelink status to inactive"
+    },
+    {
+      "term": "online",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/storagelink/action#",
+      "title": "Change storagelink status to active"
+    },
+    {
+      "term": "down",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/ipreservation/action#",
+      "title": "Change ipreservation status to inactive"
+    },
+    {
+      "term": "up",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/ipreservation/action#",
+      "title": "Change ipreservation status to active"
+    }
+  ],
+  "kinds": [
+    {
+      "term": "entity",
+      "scheme": "http://schemas.ogf.org/occi/core#",
+      "location": "/entity/",
+      "title": "OCCI Core Entity",
+      "parent": "",
+      "attributes": {
+        "occi.core.id": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]([[:alnum:]]|-|_)*$)",
+          "description": "Identifier assigned to this entity sub-type instance."
+        },
+        "occi.core.title": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:word:]]([[:blank:]]|[[:word:]]|\\-)*$)",
+          "description": "Title assigned to this entity sub-type instance."
+        }
+      }
+    },
+    {
+      "term": "link",
+      "scheme": "http://schemas.ogf.org/occi/core#",
+      "location": "/link/",
+      "title": "OCCI Core Link",
+      "parent": "http://schemas.ogf.org/occi/core#entity",
+      "attributes": {
+        "occi.core.source": {
+          "mutable": true,
+          "required": true,
+          "type": "string",
+          "description": "Source resource sub-type instance of this link sub-type instance."
+        },
+        "occi.core.target": {
+          "mutable": true,
+          "required": true,
+          "type": "string",
+          "description": "Target resource sub-type instance of this link sub-type instance."
+        },
+        "occi.core.id": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]([[:alnum:]]|-|_)*$)",
+          "description": "Identifier assigned to this entity sub-type instance."
+        },
+        "occi.core.title": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:word:]]([[:blank:]]|[[:word:]]|\\-)*$)",
+          "description": "Title assigned to this entity sub-type instance."
+        }
+      }
+    },
+    {
+      "term": "resource",
+      "scheme": "http://schemas.ogf.org/occi/core#",
+      "location": "/resource/",
+      "title": "OCCI Core Resource",
+      "parent": "http://schemas.ogf.org/occi/core#entity",
+      "attributes": {
+        "occi.core.summary": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^.*$)",
+          "description": "Brief textual description of this entity sub-type instance."
+        },
+        "occi.core.id": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]([[:alnum:]]|-|_)*$)",
+          "description": "Identifier assigned to this entity sub-type instance."
+        },
+        "occi.core.title": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:word:]]([[:blank:]]|[[:word:]]|\\-)*$)",
+          "description": "Title assigned to this entity sub-type instance."
+        }
+      }
+    },
+    {
+      "term": "compute",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure#",
+      "location": "/compute/",
+      "title": "OCCI Infrastructure Compute",
+      "parent": "http://schemas.ogf.org/occi/core#resource",
+      "actions": [
+        "http://schemas.ogf.org/occi/infrastructure/compute/action#start",
+        "http://schemas.ogf.org/occi/infrastructure/compute/action#stop",
+        "http://schemas.ogf.org/occi/infrastructure/compute/action#restart",
+        "http://schemas.ogf.org/occi/infrastructure/compute/action#suspend",
+        "http://schemas.ogf.org/occi/infrastructure/compute/action#save"
+      ],
+      "attributes": {
+        "occi.compute.architecture": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^(x86|x64)$)",
+          "default": "x64",
+          "description": "Compute platform architecture."
+        },
+        "occi.compute.cores": {
+          "mutable": true,
+          "required": false,
+          "type": "number",
+          "description": "Number of compute processor cores."
+        },
+        "occi.compute.hostname": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "description": "Compute FQDN."
+        },
+        "occi.compute.memory": {
+          "mutable": true,
+          "required": false,
+          "type": "number",
+          "description": "Amount of compute memory in GBs."
+        },
+        "occi.compute.speed": {
+          "mutable": true,
+          "required": false,
+          "type": "number",
+          "description": "Relative speed of the compute instance."
+        },
+        "occi.compute.state": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^(active|inactive|error|waiting|suspended)$)",
+          "default": "inactive",
+          "description": "Compute instance state."
+        },
+        "occi.core.summary": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^.*$)",
+          "description": "Brief textual description of this entity sub-type instance."
+        },
+        "occi.core.id": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]([[:alnum:]]|-|_)*$)",
+          "description": "Identifier assigned to this entity sub-type instance."
+        },
+        "occi.core.title": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:word:]]([[:blank:]]|[[:word:]]|\\-)*$)",
+          "description": "Title assigned to this entity sub-type instance."
+        }
+      }
+    },
+    {
+      "term": "network",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure#",
+      "location": "/network/",
+      "title": "OCCI Infrastructure Network",
+      "parent": "http://schemas.ogf.org/occi/core#resource",
+      "actions": [
+        "http://schemas.ogf.org/occi/infrastructure/network/action#up",
+        "http://schemas.ogf.org/occi/infrastructure/network/action#down"
+      ],
+      "attributes": {
+        "occi.network.vlan": {
+          "mutable": true,
+          "required": false,
+          "type": "number",
+          "description": "VLAN identifier or a tag."
+        },
+        "occi.network.label": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "description": "Label of the network instance."
+        },
+        "occi.network.state": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^(active|inactive|error)$)",
+          "default": "inactive",
+          "description": "Network instance state."
+        },
+        "occi.core.summary": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^.*$)",
+          "description": "Brief textual description of this entity sub-type instance."
+        },
+        "occi.core.id": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]([[:alnum:]]|-|_)*$)",
+          "description": "Identifier assigned to this entity sub-type instance."
+        },
+        "occi.core.title": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:word:]]([[:blank:]]|[[:word:]]|\\-)*$)",
+          "description": "Title assigned to this entity sub-type instance."
+        }
+      }
+    },
+    {
+      "term": "networkinterface",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure#",
+      "location": "/link/networkinterface/",
+      "title": "OCCI Infrastructure NetworkInterface",
+      "parent": "http://schemas.ogf.org/occi/core#link",
+      "actions": [
+        "http://schemas.ogf.org/occi/infrastructure/networkinterface/action#up",
+        "http://schemas.ogf.org/occi/infrastructure/networkinterface/action#down"
+      ],
+      "attributes": {
+        "occi.networkinterface.interface": {
+          "mutable": false,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]+$)",
+          "description": "Network interface name."
+        },
+        "occi.networkinterface.mac": {
+          "mutable": false,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^([0-9a-fA-F]{2}[:-]){5}([0-9a-fA-F]{2})$)",
+          "description": "Network interface MAC address."
+        },
+        "occi.networkinterface.state": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^(active|inactive|error)$)",
+          "default": "inactive",
+          "description": "Networkinterface instance state."
+        },
+        "occi.core.source": {
+          "mutable": true,
+          "required": true,
+          "type": "string",
+          "description": "Source resource sub-type instance of this link sub-type instance."
+        },
+        "occi.core.target": {
+          "mutable": true,
+          "required": true,
+          "type": "string",
+          "description": "Target resource sub-type instance of this link sub-type instance."
+        },
+        "occi.core.id": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]([[:alnum:]]|-|_)*$)",
+          "description": "Identifier assigned to this entity sub-type instance."
+        },
+        "occi.core.title": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:word:]]([[:blank:]]|[[:word:]]|\\-)*$)",
+          "description": "Title assigned to this entity sub-type instance."
+        }
+      }
+    },
+    {
+      "term": "storage",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure#",
+      "location": "/storage/",
+      "title": "OCCI Infrastructure Storage",
+      "parent": "http://schemas.ogf.org/occi/core#resource",
+      "actions": [
+        "http://schemas.ogf.org/occi/infrastructure/storage/action#online",
+        "http://schemas.ogf.org/occi/infrastructure/storage/action#offline",
+        "http://schemas.ogf.org/occi/infrastructure/storage/action#backup",
+        "http://schemas.ogf.org/occi/infrastructure/storage/action#snapshot",
+        "http://schemas.ogf.org/occi/infrastructure/storage/action#resize"
+      ],
+      "attributes": {
+        "occi.storage.size": {
+          "mutable": true,
+          "required": false,
+          "type": "number",
+          "description": "Amount of storage in GBs."
+        },
+        "occi.storage.state": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^(online|offline|backup|snapshot|resize|degraded)$)",
+          "default": "offline",
+          "description": "Storage instance state."
+        },
+        "occi.core.summary": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^.*$)",
+          "description": "Brief textual description of this entity sub-type instance."
+        },
+        "occi.core.id": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]([[:alnum:]]|-|_)*$)",
+          "description": "Identifier assigned to this entity sub-type instance."
+        },
+        "occi.core.title": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:word:]]([[:blank:]]|[[:word:]]|\\-)*$)",
+          "description": "Title assigned to this entity sub-type instance."
+        }
+      }
+    },
+    {
+      "term": "storagelink",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure#",
+      "location": "/link/storagelink/",
+      "title": "OCCI Infrastructure StorageLink",
+      "parent": "http://schemas.ogf.org/occi/core#link",
+      "actions": [
+        "http://schemas.ogf.org/occi/infrastructure/storagelink/action#online",
+        "http://schemas.ogf.org/occi/infrastructure/storagelink/action#offline"
+      ],
+      "attributes": {
+        "occi.storagelink.deviceid": {
+          "mutable": false,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]+$)",
+          "description": "Block device ID."
+        },
+        "occi.storagelink.mountpoint": {
+          "mutable": false,
+          "required": false,
+          "type": "string",
+          "description": "Block device mount point."
+        },
+        "occi.storagelink.state": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^(active|inactive|error|waiting)$)",
+          "default": "inactive",
+          "description": "Storagelink instance state."
+        },
+        "occi.core.source": {
+          "mutable": true,
+          "required": true,
+          "type": "string",
+          "description": "Source resource sub-type instance of this link sub-type instance."
+        },
+        "occi.core.target": {
+          "mutable": true,
+          "required": true,
+          "type": "string",
+          "description": "Target resource sub-type instance of this link sub-type instance."
+        },
+        "occi.core.id": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]([[:alnum:]]|-|_)*$)",
+          "description": "Identifier assigned to this entity sub-type instance."
+        },
+        "occi.core.title": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:word:]]([[:blank:]]|[[:word:]]|\\-)*$)",
+          "description": "Title assigned to this entity sub-type instance."
+        }
+      }
+    },
+    {
+      "term": "ipreservation",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure#",
+      "location": "/ipreservation/",
+      "title": "OCCI Infrastructure IP Reservation",
+      "parent": "http://schemas.ogf.org/occi/infrastructure#network",
+      "actions": [
+        "http://schemas.ogf.org/occi/infrastructure/ipreservation/action#up",
+        "http://schemas.ogf.org/occi/infrastructure/ipreservation/action#down"
+      ],
+      "attributes": {
+        "occi.ipreservation.address": {
+          "mutable": true,
+          "required": true,
+          "type": "string",
+          "description": "IP address (v4 or v6) assigned to this reservation."
+        },
+        "occi.ipreservation.used": {
+          "mutable": false,
+          "required": true,
+          "type": "boolean",
+          "default": false,
+          "description": "Status of the IPReservation instance."
+        },
+        "occi.ipreservation.state": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^(active|inactive|error)$)",
+          "default": "inactive",
+          "description": "IPReservation instance state."
+        },
+        "occi.network.vlan": {
+          "mutable": true,
+          "required": false,
+          "type": "number",
+          "description": "VLAN identifier or a tag."
+        },
+        "occi.network.label": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "description": "Label of the network instance."
+        },
+        "occi.network.state": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^(active|inactive|error)$)",
+          "default": "inactive",
+          "description": "Network instance state."
+        },
+        "occi.core.summary": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^.*$)",
+          "description": "Brief textual description of this entity sub-type instance."
+        },
+        "occi.core.id": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]([[:alnum:]]|-|_)*$)",
+          "description": "Identifier assigned to this entity sub-type instance."
+        },
+        "occi.core.title": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:word:]]([[:blank:]]|[[:word:]]|\\-)*$)",
+          "description": "Title assigned to this entity sub-type instance."
+        }
+      }
+    },
+    {
+      "term": "securitygroup",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure#",
+      "location": "/securitygroup/",
+      "title": "OCCI Infrastructure Security Group",
+      "parent": "http://schemas.ogf.org/occi/core#resource",
+      "attributes": {
+        "occi.securitygroup.rules": {
+          "mutable": true,
+          "required": true,
+          "type": "array",
+          "description": "Status of the IPReservation instance."
+        },
+        "occi.securitygroup.state": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^(active|inactive|error)$)",
+          "default": "inactive",
+          "description": "SecurityGroup instance state."
+        },
+        "occi.core.summary": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^.*$)",
+          "description": "Brief textual description of this entity sub-type instance."
+        },
+        "occi.core.id": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]([[:alnum:]]|-|_)*$)",
+          "description": "Identifier assigned to this entity sub-type instance."
+        },
+        "occi.core.title": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:word:]]([[:blank:]]|[[:word:]]|\\-)*$)",
+          "description": "Title assigned to this entity sub-type instance."
+        }
+      }
+    },
+    {
+      "term": "securitygrouplink",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure#",
+      "location": "/link/securitygrouplink/",
+      "title": "OCCI Infrastructure Security Group link",
+      "parent": "http://schemas.ogf.org/occi/core#link",
+      "attributes": {
+        "occi.securitygrouplink.state": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^(active|inactive|error)$)",
+          "default": "inactive",
+          "description": "SecurityGroupLink instance state."
+        },
+        "occi.core.source": {
+          "mutable": true,
+          "required": true,
+          "type": "string",
+          "description": "Source resource sub-type instance of this link sub-type instance."
+        },
+        "occi.core.target": {
+          "mutable": true,
+          "required": true,
+          "type": "string",
+          "description": "Target resource sub-type instance of this link sub-type instance."
+        },
+        "occi.core.id": {
+          "mutable": false,
+          "required": true,
+          "type": "string",
+          "pattern": "(?-mix:^[[:alnum:]]([[:alnum:]]|-|_)*$)",
+          "description": "Identifier assigned to this entity sub-type instance."
+        },
+        "occi.core.title": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^[[:word:]]([[:blank:]]|[[:word:]]|\\-)*$)",
+          "description": "Title assigned to this entity sub-type instance."
+        }
+      }
+    }
+  ],
+  "mixins": [
+    {
+      "term": "ipnetwork",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/network#",
+      "location": "/mixin/ipnetwork/",
+      "title": "OCCI IP Network mixin",
+      "applies": [
+        "http://schemas.ogf.org/occi/infrastructure#network"
+      ],
+      "attributes": {
+        "occi.network.address": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "description": "IP address (v4 or v6) assigned to this instance."
+        },
+        "occi.network.allocation": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^(dynamic|static)$)",
+          "default": "static",
+          "description": "Network address allocation mechanism."
+        },
+        "occi.network.gateway": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "description": "IP address (v4 or v6) of the pre-configured gateway."
+        }
+      }
+    },
+    {
+      "term": "ipnetworkinterface",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure/networkinterface#",
+      "location": "/mixin/ipnetworkinterface/",
+      "title": "OCCI IP NetworkInterface mixin",
+      "applies": [
+        "http://schemas.ogf.org/occi/infrastructure#networkinterface"
+      ],
+      "attributes": {
+        "occi.networkinterface.address": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "description": "IP address (v4 or v6) assigned to this instance."
+        },
+        "occi.networkinterface.allocation": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "pattern": "(?-mix:^(dynamic|static)$)",
+          "default": "static",
+          "description": "Network address allocation mechanism."
+        },
+        "occi.networkinterface.gateway": {
+          "mutable": true,
+          "required": false,
+          "type": "string",
+          "description": "IP address (v4 or v6) of the pre-configured gateway."
+        }
+      }
+    },
+    {
+      "term": "os_tpl",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure#",
+      "location": "/mixin/os_tpl/",
+      "title": "OS or Appliance template (parent mixin)"
+    },
+    {
+      "term": "resource_tpl",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure#",
+      "location": "/mixin/resource_tpl/",
+      "title": "Resource template providing flavor/sizing information (parent mixin)"
+    },
+    {
+      "term": "availability_zone",
+      "scheme": "http://schemas.ogf.org/occi/infrastructure#",
+      "location": "/mixin/availability_zone/",
+      "title": "OCCI Availability Zone mixin"
+    }
+  ]
+}
