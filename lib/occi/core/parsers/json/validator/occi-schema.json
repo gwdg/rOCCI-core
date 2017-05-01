@@ -1,0 +1,277 @@
+{
+	"id": "occi-schema.json",
+	"$schema": "draft04-schema.json",
+	"title": "OCCI v1.2 JSON Rendering Schema",
+	"definitions": {
+		"kinded_uri": {
+			"id": "#kinded_uri",
+			"type": "object",
+			"required": ["location"],
+			"additionalProperties": false,
+			"properties": {
+				"location": { "type": "string" },
+				"kind": { "type": "string" }
+			}
+		},
+		"resource": {
+			"id": "#resource",
+			"type": "object",
+			"required": ["kind", "id", "attributes"],
+			"additionalProperties": false,
+			"properties": {
+				"kind": { "type": "string" },
+				"mixins": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"attributes": { "$ref": "#/definitions/attributes" },
+				"actions": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"id": { "type": "string" },
+				"links": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#definitions/link"
+					}
+				},
+				"summary": { "type": "string" },
+				"title": { "type": "string" }
+			}
+		},
+		"action_instance": {
+			"id": "#action_instance",
+			"type": "object",
+			"required": ["action"],
+			"additionalProperties": false,
+			"properties": {
+				"action": { "type": "string" },
+				"attributes": { "$ref": "#/definitions/attributes" }
+			}
+		},
+		"link": {
+			"id": "#link",
+			"type": "object",
+			"required": ["kind", "id", "target", "source", "attributes"],
+			"additionalProperties": false,
+			"properties": {
+				"kind": { "type": "string" },
+				"mixins": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"attributes": { "$ref": "#/definitions/attributes" },
+				"actions": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"id": { "type": "string" },
+				"source": { "$ref": "#/definitions/kinded_uri" },
+				"target": { "$ref": "#/definitions/kinded_uri" },
+				"title": { "type": "string" }
+			}
+		},
+		"kind": {
+			"id": "#kind",
+			"type": "object",
+			"required": ["term", "scheme", "location"],
+			"additionalProperties": false,
+			"properties": {
+				"term": { "type": "string" },
+				"scheme": { "type": "string" },
+				"title": { "type": "string" },
+				"attributes": { "$ref": "#/definitions/attribute_definitions" },
+				"actions": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"parent": { "type": "string" },
+				"location": { "type": "string" }
+			}
+		},
+		"mixin": {
+			"id": "#mixin",
+			"type": "object",
+			"required": ["term", "scheme", "location"],
+			"additionalProperties": false,
+			"properties": {
+				"term": { "type": "string" },
+				"scheme": { "type": "string" },
+				"title": { "type": "string" },
+				"attributes": { "$ref": "#/definitions/attribute_definitions" },
+				"actions": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"depends": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"applies": { "$ref": "draft04-schema.json#/definitions/stringArray" },
+				"location": { "type": "string" }
+			}
+		},
+		"action": {
+			"id": "#action",
+			"type": "object",
+			"required": ["term", "scheme"],
+			"additionalProperties": false,
+			"properties": {
+				"term": { "type": "string" },
+				"scheme": { "type": "string" },
+				"title": { "type": "string" },
+				"attributes": { "$ref": "#/definitions/attribute_definitions" }
+			}
+		},
+		"resource_collection": {
+			"id": "#resource_collection",
+			"type": "object",
+			"required": ["resources"],
+			"additionalProperties": false,
+			"properties": {
+				"resources": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#definitions/resource"
+					}
+				}
+			}
+		},
+		"link_collection": {
+			"id": "#link_collection",
+			"type": "object",
+			"required": ["links"],
+			"additionalProperties": false,
+			"properties": {
+				"links": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#definitions/link"
+					}
+				}
+			}
+		},
+		"entity_collection": {
+			"id": "#entity_collection",
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"resources": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#definitions/resource"
+					}
+				},
+				"links": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#definitions/link"
+					}
+				},
+			}
+		},
+		"kind_collection": {
+			"id": "#kind_collection",
+			"type": "object",
+			"required": ["kinds"],
+			"additionalProperties": false,
+			"properties": {
+				"kinds": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#definitions/kind"
+					}
+				}
+			}
+		},
+		"mixin_collection": {
+			"id": "#mixin_collection",
+			"type": "object",
+			"required": ["mixins"],
+			"additionalProperties": false,
+			"properties": {
+				"mixins": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#definitions/mixin"
+					}
+				}
+			}
+		},
+		"action_collection": {
+			"id": "#action_collection",
+			"type": "object",
+			"required": ["actions"],
+			"additionalProperties": false,
+			"properties": {
+				"actions": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#definitions/action"
+					}
+				}
+			}
+		},
+		"attributes": {
+			"id": "#attributes",
+			"type": "object",
+			"additionalProperties": {
+				"oneOf": [
+					{ "type": "number" },
+					{ "type": "boolean" },
+					{ "type": "string" },
+					{ "type": "object" },
+					{ "type": "array" }
+				]
+			}
+		},
+		"attribute_definition": {
+			"id": "#attribute_definition",
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["type", "mutable", "required"],
+			"properties": {
+				"mutable": { "type": "boolean" },
+				"required": { "type": "boolean" },
+				"type": { "type": "string" },
+				"default": {
+					"oneOf": [
+						{ "type": "number" },
+						{ "type": "string" },
+						{ "type": "boolean" },
+						{ "type": "object" },
+						{ "type": "array" }
+					]
+				},
+				"description": { "type": "string" },
+				"pattern": { "type": "string" }
+			}
+		},
+		"attribute_definitions": {
+			"id": "#attribute_definitions",
+			"type": "object",
+			"additionalProperties": false,
+			"patternProperties": {
+				".+": {
+					"$ref": "#/definitions/attribute_definition"
+				}
+			}
+		},
+		"model": {
+			"id": "#model",
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"mixins": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#definitions/mixin"
+					}
+				},
+				"kinds": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#definitions/kind"
+					}
+				},
+				"actions": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#definitions/action"
+					}
+				}
+			}
+		}
+	}
+}
