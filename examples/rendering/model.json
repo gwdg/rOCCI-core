@@ -152,7 +152,6 @@
       "scheme": "http://schemas.ogf.org/occi/core#",
       "location": "/entity/",
       "title": "OCCI Core Entity",
-      "parent": "",
       "attributes": {
         "occi.core.id": {
           "mutable": false,

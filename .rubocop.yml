@@ -19,6 +19,8 @@ Metrics/MethodLength:
 Metrics/AbcSize:
   Exclude:
   - 'lib/occi/core/parsers/text/*'
+  - 'lib/occi/core/parsers/json/*'
+  - 'lib/occi/core/helpers/parser_dereferencer.rb'
 
 Metrics/LineLength:
   Max: 120

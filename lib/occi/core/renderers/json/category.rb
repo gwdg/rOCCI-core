@@ -42,7 +42,7 @@ module Occi
 
           # :nodoc:
           def add_extended!(hash)
-            hash[:parent] = object_parent.to_s if object_respond_to?(:parent)
+            hash[:parent] = object_parent.to_s if object_respond_to?(:parent) && object_parent
             %i[actions depends applies].each do |symbol|
               next unless object_respond_to?(symbol) && !object_send(symbol).blank?
               hash[symbol] = object_send(symbol).collect(&:to_s)
