@@ -22,8 +22,8 @@ module Occi
             def validate!(json, type)
               JSON::Validator.schema_reader = JSON::Schema::Reader.new(accept_uri: false, accept_file: true)
               JSON::Validator.validate!(schema_for(type), json, json: true)
-            rescue JSON::Schema::ValidationError => e
-              raise Occi::Core::Errors::ParsingError, "#{self} -> #{e.message}", e
+            rescue JSON::Schema::JsonParseError, JSON::Schema::ValidationError => e
+              raise Occi::Core::Errors::ParsingError, "#{self} -> #{e.message}"
             end
 
             # :nodoc:
@@ -64,6 +64,11 @@ module Occi
             # :nodoc:
             def validate_mixin_collection!(json)
               validate! json, :'mixin-collection'
+            end
+
+            # :nodoc:
+            def validate_locations!(json)
+              validate! json, :locations
             end
 
             # :nodoc:

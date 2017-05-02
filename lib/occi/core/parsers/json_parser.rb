@@ -83,12 +83,13 @@ module Occi
           # @param headers [Hash] raw headers as provided by the transport protocol
           # @param media_type [String] media type string as provided by the transport protocol
           # @return [Array] list of extracted URIs
-          def locations(_body, _headers, media_type)
+          def locations(body, _headers, media_type)
             unless media_types.include?(media_type)
               raise Occi::Core::Errors::ParsingError,
                     "#{self} -> locations cannot be parsed from #{media_type.inspect}"
             end
-            []
+            Json::Validator.validate_locations! body
+            handle(Occi::Core::Errors::ParsingError) { JSON.parse(body).map { |i| URI.parse(i) } }
           end
         end
       end

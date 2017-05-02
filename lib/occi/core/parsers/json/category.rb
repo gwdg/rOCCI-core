@@ -8,6 +8,7 @@ module Occi
         # @author Boris Parak <parak@cesnet.cz>
         class Category
           include Yell::Loggable
+          include Helpers::ErrorHandler
           extend Helpers::ParserDereferencer
 
           # Typecasting lambdas
@@ -46,7 +47,7 @@ module Occi
             def raw_hash(body)
               JSON.parse body, symbolize_names: true
             rescue => ex
-              raise Occi::Core::Errors::ParsingError, "#{self} -> #{ex.message}", ex
+              raise Occi::Core::Errors::ParsingError, "#{self} -> #{ex.message}"
             end
 
             # :nodoc:
@@ -62,7 +63,11 @@ module Occi
                 term: raw[:term], schema: raw[:scheme], title: raw[:title],
                 attributes: attribute_definitions(raw[:attributes])
               )
-              obj.location = URI.parse(raw[:location]) if obj.respond_to?(:location)
+
+              if obj.respond_to?(:location)
+                obj.location = handle(Occi::Core::Errors::ParsingError) { URI.parse(raw[:location]) }
+              end
+
               obj
             end
 
@@ -71,7 +76,11 @@ module Occi
               return {} if raw.blank?
               attr_defs = {}
               raw.each_pair do |k, v|
-                attr_defs[k.to_s] = Occi::Core::AttributeDefinition.new typecast(v)
+                def_hsh = typecast(v)
+                unless def_hsh[:type]
+                  raise Occi::Core::Errors::ParsingError, "#{self} -> Attribute #{k.to_s.inspect} has no type"
+                end
+                attr_defs[k.to_s] = Occi::Core::AttributeDefinition.new def_hsh
               end
               attr_defs
             end
@@ -80,7 +89,7 @@ module Occi
             def typecast(hash)
               hash = hash.clone
               hash[:type] = TYPECASTER_HASH[hash[:type]]
-              hash[:pattern] = Regexp.new(hash[:pattern]) if hash[:pattern]
+              hash[:pattern] = handle(Occi::Core::Errors::ParsingError) { Regexp.new(hash[:pattern]) } if hash[:pattern]
               hash
             end
 
