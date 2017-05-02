@@ -14,6 +14,11 @@ module Occi
           CATEGORY_REGEXP  = /#{Constants::REGEXP_CATEGORY}/
           ATTRIBUTE_REGEXP = /^#{Constants::REGEXP_ATTRIBUTE_DEF}$/
 
+          # Hash constants for ParserDereferencer
+          PARENT_KEY  = :rel
+          APPLIES_KEY = :rel
+          DEPENDS_KEY = :rel
+
           class << self
             # Parses category lines into instances of subtypes of `Occi::Core::Category`. Internal references
             # between objects are converted from strings to actual objects. Categories provided in the model
@@ -145,6 +150,22 @@ module Occi
               klass.new(all)
             end
 
+            # @param mixin [Occi::Core::Mixin] mixin instance needing applicability dereferencing
+            # @param derefd [Array] list of all available category instances
+            # @param parsed_rel [Array] textual representations of needed applicability targets
+            def lookup_applies_references!(mixin, derefd, parsed_rel)
+              return if parsed_rel.blank? || parsed_rel.count == 1 # only depends here
+              parsed_rel.drop(1).each { |kind| mixin.applies << first_or_die(derefd, kind) }
+            end
+
+            # @param mixin [Occi::Core::Mixin] mixin instance needing dependency dereferencing
+            # @param derefd [Array] list of all available category instances
+            # @param parsed_rel [Array] textual representations of needed dependencies
+            def lookup_depends_references!(mixin, derefd, parsed_rel)
+              return if parsed_rel.blank?
+              mixin.depends << first_or_die(derefd, parsed_rel.first)
+            end
+
             # @param md [MatchData] `MatchData` instance to be converted
             # @return [Hash] converted hash
             def matchdata_to_hash(md)
@@ -152,6 +173,8 @@ module Occi
               md.names.each { |group| md[group] && hash[group.to_sym] = md[group] }
               hash
             end
+
+            private :lookup_applies_references!, :lookup_depends_references!
           end
         end
       end

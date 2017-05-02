@@ -19,6 +19,11 @@ module Occi
             'object'  => Hash
           }.freeze
 
+          # Hash constants for ParserDereferencer
+          PARENT_KEY  = :parent
+          APPLIES_KEY = :applies
+          DEPENDS_KEY = :depends
+
           class << self
             # Parses categories into instances of subtypes of `Occi::Core::Category`. Internal references
             # between objects are converted from strings to actual objects. Categories provided in the model
@@ -78,6 +83,20 @@ module Occi
               hash[:pattern] = Regexp.new(hash[:pattern]) if hash[:pattern]
               hash
             end
+
+            # :nodoc:
+            def lookup_applies_references!(mixin, derefd, parsed_rel)
+              return if parsed_rel.blank?
+              parsed_rel.each { |kind| mixin.applies << first_or_die(derefd, kind) }
+            end
+
+            # :nodoc:
+            def lookup_depends_references!(mixin, derefd, parsed_rel)
+              return if parsed_rel.blank?
+              parsed_rel.each { |mxn| mixin.depends << first_or_die(derefd, mxn) }
+            end
+
+            private :lookup_applies_references!, :lookup_depends_references!
           end
         end
       end

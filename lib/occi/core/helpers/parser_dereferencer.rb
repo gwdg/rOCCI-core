@@ -32,11 +32,11 @@ module Occi
           lookup_action_references!(cat, derefd, parsed_cat[:actions])
 
           if cat.is_a?(Occi::Core::Mixin)
-            lookup_depends_references!(cat, derefd, parsed_cat[:rel])
-            lookup_applies_references!(cat, derefd, parsed_cat[:rel])
+            lookup_depends_references!(cat, derefd, parsed_cat[self::DEPENDS_KEY])
+            lookup_applies_references!(cat, derefd, parsed_cat[self::APPLIES_KEY])
           else
             # only Occi::Core::Kind is left here
-            lookup_parent_references!(cat, derefd, parsed_cat[:rel])
+            lookup_parent_references!(cat, derefd, parsed_cat[self::PARENT_KEY])
           end
         end
 
@@ -53,29 +53,30 @@ module Occi
         # @param parsed_rel [Array] textual representation of needed parent(s)
         def lookup_parent_references!(kind, derefd, parsed_rel)
           return if parsed_rel.blank? || kind.parent.is_a?(Occi::Core::Kind)
-          if parsed_rel.count > 1
-            raise Occi::Core::Errors::ParsingError,
-                  "#{self} -> Kind #{kind} with multiple parents #{parsed_rel.inspect}"
+          if parsed_rel.is_a?(Enumerable)
+            if parsed_rel.count > 1
+              raise Occi::Core::Errors::ParsingError,
+                    "#{self} -> Kind #{kind} with multiple parents #{parsed_rel.inspect}"
+            end
+            parsed_rel = parsed_rel.first
           end
 
-          kind.parent = first_or_die(derefd, parsed_rel.first)
+          kind.parent = first_or_die(derefd, parsed_rel)
           kind.send(:load_parent_attributes!) # this is safe because there was no previous parent!
         end
 
         # @param mixin [Occi::Core::Mixin] mixin instance needing applicability dereferencing
         # @param derefd [Array] list of all available category instances
         # @param parsed_rel [Array] textual representations of needed applicability targets
-        def lookup_applies_references!(mixin, derefd, parsed_rel)
-          return if parsed_rel.blank? || parsed_rel.count == 1 # only depends here
-          parsed_rel.drop(1).each { |kind| mixin.applies << first_or_die(derefd, kind) }
+        def lookup_applies_references!(_mixin, _derefd, _parsed_rel)
+          raise Occi::Core::Errors::ParserError, 'Must be implemented in the parser class'
         end
 
         # @param mixin [Occi::Core::Mixin] mixin instance needing dependency dereferencing
         # @param derefd [Array] list of all available category instances
         # @param parsed_rel [Array] textual representations of needed dependencies
-        def lookup_depends_references!(mixin, derefd, parsed_rel)
-          return if parsed_rel.blank?
-          mixin.depends << first_or_die(derefd, parsed_rel.first)
+        def lookup_depends_references!(_mixin, _derefd, _parsed_rel)
+          raise Occi::Core::Errors::ParserError, 'Must be implemented in the parser class'
         end
 
         # @param where [Enumerable] list of items to look through, items must respond to `.identifier`
