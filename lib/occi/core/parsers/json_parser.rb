@@ -78,7 +78,7 @@ module Occi
               Json::Validator.validate! body, type
               found = type
             rescue
-              logger.debug "#{self.class}: Body isn't #{type.to_s}"
+              logger.debug "#{self.class}: Body isn't #{type}"
             end
           end
           raise Occi::Core::Errors::ParsingError, "#{self.class} -> No entity sub-type instance found" unless found
