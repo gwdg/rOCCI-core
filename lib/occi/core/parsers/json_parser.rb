@@ -32,9 +32,19 @@ module Occi
         # @param headers [Hash] raw headers as provided by the transport protocol
         # @param expectation [Class] expected class of the returned instance(s)
         # @return [Set] set of instances
-        def entities(_body, _headers = nil, _expectation = nil)
-          # expectation ||= Occi::Core::Entity
-          Set.new([])
+        def entities(body, _headers = nil, expectation = nil)
+          expectation ||= Occi::Core::Entity
+          type = validate_entities! body
+
+          entity_parser = Json::Entity.new(model: model)
+          entities = entity_parser.json body, type
+          entities.each do |entity|
+            unless entity.is_a?(expectation)
+              raise Occi::Core::Errors::ParsingError, "#{self.class} -> Given entity isn't #{expectation}"
+            end
+          end
+
+          entities
         end
 
         # Parses action instances from the given body/headers. Only actions already declared in the model are
@@ -58,6 +68,24 @@ module Occi
           # expectation ||= Occi::Core::Category
           Set.new([])
         end
+
+        # :nodoc:
+        def validate_entities!(body)
+          found = nil
+
+          %i[link resource entity-collection].each do |type|
+            begin
+              Json::Validator.validate! body, type
+              found = type
+            rescue
+              logger.debug "#{self.class}: Body isn't #{type.to_s}"
+            end
+          end
+          raise Occi::Core::Errors::ParsingError, "#{self.class} -> No entity sub-type instance found" unless found
+
+          found
+        end
+        private :validate_entities!
 
         class << self
           # Extracts categories from body and headers. For details, see `Occi::Core::Parsers::Json::Category`.

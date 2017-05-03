@@ -30,7 +30,7 @@ module Occi
             # between objects are converted from strings to actual objects. Categories provided in the model
             # will be reused but have to be declared in the parsed model as well.
             #
-            # @param body [Array] JSON body for parsing
+            # @param body [String] JSON body for parsing
             # @param model [Occi::Core::Model] model with existing categories
             # @return [Occi::Core::Model] model with all known category instances
             def json(body, model)
