@@ -9,7 +9,9 @@ module Occi
           let(:model) { File.read('examples/rendering/model.txt') }
 
           it 'parses model example' do
-            expect { tp.model(model, {}, 'text/plain', Occi::Core::Model.new) }.not_to raise_error
+            m = Occi::Core::Model.new
+            expect { tp.model(model, {}, 'text/plain', m) }.not_to raise_error
+            expect { m.valid! }.not_to raise_error
           end
         end
 
