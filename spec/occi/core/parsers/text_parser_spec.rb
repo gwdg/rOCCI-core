@@ -40,11 +40,50 @@ module Occi
         end
 
         describe '#entities' do
-          it 'does something'
+          let(:text_parser) { TextParser.new(model: model, media_type: 'text/plain') }
+          let(:instance) { File.read('examples/rendering/instance.txt') }
+          let(:model) do
+            m = Occi::Infrastructure::Model.new
+            m.load_core!
+            m.load_infrastructure!
+            m
+          end
+
+          it 'parses entities' do
+            inst = nil
+            expect { inst = tp.entities(instance, {}, Occi::Infrastructure::Compute) }.not_to raise_error
+            expect { inst.first.valid! }.not_to raise_error
+          end
         end
 
         describe '#categories' do
-          it 'does something'
+          let(:text_parser) { TextParser.new(model: model, media_type: 'text/plain') }
+          let(:categories) { File.read('examples/rendering/categories.txt') }
+          let(:model) do
+            m = Occi::Infrastructure::Model.new
+            m.load_core!
+            m.load_infrastructure!
+            m
+          end
+
+          it 'parses categories' do
+            expect { tp.categories(categories, {}) }.not_to raise_error
+          end
+        end
+
+        describe '#action_instances' do
+          let(:text_parser) { TextParser.new(model: model, media_type: 'text/plain') }
+          let(:action_instance) { File.read('examples/rendering/action_instance.txt') }
+          let(:model) do
+            m = Occi::Infrastructure::Model.new
+            m.load_core!
+            m.load_infrastructure!
+            m
+          end
+
+          it 'parses action instances' do
+            expect { tp.action_instances(action_instance, {}) }.not_to raise_error
+          end
         end
       end
     end

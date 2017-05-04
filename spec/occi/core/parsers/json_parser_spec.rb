@@ -37,11 +37,50 @@ module Occi
         end
 
         describe '#entities' do
-          it 'does something'
+          let(:json_parser) { JsonParser.new(model: model, media_type: 'application/json') }
+          let(:instance) { File.read('examples/rendering/instance.json') }
+          let(:model) do
+            m = Occi::Infrastructure::Model.new
+            m.load_core!
+            m.load_infrastructure!
+            m
+          end
+
+          it 'parses entities' do
+            inst = nil
+            expect { inst = jp.entities(instance, {}, Occi::Infrastructure::Compute) }.not_to raise_error
+            expect { inst.first.valid! }.not_to raise_error
+          end
         end
 
         describe '#categories' do
-          it 'does something'
+          let(:json_parser) { JsonParser.new(model: model, media_type: 'application/json') }
+          let(:categories) { File.read('examples/rendering/categories.json') }
+          let(:model) do
+            m = Occi::Infrastructure::Model.new
+            m.load_core!
+            m.load_infrastructure!
+            m
+          end
+
+          it 'parses categories' do
+            expect { jp.categories(categories, {}) }.not_to raise_error
+          end
+        end
+
+        describe '#action_instances' do
+          let(:json_parser) { JsonParser.new(model: model, media_type: 'application/json') }
+          let(:action_instance) { File.read('examples/rendering/action_instance.json') }
+          let(:model) do
+            m = Occi::Infrastructure::Model.new
+            m.load_core!
+            m.load_infrastructure!
+            m
+          end
+
+          it 'parses action instances' do
+            expect { jp.action_instances(action_instance, {}) }.not_to raise_error
+          end
         end
       end
     end
