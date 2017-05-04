@@ -9,7 +9,7 @@ model.load_infrastructure!
 model.valid!
 
 parser = Occi::Core::Parsers::JsonParser.new(model: model, media_type: 'application/occi+json')
-cf = File.read File.join(File.dirname(__FILE__), 'rendering', 'compute.json')
+cf = File.read File.join(File.dirname(__FILE__), 'rendering', 'instance.json')
 
 compute = parser.entities(cf, {}).first
 compute.valid!
