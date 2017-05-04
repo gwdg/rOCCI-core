@@ -147,7 +147,7 @@ module Occi
           # @param md [MatchData] Hash-like structure with matched parts of the link
           # @param entity [Occi::Core::Entity] partially constructed entity instance to be updated
           def plain_action!(md, entity)
-            entity << model.find_by_identifier!(md[:rel])
+            entity << handle(Occi::Core::Errors::ParsingError) { model.find_by_identifier!(md[:rel]) }
           end
 
           # Constructs a single link instance. Supports only ordinary OCCI links between resources.
@@ -161,7 +161,7 @@ module Occi
             end
 
             link = plain_oglink_instance(md)
-            link.location = URI.parse md[:self]
+            link.location = handle(Occi::Core::Errors::ParsingError) { URI.parse md[:self] }
             entity.links << link
 
             plain_oglink_attributes! md, link
@@ -181,8 +181,11 @@ module Occi
             end
 
             categories = md[:category].split
-            link = @_ib.build(categories.shift, rel: md[:rel])
-            categories.each { |mxn| link << model.find_by_identifier!(mxn) }
+            target_kind = handle(Occi::Core::Errors::ParsingError) { model.find_by_identifier!(md[:rel]) }
+            link = @_ib.build(categories.shift, target_kind: target_kind)
+            categories.each do |mxn|
+              link << handle(Occi::Core::Errors::ParsingError) { model.find_by_identifier!(mxn) }
+            end
 
             link
           end
