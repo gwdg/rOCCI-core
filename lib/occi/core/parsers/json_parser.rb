@@ -53,8 +53,9 @@ module Occi
         # @param body [String] raw `String`-like body as provided by the transport protocol
         # @param headers [Hash] raw headers as provided by the transport protocol
         # @return [Set] set of parsed instances
-        def action_instances(_body, _headers = nil)
-          Set.new([])
+        def action_instances(body, _headers = nil)
+          Json::Validator.validate_action_instance! body
+          Set.new [Json::ActionInstance.json(body, model)]
         end
 
         # Parses categories from the given body/headers and returns corresponding instances
@@ -64,9 +65,10 @@ module Occi
         # @param headers [Hash] raw headers as provided by the transport protocol
         # @param expectation [Class] expected class of the returned instance(s)
         # @return [Set] set of instances
-        def categories(_body, _headers = nil, _expectation = nil)
-          # expectation ||= Occi::Core::Category
-          Set.new([])
+        def categories(body, _headers = nil, expectation = nil)
+          expectation ||= Occi::Core::Category
+          Json::Validator.validate_model! body
+          Json::Category.json(body, Set.new, false).map { |c| lookup c.identifier, expectation }.to_set
         end
 
         # :nodoc:

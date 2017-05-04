@@ -12,6 +12,7 @@ module Occi
           include Yell::Loggable
           include Helpers::ArgumentValidator
           include Helpers::ErrorHandler
+          extend Helpers::RawJsonParser
 
           # Constants
           SINGLE_INSTANCE_TYPES = %i[resource link].freeze
@@ -47,9 +48,9 @@ module Occi
           def json(body, type)
             case type
             when *SINGLE_INSTANCE_TYPES
-              json_single raw_hash(body)
+              json_single self.class.raw_hash(body)
             when *MULTI_INSTANCE_TYPES
-              json_collection raw_hash(body)
+              json_collection self.class.raw_hash(body)
             else
               raise Occi::Core::Errors::ParserError, "#{self.class} -> #{type.to_s.inspect} is not a valid type"
             end
@@ -115,13 +116,6 @@ module Occi
             return if hash.blank? || hash[:kind].blank?
 
             link.target_kind = lookup([hash[:kind]]).first
-          end
-
-          # :nodoc:
-          def raw_hash(body)
-            JSON.parse body, symbolize_names: true
-          rescue => ex
-            raise Occi::Core::Errors::ParsingError, "#{self} -> #{ex.message}"
           end
 
           # :nodoc:

@@ -10,6 +10,7 @@ module Occi
           include Yell::Loggable
           include Helpers::ErrorHandler
           extend Helpers::ParserDereferencer
+          extend Helpers::RawJsonParser
 
           # Typecasting lambdas
           TYPECASTER_HASH = {
@@ -32,22 +33,18 @@ module Occi
             #
             # @param body [String] JSON body for parsing
             # @param model [Occi::Core::Model] model with existing categories
+            # @param full [Boolean] dereference categories
             # @return [Occi::Core::Model] model with all known category instances
-            def json(body, model)
+            def json(body, model, full = true)
               parsed = raw_hash(body)
 
               instantiate_hashes! parsed, model
+              return model unless full
+
               raw_categories = [parsed[:kinds], parsed[:mixins]].flatten.compact
               dereference_identifiers! model.categories, raw_categories
 
               model
-            end
-
-            # :nodoc:
-            def raw_hash(body)
-              JSON.parse body, symbolize_names: true
-            rescue => ex
-              raise Occi::Core::Errors::ParsingError, "#{self} -> #{ex.message}"
             end
 
             # :nodoc:
@@ -74,6 +71,7 @@ module Occi
             # :nodoc:
             def attribute_definitions(raw)
               return {} if raw.blank?
+
               attr_defs = {}
               raw.each_pair do |k, v|
                 def_hsh = typecast(v)
@@ -82,6 +80,7 @@ module Occi
                 end
                 attr_defs[k.to_s] = Occi::Core::AttributeDefinition.new def_hsh
               end
+
               attr_defs
             end
 
