@@ -1,38 +1,87 @@
 module Occi
   module Core
     describe Mixin do
+      subject(:mxn) { mixin }
 
-      describe '#location' do
-        let(:mixin) { Occi::Core::Mixin.new }
+      let(:example_term) { 'mixin' }
+      let(:example_schema) { 'http://schemas.org/schema#' }
+      let(:example_title) { 'Generic mixin' }
+      let(:kind_double) { instance_double('Occi::Core::Kind') }
 
-        it 'defaults to /mixin/term/' do
-          expect(mixin.location).to eq '/mixin/mixin/'
-        end
+      let(:mixin) do
+        Mixin.new(
+          term: example_term,
+          schema: example_schema,
+          title: example_title,
+          depends: Set.new([second_mixin]),
+          applies: Set.new([kind_double])
+        )
+      end
 
-        it 'gets normalized to a relative path' do
-          mixin.location = 'http://example.org/mixin/'
-          expect(mixin.location).to eq '/mixin/'
-        end
+      let(:second_mixin) do
+        Mixin.new(
+          term: 'second_mixin',
+          schema: 'http://schema.test.opr/test#',
+          title: 'Second mixin'
+        )
+      end
 
-        it 'can be set to nil' do
-          mixin.location = nil
-          expect(mixin.location).to be_nil
-        end
+      MIXIN_ATTRS = %i[actions depends applies location].freeze
 
-        it 'raises an error when location does not start and end with a slash' do
-          expect { mixin.location = '/no_slash' }.to raise_error
-          expect { mixin.location = 'no_slash/' }.to raise_error
-        end
-
-        it 'raises an error when location contains spaces' do
-          expect { mixin.location = '/sla shes/' }.to raise_error
-        end
-
-        it 'can be set to an empty string' do
-          expect { mixin.location = '' }.not_to raise_error
+      MIXIN_ATTRS.each do |attr|
+        it "has #{attr} accessor" do
+          is_expected.to have_attr_accessor attr.to_sym
         end
       end
 
+      describe '#depends?' do
+        it 'returns `false` without passing a mixin' do
+          expect(mxn.depends?(nil)).to be false
+        end
+
+        it 'returns `false` without dependency' do
+          expect(second_mixin.depends?(mixin)).to be false
+        end
+
+        it 'returns `true` with dependency' do
+          expect(mxn.depends?(second_mixin)).to be true
+        end
+      end
+
+      describe '#applies?' do
+        it 'returns `false` without passing a kind' do
+          expect(mxn.applies?(nil)).to be false
+        end
+
+        it 'returns `false` without applicability' do
+          expect(second_mixin.applies?(kind_double)).to be false
+        end
+
+        it 'returns `true` with applicability' do
+          expect(mxn.applies?(kind_double)).to be true
+        end
+      end
+
+      describe '#location' do
+        context 'without term and location' do
+          before do
+            mxn.term = nil
+            mxn.location = nil
+          end
+
+          it 'fails' do
+            expect { mxn.location }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+          end
+        end
+
+        context 'with term and without location' do
+          before { mxn.location = nil }
+
+          it 'returns default' do
+            expect(mxn.location).to be_kind_of URI
+          end
+        end
+      end
     end
   end
 end

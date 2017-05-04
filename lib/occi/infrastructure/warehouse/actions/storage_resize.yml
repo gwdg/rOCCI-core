@@ -1,0 +1,12 @@
+---
+term: resize
+schema: http://schemas.ogf.org/occi/infrastructure/storage/action#
+title: Change the resize of the storage instance
+attributes:
+  size:
+    type: !ruby/class Integer
+    required: true
+    mutable: true
+    default: ~
+    description: Amount of storage in GBs.
+    pattern: ~

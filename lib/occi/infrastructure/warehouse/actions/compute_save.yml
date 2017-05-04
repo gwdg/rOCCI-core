@@ -1,0 +1,19 @@
+---
+term: save
+schema: http://schemas.ogf.org/occi/infrastructure/compute/action#
+title: Makes an independent copy of the compute instance
+attributes:
+  method:
+    type: !ruby/class String
+    required: false
+    mutable: true
+    default: deffered
+    description: Save method
+    pattern: !ruby/regexp '/^(hot|deffered)$/'
+  name:
+    type: !ruby/class String
+    required: false
+    mutable: true
+    default: ~
+    description: Name of the copy
+    pattern: !ruby/regexp '/^[[:alnum:]]+$/'

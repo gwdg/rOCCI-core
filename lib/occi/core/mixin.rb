@@ -1,81 +1,96 @@
 module Occi
   module Core
-    class Mixin < Occi::Core::Category
+    # Defines the extension mechanism of the OCCI Core Model. The
+    # `Mixin` instance can be used to add `actions`, `attributes`,
+    # and custom features to existing `Entity` instances based on
+    # a specific `Kind` instance. A `Mixin` instance may depend
+    # on other `Mixin` instances (see `#depends`) and may be applied
+    # only to `Entity` instances based on specified `Kind` instances
+    # (see `#applies`). Some `Mixin` instances have special meaning
+    # defined in OCCI Standard documents.
+    #
+    # @attr actions [Set] list of `Action` instances attached to this mixin instance
+    # @attr depends [Set] list of `Mixin` instances on which this mixin depends
+    # @attr applies [Set] list of `Kind` instances to which this mixin can be applied
+    # @attr location [URI] protocol agnostic location of this mixin instance
+    #
+    # @author Boris Parak <parak@cesnet.cz>
+    class Mixin < Category
+      include Helpers::Locatable
 
-      attr_accessor :entities, :depends, :actions, :applies
+      attr_accessor :actions, :depends, :applies
+      attr_writer :location
 
-      # @param [String] scheme
-      # @param [String] term
-      # @param [String] title
-      # @param [Occi::Core::Attributes,Hash,NilClass] attributes
-      # @param [Occi::Core::Categories,Hash,NilClass] depends
-      # @param [Occi::Core::Actions,Hash,NilClass] actions
-      # @param [String] location
-      # @param [Occi::Core::Kinds, NilClass] applies
-      def initialize(scheme='http://schemas.ogf.org/occi/core#',
-          term='mixin',
-          title=nil,
-          attributes=Occi::Core::Attributes.new,
-          depends=Occi::Core::Dependencies.new,
-          actions=Occi::Core::Actions.new,
-          location='',
-          applies=Occi::Core::Kinds.new)
-
-        super(scheme, term, title, attributes)
-        @depends = Occi::Core::Dependencies.new depends
-        @actions = Occi::Core::Actions.new actions
-        @entities = Occi::Core::Entities.new
-        @location = location.blank? ? "/mixin/#{term}/" : URI.parse(location).path
-        @applies = Occi::Core::Kinds.new applies
-      end
-
-      # Check if this Mixin instance is related to another Mixin instance.
+      # Checks whether the given mixin is in the dependency
+      # chains of this instance. Checking for dependencies
+      # is strictly flat (no transitivity is applied). One
+      # `Mixin` instance may depend on multiple other instances.
       #
-      # @param kind [Occi::Core::Mixin, String] Mixin or Type Identifier of a Mixin where relation should be checked.
-      # @return [true,false]
-      def related_to?(mixin)
-        self.to_s == mixin.to_s || self.related.any? { |m| m.type_identifier == mixin.to_s }
+      # @param mixin [Mixin] candidate instance
+      # @return [TrueClass, FalseClass] result
+      def depends?(mixin)
+        return false unless depends && mixin
+        depends.include? mixin
       end
 
-      # set location attribute of kind
-      # @param [String] location
-      def location=(location)
-        location = URI.parse(location).path if location
-        raise "Mixin locations must end with a slash!" unless location.blank? || location =~ /^\/\S+\/$/
-        @location = location
+      # Checks whether the given kind is in the applies
+      # set of this instance (i.e., this mixin can be applied
+      # to an `Entity` instance of the given kind). Checking
+      # for applicable kinds is strictly flat (no transitivity
+      # is applied). One `Mixin` instance may be applied to
+      # multiple kinds (`Entity` instances of the given kind).
+      #
+      # @param kind [Kind] candidate instance
+      # @return [TrueClass, FalseClass] result
+      def applies?(kind)
+        return false unless applies && kind
+        applies.include? kind
       end
 
-      def location
-        @location ? @location.clone : nil
+      protected
+
+      # :nodoc:
+      def defaults
+        super.merge(actions: Set.new, depends: Set.new, applies: Set.new, location: nil)
       end
 
-      def related
-        self.depends.to_a
+      # :nodoc:
+      def sufficient_args!(args)
+        super
+        %i[actions depends applies].each do |attr|
+          if args[attr].nil?
+            raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
+                  "argument for #{self.class}"
+          end
+        end
       end
 
-      # @param [Hash] options
-      # @return [Hashie::Mash] json representation
-      def as_json(options={})
-        mixin = Hashie::Mash.new
-        mixin.depends = self.depends.to_a.collect { |m| m.type_identifier } if self.depends.any?
-        mixin.applies = self.applies.to_a.collect { |m| m.type_identifier } if self.applies.any?
-        mixin.related = self.related.to_a.collect { |m| m.type_identifier } if self.related.any?
-        mixin.actions = self.actions if self.actions.any?
-        mixin.location = self.location if self.location
-        mixin.merge! super
-        mixin
+      # :nodoc:
+      def post_initialize(args)
+        super
+        @actions = args.fetch(:actions)
+        @depends = args.fetch(:depends)
+        @applies = args.fetch(:applies)
+        @location = args.fetch(:location)
       end
 
-      # @return [String] text representation
-      def to_string
-        string = super
-        string << ";rel=#{self.related.join(' ').inspect}" if self.related.any?
-        string << ";location=#{self.location.inspect}"
-        string << self.attributes.to_string_short
-        string << ";actions=#{self.actions.join(' ').inspect}" if self.actions.any?
-        string
-      end
+      private
 
+      # Generates default location based on the already configured
+      # `term` attribute. Fails if `term` is not present.
+      #
+      # @example
+      #   mixin.term              # => 'compute'
+      #   mixin.generate_location # => #<URI::Generic /mixin/compute/>
+      #
+      # @return [URI] generated location string
+      def generate_location
+        if term.blank?
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot generate default location without a `term`'
+        end
+        URI.parse "/mixin/#{term}/"
+      end
     end
   end
 end

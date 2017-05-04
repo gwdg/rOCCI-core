@@ -1,0 +1,7 @@
+---
+type: !ruby/class Integer
+required: false
+mutable: true
+default: ~
+description: Amount of storage in GBs.
+pattern: ~

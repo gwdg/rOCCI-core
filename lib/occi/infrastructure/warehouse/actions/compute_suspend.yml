@@ -1,0 +1,12 @@
+---
+term: suspend
+schema: http://schemas.ogf.org/occi/infrastructure/compute/action#
+title: Change compute status to suspended
+attributes:
+  method:
+    type: !ruby/class String
+    required: false
+    mutable: true
+    default: suspend
+    description: Suspend method
+    pattern: !ruby/regexp '/^(hibernate|suspend)$/'

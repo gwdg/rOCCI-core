@@ -1,95 +1,70 @@
 module Occi
   module Core
-    class Link < Occi::Core::Entity
+    # Implements the base class for all OCCI links, this
+    # class can be used directly to create link instances.
+    #
+    # @attr source [URI] link source as URI
+    # @attr source_kind [Occi::Core::Kind, NilClass] source kind or `nil` if unknown
+    # @attr target [URI] link target, may point outside of this domain
+    # @attr target_kind [Occi::Core::Kind, NilClass] target kind or `nil` if ourside the domain
+    #
+    # @author Boris Parak <parak@cesnet.cz>
+    class Link < Entity
+      attr_accessor :target_kind, :source_kind
 
-      attr_accessor :rel, :source, :target
-
-      self.attributes = Occi::Core::Attributes.new(Occi::Core::Entity.attributes)
-      self.attributes['occi.core.target'] = {:mutable => true}
-      self.attributes['occi.core.source'] = {:mutable => true, :required => true}
-
-      self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/core#',
-                                       term='link',
-                                       title='link',
-                                       attributes=Occi::Core::Attributes.new(self.attributes),
-                                       parent=Occi::Core::Entity.kind
-
-      # @param [String] kind
-      # @param [String] mixins
-      # @param [Occi::Core::Attributes] attributes
-      # @param [Array] actions
-      # @param [String] rel
-      # @param [String,Occi::Core::Entity] target
-      # @param [String,Occi::Core::Entity] source
-      def initialize(kind=self.kind, mixins=[], attributes={}, actions=[], rel=Occi::Core::Link.type_identifier, target=nil, source=nil, location=nil)
-        super(kind, mixins, attributes, actions, location)
-        scheme, term = rel.to_s.split('#')
-        @rel = Occi::Core::Kind.get_class(scheme, term).kind if scheme && term
-        @source = source if source
-        @target = target
-      end
-
-      # @return [String] target attribute of the link
-      def target
-        @target ||= self.attributes.occi_.core_.target
-        @target
-      end
-
-      # set target attribute of link
-      # @param [String] target
-      def target=(target)
-        self.attributes['occi.core.target'] = target.to_s
-        @target = target.to_s
-      end
-
-      # @return [String] source attribute of the link
+      # @return [URI] link source
       def source
-        @source ||= self.attributes.occi_.core_.source
-        @source
+        self['occi.core.source']
       end
 
-      # set source attribute of link
-      # @param [String] source
+      # @param source [URI] link source
       def source=(source)
-        self.attributes['occi.core.source'] = source.to_s
-        @source = source.to_s
+        self['occi.core.source'] = source.is_a?(String) ? URI.parse(source) : source
       end
 
-      # Runs check on attributes
-      def check(set_defaults = false)
-        raise ArgumentError, "Cannot run check on #{self.to_s.inspect} kind #{self.kind.to_s.inspect} without relation (the rel attribute) set!" unless @rel
+      # @return [URI] link target
+      def target
+        self['occi.core.target']
+      end
+
+      # @param target [URI] link target
+      def target=(target)
+        self['occi.core.target'] = target.is_a?(String) ? URI.parse(target) : target
+      end
+
+      # See `target_kind`
+      alias rel target_kind
+      alias rel= target_kind=
+
+      # See `#valid!` on `Occi::Core::Entity`.
+      def valid!
+        %i[source target].each do |attr|
+          next if send(attr)
+          raise Occi::Core::Errors::InstanceValidationError, "Missing valid #{attr}"
+        end
+
         super
       end
 
-      # @param [Hash] options
-      # @return [Hashie::Mash] json representation
-      def as_json(options={})
-        link = super
-        link.rel = @rel.to_s if @rel
-        link.source = self.source.to_s unless self.source.to_s.blank?
-        link.target = self.target.to_s if self.target
-        link
+      protected
+
+      # :nodoc:
+      def defaults
+        super.merge(source: nil, target: nil, target_kind: nil, source_kind: nil)
       end
 
-      # @return [String] text representation of link reference
-      def to_string
-        string = "<#{self.target.to_s}>"
-        string << ";rel=#{@rel.to_s.inspect}"
-        string << ";self=#{self.location.inspect}" if self.location
+      # :nodoc:
+      def post_initialize(args)
+        super
+        if attributes['occi.core.source']
+          self.source = args.fetch(:source)
+          @source_kind = args.fetch(:source_kind)
+        end
 
-        categories = [@kind.type_identifier].concat(@mixins.to_a.collect { |m| m.type_identifier })
-        string << ";category=#{categories.join(' ').inspect}"
-
-        string << @attributes.to_string
-
-        string
+        return unless attributes['occi.core.target']
+        self.target = args.fetch(:target)
+        @target_kind = args.fetch(:target_kind)
       end
-
-      # @return [String] text representation of link
-      def to_text_link
-        "Link: #{self.to_string}"
-      end
-
     end
   end
 end

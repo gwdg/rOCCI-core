@@ -1,0 +1,12 @@
+Category: compute;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind";
+X-OCCI-Attribute: occi.core.id="89878"
+X-OCCI-Attribute: occi.core.title="my_compute"
+X-OCCI-Attribute: occi.core.summary="Instantiated with rOCCI-server on Tue, 18 Apr 2017 16:55:12 +0200."
+X-OCCI-Attribute: occi.compute.cores=1
+X-OCCI-Attribute: occi.compute.memory=1.0
+X-OCCI-Attribute: occi.compute.state="active"
+Link: </compute/89878?action=stop>;rel="http://schemas.ogf.org/occi/infrastructure/compute/action#stop"
+Link: </compute/89878?action=restart>;rel="http://schemas.ogf.org/occi/infrastructure/compute/action#restart"
+Link: </compute/89878?action=suspend>;rel="http://schemas.ogf.org/occi/infrastructure/compute/action#suspend"
+Link: </storage/5401>;rel="http://schemas.ogf.org/occi/infrastructure#storage";self="/link/storagelink/compute_89878_disk_0";category="http://schemas.ogf.org/occi/infrastructure#storagelink";occi.core.id="compute_89878_disk_0";occi.core.title="38d42ca1-f4e9-5b5c-98de-37eb2d26301a";occi.core.target="/storage/5401";occi.core.source="/compute/89878";occi.storagelink.deviceid="/dev/vda";occi.storagelink.state="active"
+Link: </network/24>;rel="http://schemas.ogf.org/occi/infrastructure#network";self="/link/networkinterface/compute_89878_nic_0";category="http://schemas.ogf.org/occi/infrastructure#networkinterface http://schemas.ogf.org/occi/infrastructure/networkinterface#ipnetworkinterface";occi.core.id="compute_89878_nic_0";occi.core.title="public";occi.core.target="/network/24";occi.core.source="/compute/89878";occi.networkinterface.interface="eth0";occi.networkinterface.mac="02:00:93:e4:f2:a3";occi.networkinterface.state="active";occi.networkinterface.address="172.16.0.1"

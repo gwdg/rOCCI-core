@@ -1,216 +1,228 @@
 module Occi
   module Core
     describe Category do
+      subject(:cat) { category }
 
-      let(:category) { Category.new }
-      let(:category_scheme) { Category.new 'http://example.org/test#', 'category' }
-      let(:category_term) { Category.new 'http://schemas.ogf.org/occi/core#', 'testcat' }
-      let(:category_scheme_term) { Category.new *'http://schemas.ogf.org/occi/test#category1'.split('#') }
+      let(:example_term) { 'generic' }
+      let(:example_schema) { 'http://schemas.org/schema#' }
+      let(:example_title) { 'Generic category' }
+      let(:example_attributes) { {} }
 
-      context '#new' do
+      let(:category) do
+        Category.new(
+          term: example_term,
+          schema: example_schema,
+          title: example_title,
+          attributes: example_attributes
+        )
+      end
 
-        it 'with defaults' do
-          expect { Category.new }.not_to raise_error
+      let(:category_other) do
+        Category.new(
+          term: "#{example_term}2",
+          schema: example_schema,
+          title: example_title,
+          attributes: example_attributes
+        )
+      end
+
+      let(:category_same) do
+        Category.new(
+          term: example_term,
+          schema: example_schema,
+          title: example_title,
+          attributes: example_attributes
+        )
+      end
+
+      CAT_ATTRS = %i[term schema title attributes].freeze
+
+      CAT_ATTRS.each do |attr|
+        it "has #{attr} accessor" do
+          is_expected.to have_attr_accessor attr.to_sym
         end
+      end
 
-        it 'fails without scheme' do
-          expect { Category.new nil }.to raise_error(ArgumentError)
-        end
+      it 'has only a reader for identifier' do
+        is_expected.to have_attr_reader_only :identifier
+      end
 
+      it 'has logger' do
+        expect(cat).to respond_to(:logger)
+        expect(cat.class).to respond_to(:logger)
+      end
+
+      it 'is renderable' do
+        expect(cat).to be_kind_of(Helpers::Renderable)
+        expect(cat).to respond_to(:render)
+      end
+
+      it 'has attributes value accessor' do
+        expect(cat).to be_kind_of(Helpers::AttributesAccessor)
+        expect(cat).to respond_to(:[])
+        expect(cat).to respond_to(:[]=)
+      end
+
+      describe '::new' do
         it 'fails without term' do
-          expect { Category.new 'scheme', nil }.to raise_error(ArgumentError)
+          expect { Category.new(term: nil, schema: example_schema) }.to raise_error(
+            Occi::Core::Errors::MandatoryArgumentError
+          )
         end
 
-        it 'passes without attributes' do
-          expect { Category.new 'scheme', 'term', nil, nil }.not_to raise_error
+        it 'fails with empty term' do
+          expect { Category.new(term: '', schema: example_schema) }.to raise_error(
+            Occi::Core::Errors::MandatoryArgumentError
+          )
         end
 
+        it 'fails without schema' do
+          expect { Category.new(term: example_term, schema: nil) }.to raise_error(
+            Occi::Core::Errors::MandatoryArgumentError
+          )
+        end
+
+        it 'fails with empty schema' do
+          expect { Category.new(term: example_term, schema: '') }.to raise_error(
+            Occi::Core::Errors::MandatoryArgumentError
+          )
+        end
+
+        it 'fails with invalid term' do
+          expect { Category.new(term: 'as tr%$^!', schema: example_schema) }.to raise_error(
+            Occi::Core::Errors::MandatoryArgumentError
+          )
+        end
+
+        it 'fails with invalid schema' do
+          expect { Category.new(term: example_term, schema: 'sf 5as4%$61&') }.to raise_error(
+            Occi::Core::Errors::MandatoryArgumentError
+          )
+        end
+
+        CAT_ATTRS.each do |attr|
+          it "assigns #{attr}" do
+            expect(cat.send(attr)).to match send("example_#{attr}")
+          end
+        end
       end
 
-      context 'instance attributes' do
+      %w[identifier to_s].each do |mtd|
+        describe "##{mtd}" do
+          it 'returns category identifier as URI string' do
+            expect(cat.send(mtd)).to be_kind_of String
+            expect { URI.parse(cat.send(mtd)) }.not_to raise_error
+          end
 
-        it 'default scheme is OGF OCCI Core' do
-          expect(category.scheme).to eq 'http://schemas.ogf.org/occi/core#'
+          it 'returns a join of schema and term' do
+            expect(cat.send(mtd)).to eq "#{cat.schema}#{cat.term}"
+          end
         end
-
-        it 'default term is "category"' do
-          expect(category.term).to eq 'category'
-        end
-
-        it 'default title is nil' do
-          expect(category.title).to be_nil
-        end
-
-        it 'default attributes are Occi::Core::Attributes' do
-          expect(category.attributes).to be_kind_of Occi::Core::Attributes
-        end
-
-        it 'default attributes are empty' do
-          expect(category.attributes).to be_empty
-        end
-
-        it 'scheme always ends with a #' do
-          expect(category_scheme_term.scheme).to eq 'http://schemas.ogf.org/occi/test#'
-        end
-
-        it 'term is always after the #' do
-          expect(category_scheme_term.term).to eq 'category1'
-        end
-
       end
 
-      context '#type_identifier' do
-
-        it 'returns the type identifier of the category' do
-          expect(category.type_identifier).to eq 'http://schemas.ogf.org/occi/core#category'
+      describe '#==' do
+        context 'with same category' do
+          it 'returns `true`' do
+            expect(cat == category_same).to be true
+          end
         end
 
+        context 'without category' do
+          it 'returns `false`' do
+            expect(cat == nil).to be false
+          end
+        end
+
+        context 'with different object' do
+          it 'returns `false`' do
+            expect(cat == Object.new).to be false
+          end
+        end
+
+        context 'with different category' do
+          it 'returns `false`' do
+            expect(cat == category_other).to be false
+          end
+        end
       end
 
-      context '#==' do
-
-        it 'matches the same instance' do
-          expect(category).to eq category
+      describe '#eql?' do
+        context 'with same category' do
+          it 'returns `true`' do
+            expect(cat.eql?(category_same)).to be true
+          end
         end
 
-        it 'matches a clone' do
-          expect(category).to eq category.clone
+        context 'without category' do
+          it 'returns `false`' do
+            expect(cat.eql?(nil)).to be false
+          end
         end
 
-        it 'matches with a different title' do
-          changed_clone = category.clone
-          changed_clone.title = 'newtitle'
-
-          expect(category).to eq changed_clone
+        context 'with different object' do
+          it 'returns `false`' do
+            expect(cat.eql?(Object.new)).to be false
+          end
         end
 
-        it 'matches with different attributes' do
-          changed_clone = category.clone
-          changed_clone.attributes = Occi::Core::Attributes.new({ "id" => '123123' })
-
-          expect(category).to eq changed_clone
+        context 'with different category' do
+          it 'returns `false`' do
+            expect(cat.eql?(category_other)).to be false
+          end
         end
-
-        it 'does not match a nil' do
-          expect(category).not_to eq nil
-        end
-
-        it 'does not match with a different scheme' do
-          expect(category).not_to eq category_scheme
-        end
-
-        it 'does not match with a different term' do
-          expect(category).not_to eq category_term
-        end
-
-        it 'does not match with a different scheme and term' do
-          expect(category).not_to eq category_scheme_term
-        end
-
       end
 
-      context '#eql?' do
-
-        it 'matches the same instance' do
-          expect(category).to eql category
+      describe '#hash' do
+        it 'returns value' do
+          expect(cat.hash).not_to be_nil
         end
 
-        it 'matches a clone' do
-          expect(category).to eql category.clone
+        context 'between different categories' do
+          it 'differs' do
+            expect(cat.hash).not_to eq category_other.hash
+          end
         end
 
-        it 'matches with a different title' do
-          changed_clone = category.clone
-          changed_clone.title = 'newtitle'
-
-          expect(category).to eql changed_clone
+        context 'between same categories' do
+          it 'equals' do
+            expect(cat.hash).to eq category_same.hash
+          end
         end
-
-        it 'matches with different attributes' do
-          changed_clone = category.clone
-          changed_clone.attributes = Occi::Core::Attributes.new({ "id" => '123123' })
-
-          expect(category).to eql changed_clone
-        end
-
-        it 'does not match a nil' do
-          expect(category).not_to eql nil
-        end
-
-        it 'does not match with a different scheme' do
-          expect(category).not_to eql category_scheme
-        end
-
-        it 'does not match with a different term' do
-          expect(category).not_to eql category_term
-        end
-
-        it 'does not match with a different scheme and term' do
-          expect(category).not_to eql category_scheme_term
-        end
-
       end
 
-      context '#equal?' do
-
-        it 'matches the same instance' do
-          expect(category).to equal category
+      describe '#valid?' do
+        context 'when instance valid' do
+          it 'returns `true`' do
+            expect(cat.valid?).to be true
+          end
         end
 
-        it 'does not match clones' do
-          expect(category).not_to equal category.clone
-        end
+        context 'when instance invalid' do
+          let(:invalid_term) { 'a b % !' }
 
+          it 'returns `false`' do
+            cat.term = invalid_term
+            expect(cat.valid?).to be false
+          end
+        end
       end
 
-      context '#hash' do
-
-        it 'matches for clones' do
-          expect(category.hash).to eq category.clone.hash
+      describe '#valid!' do
+        context 'when instance valid' do
+          it 'raises nothing' do
+            expect { cat.valid! }.not_to raise_error
+          end
         end
 
-        it 'matches for the same instance' do
-          expect(category.hash).to eq category.hash
-        end
+        context 'when instance invalid' do
+          let(:invalid_term) { 'a b % !' }
 
-        it 'does not match when term is different' do
-          expect(category.hash).not_to eq category_term.hash
+          it 'raises an error' do
+            cat.term = invalid_term
+            expect { cat.valid! }.to raise_error Occi::Core::Errors::CategoryValidationError
+          end
         end
-
-        it 'does not match when scheme is different' do
-          expect(category.hash).not_to eq category_scheme.hash
-        end
-
-        it 'does not match when scheme and term are different' do
-          expect(category.hash).not_to eq category_scheme_term
-        end
-
       end
-
-      context '#empty?' do
-
-        it 'returns false for a new instance with defaults' do
-          expect(category.empty?).to be false
-        end
-
-        it 'returns true for an instance without a term' do
-          cat = category.clone
-          cat.term = nil
-
-          expect(cat.empty?).to be true
-        end
-
-        it 'returns true for an instance without a scheme' do
-          cat = category.clone
-          cat.scheme = nil
-
-          expect(cat.empty?).to be true
-        end
-
-      end
-
-      # rendering
-
     end
   end
 end

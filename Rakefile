@@ -1,31 +1,39 @@
-require 'rubygems'
 require 'rubygems/tasks'
+require 'rubocop/rake_task'
+require 'yard'
 
-task :default => 'test'
+task default: 'test'
 
-desc "Run all tests; includes rspec and coverage reports"
-task :test => 'rcov:all'
+desc 'Run acceptance tests (RSpec + Rubocop)'
+task test: 'acceptance'
 
-desc "Run all tests; includes rspec and coverage reports"
-task :spec => 'test'
+desc 'Run all RSpec test with coverage reporting'
+task spec: 'rcov:all'
 
-Gem::Tasks.new(:build => {:tar => true, :zip => true}, :sign => {:checksum => true, :pgp => false})
+Gem::Tasks.new(build: { tar: true, zip: true }, sign: { checksum: true, pgp: false })
+
+RuboCop::RakeTask.new
+
+YARD::Rake::YardocTask.new do |t|
+  t.stats_options = ['--list-undoc']
+end
+
+desc 'Run acceptance tests (RSpec + Rubocop)'
+task :acceptance do |_t|
+  Rake::Task['spec'].invoke
+  Rake::Task['rubocop'].invoke
+end
 
 namespace :rcov do
   require 'rspec/core/rake_task'
 
-  RSpec::Core::RakeTask.new(:rspec) do |t|
-    ENV['COVERAGE'] = "true"
+  RSpec::Core::RakeTask.new(:rspec) do |_t|
+    ENV['COVERAGE'] = 'true'
   end
 
-  desc "Run rspec to generate aggregated coverage"
-  task :all do |t|
-    rm "coverage/coverage.data" if File.exist?("coverage/coverage.data")
+  desc 'Run RSpec to generate aggregated coverage'
+  task :all do |_t|
+    rm 'coverage/coverage.data' if File.exist?('coverage/coverage.data')
     Rake::Task['rcov:rspec'].invoke
   end
-end
-
-require 'yard'
-YARD::Rake::YardocTask.new(:yard) do |t|
-  t.options = ['--any', '--extra', '--opts'] # optional
 end

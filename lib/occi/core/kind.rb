@@ -1,153 +1,127 @@
 module Occi
   module Core
-    class Kind < Occi::Core::Category
+    # Defines the classification system of the OCCI Core Model. The `Kind`
+    # instance represents the type identification mechanism for all `Entity`
+    # instances present in the model.
+    #
+    # @example
+    #   Kind.new schema: 'http://schemas.ogf.org/occi/infrastructure#',
+    #            term: 'compute',
+    #            title: 'Compute'
+    #
+    # @attr parent [Kind] previous `Kind` in the OCCI kind hierarchy
+    # @attr actions [Set] list of `Action` instances applicable to this `Kind`
+    # @attr location [URI] protocol agnostic location of this `Kind` instance
+    #
+    # @author Boris Parak <parak@cesnet.cz>
+    class Kind < Category
+      include Helpers::Locatable
 
-      attr_accessor :entities, :parent, :actions
+      attr_accessor :parent, :actions
+      attr_writer :location
 
-      # @param scheme [String ] The categorisation scheme.
-      # @param term [String] Unique identifier of the Kind instance within the categorisation scheme.
-      # @param title [String] The display name of an instance.
-      # @param parent [Occi::Core::Kind,String] Another Kind instance which this Kind relates to.
-      # @param actions [Occi::Core::Actions,Array] Set of Action instances defined by the Kind instance.
-      # @param location [String] Location of the Kind instance.
-      def initialize(scheme='http://schemas.ogf.org/occi/core#',
-          term='kind',
-          title=nil,
-          attributes=Occi::Core::Attributes.new,
-          parent=nil,
-          actions=Occi::Core::Actions.new,
-          location=nil)
-        super(scheme, term, title, attributes)
-        @parent = [parent].flatten.first
-        @actions = Occi::Core::Actions.new(actions)
-        @entities = Occi::Core::Entities.new
-        @location = location.blank? ? "/#{term}/" : URI.parse(location).path
-      end
-
-      # @param scheme [String] The categorisation scheme.
-      # @param term [String] Unique identifier of the Category instance within the categorisation scheme.
-      # @param parent [Array] Another Kind instance which this Kind relates to.
-      # @return [Class] Ruby class with scheme as namespace, term as name and parent kind as super class.
-      def self.get_class(scheme, term, parent=Occi::Core::Entity.kind)
-        parent ||= Occi::Core::Entity.kind
-        raise ArgumentError, 'Mandatory argument cannot be nil' unless scheme && term
-
-        if parent.kind_of? Array
-          parent = parent.first
-        end
-
-        if parent.to_s == 'http://schemas.ogf.org/occi/core#entity'
-          parent = Occi::Core::Entity.kind
-        elsif parent.to_s == 'http://schemas.ogf.org/occi/core#resource'
-          parent = Occi::Core::Resource.kind
-        elsif parent.to_s == 'http://schemas.ogf.org/occi/core#link'
-          parent = Occi::Core::Link.kind
-        elsif parent.kind_of? Occi::Core::Kind
-          parent = parent
-        else
-          parent = self.get_class(*parent.to_s.split('#')).kind
-        end
-
-        term = self.sanitize_term(term) if Occi::Settings.compatibility
-        raise ArgumentError, "Invalid characters in term #{term}" unless Occi::Core::Category.valid_term?(term)
-
-        unless scheme.end_with? '#'
-          scheme << '#'
-        end
-
-        uri = URI.parse(scheme)
-
-        if uri.host == 'schemas.ogf.org'
-          namespace = uri.path.reverse.chomp('/').reverse.split('/')
-        else
-          namespace = uri.host.split('.').reverse + uri.path.reverse.chomp('/').reverse.split('/')
-        end
-        namespace.inject(Object) do |mod, name|
-          if mod.constants.collect { |sym| sym.to_s }.include? name.capitalize
-            namespace = mod.const_get name.capitalize
-          else
-            namespace = mod.const_set name.capitalize, Module.new
-          end
-        end
-
-        class_name = term.classify
-        if namespace.const_defined? class_name
-          klass = namespace.const_get class_name
-          unless klass.ancestors.include? Occi::Core::Entity
-            raise "OCCI Kind with type identifier #{scheme + term} could not be created as the corresponding class #{klass.to_s} already exists and is not derived from Occi::Core::Entity"
-          end
-        else
-          klass = namespace.const_set class_name, Class.new(parent.entity_type)
-          klass.kind = Occi::Core::Kind.new scheme=scheme,
-                                            term=term,
-                                            title=nil,
-                                            attributes={},
-                                            parent=parent
-        end
-
-        klass
-      end
-
-      # Check if this Kind instance is related to another Kind instance.
+      # Checks whether the given `Kind` instance is related
+      # to this instance. The given `Kind` instance must be
+      # included in the list of predecessors (see `#related`)
+      # to succeed.
       #
-      # @param kind [Occi::Core::Kind, String] Kind or Type Identifier of a Kind where relation should be checked.
-      # @return [true,false]
-      def related_to?(kind)
-        self.parent.to_s == kind.to_s or self.to_s == kind.to_s
+      # @param kind [Kind] suspected predecessor
+      # @return [TrueClass, FalseClass] result
+      def related?(kind)
+        return false unless kind
+        return true if kind == self
+        related.include? kind
       end
 
-      def entity_type
-        self.class.get_class self.scheme, self.term, self.parent
+      # Checks whether the given `Kind` instance is related
+      # to this instance. The given `Kind` instance must be
+      # the immediate predecessor (see `#directly_related`)
+      # to succeed.
+      #
+      # @param kind [Kind] suspected predecessor
+      # @return [TrueClass, FalseClass] result
+      def directly_related?(kind)
+        return false unless kind
+        return true if kind == self
+        directly_related.include? kind
       end
 
-      # set location attribute of kind
-      # @param [String] location
-      def location=(location)
-        location = URI.parse(location).path if location
-        raise "Kind locations must end with a slash!" unless location.blank? || location =~ /^\/\S+\/$/
-        @location = location
-      end
-
-      def location
-        @location ? @location.clone : nil
-      end
-
+      # Transitively returns all predecessors of this `Kind` instance in
+      # a multi-element `Array`.
+      #
+      # @return [Array] list containing predecessors of this `Kind` instance
       def related
-        [self.parent]
+        return directly_related if hierarchy_root?
+        [parent, parent.related].flatten.compact
       end
 
-      # @param [Hash] options
-      # @return [Hashie::Mash] json representation
-      def as_json(options={})
-        kind = Hashie::Mash.new
-        kind.parent = self.parent.to_s if self.parent
-        kind.related = self.related.join(' ').split(' ') if self.related.any?
-        kind.actions = self.actions.join(' ').split(' ') if self.actions.any?
-        kind.location = self.location if self.location
-        kind.merge! super
-        kind
+      # For compatibility reasons, returns the parent instance of this `Kind` in
+      # an `Array`. For hierarchy roots, returns only an empty `Array`.
+      #
+      # @return [Array] a list containing the parent `Kind` instance, if any
+      def directly_related
+        [parent].compact
       end
 
-      # @return [String] string representation of the kind
-      def to_string
-        string = super
-        string << ";rel=#{self.related.first.to_s.inspect}" if self.related.any?
-        string << ";location=#{self.location.inspect}"
-        string << self.attributes.to_string_short
-        string << ";actions=#{self.actions.join(' ').inspect}" if self.actions.any?
-        string
+      # Indicates whether this instance is the base of the OCCI kind
+      # hierarchy, i.e. there are no predecessors. This helps to
+      # calculate the relationship status correctly, see `#related`.
+      #
+      # @return [TrueClass, FalseClass] result
+      def hierarchy_root?
+        parent.nil?
+      end
+
+      protected
+
+      # :nodoc:
+      def defaults
+        super.merge(parent: nil, actions: Set.new, location: nil)
+      end
+
+      # :nodoc:
+      def sufficient_args!(args)
+        super
+        [:actions].each do |attr|
+          if args[attr].nil?
+            raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
+                  "argument for #{self.class}"
+          end
+        end
+      end
+
+      # :nodoc:
+      def post_initialize(args)
+        super
+        @parent = args.fetch(:parent)
+        @actions = args.fetch(:actions)
+        @location = args.fetch(:location)
+
+        load_parent_attributes! if parent
+      end
+
+      # :nodoc:
+      def load_parent_attributes!
+        attributes.merge!(parent.attributes) { |_, oldval, _| oldval }
       end
 
       private
 
-      # Relaxed parser rules require additional checks on terms.
-      def self.sanitize_term(term)
-        sanitized = term.downcase.gsub(/[^a-z0-9-]/, '_').gsub(/_+/, '_').gsub(/^_|_$/, '')
-        sanitized = "uuid_#{sanitized}" if sanitized.match(/^[0-9]/)
-
-        sanitized
+      # Generates default location based on the already configured
+      # `term` attribute. Fails if `term` is not present.
+      #
+      # @example
+      #   kind.term              # => 'compute'
+      #   kind.generate_location # => #<URI::Generic /compute/>
+      #
+      # @return [URI] generated location
+      def generate_location
+        if term.blank?
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot generate default location without a `term`'
+        end
+        URI.parse "/#{term}/"
       end
-
     end
   end
 end

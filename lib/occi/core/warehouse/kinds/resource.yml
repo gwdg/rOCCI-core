@@ -1,0 +1,9 @@
+---
+term: resource
+schema: http://schemas.ogf.org/occi/core#
+title: OCCI Core Resource
+parent: http://schemas.ogf.org/occi/core#entity
+location: /resource/
+attributes:
+  - occi.core.summary
+actions: []

@@ -1,0 +1,7 @@
+---
+type: !ruby/module Boolean
+required: true
+mutable: false
+default: false
+description: Status of the IPReservation instance.
+pattern: ~

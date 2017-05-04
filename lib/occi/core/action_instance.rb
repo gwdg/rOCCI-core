@@ -1,97 +1,141 @@
 module Occi
   module Core
+    # Class representing executable instances of actions. Every instance carries the original
+    # action definition (instance of `Action`) together with attributes chosen for this
+    # invocation of the action. Validity of `ActionInstance` instances is determined by
+    # the validity of included `Action` instance and validity of provided attribute values.
+    #
+    # @attr action [Action] original action definition
+    # @attr attributes [Hash] attributes for this action instance
+    #
+    # @author Boris Parak <parak@cesnet.cz>
     class ActionInstance
+      include Yell::Loggable
+      include Helpers::Renderable
+      include Helpers::InstanceAttributesAccessor
+      include Helpers::ArgumentValidator
+      include Helpers::InstanceAttributeResetter
 
-      include Occi::Helpers::Inspect
-      include Occi::Helpers::Comparators::ActionInstance
+      attr_accessor :action, :attributes
 
-      attr_accessor :action, :attributes, :model
+      ERRORS = [
+        Occi::Core::Errors::AttributeValidationError,
+        Occi::Core::Errors::AttributeDefinitionError,
+        Occi::Core::Errors::InstanceValidationError
+      ].freeze
 
-      class_attribute :action, :attributes
+      def initialize(args = {})
+        default_args! args
 
-      self.attributes = Occi::Core::Attributes.new
+        @action = args.fetch(:action)
+        @attributes = args.fetch(:attributes)
 
-      self.action = Occi::Core::Action.new scheme='http://schemas.ogf.org/occi/core#',
-                                           term='action_instance',
-                                           title='action',
-                                           attributes=Occi::Core::Attributes.new(self.attributes)
-
-      def initialize(action = self.action, attributes=self.attributes)
-        raise ArgumentError, 'action cannot be nil' unless action
-
-        if action.kind_of? String
-          scheme, term = action.split '#'
-          action = Occi::Core::Action.new(scheme, term)
-        end
-        @action = action
-
-        if attributes.kind_of? Occi::Core::Attributes
-          @attributes = attributes.convert
-        else
-          @attributes = Occi::Core::Attributes.new(attributes || {})
-        end
+        reset_attributes
       end
 
-      # @param [Hash] options
-      # @return [Hashie::Mash] json representation
-      def as_json(options={})
-        action = Hashie::Mash.new
-        action.action = @action.to_s if @action
-        action.attributes = @attributes.any? ? @attributes.as_json : Occi::Core::Attributes.new.as_json
+      # Short-hand for accessing the identifier of assigned `Action`
+      # instance.
+      #
+      # @return [String] identifier of the included `Action` instance
+      # @return [NilClass] if no action is present
+      def action_identifier
+        action ? action.identifier : nil
+      end
+
+      # Assigns new action instance to this action instance. This
+      # method will trigger a complete reset on all previously
+      # set attributes, for the sake of consistency.
+      #
+      # @param action [Occi::Core::Action] action to be assigned
+      # @return [Occi::Core::Action] assigned action
+      def action=(action)
+        unless action
+          raise Occi::Core::Errors::InstanceValidationError,
+                'Missing valid action'
+        end
+
+        @action = action
+        reset_attributes!
+
         action
       end
+      alias kind action
+      alias kind= action=
 
-      # @return [String] text representation
-      def to_text
-        text = "Category: #{@action.to_string_short}"
-        @attributes.names.each_pair do |name, value|
-          value = value.to_s.inspect unless value && value.is_a?(Numeric)
-          text << "\nX-OCCI-Attribute: #{name}=#{value}"
+      # Checks whether this action instance is valid. Validity
+      # is determined by the validity of the included action
+      # object and attribute value(s).
+      #
+      # @return [TrueClass] if valid
+      # @return [FalseClass] if invalid
+      def valid?
+        begin
+          valid!
+        rescue *ERRORS => ex
+          logger.warn "ActionInstance invalid: #{ex.message}"
+          return false
         end
 
-        text
+        true
       end
 
-      # @return [String] JSON representation
-      def to_json
-        as_json.to_json
+      # Checks whether this action instance is valid. Validity
+      # is determined by the validity of the included action
+      # object and attribute value(s). This method will raise
+      # an error when the validation fails.
+      #
+      # @raise [Errors::AttributeValidationError] if attribute(s) are invalid
+      # @raise [Errors::AttributeDefinitionError] if attribute defs are missing
+      # @raise [Occi::Core::Errors::InstanceValidationError] if this instance is invalid
+      def valid!
+        raise Occi::Core::Errors::InstanceValidationError, 'Missing valid action object' unless action
+        raise Occi::Core::Errors::InstanceValidationError, 'Missing valid attributes object' unless attributes
+
+        attributes.each_pair { |name, attribute| valid_attribute!(name, attribute) }
       end
 
-      # @return [Hash] hash containing the HTTP headers of the text/occi rendering
-      def to_header
-        header = Hashie::Mash.new
-        header['Category'] = @action.to_string_short
+      private
 
-        attributes = []
-        @attributes.names.each_pair do |name, value|
-          value = value.to_s.inspect unless value && value.is_a?(Numeric)
-          attributes << "#{name}=#{value}"
+      # Returns all base attributes for this instance in the
+      # form of the original hash.
+      #
+      # @return [Hash] hash with base attributes
+      def base_attributes
+        action.attributes
+      end
+
+      # Collects all available additional attributes for this
+      # instance and returns them as an array.
+      #
+      # @return [Array] array with added attribute hashes
+      def added_attributes
+        []
+      end
+
+      # :nodoc:
+      def sufficient_args!(args)
+        %i[action attributes].each do |attr|
+          unless args[attr]
+            raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
+                  "argument for #{self.class}"
+          end
         end
-        header['X-OCCI-Attribute'] = attributes.join(',') if attributes.any?
-
-        header
       end
 
-      # @return [Boolean] Indicating whether this action instance is "empty", i.e. required attributes are blank
-      def empty?
-        action.nil? || action.empty?
+      # :nodoc:
+      def defaults
+        {
+          action: nil,
+          attributes: {}
+        }
       end
 
-      # @param [Boolean] set default values for all empty attributes
-      # @return [Boolean] Result of the validation process
-      def check(set_defaults = false)
-        raise ArgumentError, 'No model has been assigned to this action instance' unless @model
-
-        action = @model.get_by_id(@action.type_identifier, true)
-        raise Occi::Errors::CategoryNotDefinedError,
-              "Action not found for action instance #{self.class.name}[#{self.to_s.inspect}]!" unless action
-
-        definitions = Occi::Core::Attributes.new
-        definitions.merge! action.attributes
-
-        @attributes.check!(definitions, set_defaults)
+      # :nodoc:
+      def valid_attribute!(name, attribute)
+        attribute.valid!
+      rescue => ex
+        raise ex, "Attribute #{name.inspect} invalid: #{ex}", ex.backtrace
       end
-
     end
   end
 end

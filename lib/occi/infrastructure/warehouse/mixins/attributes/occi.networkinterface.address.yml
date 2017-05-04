@@ -1,0 +1,7 @@
+---
+type: !ruby/class IPAddr
+required: false
+mutable: true
+default: ~
+description: IP address (v4 or v6) assigned to this instance.
+pattern: ~

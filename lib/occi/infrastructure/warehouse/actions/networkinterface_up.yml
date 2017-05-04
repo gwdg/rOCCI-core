@@ -1,0 +1,4 @@
+---
+term: up
+schema: http://schemas.ogf.org/occi/infrastructure/networkinterface/action#
+title: Change networkinterface status to active

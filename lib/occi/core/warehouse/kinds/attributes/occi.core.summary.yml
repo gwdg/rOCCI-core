@@ -1,0 +1,7 @@
+---
+type: !ruby/class String
+required: false
+mutable: true
+default: ~
+description: Brief textual description of this entity sub-type instance.
+pattern: !ruby/regexp '/^.*$/'

@@ -1,111 +1,138 @@
 module Occi
   module Core
+    # Implements the base class for all OCCI categories, including
+    # `Kind`, `Action`, and `Mixin`.
+    #
+    # @attr term [String] category term
+    # @attr schema [String] category schema, ending with '#'
+    # @attr title [String] category title
+    # @attr attributes [Hash] category attributes
+    #
+    # @attr_reader identifier [String] full identifier constructed from term and schema
+    #
+    # @abstract The base class itself is not renderable and should be
+    #           used as an abstract starting point.
+    # @author Boris Parak <parak@cesnet.cz>
     class Category
+      include Yell::Loggable
+      include Helpers::Renderable
+      extend Helpers::IdentifierValidator
+      include Helpers::AttributesAccessor
+      include Helpers::ArgumentValidator
+      extend Helpers::YamlSummoner
 
-      include Occi::Helpers::Inspect
-      include Occi::Helpers::Comparators::Category
+      attr_accessor :term, :schema, :title, :attributes
 
-      attr_accessor :scheme, :term, :title, :attributes, :model
+      # Constructs an instance with the given category information.
+      # Both `term` and `schema` are mandatory arguments. `schema` must
+      # be terminated with '#'.
+      #
+      # @example
+      #   Category.new term: 'gnr', schema: 'http://example.org/test#'
+      #
+      # @param args [Hash] arguments with category information
+      # @option args [String] :term category term
+      # @option args [String] :schema category schema, ending with '#'
+      # @option args [String] :title (nil) category title
+      # @option args [Hash] :attributes (Hash) category attributes
+      def initialize(args = {})
+        pre_initialize(args)
+        default_args! args
 
-      # @param scheme [String] The categorisation scheme.
-      # @param term [String] Unique identifier of the Category instance within the categorisation scheme.
-      # @param title [String] The display name of an instance.
-      # @param attributes [Occi::Core::Attributes,Hash] Set of Attribute instances.
-      def initialize(scheme='http://schemas.ogf.org/occi/core#',
-          term='category',
-          title=nil,
-          attributes=nil)
-        raise ArgumentError, 'Scheme and term cannot be empty' if scheme.blank? || term.blank?
-        attributes ||= Occi::Core::Attributes.new
+        @term = args.fetch(:term)
+        @schema = args.fetch(:schema)
+        @title = args.fetch(:title)
+        @attributes = args.fetch(:attributes)
 
-        scheme << '#' unless scheme.end_with? '#'
-        @scheme = scheme
-        @term = term
-        @title = title
+        post_initialize(args)
+      end
 
-        case attributes
-          when Occi::Core::Attributes
-            @attributes = Occi::Core::Attributes.new(attributes)
-          else
-            @attributes = Occi::Core::Attributes.parse_properties attributes
+      # Returns a full category identifier constructed from
+      # `term` and `schema`.
+      #
+      # @example
+      #   category.identifier  # => 'http://example.org/test#gnr'
+      #
+      # @return [String] category identifier
+      def identifier
+        "#{schema}#{term}"
+      end
+
+      # Performs internal validation of the category. Returns
+      # `true` or `false` depending on the result. Currently, only
+      # the category identifier is used in this process.
+      #
+      # @example
+      #   category.valid?  # => true
+      #
+      # @return [TrueClass] when valid
+      # @return [FalseClass] when invalid
+      def valid?
+        # TODO: validate attribute definitions?
+        self.class.valid_identifier? identifier
+      end
+
+      # Performs internal validation of the category. Raises error
+      # depending on the result. Currently, only the category
+      # identifier is used in this process.
+      #
+      # @example
+      #   category.valid!
+      #
+      # @raise [Occi::Core::Errors::CategoryValidationError] when invalid
+      def valid!
+        # TODO: validate attribute definitions?
+        self.class.valid_identifier! identifier
+      end
+
+      # :nodoc:
+      def to_s
+        identifier
+      end
+
+      # :nodoc:
+      def ==(other)
+        return false unless other && other.respond_to?(:identifier)
+        identifier == other.identifier
+      end
+
+      # :nodoc:
+      def eql?(other)
+        self == other
+      end
+
+      # :nodoc:
+      def hash
+        identifier.hash
+      end
+
+      protected
+
+      # :nodoc:
+      def sufficient_args!(args)
+        %i[term schema].each do |attr|
+          unless self.class.send("valid_#{attr}?", args[attr])
+            raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
+                  "argument for #{self.class}"
+          end
         end
       end
 
-      # @return [String] Type identifier of the Category.
-      def type_identifier
-        "#{self.scheme}#{self.term}"
+      # :nodoc:
+      def defaults
+        {
+          term: nil,
+          schema: nil,
+          title: nil,
+          attributes: {}
+        }
       end
 
-      # @param options [Hash]
-      # @return [Hashie::Mash] JSON representation of Category.
-      def as_json(options={})
-        category = Hashie::Mash.new
-        category.scheme = self.scheme
-        category.term = self.term
-        category.title = self.title if self.title
-        category.attributes = self.attributes.any? ? self.attributes.as_json : Occi::Core::Attributes.new.as_json
-        category
-      end
+      # :nodoc:
+      def pre_initialize(args); end
 
-      # @return [String] Short text representation of the Category.
-      def to_string_short
-        "#{self.term};scheme=#{self.scheme.inspect};class=#{self.class.name.demodulize.downcase.inspect}"
-      end
-
-      # @return [String] Full text representation of the Category.
-      def to_string
-        string = self.to_string_short
-        string << ";title=#{self.title.inspect}" if self.title
-        string
-      end
-
-      # @return [String] Text representation of the Category.
-      def to_text
-        "Category: #{self.to_string}"
-      end
-
-      # @return [Hash] Hash containing the HTTP headers of the text/occi rendering.
-      def to_header
-        {:Category => self.to_string}
-      end
-
-      # @return [NilClass] Returns nil as Category itself does not have a location.
-      def location
-        nil # not implemented
-      end
-
-      # @return [String] Type Identififier of the Category.
-      def to_s
-        self.type_identifier
-      end
-
-      # @return [Boolean] Indicating whether this category is "empty", i.e. required attributes are blank
-      def empty?
-        term.blank? || scheme.blank?
-      end
-
-      # Checks this category against the model
-      # @param check_attributes [Boolean] attribute definitions must match
-      # @param check_title [Boolean] titles must match
-      # @return [Boolean]
-      def check(check_attributes = false, check_title = false)
-        raise ArgumentError, 'No model has been assigned to this category' unless @model
-
-        cat = @model.get_by_id(type_identifier, true)
-        raise Occi::Errors::CategoryNotDefinedError,
-              "Category #{self.class.name}[#{type_identifier.inspect}] not found in the model!" unless cat
-
-        # TODO: impl. check_attributes and check_title for strict matching
-
-        true
-      end
-
-      # @param term [String] Term to check.
-      # @return [Boolean] Indicating whether term consists exclusively of valid characters.
-      def self.valid_term?(term)
-        term =~ /^[a-z][a-z0-9_-]*$/
-      end
-
+      # :nodoc:
+      def post_initialize(args); end
     end
   end
 end

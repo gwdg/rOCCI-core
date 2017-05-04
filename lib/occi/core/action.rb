@@ -1,32 +1,18 @@
 module Occi
   module Core
-    class Action < Occi::Core::Category
-
-      # @param [String] scheme
-      # @param [String] term
-      # @param [String] title
-      # @param [Hash] attributes
-      def initialize(scheme='http://schemas.ogf.org/occi/core#',
-          term='action',
-          title=nil,
-          attributes=Occi::Core::Attributes.new)
-        super(scheme, term, title, attributes)
+    # Class without internal logic semantically separating `Category` and
+    # `Action` instances for rendering purposes.
+    #
+    # @author Boris Parak <parak@cesnet.cz>
+    class Action < Category
+      class << self
+        # :nodoc:
+        def allowed_yaml_classes
+          # TODO: get rid of this with referenced (name-only) attributes in Action YAMLs
+          [String, Regexp, URI, IPAddr, Integer, Float].freeze
+        end
+        private :allowed_yaml_classes
       end
-
-      # @return [String] text representation
-      def to_text
-        text = super
-        text << "#{@attributes.to_string_short}"
-        text
-      end
-
-      # @return [Hash] hash containing the HTTP headers of the text/occi rendering
-      def to_header
-        header = super
-        header[:Category] << "#{@attributes.to_string_short}"
-        header
-      end
-
     end
   end
 end

@@ -1,0 +1,7 @@
+---
+type: !ruby/module URI
+required: true
+mutable: true
+default: ~
+description: Source resource sub-type instance of this link sub-type instance.
+pattern: ~

@@ -1,0 +1,7 @@
+---
+type: !ruby/class String
+required: false
+mutable: false
+default: ~
+description: Network interface MAC address.
+pattern: !ruby/regexp '/^([0-9a-fA-F]{2}[:-]){5}([0-9a-fA-F]{2})$/'

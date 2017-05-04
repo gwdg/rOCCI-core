@@ -1,374 +1,509 @@
 module Occi
   module Core
     describe Entity do
-      let(:entity){
-        entity = Occi::Core::Entity.new
-        entity.id = 'baf1'
-        entity
-      }
-      let(:testaction){ Occi::Core::Action.new scheme='http://schemas.ogf.org/occi/core/entity/action#', term='testaction', title='testaction action' }
+      subject(:ent) { entity }
 
-      it "initializes itself successfully" do
-        expect(entity).to be_kind_of Occi::Core::Entity
+      let(:attribute_title) { 'occi.core.title' }
+      let(:attribute_id) { 'occi.core.id' }
+
+      let(:action) { instance_double('Occi::Core::Action') }
+      let(:action2) { instance_double('Occi::Core::Action') }
+      let(:actions) { Set.new([action]) }
+
+      let(:mixin) { instance_double('Occi::Core::Mixin') }
+      let(:mixin2) { instance_double('Occi::Core::Mixin') }
+      let(:mixins) { Set.new([mixin]) }
+
+      let(:attributes) do
+        {
+          attribute_title => instance_double('Occi::Core::AttributeDefinition'),
+          attribute_id    => instance_double('Occi::Core::AttributeDefinition')
+        }
       end
 
-      context 'initializiation of a subclass using a type identifier' do
-        let(:type_identifier){ 'http://example.com/testnamespace#test' }
-        let(:typed_entity){ Occi::Core::Entity.new type_identifier }
-
-        it 'has the correct kind' do
-          expect(typed_entity).to be_kind_of 'Com::Example::Testnamespace::Test'.constantize
-        end
-
-        it 'uses the right identifier' do
-          expect(typed_entity.kind.type_identifier).to eq type_identifier
-        end
-
-        it 'relates to Entity' do
-          expect(typed_entity.kind.related.first).to eq Occi::Core::Entity.kind
-        end
+      let(:kind) do
+        Kind.new(
+          term: 'root',
+          schema: 'http://test.org/root#',
+          title: 'Root kind',
+          attributes: attributes
+        )
       end
 
-      context "initialization of a subclass using an OCCI Kind" do
-        let(:kind){ Occi::Core::Resource.kind }
-        let(:kind_entity){ Occi::Core::Entity.new kind }
-
-        it 'has the correct kind' do
-          expect(kind_entity).to be_kind_of Occi::Core::Resource
-        end
-
-        it 'uses the right identifier' do
-          expect(kind_entity.kind.type_identifier).to eq Occi::Core::Resource.type_identifier
-        end
-
-        it 'relates to Entity' do
-          expect(kind_entity.kind.related.first).to eq Occi::Core::Entity.kind
-        end
+      let(:entity) do
+        Entity.new(kind: kind, title: 'my_title', id: SecureRandom.uuid)
       end
 
-      context '#kind' do
-        it 'accepts kind from string' do
-          entity.kind = 'http://example.com/testnamespace#test'
-          expect(entity.kind).to eql Com::Example::Testnamespace::Test
-        end
+      before do
+        allow(attributes[attribute_title]).to receive(:default)
+        allow(attributes[attribute_id]).to receive(:default)
+        allow(mixin).to receive(:attributes).and_return({})
+        allow(mixin2).to receive(:attributes).and_return({})
+      end
 
-        it 'accepts kind from class' do
-          entity.kind = Com::Example::Testnamespace::Test
-          expect(entity.kind).to eql Com::Example::Testnamespace::Test
+      ENTITY_ATTRS = %i[kind id location title attributes mixins actions].freeze
+
+      ENTITY_ATTRS.each do |attr|
+        it "has #{attr} accessor" do
+          is_expected.to have_attr_accessor attr.to_sym
         end
       end
 
-      context '#mixins' do
-        let(:mixin){ 'http://example.com/mynamespace#mymixin' }
-
-        it "converts mixin type identifiers to objects if a mixin is added to the entities mixins" do
-          entity.mixins << mixin
-          expect(entity.mixins.first.to_s).to eq mixin
-        end
+      it 'has attributes value accessor' do
+        expect(ent).to be_kind_of(Helpers::InstanceAttributesAccessor)
+        expect(ent).to respond_to(:[])
+        expect(ent).to respond_to(:[]=)
+        expect(ent).to respond_to(:attribute?)
       end
 
-      context 'attributes' do
+      it 'has logger' do
+        expect(ent).to respond_to(:logger)
+        expect(ent.class).to respond_to(:logger)
+      end
 
-        context 'checking attribute validity' do
-          before(:each) { Occi::Settings['compatibility']=false }
-          after(:each) { Occi::Settings.reload! }
+      it 'is renderable' do
+        expect(ent).to be_kind_of(Helpers::Renderable)
+        expect(ent).to respond_to(:render)
+      end
 
-          it 'fails check with model missing' do
-            expect { entity.check }.to raise_error
-          end
-
-          it 'runs check successfully with a model registered' do
-            entity.model = Occi::Model.new
-            entity.title = 'test'
-            uuid = UUIDTools::UUID.random_create.to_s
-            Occi::Settings['verify_attribute_pattern']=true
-            expect { entity.id = uuid }.to_not raise_error
-          end
-
-          it 'rejects values not matching pattern' do
-            entity.model = Occi::Model.new
-            entity.id = 'id with spaces'
-            Occi::Settings['verify_attribute_pattern']=true
-            expect{ entity.id = 'id with spaces' }.to raise_error Occi::Errors::AttributeTypeError
-          end
-
-        end
-
-        context '#location' do
-          it 'can be set and read' do
-            entity.location = 'TestLoc'
-            expect(entity.location).to eq 'TestLoc'
-          end
-
-          it 'can be constructed from id' do
-            entity.id = UUIDTools::UUID.random_create.to_s
-            expect(entity.location).to eq '/entity/' + entity.id
-          end
-
-          it 'gets normalized to a relative path' do
-            entity.location = 'http://example.org/entity/12'
-            expect(entity.location).to eq '/entity/12'
-          end
-
-          it 'can be set to nil and default to /kind/id' do
-            entity.location = nil
-            expect(entity.location).to eq '/entity/baf1'
-          end
-
-          it 'will not duplicate slashes' do
-            entity.id = '//baf1'
-            expect(entity.location).to eq '/entity/baf1'
-          end
-
-          it 'will not duplicate kind location' do
-            entity.id = '/entity/baf1'
-            expect(entity.location).to eq '/entity/baf1'
+      describe '::new' do
+        context 'without required arguments' do
+          it 'raises error on missing `kind`' do
+            expect { Entity.new }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
           end
         end
 
-        context '#title' do
-          it 'can be set and read' do
-            entity.title = 'TestTitle'
-            expect(entity.title).to eq 'TestTitle'
+        context 'with required arguments' do
+          it 'constructs instance' do
+            expect { Entity.new(kind: kind) }.not_to raise_error
           end
         end
       end
 
-      context '#actions' do
-        it 'can be populated through redirection' do
-          entity.actions << testaction
-          expect(entity.actions.count).to eq 1
-        end
-
-        it 'can be assigned through the setter method' do
-          acts = Occi::Core::Actions.new
-          acts << testaction
-          entity.actions=acts
-          expect(entity.actions.count).to eq 1
+      describe '#id' do
+        it 'redirects to `occi.core.id`' do
+          expect(ent).to receive(:[]).with('occi.core.id')
+          expect { ent.id }.not_to raise_error
         end
       end
 
-      context '#to_text' do
-        it 'renders fresh instance in text correctly' do
-          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/";title="entity"
-X-OCCI-Attribute: occi.core.id="baf1"|
-          expect(entity.to_text).to eq(expected)
-        end
-
-        it 'renders instance with attributes in text correctly' do
-          entity.actions << testaction
-          entity.title = 'TestTitle'
-          entity.location = '/TestLoc/1'
-          entity.mixins <<  'http://example.com/mynamespace#mymixin'
-
-          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/";title="entity"
-Category: mymixin;scheme="http://example.com/mynamespace#";class="mixin";location="/mixin/mymixin/";title=""
-X-OCCI-Attribute: occi.core.id="baf1"
-X-OCCI-Attribute: occi.core.title="TestTitle"
-Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entity/action#testaction"|
-          expect(entity.to_text).to eq(expected)
+      describe '#id=' do
+        it 'redirects to `occi.core.id`' do
+          expect(ent).to receive(:[]=).with('occi.core.id', 'adasda')
+          expect { ent.id = 'adasda' }.not_to raise_error
         end
       end
 
-      context '#to_header' do
-        it 'renders fresh instance in HTTP Header correctly' do
-          expected = Hashie::Mash.new
-          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/";title="entity"'
-          expected['X-OCCI-Attribute'] = 'occi.core.id="baf1"'
-
-          expect(entity.to_header).to eql(expected)
-        end
-
-        it 'renders instance with attributes in HTTP Header correctly' do
-          entity.actions << testaction
-          entity.title = 'TestTitle'
-          entity.location = '/TestLoc/1'
-          entity.mixins <<  'http://example.com/mynamespace#mymixin'
-
-          expected = Hashie::Mash.new
-          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/";title="entity",mymixin;scheme="http://example.com/mynamespace#";class="mixin";location="/mixin/mymixin/";title=""'
-          expected['X-OCCI-Attribute'] = 'occi.core.id="baf1",occi.core.title="TestTitle"'
-          expected['Link'] = '</TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entity/action#testaction"'
-
-          expect(entity.to_header).to eql(expected)
+      describe '#title' do
+        it 'redirects to `occi.core.title`' do
+          expect(ent).to receive(:[]).with('occi.core.title')
+          expect { ent.title }.not_to raise_error
         end
       end
 
-      context '#as_json' do
-        it 'renders element as JSON' do
-          entity.actions << testaction
-
-          expected = Hashie::Mash.new JSON.parse('{"kind":"http://schemas.ogf.org/occi/core#entity","actions":["http://schemas.ogf.org/occi/core/entity/action#testaction"],"attributes":{"occi":{"core":{"id":"baf1"}}},"id":"baf1"}')
-          expect(entity.as_json).to eql expected
+      describe '#title=' do
+        it 'redirects to `occi.core.title`' do
+          expect(ent).to receive(:[]=).with('occi.core.title', 'asdasd')
+          expect { ent.title = 'asdasd' }.not_to raise_error
         end
       end
 
-      context '#check' do
-        let(:defs){
-          defs = Occi::Core::Attributes.new
-          defs['occi.core.id'] = { :type=> 'string',
-                                   :required => true }
-          defs['numbertype'] =   { :type => 'number',
-                                           :default => 42,
-                                           :mutable => true,
-                                           :pattern => '^[0-9]+'  }
-          defs['stringtype'] =   { :type => 'string',
-                                           :pattern => '[adefltuv]+',
-                                           :default => 'defaultvalue',
-                                           :mutable => true }
-          defs['booleantype'] =  { :type => 'boolean',
-                                           :default => true,
-                                           :mutable => true}
-          defs['booleantypefalse'] =  { :type => 'boolean',
-                                           :default => false,
-                                           :mutable => true }
-          defs['booleantypepattern'] =  { :type => 'boolean',
-                                           :default => true,
-                                           :mutable => true,
-                                           :pattern => true }
-          defs }
-        let(:kind){ Occi::Core::Kind.new 'http://schemas.ogf.org/occi/core#', 'testkind', 'Test Kind', defs }
-        let(:model){ model = Occi::Model.new
-          model.register(kind)
-          model.register(defmixin)
-          model }
-        let(:defmixin){ defmixin = Occi::Core::Mixin.new 'http://schemas.ogf.org/occi/core#', 'testmixin'
-          defmixin.attributes['mixinstring'] =  { :type => 'string',
-                                               :pattern => '.*',
-                                               :default => 'mixdefault',
-                                               :mutable => true }
-          defmixin }
-        let(:mixin){ Occi::Core::Mixin.new 'http://schemas.ogf.org/occi/core#', 'testmixin' }
-        let(:undefmixin){ Occi::Core::Mixin.new 'http://schemas.ogf.org/occi/core#', 'fake_mixin' }
+      describe '#kind_identifier' do
+        it 'returns kind identifier' do
+          expect(ent.kind_identifier).to eq 'http://test.org/root#root'
+        end
+      end
 
-        let(:entity){ entity = Occi::Core::Entity.new(kind, [], defs)
-          entity.model = model
-          entity.mixins << mixin
-          entity }
-
-
-        before(:each){ Occi::Settings['compatibility']=false
-                       Occi::Settings['verify_attribute_pattern']=true }
-        after(:each) { Occi::Settings.reload! }
-
-        context 'unsupported types' do
-          it 'refuses unsupported type' do
-            expect{ entity.attributes['othertype'] = { :type => 'other', :default => 'defaultvalue' } }.to raise_exception(Occi::Errors::AttributePropertyTypeError)
+      describe '#kind=' do
+        context 'without kind' do
+          it 'raises error' do
+            expect { ent.kind = nil }.to raise_error(Occi::Core::Errors::InstanceValidationError)
           end
         end
 
-        context 'defaults' do
-          context 'setting defaults' do
-            it 'sets numeric default' do
-              entity.check(true)
-              expect(entity.attributes['numbertype']).to eq 42
-            end
-            it 'sets string default' do
-              entity.check(true)
-              expect(entity.attributes['stringtype']).to eq 'defaultvalue'
-            end
-            it 'sets mixin string default' do
-              entity.check(true)
-              expect(entity.attributes['mixinstring']).to eq 'mixdefault'
-            end
-            it 'sets boolean default if true' do
-              entity.check(true)
-              expect(entity.attributes['booleantype']).to eq true
-            end
-            it 'sets boolean default if false' do
-              entity.check(true)
-              expect(entity.attributes['booleantypefalse']).to eq false
-            end
-            it 'can be checked twice in a row' do
-              entity.check(true)
-              expect{ entity.check(true) }.to_not raise_exception
-            end
-            it 'skips numeric default' do
-              entity.attributes['numbertype'] = 12
-              entity.check(true)
-              expect(entity.attributes['numbertype']).to eq 12
-            end
-            it 'skips string default' do
-              entity.attributes['stringtype'] = 'fault'
-              entity.check(true)
-              expect(entity.attributes['stringtype']).to eq 'fault'
-            end
-            it 'skips boolean default if true' do
-              entity.attributes['booleantype'] = false
-              entity.check(true)
-              expect(entity.attributes['booleantype']).to eq false
-            end
-            it 'skips boolean default if false' do
-              entity.attributes['booleantypefalse'] = true
-              entity.check(true)
-              expect(entity.attributes['booleantypefalse']).to eq true
-            end
+        context 'with kind' do
+          let(:new_kind) { instance_double('Occi::Core::Kind') }
+
+          before do
+            expect(ent).to receive(:reset_attributes!)
           end
 
-          context 'patterns' do
-            it 'checks string pattern' do
-              expect{ entity.attributes['stringtype'] = 'bflmpsvz' }.to raise_exception(Occi::Errors::AttributeTypeError)
-            end
-            it 'checks numeric pattern' do
-              expect{ entity.attributes['numbertype'] = -32 }.to raise_exception(Occi::Errors::AttributeTypeError)
-            end
-            it 'checks boolean pattern' do
-              expect{ entity.attributes['booleantypepattern'] = false }.to raise_exception(Occi::Errors::AttributeTypeError)
-            end
-          end
-        end
-
-        context 'exceptions' do
-          it 'raisees exception for missing model' do
-            ent = Occi::Core::Entity.new(kind, [], defs)
-            expect{ ent.check(true) }.to raise_exception ArgumentError
+          it 'sets kind' do
+            expect { ent.kind = new_kind }.not_to raise_error
+            expect(ent.kind).to eq new_kind
           end
 
-          it 'raises exception for nonexistent kind' do
-            ent = Occi::Core::Entity.new(kind, [], defs)
-            mod = Occi::Model.new
-            ent.model = mod
-            expect{ ent.check(true) }.to raise_exception Occi::Errors::KindNotDefinedError
-          end
-
-          it 'raises expection for nonexistent mixins' do
-            ent = Occi::Core::Entity.new(kind, [], defs)
-            ent.model = model
-            ent.mixins << undefmixin
-            expect{ ent.check }.to raise_exception Occi::Errors::CategoryNotDefinedError
+          it 'triggers attribute reset' do
+            expect { ent.kind = new_kind }.not_to raise_error
           end
         end
       end
 
-      context '#attribute_properties' do
-        it 'gets attribute properties' do
-          properties = entity.attribute_properties
-          expect(properties.occi.core.count).to eql 4
+      describe '#mixins=' do
+        context 'without mixins' do
+          it 'raises error' do
+            expect { ent.mixins = nil }.to raise_error(Occi::Core::Errors::InstanceValidationError)
+          end
+        end
+
+        context 'with mixins' do
+          let(:new_mixins) { Set.new }
+
+          before do
+            expect(ent).to receive(:reset_added_attributes!)
+            expect(ent).to receive(:remove_undef_attributes)
+          end
+
+          it 'sets mixins' do
+            expect { ent.mixins = new_mixins }.not_to raise_error
+            expect(ent.mixins).to eq new_mixins
+          end
+
+          it 'triggers attribute reset' do
+            expect { ent.mixins = new_mixins }.not_to raise_error
+          end
         end
       end
 
-      context '#empty?' do
+      describe '#<<' do
+        let(:action) { Occi::Core::Action.new(term: 'action', schema: 'http://my.test.schema/test#') }
+        let(:action2) { Occi::Core::Action.new(term: 'action2', schema: 'http://my.test.schema/test#') }
+        let(:actions) { Set.new([action]) }
 
-        it 'returns false for a new instance with defaults' do
-          expect(entity.empty?).to be false
+        let(:mixin) { Occi::Core::Mixin.new(term: 'mixin', schema: 'http://my.test.schema/test#') }
+        let(:mixin2) { Occi::Core::Mixin.new(term: 'mixin2', schema: 'http://my.test.schema/test#') }
+        let(:mixins) { Set.new([mixin]) }
+
+        context 'with action' do
+          before do
+            ent.actions = actions
+          end
+
+          context 'assigned to entity' do
+            it 'silently ignores' do
+              expect(ent.actions.count).to eq 1
+              expect(ent.actions).to include(action)
+              ent << action
+              expect(ent.actions.count).to eq 1
+              expect(ent.actions).to include(action)
+            end
+          end
+
+          context 'not assigned to entity' do
+            it 'adds action to entity' do
+              expect(ent.actions).not_to be_empty
+              ent << action2
+              expect(ent.actions).to include(action)
+              expect(ent.actions).to include(action2)
+            end
+          end
         end
 
-        it 'returns true for an instance without a kind' do
-          ent = entity.clone
-          ent.kind = nil
+        context 'with mixin' do
+          before do
+            ent.mixins = mixins
+          end
 
-          expect(ent.empty?).to be true
+          context 'assigned to entity' do
+            it 'silently ignores' do
+              expect(ent.mixins.count).to eq 1
+              expect(ent.mixins).to include(mixin)
+              ent << mixin
+              expect(ent.mixins.count).to eq 1
+              expect(ent.mixins).to include(mixin)
+            end
+          end
+
+          context 'not assigned to entity' do
+            it 'adds mixin to entity' do
+              expect(ent.mixins).not_to be_empty
+              ent << mixin2
+              expect(ent.mixins).to include(mixin)
+              expect(ent.mixins).to include(mixin2)
+            end
+          end
         end
 
-        it 'returns true for an instance without an identifier' do
-          ent = entity.clone
+        context 'with unknown object' do
+          it 'raises error' do
+            expect { ent << Object.new }.to raise_error(ArgumentError)
+          end
+        end
+      end
+
+      describe '#remove' do
+        let(:action) { Occi::Core::Action.new(term: 'action', schema: 'http://my.test.schema/test#') }
+        let(:action2) { Occi::Core::Action.new(term: 'action2', schema: 'http://my.test.schema/test#') }
+        let(:actions) { Set.new([action]) }
+
+        let(:mixin) { Occi::Core::Mixin.new(term: 'mixin', schema: 'http://my.test.schema/test#') }
+        let(:mixin2) { Occi::Core::Mixin.new(term: 'mixin2', schema: 'http://my.test.schema/test#') }
+        let(:mixins) { Set.new([mixin]) }
+
+        context 'with action' do
+          before do
+            ent.actions = actions
+          end
+
+          context 'assigned to entity' do
+            it 'removes given action' do
+              expect(ent.actions).not_to be_empty
+              ent.remove action
+              expect(ent.actions).to be_empty
+            end
+          end
+
+          context 'not assigned to entity' do
+            it 'silently ignores' do
+              expect(ent.actions).not_to be_empty
+              ent.remove action2
+              expect(ent.actions).to include(action)
+              expect(ent.actions).not_to include(action2)
+            end
+          end
+        end
+
+        context 'with mixin' do
+          before do
+            ent.mixins = mixins
+          end
+
+          context 'assigned to entity' do
+            it 'removes given mixin' do
+              expect(ent.mixins).not_to be_empty
+              ent.remove mixin
+              expect(ent.mixins).to be_empty
+            end
+          end
+
+          context 'not assigned to entity' do
+            it 'silently ignores' do
+              expect(ent.mixins).not_to be_empty
+              ent.remove mixin2
+              expect(ent.mixins).to include(mixin)
+              expect(ent.mixins).not_to include(mixin2)
+            end
+          end
+        end
+
+        context 'with unknown object' do
+          it 'raises error' do
+            expect { ent.remove(Object.new) }.to raise_error(ArgumentError)
+          end
+        end
+      end
+
+      describe '#add_mixin' do
+        context 'when mixin is new' do
+          it 'adds mixin to mixins' do
+            expect(ent.mixins).to be_empty
+            expect { ent.add_mixin(mixin) }.not_to raise_error
+            expect(ent.mixins).not_to be_empty
+          end
+        end
+
+        context 'when mixin is already assigned' do
+          before do
+            ent.mixins = mixins
+          end
+
+          it 'does nothing' do
+            expect(ent.mixins).to eq mixins
+            expect { ent.add_mixin(mixin) }.not_to raise_error
+            expect(ent.mixins).to eq mixins
+          end
+        end
+
+        context 'when no mixin is provided' do
+          it 'fails' do
+            expect { ent.add_mixin(nil) }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+          end
+        end
+      end
+
+      describe '#remove_mixin' do
+        context 'when mixin exists' do
+          before do
+            ent.mixins = mixins
+          end
+
+          it 'removes mixins from instance' do
+            expect { ent.remove_mixin(mixin) }.not_to raise_error
+            expect(ent.mixins).to be_empty
+          end
+        end
+
+        context 'when mixin does not exist' do
+          it 'does not raise error' do
+            expect { ent.remove_mixin(mixin) }.not_to raise_error
+          end
+        end
+
+        context 'when no mixin is provided' do
+          it 'fails' do
+            expect { ent.remove_mixin(nil) }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+          end
+        end
+      end
+
+      describe '#replace_mixin' do
+        context 'when mixin exists' do
+          before do
+            ent.mixins = mixins
+          end
+
+          it 'replaces mixin' do
+            expect(ent.mixins).to include(mixin)
+            expect { ent.replace_mixin(mixin, mixin2) }.not_to raise_error
+            expect(ent.mixins).to include(mixin2)
+            expect(ent.mixins).not_to include(mixin)
+          end
+        end
+
+        context 'when mixin does not exist' do
+          it 'does not change anything' do
+            expect(ent.mixins).to be_empty
+            expect { ent.replace_mixin(mixin, mixin2) }.not_to raise_error
+            expect(ent.mixins).to include(mixin2)
+          end
+        end
+
+        context 'when no mixin is provided' do
+          it 'fails' do
+            expect { ent.replace_mixin(nil, nil) }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+          end
+        end
+      end
+
+      describe '#add_action' do
+        context 'when action is new' do
+          it 'adds action to actions' do
+            expect(ent.actions).to be_empty
+            expect { ent.add_action(action) }.not_to raise_error
+            expect(ent.actions).not_to be_empty
+          end
+        end
+
+        context 'when action is already assigned' do
+          before do
+            ent.actions = actions
+          end
+
+          it 'does nothing' do
+            expect(ent.actions).to eq actions
+            expect { ent.add_action(action) }.not_to raise_error
+            expect(ent.actions).to eq actions
+          end
+        end
+
+        context 'when no action is provided' do
+          it 'fails' do
+            expect { ent.add_action(nil) }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+          end
+        end
+      end
+
+      describe '#remove_action' do
+        context 'when action exists' do
+          before do
+            ent.actions = actions
+          end
+
+          it 'removes actions from instance' do
+            expect { ent.remove_action(action) }.not_to raise_error
+            expect(ent.actions).to be_empty
+          end
+        end
+
+        context 'when action does not exist' do
+          it 'does not raise error' do
+            expect { ent.remove_action(action) }.not_to raise_error
+          end
+        end
+
+        context 'when no action is provided' do
+          it 'fails' do
+            expect { ent.remove_action(nil) }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+          end
+        end
+      end
+
+      describe '#valid?' do
+        context 'on failure' do
+          it 'returns false' do
+            expect(ent).to receive(:valid!).and_raise(Occi::Core::Errors::InstanceValidationError)
+            expect(ent.valid?).to be false
+          end
+        end
+
+        context 'on success' do
+          it 'returns true' do
+            expect(ent).to receive(:valid!)
+            expect(ent.valid?).to be true
+          end
+        end
+      end
+
+      describe '#valid!' do
+        context 'with missing required attributes' do
+          before { ent.id = nil }
+
+          it 'raises error' do
+            expect { ent.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
+          end
+        end
+
+        context 'with all required attributes' do
+          before do
+            expect(attributes.values).to all(receive(:valid!))
+          end
+
+          it 'passes without error' do
+            expect { ent.valid! }.not_to raise_error
+          end
+        end
+      end
+
+      describe '#base_attributes' do
+        it 'returns attributes from kind' do
+          expect(ent.base_attributes).to eq kind.attributes
+        end
+      end
+
+      describe '#added_attributes' do
+        context 'with mixin(s)' do
+          before do
+            allow(ent).to receive(:mixins).and_return(mixins)
+            allow(mixin).to receive(:attributes).and_return(attributes)
+          end
+
+          it 'returns list of attributes from mixins' do
+            expect(ent.added_attributes).to eq [attributes]
+          end
+        end
+
+        context 'without mixin(s)' do
+          it 'returns empty list' do
+            expect(ent.added_attributes).to be_empty
+            expect(ent.added_attributes).to be_kind_of Array
+          end
+        end
+      end
+
+      describe '#identify!' do
+        it 'sets and returns missing id' do
           ent.id = nil
-
-          expect(ent.empty?).to be true
+          expect(ent.identify!).not_to be_nil
+          expect(ent.id).not_to be_nil
         end
 
+        it 'returns existing id without changing it' do
+          old_id = ent.id
+          expect(ent.id).not_to be_nil
+          expect(ent.identify!).to be old_id
+          expect(ent.id).to be old_id
+        end
       end
-
     end
   end
 end

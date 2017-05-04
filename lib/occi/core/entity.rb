@@ -1,258 +1,364 @@
 module Occi
   module Core
+    # Implements the base class for all OCCI resources and links, this
+    # class should be treated as an abstracts class and not used directly
+    # to create entity instances.
+    #
+    # @attr kind [Occi::Core::Kind] entity kind, following OCCI's typing mechanism
+    # @attr id [String] entity instance identifier, unique in the given domain
+    # @attr location [URI] entity instance location, unique in the given domain
+    # @attr title [String] entity instance title
+    # @attr attributes [Hash] entity instance attributes
+    # @attr mixins [Set] set of mixins associated with this entity instance
+    # @attr actions [Set] set of actions associated with this entity instance
+    #
+    # @abstract The base class itself should be used as an abstract starting
+    #           point when creating custom resources and links.
+    # @author Boris Parak <parak@cesnet.cz>
     class Entity
+      include Yell::Loggable
+      include Helpers::Renderable
+      include Helpers::Locatable
+      include Helpers::InstanceAttributesAccessor
+      include Helpers::ArgumentValidator
+      include Helpers::InstanceAttributeResetter
 
-      include Occi::Helpers::Inspect
-      include Occi::Helpers::Comparators::Entity
+      attr_accessor :kind, :actions, :attributes, :mixins
+      attr_writer :location
 
-      attr_accessor :mixins, :attributes, :actions, :id, :model
-      attr_reader :kind
+      ERRORS = [
+        Occi::Core::Errors::AttributeValidationError,
+        Occi::Core::Errors::AttributeDefinitionError,
+        Occi::Core::Errors::InstanceValidationError
+      ].freeze
 
-      class_attribute :kind, :mixins, :attributes, :actions
+      # Constructs an instance with the given information. `kind` is a mandatory
+      # argument, the rest will either default to appropriate values or remain
+      # `nil`. The `id` attribute will default to a newly generated UUID, see
+      # `SecureRandom.uuid` for details.
+      #
+      # @example
+      #   my_kind = Occi::Core::Kind.new term: 'gnr', schema: 'http://example.org/test#'
+      #   Entity.new kind: my_kind
+      #
+      # @param args [Hash] arguments with entity instance information
+      # @option args [Occi::Core::Kind] :kind entity kind, following OCCI's typing mechanism
+      # @option args [String] :id entity instance identifier, unique in the given domain
+      # @option args [URI] :location entity instance location, unique in the given domain
+      # @option args [String] :title entity instance title
+      # @option args [Hash] :attributes entity instance attributes
+      # @option args [Set] :mixins set of mixins associated with this entity instance
+      # @option args [Set] :actions set of actions associated with this entity instance
+      def initialize(args = {})
+        pre_initialize(args)
+        default_args! args
 
-      self.mixins = Occi::Core::Mixins.new
+        @kind = args.fetch(:kind)
+        @location = args.fetch(:location)
+        @attributes = args.fetch(:attributes)
+        @mixins = args.fetch(:mixins)
+        @actions = args.fetch(:actions)
 
-      self.attributes = Occi::Core::Attributes.new
-      self.attributes['occi.core.id'] = {:pattern => '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}', :required => true, :mutable => false}
-      self.attributes['occi.core.title'] = {:mutable => true}
-
-      self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/core#',
-                                       term='entity',
-                                       title='entity',
-                                       attributes=self.attributes
-
-      # @return [String]
-      def self.type_identifier
-        self.kind.type_identifier
+        post_initialize(args)
       end
 
-      # @param [Array] args list of arguments
-      # @return [Object] new instance of this class
-      def self.new(*args)
-        if args.size > 0
-          type_identifier = args[0].to_s
-          related = [self.kind]
-        else
-          type_identifier = self.kind.type_identifier
-          related = nil
-        end
-        scheme, term = type_identifier.split '#'
-
-        klass = Occi::Core::Kind.get_class scheme, term, related
-
-        object = klass.allocate
-        object.send :initialize, *args
-        object
-      end
-
-      def self.attribute_properties
-        attributes = Occi::Core::Attributes.new self.attributes
-        attributes.merge! Occi::Core::Attributes.new(self.superclass.attribute_properties) if self < Occi::Core::Entity
-        attributes
-      end
-
-      def attribute_properties
-        attributes = self.class.attribute_properties
-        @mixins.collect {|mixin| attributes.merge! Occi::Core::Attributes.new(mixin.attributes)}
-        attributes
-      end
-
-      # @param [String] kind
-      # @param [String] mixins
-      # @param [Occi::Core::Attributes] attributes
-      # @param [Occi::Core::Actions] actions
-      # @return [Occi::Core::Entity]
-      def initialize(kind = self.kind, mixins=[], attributes={}, actions=[], location=nil)
-        @kind = self.class.kind.clone
-        @mixins = Occi::Core::Mixins.new mixins
-        @mixins.entity = self
-
-        attributes = self.class.attribute_properties if attributes.blank?
-        if attributes.kind_of? Occi::Core::Attributes
-          @attributes = attributes.convert
-        else
-          @attributes = Occi::Core::Attributes.new attributes
-        end
-        @attributes['occi.core.id'] ||= UUIDTools::UUID.random_create.to_s
-
-        @actions = Occi::Core::Actions.new actions
-        @location = location ? URI.parse(location).path : nil
-      end
-
-      # @param [Occi::Core::Kind,String] kind
-      # @return [Occi::Core::Kind]
-      def kind=(kind)
-        if kind.kind_of? String
-          scheme, term = kind.split '#'
-          kind = Occi::Core::Kind.get_class scheme, term
-        end
-        @kind = kind
-      end
-
-      # @param [Array] mixins
-      def mixins=(mixins)
-        @mixins = Occi::Core::Mixins.new mixins
-        @mixins.entity = self
-        @mixins
-      end
-
-      # @param [Occi::Core::Attributes] attributes
-      def attributes=(attributes)
-        @attributes = Occi::Core::Attributes.new attributes
-      end
-
-      # @param [Occi::Core::Actions] actions
-      def actions=(actions)
-        @actions = Occi::Core::Actions.new actions
-      end
-
-      # set id for entity
-      # @param [UUIDTools::UUID] id
-      def id=(id)
-        @attributes.occi!.core!.id = id
-        @id = id
-      end
-
-      # @return [UUIDTools::UUID] id of the entity
+      # @return [String] entity instance identifier, unique in the given domain
       def id
-        @id ||= @attributes.occi_.core_.id
-        @id
+        self['occi.core.id']
       end
 
-      # set title attribute for entity
-      # @param [String] title
-      def title=(title)
-        @attributes.occi!.core!.title = title
+      # @param id [String] entity instance identifier, unique in the given domain
+      def id=(id)
+        self['occi.core.id'] = id
       end
 
-      # @return [String] title attribute of entity
+      # @return [String] entity instance title
       def title
-        @attributes.occi_.core_.title
+        self['occi.core.title']
       end
 
-      # @param [Occi::Model] model
-      # @return [Occi::Model]
-      def model=(model)
-        @model = model
-
-        @kind = (model.get_by_id(@kind.type_identifier) || @kind)
-        @kind.entities << self
-
-        @mixins.model = model
-        @mixins.each { |mixin| mixin.entities << self }
-
-        @actions.model = model
+      # @param title [String] entity instance title
+      def title=(title)
+        self['occi.core.title'] = title
       end
 
-      # set location attribute of entity
-      # @param [String] location
-      def location=(location)
-        @location = location ? URI.parse(location).path : nil
+      # Short-hand for accessing the identifier of assigned `Kind`
+      # instance.
+      #
+      # @return [String] identifier of the included `Kind` instance
+      # @return [NilClass] if no kind is present
+      def kind_identifier
+        kind ? kind.identifier : nil
       end
 
-      # @return [String] location of the entity
-      def location
-        return @location.clone if @location
-        return if id.blank? || kind.location.blank?
+      # Assigns new kind instance to this entity instance. This
+      # method will trigger a complete reset on all previously
+      # set attributes, for the sake of consistency.
+      #
+      # @param kind [Occi::Core::Kind] kind instance to be assigned
+      # @return [Occi::Core::Kind] assigned kind instance
+      def kind=(kind)
+        unless kind
+          raise Occi::Core::Errors::InstanceValidationError,
+                'Missing valid kind'
+        end
 
-        # guess the location from kind and ID
-        # check for kind locations already included in IDs
-        tmp_id = id.gsub('urn:uuid:', '')
-        @location = if tmp_id.start_with?(kind.location)
-          # ID by itself is enough
-          tmp_id
+        @kind = kind
+        reset_attributes!
+
+        kind
+      end
+
+      # Assigns new mixins instance to this entity instance. This
+      # method will trigger a complete reset on all previously
+      # set attributes, for the sake of consistency.
+      #
+      # @param kind [Hash] mixins instance to be assigned
+      # @return [Hash] mixins instance assigned
+      def mixins=(mixins)
+        unless mixins
+          raise Occi::Core::Errors::InstanceValidationError,
+                'Missing valid mixins'
+        end
+
+        @mixins = mixins
+        reset_added_attributes!
+        remove_undef_attributes
+        # TODO: handle sync'ing actions
+
+        mixins
+      end
+
+      # Shorthand for assigning mixins and actions to entity
+      # instances. Unsupported `object` types will raise an
+      # error. `self` is always returned for chaining purposes.
+      #
+      # @example
+      #   entity << mixin   #=> #<Occi::Core::Entity>
+      #   entity << action  #=> #<Occi::Core::Entity>
+      #
+      # @param object [Occi::Core::Mixin, Occi::Core::Action] object to be added
+      # @return [Occi::Core::Entity] self
+      def <<(object)
+        case object
+        when Occi::Core::Mixin
+          add_mixin object
+        when Occi::Core::Action
+          add_action object
         else
-          # concat kind location and ID, remove duplicated slashes
-          "#{kind.location}#{tmp_id}".gsub(/\/+/, '/')
+          raise ArgumentError, "Cannot automatically assign #{object.inspect}"
+        end
+
+        self
+      end
+      alias add <<
+
+      # Shorthand for removing mixins and actions from entity
+      # instances. Unsupported `object` types will raise an
+      # error. `self` is always returned for chaining purposes.
+      #
+      # @example
+      #   entity.remove mixin   #=> #<Occi::Core::Entity>
+      #   entity.remove action  #=> #<Occi::Core::Entity>
+      #
+      # @param object [Occi::Core::Mixin, Occi::Core::Action] object to be removed
+      # @return [Occi::Core::Entity] self
+      def remove(object)
+        case object
+        when Occi::Core::Mixin
+          remove_mixin object
+        when Occi::Core::Action
+          remove_action object
+        else
+          raise ArgumentError, "Cannot automatically remove #{object.inspect}"
+        end
+
+        self
+      end
+
+      # Adds the given mixin to this instance. Attributes defined in the mixin
+      # will be transfered to instance attributes.
+      #
+      # @param mixin [Occi::Core::Mixin] mixin to be added
+      def add_mixin(mixin)
+        unless mixin
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot add a non-existent mixin'
+        end
+
+        # TODO: handle adding actions
+        mixins << mixin
+        reset_added_attributes
+      end
+
+      # Removes the given mixin from this instance. Attributes defined in the
+      # mixin will be reset to their original definition or removed completely
+      # if not defined as part of `kind` attributes.
+      #
+      # @param mixin [Occi::Core::Mixin] mixin to be removed
+      def remove_mixin(mixin)
+        unless mixin
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot remove a non-existent mixin'
+        end
+
+        # TODO: handle removing actions
+        mixins.delete mixin
+        reset_attributes
+      end
+
+      # Replaces the given mixin in this instance with a new mixin provided.
+      # This is a shorthand for invoking `remove_mixin` and `add_mixin`.
+      #
+      # @param old_mixin [Occi::Core::Mixin] mixin to be removed
+      # @param new_mixin [Occi::Core::Mixin] mixin to be added
+      def replace_mixin(old_mixin, new_mixin)
+        # TODO: handle replacing actions
+        remove_mixin old_mixin
+        add_mixin new_mixin
+      end
+
+      # Adds the given action to this instance.
+      #
+      # @param action [Occi::Core::Action] action to be added
+      def add_action(action)
+        unless action
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot add a non-existent action'
+        end
+        actions << action
+      end
+
+      # Removes the given action from this instance.
+      #
+      # @param action [Occi::Core::Action] action to be removed
+      def remove_action(action)
+        unless action
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot remove a non-existent action'
+        end
+        actions.delete action
+      end
+
+      # Validates the content of this entity instance, including
+      # all previously defined OCCI attributes and other required
+      # elements. This method limits the information returned to
+      # a boolean response.
+      #
+      # @example
+      #   entity.valid? #=> false
+      #   entity.valid? #=> true
+      #
+      # @return [TrueClass] when entity instance is valid
+      # @return [FalseClass] when entity instance is invalid
+      def valid?
+        begin
+          valid!
+        rescue *ERRORS => ex
+          logger.warn "Entity invalid: #{ex.message}"
+          return false
+        end
+
+        true
+      end
+
+      # Validates the content of this entity instance, including
+      # all previously defined OCCI attributes and other required
+      # elements. This method provides additional information in
+      # messages of raised errors.
+      #
+      # @example
+      #   entity.valid! #=> #<Occi::Core::Errors::InstanceValidationError>
+      #   entity.valid! #=> nil
+      #
+      # @return [NilClass] when entity instance is valid
+      def valid!
+        %i[kind id location title attributes mixins actions].each do |attr|
+          unless send(attr)
+            raise Occi::Core::Errors::InstanceValidationError,
+                  "Missing valid #{attr}"
+          end
+        end
+
+        attributes.each_pair { |name, attribute| valid_attribute!(name, attribute) }
+      end
+
+      # Returns all base attributes for this instance in the
+      # form of the original hash.
+      #
+      # @return [Hash] hash with base attributes
+      def base_attributes
+        kind.attributes
+      end
+
+      # Collects all available additional attributes for this
+      # instance and returns them as an array.
+      #
+      # @return [Array] array with added attribute hashes
+      def added_attributes
+        mixins.collect(&:attributes)
+      end
+
+      # Returns entity instance identifier. If such identifier is not set,
+      # it will generate a pseudo-random UUID and assign/return it.
+      #
+      # @return [String] entity instance identifier
+      def identify!
+        self.id ||= SecureRandom.uuid
+      end
+
+      protected
+
+      # :nodoc:
+      def valid_attribute!(name, attribute)
+        attribute.valid!
+      rescue => ex
+        raise ex, "Attribute #{name.inspect} invalid: #{ex}", ex.backtrace
+      end
+
+      # :nodoc:
+      def sufficient_args!(args)
+        %i[kind attributes mixins actions].each do |attr|
+          unless args[attr]
+            raise Occi::Core::Errors::MandatoryArgumentError, "#{attr} is a mandatory " \
+                  "argument for #{self.class}"
+          end
         end
       end
 
-      # check attributes against their definitions and set defaults
-      # @param [true,false] set default values for all empty attributes
-      def check(set_defaults = false)
-        raise ArgumentError, 'No model has been assigned to this entity' unless @model
-
-        kind = @model.get_by_id(@kind.to_s, true)
-        raise Occi::Errors::KindNotDefinedError,
-              "Kind not found for entity #{self.class.name}[#{self.to_s.inspect}]!" unless kind
-
-        definitions = Occi::Core::Attributes.new
-        definitions.merge! kind.attributes
-
-        @mixins.each do |mxn|
-          mixin = @model.get_by_id(mxn.to_s)
-          raise Occi::Errors::CategoryNotDefinedError,
-                "Mixin #{mxn.to_s.inspect} not declared in the model!" unless mixin && mixin.kind_of?(Occi::Core::Mixin)
-
-          definitions.merge!(mixin.attributes) if mixin.attributes
-        end if @mixins
-
-        @attributes.check!(definitions, set_defaults)
+      # :nodoc:
+      def defaults
+        {
+          kind: nil, id: nil, location: nil, title: nil,
+          attributes: {}, mixins: Set.new, actions: Set.new
+        }
       end
 
-      # @param [Hash] options
-      # @return [Hashie::Mash] json representation
-      def as_json(options={})
-        entity = Hashie::Mash.new
-        entity.kind = @kind.to_s if @kind
-        entity.mixins = @mixins.join(' ').split(' ') if @mixins.any?
+      # :nodoc:
+      def pre_initialize(args); end
 
-        action_strings = @actions.collect { |action| action.to_s if action.to_s }.compact
-        entity.actions = action_strings unless action_strings.empty?
+      # :nodoc:
+      def post_initialize(args)
+        reset_attributes
 
-        entity.attributes = @attributes.as_json if @attributes.as_json.any?
-        entity.id = id.to_s if id
-
-        entity
+        self.id = args.fetch(:id) if attributes['occi.core.id']
+        self.title = args.fetch(:title) if attributes['occi.core.title']
       end
 
-      # @return [String] text representation
-      def to_text
-        text = "Category: #{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\";location=#{self.kind.location.inspect};title=#{self.kind.title.inspect}"
-        @mixins.each do |mixin|
-          scheme, term = mixin.to_s.split('#')
-          scheme << '#'
-          text << "\nCategory: #{term};scheme=#{scheme.inspect};class=\"mixin\";location=#{mixin.location.inspect};title=#{mixin.title ? mixin.title.inspect : ''.inspect}"
+      # Generates default location based on the already configured
+      # `kind.location` and `id` attribute. Fails if `id` is not present.
+      #
+      # @example
+      #   entity.generate_location # => #<URI::Generic /compute/1>
+      #
+      # @return [URI] generated location
+      def generate_location
+        if id.blank?
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot generate default location without an `id`'
         end
-
-        text << @attributes.to_text
-
-        @actions.each { |action| text << "\nLink: <#{self.location}?action=#{action.term}>;rel=#{action.to_s.inspect}" }
-
-        text
+        URI.parse "#{kind.location}#{id}"
       end
-
-      # @return [Hash] hash containing the HTTP headers of the text/occi rendering
-      def to_header
-        header = Hashie::Mash.new
-        header['Category'] = "#{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\";location=#{self.kind.location.inspect};title=#{self.kind.title.inspect}"
-
-        @mixins.each do |mixin|
-          scheme, term = mixin.to_s.split('#')
-          scheme << '#'
-          header['Category'] << ",#{term};scheme=#{scheme.inspect};class=\"mixin\";location=#{mixin.location.inspect};title=#{mixin.title ? mixin.title.inspect : ''.inspect}"
-        end
-
-        attributes = @attributes.to_header
-        header['X-OCCI-Attribute'] = attributes unless attributes.blank?
-
-        links = []
-        @actions.each { |action| links << "<#{self.location}?action=#{action.term}>;rel=#{action.to_s.inspect}" }
-        header['Link'] = links.join(',') if links.any?
-
-        header
-      end
-
-      # @return [String] string representation of entity is its location
-      def to_s
-        self.location
-      end
-
-      # @return [Bool] Indicating whether this entity is "empty", i.e. required attributes are blank
-      def empty?
-        kind.blank? || attributes['occi.core.id'].blank?
-      end
-
     end
   end
 end

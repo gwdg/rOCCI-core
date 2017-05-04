@@ -1,82 +1,118 @@
 module Occi
   module Core
-    class Resource < Occi::Core::Entity
+    # Implements the base class for all OCCI resources, this
+    # class can be used directly to create resource instances.
+    #
+    # @attr links [Set] set of links associated with this resource instance
+    # @attr summary [String] simple human-readable description of this resource instance
+    #
+    # @author Boris Parak <parak@cesnet.cz>
+    class Resource < Entity
+      attr_reader :links
 
-      attr_accessor :links
-
-      self.attributes = Occi::Core::Attributes.new(Occi::Core::Entity.attributes)
-
-      self.attributes['occi.core.summary'] = {:mutable => true}
-
-      self.kind = Occi::Core::Kind.new scheme='http://schemas.ogf.org/occi/core#',
-                                       term='resource',
-                                       title='resource',
-                                       attributes=self.attributes,
-                                       parent=Occi::Core::Entity.kind
-
-      # @param [String] kind
-      # @param [Array] mixins
-      # @param [Occi::Core::Attributes,Hash] attributes
-      # @param [Array] links
-      # @return [Occi::Core::Resource]
-      def initialize(kind=self.kind, mixins=[], attributes={}, actions=[], links=[], location=nil)
-        super(kind, mixins, attributes, actions, location)
-        @links = Occi::Core::Links.new(links)
-      end
-
-      def model=(model)
-        super model
-        @links.model = model
-      end
-
-      # @return [String] summary attribute of the resource
+      # @return [String] resource summary
       def summary
-        self.attributes.occi_.core_.summary
+        self['occi.core.summary']
       end
 
-      # set summary attribute of resource
-      # @param [String] summary
+      # @param summary [String] resource summary
       def summary=(summary)
-        self.attributes.occi!.core!.summary = summary
+        self['occi.core.summary'] = summary
       end
 
-      def link(target, kind=Occi::Core::Link.kind, mixins=[], attributes=Occi::Core::Attributes.new, rel=Occi::Core::Resource.type_identifier)
-        link = kind.entity_type.new
+      # @param links [Set] set of links
+      def links=(links)
+        unless links
+          raise Occi::Core::Errors::InstanceValidationError,
+                'Missing valid links'
+        end
+        @links ||= Set.new
+        @links.each { |l| remove_link(l) }
+        links.each { |l| add_link(l) }
 
-        link.rel = rel
-        link.attributes = attributes
-        link.id ||= UUIDTools::UUID.random_create.to_s
-        link.target = target
-        link.source = self
-        link.mixins = mixins
-
-        @links << link
-
-        link
+        @links
       end
 
-      # @return [String] text representation
-      def to_text
-        text = super
-        @links.each { |link| text << "\n#{link.to_text_link}" }
-        text
+      # :nodoc:
+      def <<(object)
+        case object
+        when Occi::Core::Link
+          add_link(object)
+          return self
+        end
+
+        super
       end
 
-      # @return [Hash] hash containing the HTTP headers of the text/occi rendering
-      def to_header
-        header = super
-        header['Link'] = @links.collect {|link| link.to_string }.join(',') if @links.any?
-        header
+      # :nodoc:
+      def remove(object)
+        case object
+        when Occi::Core::Link
+          remove_link(object)
+          return self
+        end
+
+        super
       end
 
-      # @param [Hash] options
-      # @return [Hashie::Mash] link as Hashie::Mash to be parsed into a JSON object
-      def as_json(options={})
-        resource = super
-        resource.links = @links.as_json if @links.any?
-        resource
+      # Adds the given link to this instance.
+      #
+      # @param link [Occi::Core::Link] link to be added
+      def add_link(link)
+        unless link
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot add a non-existent link'
+        end
+        link.source = location
+        link.source_kind = kind
+        links << link
       end
 
+      # Removes the given link from this instance.
+      #
+      # @param link [Occi::Core::Link] link to be removed
+      def remove_link(link)
+        unless link
+          raise Occi::Core::Errors::MandatoryArgumentError,
+                'Cannot remove a non-existent link'
+        end
+        link.source = nil
+        link.source_kind = nil
+        links.delete link
+      end
+
+      # See `#valid!` on `Occi::Core::Entity`.
+      def valid!
+        unless links
+          raise Occi::Core::Errors::InstanceValidationError,
+                'Missing valid links'
+        end
+        links.each(&:valid!)
+        super
+      end
+
+      protected
+
+      # :nodoc:
+      def defaults
+        super.merge(links: Set.new, summary: nil)
+      end
+
+      # :nodoc:
+      def sufficient_args!(args)
+        super
+
+        return unless args[:links].nil?
+        raise Occi::Core::Errors::MandatoryArgumentError,
+              "Links is a mandatory argument for #{self.class}"
+      end
+
+      # :nodoc:
+      def post_initialize(args)
+        super
+        self.links = args.fetch(:links)
+        self.summary = args.fetch(:summary) if attributes['occi.core.summary']
+      end
     end
   end
 end

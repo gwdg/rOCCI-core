@@ -1,50 +1,108 @@
 module Occi
   module Core
     describe Link do
-      # XXX This is a poor man's spec file, by no means exhaustive
-      # XXX So far it is only used to cover code otherwise not
-      # XXX covered by calls from other specs
+      subject(:lnk) { link }
 
-      context '#check' do
-        let(:defs){
-          defs = Occi::Core::Attributes.new
-          defs['occi.core.id']       = { :type=> 'string', :required => true }
-          defs['stringtype']         = { :type => 'string', :pattern => '[adefltuv]+',
-                                           :default => 'defaultforlink', :mutable => true, :required => true }
-          defs['stringtypeoptional'] = { :type => 'string', :pattern => '[adefltuv]+',
-                                           :default => 'defaultforlink', :mutable => true, :required => false }
-          defs }
+      let(:attribute_title) { 'occi.core.title' }
+      let(:attribute_id) { 'occi.core.id' }
+      let(:attribute_source) { 'occi.core.source' }
+      let(:attribute_target) { 'occi.core.target' }
+      let(:attributes) do
+        {
+          attribute_title   => instance_double('Occi::Core::AttributeDefinition'),
+          attribute_id      => instance_double('Occi::Core::AttributeDefinition'),
+          attribute_source  => instance_double('Occi::Core::AttributeDefinition'),
+          attribute_target  => instance_double('Occi::Core::AttributeDefinition')
+        }
+      end
 
-        it 'sets default for required attribute' do
-          link = Occi::Core::Link.new
-          link.kind.attributes.merge!(defs)
-          model = Occi::Model.new
-          model.register(link.kind)
-          link.model = model
-          link.source = Occi::Core::Resource.new
+      let(:attribute_instance) { instance_double('Occi::Core::Attribute') }
 
-          link.check
-          expect(link.attributes['stringtype']).to eql 'defaultforlink'
-          expect(link.attributes['stringtypeoptional']).to be_nil
+      let(:kind) { instance_double('Occi::Core::Kind') }
+
+      let(:link) { Link.new(kind: kind, title: 'My Link', id: SecureRandom.uuid) }
+
+      before do
+        allow(kind).to receive(:attributes).and_return(attributes)
+        allow(kind).to receive(:location).and_return(URI.parse('/kind/'))
+        attributes.keys.each { |attrib| allow(attributes[attrib]).to receive(:default) }
+      end
+
+      LNK_ATTRS = %i[source target rel].freeze
+
+      LNK_ATTRS.each do |attr|
+        it "has #{attr} accessor" do
+          is_expected.to have_attr_accessor attr.to_sym
+        end
+      end
+
+      it 'has attributes value accessor' do
+        expect(lnk).to be_kind_of(Helpers::InstanceAttributesAccessor)
+        expect(lnk).to respond_to(:[])
+        expect(lnk).to respond_to(:[]=)
+        expect(lnk).to respond_to(:attribute?)
+      end
+
+      it 'has logger' do
+        expect(lnk).to respond_to(:logger)
+        expect(lnk.class).to respond_to(:logger)
+      end
+
+      it 'is renderable' do
+        expect(lnk).to be_kind_of(Helpers::Renderable)
+        expect(lnk).to respond_to(:render)
+      end
+
+      describe '#source=' do
+        it 'redirects to `occi.core.source`' do
+          expect(lnk).to receive(:[]=).with('occi.core.source', attribute_instance)
+          expect { lnk.source = attribute_instance }.not_to raise_error
+        end
+      end
+
+      describe '#source' do
+        it 'redirects to `occi.core.source`' do
+          expect(lnk).to receive(:[]).with('occi.core.source')
+          expect { lnk.source }.not_to raise_error
+        end
+      end
+
+      describe '#target=' do
+        it 'redirects to `occi.core.target`' do
+          expect(lnk).to receive(:[]=).with('occi.core.target', attribute_instance)
+          expect { lnk.target = attribute_instance }.not_to raise_error
+        end
+      end
+
+      describe '#target' do
+        it 'redirects to `occi.core.target`' do
+          expect(lnk).to receive(:[]).with('occi.core.target')
+          expect { lnk.target }.not_to raise_error
+        end
+      end
+
+      describe '#valid!' do
+        context 'with missing required attributes' do
+          before do
+            lnk.target = nil
+            lnk.source = nil
+          end
+
+          it 'raises error' do
+            expect { lnk.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
+          end
         end
 
-        it 'accepts the set_defaults flag' do
-          link = Occi::Core::Link.new
-          link.kind.attributes.merge!(defs)
-          model = Occi::Model.new
-          model.register(link.kind)
-          link.model = model
-          link.source = Occi::Core::Resource.new
+        context 'with all required attributes' do
+          before do
+            lnk.target = attributes['occi.core.target']
+            lnk.source = attributes['occi.core.source']
+            expect(attributes.values).to all(receive(:valid!))
+          end
 
-          link.check(true)
-          expect(link.attributes['stringtype']).to eql 'defaultforlink'
-          expect(link.attributes['stringtypeoptional']).to eql 'defaultforlink'
-        end
-
-        it 'raises error if no relationship is set' do
-          norel = Occi::Core::Link.new
-          norel.instance_eval { @rel=nil }
-          expect{ norel.check }.to raise_exception ArgumentError
+          it 'passes without error' do
+            expect { lnk.valid! }.not_to raise_error
+          end
         end
       end
     end

@@ -1,182 +1,189 @@
 module Occi
   module Core
     describe Kind do
+      subject(:knd) { kind }
 
-      describe '#get_class' do
+      let(:example_term) { 'kind' }
+      let(:example_schema) { 'http://schemas.org/schema#' }
+      let(:example_title) { 'Generic kind' }
 
-        context 'OCCI Resource class' do
-          let(:scheme){ 'http://schemas.ogf.org/occi/core' }
-          let(:term){ 'resource' }
-          let(:klass){ Occi::Core::Kind.get_class scheme, term }
+      let(:root_kind) do
+        Kind.new(
+          term: 'root',
+          schema: 'http://test.org/root#',
+          title: 'Root kind'
+        )
+      end
 
-          it 'gets OCCI Resource class by term term and scheme' do
-            expect(klass).to be Occi::Core::Resource
-          end
-          it 'also gets the superclass' do
-            expect(klass.superclass).to be Occi::Core::Entity
-            #TODO: Possibly move this test to resource_spec?
-          end
+      let(:kind) do
+        Kind.new(
+          term: example_term,
+          schema: example_schema,
+          title: example_title,
+          parent: root_kind
+        )
+      end
+
+      let(:successor_kind) do
+        Kind.new(
+          term: 'succ',
+          schema: 'http://test.org/succ#',
+          title: 'Succ kind',
+          parent: kind
+        )
+      end
+
+      KIND_ATTRS = %i[parent location actions].freeze
+
+      KIND_ATTRS.each do |attr|
+        it "has #{attr} accessor" do
+          is_expected.to have_attr_accessor attr.to_sym
+        end
+      end
+
+      describe '::new' do
+        let(:attr_def) { instance_double(Occi::Core::AttributeDefinition) }
+        let(:new_attr_def) { instance_double(Occi::Core::AttributeDefinition) }
+        let(:root_kind) do
+          rkind = Kind.new(term: 'root', schema: 'http://test.org/root#', title: 'Root kind')
+          rkind.attributes['my.test.attr'] = attr_def
+          rkind
+        end
+        let(:successor_kind) do
+          Kind.new(
+            term: 'succ', schema: 'http://test.org/succ#', title: 'Succ kind', parent: kind,
+            attributes: { 'my.test.attr' => new_attr_def }
+          )
         end
 
-        context 'non-predefined OCCI class' do
-          let(:scheme){ 'http://example.com/occi' }
-          let(:term){ 'test' }
-          let(:related){ ['http://schemas.ogf.org/occi/core#resource'] }
-          let(:klass){ Occi::Core::Kind.get_class scheme, term, related }
-
-          it 'gets non predefined OCCI class by term, scheme and related class' do
-            expect(klass).to be Com::Example::Occi::Test
-          end
-          it 'also gets the superclass' do
-            expect(klass.superclass).to be Occi::Core::Resource
-            #TODO: Possibly move this test to resource_spec?
-          end
+        it 'inherits attributes from parent' do
+          expect(kind.attributes.keys).to include('my.test.attr')
+          expect(kind.attributes['my.test.attr']).to eq attr_def
         end
 
-        it 'does not get OCCI class by term and scheme if it relates to existing class not derived from OCCI Entity' do
-          scheme = 'http://hashie/'
-          term = 'mash'
-          related = ['http://schemas.ogf.org/occi/core#resource']
-          expect { Occi::Core::Kind.get_class scheme, term, related }.to raise_error
+        it 'overwrites attributes on parent' do
+          expect(kind.attributes['my.test.attr']).to eq attr_def
+          expect(successor_kind.attributes['my.test.attr']).to eq new_attr_def
         end
 
-        context 'in case of improper input' do
+        it 'works without parent' do
+          expect { Kind.new term: example_term, schema: example_schema }.not_to raise_error
+        end
+      end
 
-          it 'handles parent overriden with nil' do
-            expect(Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', 'resource', nil).to eq Occi::Core::Resource
-          end
-          
-          it 'copes with invalid characters in scheme' do
-            expect{Occi::Core::Kind.get_class 'http://schemas ogf.org/occi/core', 'resource'}.to raise_error(URI::InvalidURIError)
-          end
-          it 'copes with non-URI-like structure of the scheme' do
-            expect{Occi::Core::Kind.get_class 'doesnotexist', 'resource'}.to raise_error(StandardError)
-          end
-
-          context 'handling invalid characters in term' do
-            after { Occi::Settings.reload! }
-            it 'copes with compatibility on' do
-              Occi::Settings['compatibility'] = true
-              expect(Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', '# #resource$').to eq Occi::Core::Resource
-            end
-            
-            it 'copes with compatibility off' do
-              Occi::Settings['compatibility'] = false
-              expect{Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', '# #resource$'}.to raise_error(ArgumentError)
-            end
-          end
-          
-          it 'handles nil scheme' do
-            expect{Occi::Core::Kind.get_class nil, 'resource'}.to raise_error(ArgumentError)
-          end
-
-          it 'handles nil resource' do
-            expect{Occi::Core::Kind.get_class 'http://schemas.ogf.org/occi/core', nil}.to raise_error(ArgumentError)
-          end
-
-          it 'copes with invalid parent' do
-            expect{Occi::Core::Kind.get_class 'http://example.com/occi', 'test', 'http://s  chemas.ogf.org/occi/core#resource'}.to raise_error(URI::InvalidURIError)
-          end
-
-          it 'copes with parent missing term' do
-            expect{Occi::Core::Kind.get_class 'http://example.com/occi', 'test', 'http://s  chemas.ogf.org/occi/core'}.to raise_error(ArgumentError)
-          end
-
+      describe '#related?' do
+        it 'returns `false` without `kind`' do
+          expect(knd.related?(nil)).to be false
         end
 
+        it 'returns `false` for not related' do
+          expect(knd.related?('wat?')).to be false
+        end
+
+        it 'returns `false` for successor kind' do
+          expect(knd.related?(successor_kind)).to be false
+        end
+
+        it 'returns `true` for related' do
+          expect(knd.related?(root_kind)).to be true
+        end
+      end
+
+      describe '#directly_related?' do
+        subject(:knd) { successor_kind }
+
+        it 'returns `false` without `kind`' do
+          expect(knd.directly_related?(nil)).to be false
+        end
+
+        it 'returns `false` for not related' do
+          expect(knd.directly_related?('wat?')).to be false
+        end
+
+        it 'returns `false` for not directly related' do
+          expect(knd.directly_related?(root_kind)).to be false
+        end
+
+        it 'returns `true` for directly related' do
+          expect(knd.directly_related?(kind)).to be true
+        end
+      end
+
+      describe '#related' do
+        subject(:knd) { root_kind.related }
+
+        it 'returns enumerable list' do
+          expect(knd).to be_kind_of(Enumerable)
+        end
+
+        it 'returns empty list for root' do
+          expect(knd).to be_empty
+        end
+
+        it 'returns non-empty list for non-root kind' do
+          expect(kind.related).to include(root_kind)
+          expect(kind.related.count).to be 1
+        end
+
+        it 'returns non-empty list for multi-predecessor kind' do
+          expect(successor_kind.related).to include(kind)
+          expect(successor_kind.related).to include(root_kind)
+          expect(successor_kind.related.count).to be 2
+        end
+      end
+
+      describe '#directly_related' do
+        subject(:knd) { root_kind.directly_related }
+
+        it 'returns enumerable list' do
+          expect(knd).to be_kind_of(Enumerable)
+        end
+
+        it 'returns empty list for root' do
+          expect(knd).to be_empty
+        end
+
+        it 'returns single-element list for single-predecessor kind' do
+          expect(kind.directly_related.count).to eq 1
+          expect(kind.directly_related).to include(root_kind)
+        end
+
+        it 'returns single-element list for multi-predecessor kind' do
+          expect(successor_kind.directly_related.count).to eq 1
+          expect(successor_kind.directly_related).to include(kind)
+        end
+      end
+
+      describe '#hierarchy_root?' do
+        it 'returns `false` for non-root kind' do
+          expect(root_kind.hierarchy_root?).to be true
+        end
+
+        it 'returns `true` for root kind' do
+          expect(successor_kind.hierarchy_root?).to be false
+        end
       end
 
       describe '#location' do
-        let(:kind) { Occi::Core::Kind.new }
+        context 'without term and location' do
+          before do
+            knd.term = nil
+            knd.location = nil
+          end
 
-        it 'gets normalized to a relative path' do
-          kind.location = 'http://example.org/kind/'
-          expect(kind.location).to eq '/kind/'
+          it 'fails' do
+            expect { knd.location }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+          end
         end
 
-        it 'can be set to nil' do
-          kind.location = nil
-          expect(kind.location).to be_nil
-        end
+        context 'with term and without location' do
+          before { knd.location = nil }
 
-        it 'raises an error when location does not start and end with a slash' do
-          expect { kind.location = '/no_slash' }.to raise_error
-          expect { kind.location = 'no_slash/' }.to raise_error
-        end
-
-        it 'raises an error when location contains spaces' do
-          expect { kind.location = '/sla shes/' }.to raise_error
-        end
-
-        it 'can be set to an empty string' do
-          expect { kind.location = '' }.not_to raise_error
+          it 'returns default' do
+            expect(knd.location).to be_kind_of URI
+          end
         end
       end
-
-      describe '#related_to?' do
-        let(:base){ Occi::Core::Kind.new 'http://occi.test.case/core/kind', 'base' }
-        let(:related){ Occi::Core::Kind.new 'http://occi.test.case/core/kind/base', 'related', 'title', Occi::Core::Attributes.new, base }
-        let(:unrelated){ Occi::Core::Kind.new 'http://occi.test.case/core/kind', 'unrelated' }
-
-        it 'recognizes existing relationship' do
-          expect(related.related_to?(base)).to eq true
-        end
-
-        it 'does not give false positives on non-existent relationship' do
-          expect(base.related_to?(unrelated)).to eq false
-        end
-
-        it 'recognizes transitive relationships' #do #TODO This test actually works, but fails because te feature is not yet implemented
-#          grandchild = Occi::Core::Kind.new 'http://occi.test.case/core/kind/base', 'related', 'title', Occi::Core::Attributes.new, related
-#          expect(grandchild.related_to?(base)).to eq true
-#        end
-      end
-
-      describe '#as_json' do
-        let(:kind){ Occi::Core::Kind.new }
-
-        it 'renders JSON correctly from freshly initialized object' do
-          expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#","attributes":{}}'
-          hash=Hashie::Mash.new(JSON.parse(expected))
-          expect(kind.as_json).to eql(hash)
-        end
-
-        it 'renders JSON correctly with optional attributes' do
-          kind.title = "test title"
-          expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#","title":"test title","attributes":{}}'
-          hash=Hashie::Mash.new(JSON.parse(expected))
-          expect(kind.as_json).to eql(hash)
-        end
-
-        it 'renders JSON correctly with special characters' do
-          kind.title = "Some special characters @#\$%"
-          expected = '{"location":"/kind/","term":"kind","scheme":"http://schemas.ogf.org/occi/core#","title":"Some special characters @#\$%","attributes":{}}'
-          hash=Hashie::Mash.new(JSON.parse(expected))
-          expect(kind.as_json).to eql(hash)
-        end
-
-      end
-
-      describe '#to_string' do
-        let(:kind){ Occi::Core::Kind.new }
-
-        it 'produces a string correctly from freshly initialized object' do
-          expected = ('scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/kind/";kind').split(/;/)
-          actual = kind.to_string.split(/;/)
-          expect(actual).to match_array(expected)
-        end
-
-        it 'produces a string correctly with optional attributes' do
-          kind.title = "test title"
-          expected = ('scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/kind/";kind;title="test title"').split(/;/)
-          actual = kind.to_string.split(/;/)
-          expect(actual).to match_array(expected)
-        end
-
-#        TODO: Optional attributes, special characters
-
-      end
-
     end
   end
 end
