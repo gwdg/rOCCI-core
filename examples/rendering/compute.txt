@@ -1,17 +1,10 @@
 Category: compute;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind";
-Category: small;scheme="http://fedcloud.egi.eu/occi/compute/flavour/1.0#";class="mixin";
-Category: uuid_egi_ubuntu_server_14_04_lts_fedcloud_warg_131;scheme="http://occi.localhost/occi/infrastructure/os_tpl#";class="mixin";
-Category: public_key;scheme="http://schemas.openstack.org/instance/credentials#";class="mixin";
-Category: user_data;scheme="http://schemas.openstack.org/compute/instance#";class="mixin";
-Category: uuid_fedcloud_warg_101;scheme="http://occi.localhost/occi/infrastructure/availability_zone#";class="mixin";
 X-OCCI-Attribute: occi.core.id="89878"
 X-OCCI-Attribute: occi.core.title="my_compute"
 X-OCCI-Attribute: occi.core.summary="Instantiated with rOCCI-server on Tue, 18 Apr 2017 16:55:12 +0200."
 X-OCCI-Attribute: occi.compute.cores=1
 X-OCCI-Attribute: occi.compute.memory=1.0
 X-OCCI-Attribute: occi.compute.state="active"
-X-OCCI-Attribute: org.openstack.credentials.publickey.data="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFy/sRQ4M0jYyiJyBRGpidQ6eJCdMRRZzzxuxQDidvxhcHPNFthrHT5/+9lfrQCorJy5YjMJEGBC22Y62kctQ//FCa2wICdxGZVgcXdOLnGar5ztgrt1txlCu2/80yc1e0u39LdlyzlEaCnjGUeD4C6tZdAISLfQwiWEvzsJKJR302MDZCqnir9BEo57rTORAVD853hmko/3lvZk2EwgM+5lcMr13Hy/mbwNSuWq0ik71BSXyB1bnJ2XfiXOzPfkG1sflhe0j488nwNLNU1NSBbHARJIRJcX8QRVH46Zq02AeTNJikXxCnbfdGG8VcG5H8eWOa36m0ZWHGNgqaa8Pt user@localhost"
-X-OCCI-Attribute: org.openstack.compute.user_data="I2Nsb3VkLWNvbmZpZwojIHNlZSBodHRwczovL2hlbHAudWJ1bnR1LmNvbS9jb21tdW5pdHkvQ2xvdWRJbml0CgpydW5jbWQ6Ci0gL2Jpbi9lY2hvICdJbnN0YW5jZSBpcyByZWFkeSB0byB1c2UuJyB8IHdhbGwKCg=="
 Link: </compute/89878?action=stop>;rel="http://schemas.ogf.org/occi/infrastructure/compute/action#stop"
 Link: </compute/89878?action=restart>;rel="http://schemas.ogf.org/occi/infrastructure/compute/action#restart"
 Link: </compute/89878?action=suspend>;rel="http://schemas.ogf.org/occi/infrastructure/compute/action#suspend"
