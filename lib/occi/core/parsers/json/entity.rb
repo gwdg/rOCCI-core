@@ -64,8 +64,8 @@ module Occi
             instance = @_ib.get hash[:kind], mixins: lookup(hash[:mixins]), actions: lookup(hash[:actions])
 
             set_attributes! instance.attributes, hash[:attributes]
-            set_links! instance.links, hash[:links]
-            fix_target! instance, hash[:target] if instance.respond_to?(:target)
+            set_links! instance.links, hash[:links] if instance.respond_to?(:links)
+            set_target! instance, hash[:target] if instance.respond_to?(:target)
 
             Set.new [instance]
           end
@@ -107,11 +107,11 @@ module Occi
 
           def set_links!(links, ary)
             return if ary.blank?
-            ary.each { |l| links << json_single(l) }
+            ary.each { |l| links << json_single(l).first }
           end
 
           # :nodoc:
-          def fix_target!(link, hash)
+          def set_target!(link, hash)
             return unless link.respond_to?(:target_kind)
             return if hash.blank? || hash[:kind].blank?
 
