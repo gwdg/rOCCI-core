@@ -4,12 +4,13 @@ module Occi
     # class can be used directly to create link instances.
     #
     # @attr source [URI] link source as URI
+    # @attr source_kind [Occi::Core::Kind, NilClass] source kind or `nil` if unknown
     # @attr target [URI] link target, may point outside of this domain
-    # @attr rel [Occi::Core::Kind, NilClass] Kind of the `target` or `nil` if ourside the domain
+    # @attr target_kind [Occi::Core::Kind, NilClass] target kind or `nil` if ourside the domain
     #
     # @author Boris Parak <parak@cesnet.cz>
     class Link < Entity
-      attr_accessor :rel
+      attr_accessor :target_kind, :source_kind
 
       # @return [URI] link source
       def source
@@ -18,7 +19,7 @@ module Occi
 
       # @param source [URI] link source
       def source=(source)
-        self['occi.core.source'] = source
+        self['occi.core.source'] = source.is_a?(String) ? URI.parse(source) : source
       end
 
       # @return [URI] link target
@@ -28,16 +29,18 @@ module Occi
 
       # @param target [URI] link target
       def target=(target)
-        self['occi.core.target'] = target
+        self['occi.core.target'] = target.is_a?(String) ? URI.parse(target) : target
       end
+
+      # See `target_kind`
+      alias rel target_kind
+      alias rel= target_kind=
 
       # See `#valid!` on `Occi::Core::Entity`.
       def valid!
         %i[source target].each do |attr|
-          unless send(attr)
-            raise Occi::Core::Errors::InstanceValidationError,
-                  "Missing valid #{attr}"
-          end
+          next if send(attr)
+          raise Occi::Core::Errors::InstanceValidationError, "Missing valid #{attr}"
         end
 
         super
@@ -47,15 +50,20 @@ module Occi
 
       # :nodoc:
       def defaults
-        super.merge(source: nil, target: nil, rel: nil)
+        super.merge(source: nil, target: nil, target_kind: nil, source_kind: nil)
       end
 
       # :nodoc:
       def post_initialize(args)
         super
-        self.source = args.fetch(:source) if attributes['occi.core.source']
-        self.target = args.fetch(:target) if attributes['occi.core.target']
-        @rel = args.fetch(:rel)
+        if attributes['occi.core.source']
+          self.source = args.fetch(:source)
+          @source_kind = args.fetch(:source_kind)
+        end
+
+        return unless attributes['occi.core.target']
+        self.target = args.fetch(:target)
+        @target_kind = args.fetch(:target_kind)
       end
     end
   end

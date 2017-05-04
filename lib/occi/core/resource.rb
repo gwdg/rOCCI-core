@@ -26,10 +26,11 @@ module Occi
           raise Occi::Core::Errors::InstanceValidationError,
                 'Missing valid links'
         end
-        links.each { |link| link.source = self }
-        @links = links
+        @links ||= Set.new
+        @links.each { |l| remove_link(l) }
+        links.each { |l| add_link(l) }
 
-        links
+        @links
       end
 
       # :nodoc:
@@ -62,7 +63,8 @@ module Occi
           raise Occi::Core::Errors::MandatoryArgumentError,
                 'Cannot add a non-existent link'
         end
-        link.source = self
+        link.source = location
+        link.source_kind = kind
         links << link
       end
 
@@ -75,16 +77,17 @@ module Occi
                 'Cannot remove a non-existent link'
         end
         link.source = nil
+        link.source_kind = nil
         links.delete link
       end
 
       # See `#valid!` on `Occi::Core::Entity`.
       def valid!
-        # TODO: validate included links
         unless links
           raise Occi::Core::Errors::InstanceValidationError,
                 'Missing valid links'
         end
+        links.each(&:valid!)
         super
       end
 

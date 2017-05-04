@@ -88,12 +88,13 @@ module Occi
 
         context 'with links' do
           before do
-            expect(link).to receive(:source=).with(res)
+            expect(link).to receive(:source=).with(res.location)
+            expect(link).to receive(:source_kind=).with(res.kind)
           end
 
           it 'assigns links with changed `source`' do
             expect { res.links = links }.not_to raise_error
-            expect(res.links).to be links
+            expect(res.links).to eq links
           end
         end
 
