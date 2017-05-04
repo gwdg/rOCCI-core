@@ -111,10 +111,10 @@ module Occi
 
           # :nodoc:
           def fix_target!(link, hash)
-            return unless link.respond_to?(:rel) && !hash.blank?
-            return if hash[:kind].blank?
+            return unless link.respond_to?(:target_kind)
+            return if hash.blank? || hash[:kind].blank?
 
-            link.rel = lookup([hash[:kind]]).first
+            link.target_kind = lookup([hash[:kind]]).first
           end
 
           # :nodoc:
