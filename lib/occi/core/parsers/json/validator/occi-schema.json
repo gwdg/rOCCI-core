@@ -13,52 +13,49 @@
 				"kind": { "type": "string" }
 			}
 		},
-		"resource": {
-			"id": "#resource",
+		"attributes": {
+			"id": "#attributes",
 			"type": "object",
-			"required": ["kind", "id", "attributes"],
+			"additionalProperties": {
+				"oneOf": [
+					{ "type": "number" },
+					{ "type": "boolean" },
+					{ "type": "string" },
+					{ "type": "object" },
+					{ "type": "array" }
+				]
+			}
+		},
+		"attribute_definition": {
+			"id": "#attribute_definition",
+			"type": "object",
 			"additionalProperties": false,
+			"required": ["type", "mutable", "required"],
 			"properties": {
-				"kind": { "type": "string" },
-				"mixins": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
-				"attributes": { "$ref": "#/definitions/attributes" },
-				"actions": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
-				"id": { "type": "string" },
-				"links": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"$ref": "#/definitions/link"
-					}
+				"mutable": { "type": "boolean" },
+				"required": { "type": "boolean" },
+				"type": { "type": "string" },
+				"default": {
+					"oneOf": [
+						{ "type": "number" },
+						{ "type": "string" },
+						{ "type": "boolean" },
+						{ "type": "object" },
+						{ "type": "array" }
+					]
 				},
-				"summary": { "type": "string" },
-				"title": { "type": "string" }
+				"description": { "type": "string" },
+				"pattern": { "type": "string" }
 			}
 		},
-		"action_instance": {
-			"id": "#action_instance",
+		"attribute_definitions": {
+			"id": "#attribute_definitions",
 			"type": "object",
-			"required": ["action"],
 			"additionalProperties": false,
-			"properties": {
-				"action": { "type": "string" },
-				"attributes": { "$ref": "#/definitions/attributes" }
-			}
-		},
-		"link": {
-			"id": "#link",
-			"type": "object",
-			"required": ["kind", "id", "target", "source", "attributes"],
-			"additionalProperties": false,
-			"properties": {
-				"kind": { "type": "string" },
-				"mixins": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
-				"attributes": { "$ref": "#/definitions/attributes" },
-				"actions": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
-				"id": { "type": "string" },
-				"source": { "$ref": "#/definitions/kinded_uri" },
-				"target": { "$ref": "#/definitions/kinded_uri" },
-				"title": { "type": "string" }
+			"patternProperties": {
+				".+": {
+					"$ref": "#/definitions/attribute_definition"
+				}
 			}
 		},
 		"kind": {
@@ -102,6 +99,54 @@
 				"scheme": { "type": "string" },
 				"title": { "type": "string" },
 				"attributes": { "$ref": "#/definitions/attribute_definitions" }
+			}
+		},
+		"action_instance": {
+			"id": "#action_instance",
+			"type": "object",
+			"required": ["action"],
+			"additionalProperties": false,
+			"properties": {
+				"action": { "type": "string" },
+				"attributes": { "$ref": "#/definitions/attributes" }
+			}
+		},
+		"resource": {
+			"id": "#resource",
+			"type": "object",
+			"required": ["kind", "id", "attributes"],
+			"additionalProperties": false,
+			"properties": {
+				"kind": { "type": "string" },
+				"mixins": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
+				"attributes": { "$ref": "#/definitions/attributes" },
+				"actions": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
+				"id": { "type": "string" },
+				"links": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#/definitions/link"
+					}
+				},
+				"summary": { "type": "string" },
+				"title": { "type": "string" }
+			}
+		},
+		"link": {
+			"id": "#link",
+			"type": "object",
+			"required": ["kind", "id", "target", "source", "attributes"],
+			"additionalProperties": false,
+			"properties": {
+				"kind": { "type": "string" },
+				"mixins": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
+				"attributes": { "$ref": "#/definitions/attributes" },
+				"actions": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
+				"id": { "type": "string" },
+				"source": { "$ref": "#/definitions/kinded_uri" },
+				"target": { "$ref": "#/definitions/kinded_uri" },
+				"title": { "type": "string" }
 			}
 		},
 		"resource_collection": {
@@ -155,94 +200,41 @@
 				}
 			}
 		},
-		"kind_collection": {
-			"id": "#kind_collection",
-			"type": "object",
-			"required": ["kinds"],
-			"additionalProperties": false,
-			"properties": {
-				"kinds": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"$ref": "#/definitions/kind"
-					}
-				}
-			}
-		},
-		"mixin_collection": {
-			"id": "#mixin_collection",
+		"mixin_identifiers": {
+			"id": "#mixin_identifiers",
 			"type": "object",
 			"required": ["mixins"],
 			"additionalProperties": false,
 			"properties": {
-				"mixins": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"$ref": "#/definitions/mixin"
-					}
-				}
+				"mixins": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" }
 			}
 		},
-		"action_collection": {
-			"id": "#action_collection",
+		"kind_identifiers": {
+			"id": "#kind_identifiers",
+			"type": "object",
+			"required": ["kinds"],
+			"additionalProperties": false,
+			"properties": {
+				"kinds": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" }
+			}
+		},
+		"action_identifiers": {
+			"id": "#action_identifiers",
 			"type": "object",
 			"required": ["actions"],
 			"additionalProperties": false,
 			"properties": {
-				"actions": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"$ref": "#/definitions/action"
-					}
-				}
+				"actions": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" }
 			}
 		},
-		"attributes": {
-			"id": "#attributes",
-			"type": "object",
-			"additionalProperties": {
-				"oneOf": [
-					{ "type": "number" },
-					{ "type": "boolean" },
-					{ "type": "string" },
-					{ "type": "object" },
-					{ "type": "array" }
-				]
-			}
-		},
-		"attribute_definition": {
-			"id": "#attribute_definition",
+		"category_identifiers": {
+			"id": "#category_identifiers",
 			"type": "object",
 			"additionalProperties": false,
-			"required": ["type", "mutable", "required"],
 			"properties": {
-				"mutable": { "type": "boolean" },
-				"required": { "type": "boolean" },
-				"type": { "type": "string" },
-				"default": {
-					"oneOf": [
-						{ "type": "number" },
-						{ "type": "string" },
-						{ "type": "boolean" },
-						{ "type": "object" },
-						{ "type": "array" }
-					]
-				},
-				"description": { "type": "string" },
-				"pattern": { "type": "string" }
-			}
-		},
-		"attribute_definitions": {
-			"id": "#attribute_definitions",
-			"type": "object",
-			"additionalProperties": false,
-			"patternProperties": {
-				".+": {
-					"$ref": "#/definitions/attribute_definition"
-				}
+				"mixins": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
+				"kinds": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" },
+				"actions": { "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray" }
 			}
 		},
 		"model": {

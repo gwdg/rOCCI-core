@@ -67,8 +67,13 @@ module Occi
         # @return [Set] set of instances
         def categories(body, _headers = nil, expectation = nil)
           expectation ||= Occi::Core::Category
-          Json::Validator.validate_model! body
-          Json::Category.json(body, Set.new, false).map { |c| lookup c.identifier, expectation }.to_set
+          Json::Validator.validate_category_identifiers! body
+
+          cats = Set.new
+          hsh = handle(Occi::Core::Errors::ParsingError) { JSON.parse(body) }
+          hsh.values.flatten.each { |cat_id| cats << lookup(cat_id, expectation) }
+
+          cats
         end
 
         # :nodoc:

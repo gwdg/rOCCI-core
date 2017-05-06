@@ -27,8 +27,23 @@ module Occi
             end
 
             # :nodoc:
+            def validate_locations!(json)
+              validate! json, :locations
+            end
+
+            # :nodoc:
+            def validate_category_identifiers!(json)
+              validate! json, :'category-identifiers'
+            end
+
+            # :nodoc:
             def validate_model!(json)
               validate! json, :model
+            end
+
+            # :nodoc:
+            def validate_action_instance!(json)
+              validate! json, :'action-instance'
             end
 
             # :nodoc:
@@ -42,33 +57,8 @@ module Occi
             end
 
             # :nodoc:
-            def validate_action_instance!(json)
-              validate! json, :'action-instance'
-            end
-
-            # :nodoc:
             def validate_entity_collection!(json)
               validate! json, :'entity-collection'
-            end
-
-            # :nodoc:
-            def validate_link_collection!(json)
-              validate! json, :'link-collection'
-            end
-
-            # :nodoc:
-            def validate_resource_collection!(json)
-              validate! json, :'resource-collection'
-            end
-
-            # :nodoc:
-            def validate_mixin_collection!(json)
-              validate! json, :'mixin-collection'
-            end
-
-            # :nodoc:
-            def validate_locations!(json)
-              validate! json, :locations
             end
 
             # :nodoc:
