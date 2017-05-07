@@ -33,13 +33,10 @@ module Occi
             #
             # @param body [String] JSON body for parsing
             # @param model [Occi::Core::Model] model with existing categories
-            # @param full [Boolean] dereference categories
             # @return [Occi::Core::Model] model with all known category instances
-            def json(body, model, full = true)
+            def json(body, model)
               parsed = raw_hash(body)
-
               instantiate_hashes! parsed, model
-              return model unless full
 
               raw_categories = [parsed[:kinds], parsed[:mixins]].flatten.compact
               dereference_identifiers! model.categories, raw_categories

@@ -1,78 +1,8 @@
 {
   "mixins": [
-    {
-      "applies": [
-        "http://schemas.ogf.org/occi/infrastructure#network"
-      ],
-      "attributes": {
-        "occi.network.address": {
-          "description": "IP address (v4 or v6) assigned to this instance.",
-          "mutable": true,
-          "required": false,
-          "type": "string"
-        },
-        "occi.network.allocation": {
-          "default": "static",
-          "description": "Network address allocation mechanism.",
-          "mutable": true,
-          "pattern": "(?-mix:^(dynamic|static)$)",
-          "required": false,
-          "type": "string"
-        },
-        "occi.network.gateway": {
-          "description": "IP address (v4 or v6) of the pre-configured gateway.",
-          "mutable": true,
-          "required": false,
-          "type": "string"
-        }
-      },
-      "location": "/mixin/ipnetwork/",
-      "scheme": "http://schemas.ogf.org/occi/infrastructure/network#",
-      "term": "ipnetwork",
-      "title": "OCCI IP Network mixin"
-    },
-    {
-      "applies": [
-        "http://schemas.ogf.org/occi/infrastructure#networkinterface"
-      ],
-      "attributes": {
-        "occi.networkinterface.address": {
-          "description": "IP address (v4 or v6) assigned to this instance.",
-          "mutable": true,
-          "required": false,
-          "type": "string"
-        },
-        "occi.networkinterface.allocation": {
-          "default": "static",
-          "description": "Network address allocation mechanism.",
-          "mutable": true,
-          "pattern": "(?-mix:^(dynamic|static)$)",
-          "required": false,
-          "type": "string"
-        },
-        "occi.networkinterface.gateway": {
-          "description": "IP address (v4 or v6) of the pre-configured gateway.",
-          "mutable": true,
-          "required": false,
-          "type": "string"
-        }
-      },
-      "location": "/mixin/ipnetworkinterface/",
-      "scheme": "http://schemas.ogf.org/occi/infrastructure/networkinterface#",
-      "term": "ipnetworkinterface",
-      "title": "OCCI IP NetworkInterface mixin"
-    },
-    {
-      "location": "/mixin/os_tpl/",
-      "scheme": "http://schemas.ogf.org/occi/infrastructure#",
-      "term": "os_tpl",
-      "title": "OS or Appliance template (parent mixin)"
-    },
-    {
-      "location": "/mixin/resource_tpl/",
-      "scheme": "http://schemas.ogf.org/occi/infrastructure#",
-      "term": "resource_tpl",
-      "title": "Resource template providing flavor/sizing information (parent mixin)"
-    }
+    "http://schemas.ogf.org/occi/infrastructure/network#ipnetwork",
+    "http://schemas.ogf.org/occi/infrastructure/networkinterface#ipnetworkinterface",
+    "http://schemas.ogf.org/occi/infrastructure#os_tpl",
+    "http://schemas.ogf.org/occi/infrastructure#resource_tpl"
   ]
 }

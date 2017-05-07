@@ -1,4 +1,4 @@
-Category: resource_tpl;scheme="http://schemas.ogf.org/occi/infrastructure#";class="mixin";title="resource template";location="/mixin/resource_tpl/"
-Category: os_tpl;scheme="http://schemas.ogf.org/occi/infrastructure#";class="mixin";title="operating system template";location="/mixin/os_tpl/"
-Category: ipnetwork;scheme="http://schemas.ogf.org/occi/infrastructure/network#";class="mixin";title="IP network mixin";location="/mixin/ipnetwork/";attributes="occi.network.address occi.network.gateway occi.network.allocation"
-Category: ipnetworkinterface;scheme="http://schemas.ogf.org/occi/infrastructure/networkinterface#";class="mixin";title="IP network interface mixin";location="/mixin/ipnetworkinterface/";attributes="occi.networkinterface.address occi.networkinterface.gateway occi.networkinterface.allocation"
+Category: resource_tpl;scheme="http://schemas.ogf.org/occi/infrastructure#";class="mixin"
+Category: os_tpl;scheme="http://schemas.ogf.org/occi/infrastructure#";class="mixin"
+Category: ipnetwork;scheme="http://schemas.ogf.org/occi/infrastructure/network#";class="mixin"
+Category: ipnetworkinterface;scheme="http://schemas.ogf.org/occi/infrastructure/networkinterface#";class="mixin"
