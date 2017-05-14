@@ -21,6 +21,7 @@ Metrics/AbcSize:
   - 'lib/occi/core/parsers/text/*'
   - 'lib/occi/core/parsers/json/*'
   - 'lib/occi/core/helpers/parser_dereferencer.rb'
+  - 'lib/occi/core/helpers/instance_attribute_resetter.rb'
 
 Metrics/LineLength:
   Max: 120

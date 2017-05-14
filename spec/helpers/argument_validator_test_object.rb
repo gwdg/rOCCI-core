@@ -1,6 +1,7 @@
 module RocciCoreSpec
   class ArgumentValidatorTestObject
     include Occi::Core::Helpers::ArgumentValidator
+    include Yell::Loggable
 
     private
 

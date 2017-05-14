@@ -42,6 +42,7 @@ module Occi
       # @return [Object] constructed instance
       # @return [NilClass] if such an instance could not be constructed
       def build(identifier, args = {})
+        logger.debug "#{self.class}: Building instance of #{identifier.inspect} with #{args.inspect}"
         k_args = args_with_kind(identifier, args)
         klass(identifier, parent_klass(k_args[:kind])).new k_args
       end
@@ -77,19 +78,23 @@ module Occi
 
       # Looks up the appropriate candidate class for the given identifier. If no class
       # is found in static tables, the last known ancestor is returned. For Core, this
-      # method ALWAYS returns the last known ancestor given as `last_ancestor`, for
+      # method ALWAYS returns the last known ancestor given as `known_ancestor`, for
       # compatibility reasons.
       #
       # @param identifier [String] identifier of the category
-      # @param last_ancestor [Class] expected ancestor
+      # @param known_ancestor [Class] expected ancestor
       # @return [Class] pre-defined class or given last ancestor
-      def klass(identifier, last_ancestor)
-        found_last_ancestor = self.class.klass_map[identifier]
-        if found_last_ancestor && !found_last_ancestor.ancestors.include?(last_ancestor)
+      def klass(identifier, known_ancestor)
+        found_klass = self.class.klass_map[identifier]
+        return known_ancestor unless found_klass
+
+        unless found_klass.ancestors.include?(known_ancestor)
           raise Occi::Core::Errors::InstanceValidationError,
-                "#{found_last_ancestor.inspect} is not a sub-type of #{last_ancestor.inspect}"
+                "#{found_klass} is not a sub-type of #{known_ancestor}"
         end
-        found_last_ancestor || last_ancestor
+
+        logger.debug "#{self.class}: Found #{found_klass} for #{identifier.inspect}"
+        found_klass
       end
 
       # Looks up the given identifier in the model. Returns `Occi::Core::Kind` instance if
@@ -98,7 +103,7 @@ module Occi
       #
       # @param identifier [String] identifier of the category
       # @return [Occi::Core::Kind] full category definition from the model
-      def kind(identifier)
+      def kind_instance(identifier)
         kind = model.find_by_identifier!(identifier)
         unless kind.is_a? Occi::Core::Kind
           raise Occi::Core::Errors::CategoryValidationError, "#{identifier.inspect} " \
@@ -113,13 +118,15 @@ module Occi
       # @param kind [Occi::Core::Kind] kind instance to evaluate
       # @return [Class] located known parent class
       def parent_klass(kind)
-        if kind.related? kind(Occi::Core::Constants::RESOURCE_KIND)
+        if kind.related? kind_instance(Occi::Core::Constants::RESOURCE_KIND)
+          logger.debug "#{self.class}: Identified #{kind.identifier} as Resource"
           Occi::Core::Resource
-        elsif kind.related? kind(Occi::Core::Constants::LINK_KIND)
+        elsif kind.related? kind_instance(Occi::Core::Constants::LINK_KIND)
+          logger.debug "#{self.class}: Identified #{kind.identifier} as Link"
           Occi::Core::Link
         else
           raise Occi::Core::Errors::ModelLookupError,
-                "Could not identify #{kind.identifier.inspect} as a Link or Resource"
+                "Could not identify #{kind.identifier} as a Link or Resource"
         end
       end
 
@@ -153,8 +160,8 @@ module Occi
       # :nodoc:
       def args_with_kind(identifier, args)
         k_args = args.clone
-        k_args[:kind] = kind(identifier)
-        k_args[:rel] = kind(k_args[:rel]) if k_args[:rel]
+        k_args[:kind] = kind_instance(identifier)
+        k_args[:rel] = kind_instance(k_args[:rel]) if k_args[:rel]
         k_args
       end
     end

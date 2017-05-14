@@ -24,6 +24,7 @@ module Occi
         end
 
         before do
+          allow(resetable).to receive(:logger).and_return(Yell[Object])
           allow(resetable).to receive(:base_attributes).and_return(base_attributes)
           allow(resetable).to receive(:added_attributes).and_return(added_attributes)
         end

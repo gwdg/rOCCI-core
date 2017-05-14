@@ -44,6 +44,7 @@ module Occi
         # @param derefd [Array] list of all available category instances
         # @param parsed_actions [Array] textual representation of needed actions
         def lookup_action_references!(cat, derefd, parsed_actions)
+          logger.debug "#{self}: Dereferencing actions #{parsed_actions.inspect} for #{cat.identifier.inspect}"
           return if parsed_actions.blank?
           parsed_actions.each { |action| cat.actions << first_or_die(derefd, action) }
         end
@@ -53,6 +54,7 @@ module Occi
         # @param parsed_rel [Array] textual representation of needed parent(s)
         def lookup_parent_references!(kind, derefd, parsed_rel)
           return if parsed_rel.blank? || kind.parent.is_a?(Occi::Core::Kind)
+          logger.debug "#{self}: Dereferencing parent #{parsed_rel.inspect} for #{kind.identifier.inspect}"
           if parsed_rel.is_a?(Enumerable)
             if parsed_rel.count > 1
               raise Occi::Core::Errors::ParsingError,
@@ -83,6 +85,7 @@ module Occi
         # @param what [String] identifier of the desired item
         # @return [Object] desired item from `where`
         def first_or_die(where, what)
+          logger.debug "#{self}: Looking for #{what.inspect} in #{where.class}"
           found = where.detect { |elm| elm.identifier == what }
           unless found
             raise Occi::Core::Errors::ParsingError,

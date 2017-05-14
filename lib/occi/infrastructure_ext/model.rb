@@ -10,6 +10,7 @@ module Occi
       #    model = Occi::InfrastructureExt::Model.new
       #    model.load_infrastructure_ext!
       def load_infrastructure_ext!
+        logger.debug "#{self.class}: Loading InfrastructureExt from Warehouse"
         Occi::InfrastructureExt::Warehouse.bootstrap! self
         self << Occi::InfrastructureExt::Mixins::AvailabilityZone.new
         nil

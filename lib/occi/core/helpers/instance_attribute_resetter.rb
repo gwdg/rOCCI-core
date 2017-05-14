@@ -51,7 +51,11 @@ module Occi
         # @return [Hash] updated attribute hash
         def remove_undef_attributes
           name_cache = attribute_names
-          attributes.keep_if { |key, value| name_cache.include?(key) && value && value.attribute_definition }
+          attributes.keep_if do |key, value|
+            defined = name_cache.include?(key) && value && value.attribute_definition
+            logger.debug "#{self.class}: Removing undefined attribute #{key.inspect}" unless defined
+            defined
+          end
         end
 
         # Collects all available attribute names into a list. Without definitions
@@ -118,8 +122,10 @@ module Occi
         # @param force [TrueClass, FalseClass] forcibly change attribute value to default
         def reset_attribute(name, definition, force)
           if attributes[name]
+            logger.debug "#{self.class}: Setting attribute definition for existing #{name.inspect}"
             attributes[name].attribute_definition = definition
           else
+            logger.debug "#{self.class}: Creating attribute definition for new #{name.inspect}"
             attributes[name] = Attribute.new(nil, definition)
           end
 
