@@ -17,7 +17,6 @@ Gem::Specification.new do |gem|
   gem.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   gem.require_paths = ['lib']
 
-  gem.add_runtime_dependency 'ox', '>= 2.4', '< 3'
   gem.add_runtime_dependency 'json', '>= 1.8', '< 3'
   gem.add_runtime_dependency 'activesupport', '>= 4.0', '< 6'
   gem.add_runtime_dependency 'json-schema', '>= 2.5', '< 3'
