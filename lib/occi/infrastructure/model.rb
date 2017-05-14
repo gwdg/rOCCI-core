@@ -22,6 +22,20 @@ module Occi
       def instance_builder
         Occi::Infrastructure::InstanceBuilder.new(model: self)
       end
+
+      # Returns all mixins dependent on the base `os_tpl` mixin defined by OGF.
+      #
+      # @return [Set] set of mixins dependent on `os_tpl`
+      def find_os_tpls
+        find_dependent Occi::Infrastructure::Mixins::OsTpl.new
+      end
+
+      # Returns all mixins dependent on the base `resource_tpl` mixin defined by OGF.
+      #
+      # @return [Set] set of mixins dependent on `resource_tpl`
+      def find_resource_tpls
+        find_dependent Occi::Infrastructure::Mixins::ResourceTpl.new
+      end
     end
   end
 end

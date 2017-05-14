@@ -21,6 +21,13 @@ module Occi
       def instance_builder
         Occi::InfrastructureExt::InstanceBuilder.new(model: self)
       end
+
+      # Returns all mixins dependent on the base `availability_zone` mixin defined by OGF.
+      #
+      # @return [Set] set of mixins dependent on `availability_zone`
+      def find_availability_zones
+        find_dependent Occi::InfrastructureExt::Mixins::AvailabilityZone.new
+      end
     end
   end
 end

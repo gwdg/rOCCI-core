@@ -29,6 +29,37 @@ module Occi
           expect(model.instance_builder).to be_kind_of Occi::InfrastructureExt::InstanceBuilder
         end
       end
+
+      describe '#find_availability_zones' do
+        before do
+          model.load_core!
+          model.load_infrastructure!
+          model.load_infrastructure_ext!
+        end
+
+        context 'without availability_zone mixins' do
+          it 'returns empty collection' do
+            expect(model.find_availability_zones).to be_empty
+          end
+        end
+
+        context 'with availability_zone mixins' do
+          let(:availability_zone_base) { Occi::InfrastructureExt::Mixins::AvailabilityZone.new }
+          let(:availability_zone) do
+            Occi::Core::Mixin.new(
+              term: 'test',
+              schema: 'http://test/1#',
+              depends: Set.new([availability_zone_base])
+            )
+          end
+
+          before { model << availability_zone }
+
+          it 'returns only availability_zone mixins' do
+            expect(model.find_availability_zones).to include(availability_zone)
+          end
+        end
+      end
     end
   end
 end
