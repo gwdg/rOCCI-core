@@ -29,6 +29,7 @@ module Occi
         #
         # @param model [Occi::Core::Model] model to be bootstrapped
         def bootstrap!(model)
+          logger.debug "#{self}: Bootstrapping#{model.empty? ? ' empty' : ''} model"
           actions! model
           kinds! model
           mixins! model
@@ -66,6 +67,7 @@ module Occi
         def kinds!(model)
           attribute_definitions = attribute_definitions_for(kinds_path)
           yamls_in(kinds_path).each do |file|
+            logger.debug "#{self}: Loading kind from #{file.inspect}"
             model << Occi::Core::Kind.from_yaml(file, model, attribute_definitions)
           end
         end
@@ -74,6 +76,7 @@ module Occi
         def mixins!(model)
           attribute_definitions = attribute_definitions_for(mixins_path)
           yamls_in(mixins_path).each do |file|
+            logger.debug "#{self}: Loading mixin from #{file.inspect}"
             model << Occi::Core::Mixin.from_yaml(file, model, attribute_definitions)
           end
         end
@@ -83,6 +86,7 @@ module Occi
           # TODO: work with separate attribute definitions
           attribute_definitions = {}
           yamls_in(actions_path).each do |file|
+            logger.debug "#{self}: Loading action from #{file.inspect}"
             model << Occi::Core::Action.from_yaml(file, model, attribute_definitions)
           end
         end
@@ -94,6 +98,7 @@ module Occi
           attr_defs_path = File.join(categories_path, ATTRIBS)
           yamls_in(attr_defs_path).each do |file|
             name = attribute_name_from(file)
+            logger.debug "#{self}: Loading attribute definition for #{name.inspect} from #{file.inspect}"
             attribute_definitions[name] = Occi::Core::AttributeDefinition.from_yaml(file)
           end
 

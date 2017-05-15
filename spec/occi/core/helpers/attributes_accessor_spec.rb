@@ -9,6 +9,7 @@ module Occi
         let(:obj_w_attrs) do
           object = RocciCoreSpec::ClassWAttributes.clone.new
           object.attributes = instance_double('Hash')
+          object.extend(Yell::Loggable)
           object.extend(AttributesAccessor)
         end
 

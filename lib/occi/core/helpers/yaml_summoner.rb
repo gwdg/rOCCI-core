@@ -25,6 +25,7 @@ module Occi
           raise 'This method cannot be invoked on instances' unless is_a? Class
           allowed_classes = respond_to?(:allowed_yaml_classes, true) ? allowed_yaml_classes : []
 
+          logger.debug "#{self}: Loading YAML definition from #{path.inspect}"
           object_args = YAML.safe_load(File.read(path), allowed_classes)
           object_args.symbolize_keys!
           object_args.dereference_with!(self, model, attribute_definitions) if needs_dereferencing?
