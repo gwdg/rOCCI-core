@@ -25,7 +25,7 @@ module Occi
           begin
             valid_term! term
           rescue Occi::Core::Errors::CategoryValidationError => ex
-            logger.warn "#{self}: Term validation failed with #{ex.message}" if respond_to?(:logger)
+            logger.warn "Term validation for #{self} failed with #{ex.message}" if respond_to?(:logger)
             return false
           end
 
@@ -58,7 +58,7 @@ module Occi
           begin
             valid_schema! schema
           rescue URI::InvalidURIError, Occi::Core::Errors::CategoryValidationError => ex
-            logger.warn "#{self}: Schema validation failed with #{ex.message}" if respond_to?(:logger)
+            logger.warn "Schema validation for #{self} failed with #{ex.message}" if respond_to?(:logger)
             return false
           end
 
@@ -96,7 +96,7 @@ module Occi
           begin
             valid_identifier! identifier
           rescue URI::InvalidURIError, Occi::Core::Errors::CategoryValidationError => ex
-            logger.warn "#{self}: Identifier validation failed with #{ex.message}" if respond_to?(:logger)
+            logger.warn "Identifier validation for #{self} failed with #{ex.message}" if respond_to?(:logger)
             return false
           end
 

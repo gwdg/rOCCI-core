@@ -9,9 +9,7 @@ module Occi
           let(:options) { { format: 'text' } }
           let(:base_renderer) { Base.new(category, options) }
 
-          BASE_ATTRS = %i[object options].freeze
-
-          BASE_ATTRS.each do |attr|
+          %i[object options].each do |attr|
             it "has #{attr} accessor" do
               is_expected.to have_attr_accessor attr.to_sym
             end

@@ -31,7 +31,7 @@ module Occi
       def initialize(args = {})
         default_args! args
 
-        logger.debug "RendererFactory: Initializing with #{args.inspect}"
+        logger.debug "Initializing RendererFactory with #{args.inspect}"
         @required_methods = args.fetch(:required_methods)
         @namespace = args.fetch(:namespace)
 
@@ -40,7 +40,7 @@ module Occi
 
       #
       def reload!
-        logger.debug 'RendererFactory: Clearing cache for renderer reload'
+        logger.debug 'Clearing RendererFactory cache for renderer reload'
         @ravail_cache = nil
       end
 
@@ -65,7 +65,7 @@ module Occi
         @ravail_cache = {}
 
         renderer_classes.each do |rndr_klass|
-          logger.debug "RendererFactory: Registering #{rndr_klass} for #{rndr_klass.formats}"
+          logger.debug "RendererFactory registering #{rndr_klass} for #{rndr_klass.formats}"
           rndr_klass.formats.each { |rndr_klass_f| @ravail_cache[rndr_klass_f] = rndr_klass }
         end
 
@@ -113,7 +113,7 @@ module Occi
           renderer_with_methods! candidate
           renderer_with_formats! candidate
         rescue Occi::Core::Errors::RendererError => ex
-          logger.debug "RendererFactory: Renderer validation failed with #{ex.message}"
+          logger.debug "Renderer validation failed with #{ex.message}"
           return false
         end
 
@@ -176,7 +176,7 @@ module Occi
             raise Occi::Core::Errors::RendererError, "#{namespace.inspect} " \
                   'is not a Module'
           end
-          logger.debug "RendererFactory: Looking for renderers in #{namespace}"
+          logger.debug "RendererFactory looking for renderers in #{namespace}"
           namespace.constants.collect { |const| namespace.const_get(const) }
         end
 

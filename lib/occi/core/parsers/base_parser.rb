@@ -18,6 +18,10 @@ module Occi
 
         attr_accessor :model, :media_type
 
+        # Shortcuts to interesting methods on logger
+        DELEGATED = %i[debug? info? warn? error? fatal?].freeze
+        delegate(*DELEGATED, to: :logger, prefix: true)
+
         # Constructs an instance of the parser that will use a particular model as the reference for every
         # parsed instance. Only instances allowed by the model will be successfuly parsed. In case of
         # `Occi::Core::Category` instances, only identifiers are parsed and existing instances from the model
@@ -32,6 +36,7 @@ module Occi
 
           @model = args.fetch(:model)
           @media_type = args.fetch(:media_type)
+          logger.debug "Initializing parser for #{media_type.inspect}"
 
           post_initialize(args)
         end
@@ -112,12 +117,16 @@ module Occi
         def lookup(identifier, klass)
           found = handle(Occi::Core::Errors::ParsingError) { model.find_by_identifier!(identifier) }
           unless found.is_a?(klass)
-            raise Occi::Core::Errors::ParsingError, "#{self.class} -> #{identifier.inspect} isn't #{klass}"
+            raise Occi::Core::Errors::ParsingError, "#{identifier.inspect} is not of expected class #{klass}"
           end
           found
         end
 
         class << self
+          # Shortcuts to interesting methods on logger
+          DELEGATED = %i[debug? info? warn? error? fatal?].freeze
+          delegate(*DELEGATED, to: :logger, prefix: true)
+
           # Returns a list of supported media types for this parser.
           #
           # @return [Array] list of supported media types

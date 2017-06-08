@@ -55,7 +55,7 @@ module Occi
         # @param base [Class] class receiving this module
         def self.included(base)
           renderer_factory.formats.each do |format|
-            base.logger.debug "Renderable: Adding support for #{format} to #{base}" if base.respond_to?(:logger)
+            base.logger.debug "Adding support for format #{format} to #{base}" if base.respond_to?(:logger)
             base.send(:define_method, "to_#{format}", proc { render(format) })
           end
         end

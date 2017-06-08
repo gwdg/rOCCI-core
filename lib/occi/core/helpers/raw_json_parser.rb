@@ -10,7 +10,7 @@ module Occi
         def raw_hash(body)
           JSON.parse body, symbolize_names: true
         rescue => ex
-          raise Occi::Core::Errors::ParsingError, "#{self} -> JSON parsing failed: #{ex.message}"
+          raise Occi::Core::Errors::ParsingError, "JSON parsing failed: #{ex.message}"
         end
       end
     end

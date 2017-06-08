@@ -10,7 +10,7 @@ module Occi
       #    model = Occi::Infrastructure::Model.new
       #    model.load_infrastructure!
       def load_infrastructure!
-        logger.debug "#{self.class}: Loading Infrastructure from Warehouse"
+        logger.debug 'Loading Infrastructure from Infrastructure::Warehouse'
         Occi::Infrastructure::Warehouse.bootstrap! self
         self << Occi::Infrastructure::Mixins::OsTpl.new
         self << Occi::Infrastructure::Mixins::ResourceTpl.new

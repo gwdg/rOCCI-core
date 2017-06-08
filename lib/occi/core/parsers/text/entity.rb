@@ -13,6 +13,10 @@ module Occi
           include Helpers::ArgumentValidator
           include Helpers::ErrorHandler
 
+          # Shortcuts to interesting methods on logger
+          DELEGATED = %i[debug? info? warn? error? fatal?].freeze
+          delegate(*DELEGATED, to: :logger, prefix: true)
+
           # Regexp constants
           ATTRIBUTE_REGEXP = /#{Constants::REGEXP_ATTRIBUTE}/
           LINK_REGEXP      = /#{Constants::REGEXP_LINK}/
@@ -57,7 +61,8 @@ module Occi
           def plain(lines)
             cats = plain_categories(lines)
             kind = cats.detect { |c| c.is_a?(Occi::Core::Kind) }
-            raise Occi::Core::Errors::ParsingError, "#{self.class} -> Entity does not specify its kind" unless kind
+            raise Occi::Core::Errors::ParsingError, 'Entity does not specify its kind' unless kind
+            logger.debug "Identified entity kind #{kind.inspect}" if logger_debug?
 
             entity = @_ib.build(kind.identifier)
             cats.each { |cat| cat.is_a?(Occi::Core::Mixin) && entity << cat }
@@ -65,6 +70,7 @@ module Occi
             plain_attributes! lines, entity.attributes
             plain_links! lines, entity
 
+            logger.debug "Created instance #{entity.inspect}" if logger_debug?
             entity
           end
 
@@ -73,11 +79,12 @@ module Occi
           # @param lines [Array] list of lines containing a single entity rendering
           # @return [Array] list of identified category instances
           def plain_categories(lines)
-            lines.map do |line|
+            categories = lines.map do |line|
               next unless line.start_with?(TextParser::CATEGORY_KEYS.first)
               cat = Category.plain_category(line, false)
               handle(Occi::Core::Errors::ParsingError) { model.find_by_identifier!("#{cat[:scheme]}#{cat[:term]}") }
-            end.compact
+            end
+            categories.compact
           end
 
           # Parses attributes from entity lines. Every attribute value is typed according to the attribute
@@ -89,15 +96,18 @@ module Occi
           def plain_attributes!(lines, attributes)
             lines.each do |line|
               next unless line.start_with?(TextParser::ATTRIBUTE_KEYS.first)
+
               name, value = raw_attribute(line)
               unless attributes[name]
                 raise Occi::Core::Errors::ParsingError,
-                      "#{self.class} -> attribute #{name.inspect} is not allowed for this entity"
+                      "Attribute #{name.inspect} is not allowed for this entity"
               end
+
               attributes[name].value = handle(Occi::Core::Errors::ParsingError) do
                 typecast value, attributes[name].attribute_definition.type
               end
             end
+
             attributes
           end
 
@@ -106,10 +116,10 @@ module Occi
           # @param line [String] line containing a single entity attribute
           # @return [Array] two-element array with name and value of the attribute
           def raw_attribute(line)
+            logger.debug "Parsing attribute line #{line.inspect}" if logger_debug?
             matched = line.match(ATTRIBUTE_REGEXP)
             unless matched
-              raise Occi::Core::Errors::ParsingError,
-                    "#{self.class} -> #{line.inspect} does not match expectations for Attribute"
+              raise Occi::Core::Errors::ParsingError, "#{line.inspect} does not match expectations for Attribute"
             end
             [matched[:name], matched[:string] || matched[:number] || matched[:bool]]
           end
@@ -123,13 +133,16 @@ module Occi
           def plain_links!(lines, entity)
             lines.each do |line|
               next unless line.start_with?(TextParser::LINK_KEYS.first)
+              logger.debug "Parsing link line #{line.inspect}" if logger_debug?
+
               matched = line.match(LINK_REGEXP)
               unless matched
-                raise Occi::Core::Errors::ParsingError,
-                      "#{self.class} -> #{line.inspect} does not match expectations for Link"
+                raise Occi::Core::Errors::ParsingError, "#{line.inspect} does not match expectations for Link"
               end
+
               plain_link! matched, entity
             end
+
             entity
           end
 
@@ -157,7 +170,7 @@ module Occi
           def plain_oglink!(md, entity)
             unless entity.respond_to?(:links)
               raise Occi::Core::Errors::ParsingError,
-                    "#{self.class} -> Cannot assign links to entity #{entity.id} which does not support them"
+                    "Cannot assign links to entity #{entity.id} which does not support them"
             end
 
             link = plain_oglink_instance(md)
@@ -169,24 +182,25 @@ module Occi
             entity
           end
 
-          # Constructs a single link instance based on the provided data. The returned instance does include contain
+          # Constructs a single link instance based on the provided data. The returned instance does include
           # action instance attributes!
           #
           # @param md [MatchData] Hash-like structure with matched parts of the link
           # @return [Occi::Core::Link] constructed link instance
           def plain_oglink_instance(md)
             if md[:category].blank? || md[:self].blank?
-              raise Occi::Core::Errors::ParsingError,
-                    "#{self.class} -> Link #{md[:uri].inspect} is missing type and location information"
+              raise Occi::Core::Errors::ParsingError, "Link #{md[:uri].inspect} missing type and location information"
             end
 
             categories = md[:category].split
             target_kind = handle(Occi::Core::Errors::ParsingError) { model.find_by_identifier!(md[:rel]) }
             link = @_ib.build(categories.shift, target_kind: target_kind)
             categories.each do |mxn|
+              logger.debug "Adding mixin #{mxn.inspect} to link instance" if logger_debug?
               link << handle(Occi::Core::Errors::ParsingError) { model.find_by_identifier!(mxn) }
             end
 
+            logger.debug "Created link instance #{link.inspect} from #{md.inspect}" if logger_debug?
             link
           end
 
@@ -196,9 +210,9 @@ module Occi
           # @param link [Occi::Core::Link] partially constructed link instance to be updated
           def plain_oglink_attributes!(md, link)
             if md[:attributes].blank?
-              raise Occi::Core::Errors::ParsingError,
-                    "#{self.class} -> Link #{link.id} is missing attribute information"
+              raise Occi::Core::Errors::ParsingError, "Link #{link.id} is missing attribute information"
             end
+            logger.debug "Parsing inline link attributes from line #{md[:attributes].inspect}" if logger_debug?
 
             line = md[:attributes].strip.gsub(/^;\s*/, '')
             attrs = line.split(';').map { |attrb| "#{TextParser::ATTRIBUTE_KEYS.first}: #{attrb}" }
@@ -214,10 +228,10 @@ module Occi
           # @return [Object] typecasted value
           def typecast(value, type)
             if value.nil? || type.nil?
-              raise Occi::Core::Errors::ParsingError,
-                    "#{self.class} -> Cannot typecast (un)set value to (un)set type"
+              raise Occi::Core::Errors::ParsingError, 'Cannot typecast (un)set value to (un)set type'
             end
 
+            logger.debug "Typecasting value #{value.inspect} to #{type}" if logger_debug?
             self.class.typecaster[type].call(value)
           end
 

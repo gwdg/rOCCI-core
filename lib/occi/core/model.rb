@@ -242,7 +242,7 @@ module Occi
       #    model = Occi::Core::Model.new
       #    model.load_core!
       def load_core!
-        logger.debug "#{self.class}: Loading Core from Warehouse"
+        logger.debug 'Loading Core definitions from Core::Warehouse'
         Occi::Core::Warehouse.bootstrap! self
       end
 

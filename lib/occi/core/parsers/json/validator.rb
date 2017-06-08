@@ -7,12 +7,18 @@ module Occi
         #
         # @author Boris Parak <parak@cesnet.cz>
         class Validator
+          include Yell::Loggable
+
           # Repository constants
           SCHEMA_DIR   = 'validator'.freeze
           SCHEMA_REPO  = File.join(File.expand_path(File.dirname(__FILE__)), SCHEMA_DIR)
           BASE_SCHEMAS = %i[occi-schema].freeze
 
           class << self
+            # Shortcuts to interesting methods on logger
+            DELEGATED = %i[debug? info? warn? error? fatal?].freeze
+            delegate(*DELEGATED, to: :logger, prefix: true)
+
             # Validates given `json` text with the appropriate schema for `type`.
             # This method raises `Occi::Core::Errors::ParsingError` on failure.
             #
@@ -20,10 +26,12 @@ module Occi
             # @param type [Symbol] schema selector
             # @raise [Occi::Core::Errors::ParsingError] on validation failure
             def validate!(json, type)
+              logger.debug "Validating #{json.inspect} as #{type}" if logger_debug?
+
               JSON::Validator.schema_reader = JSON::Schema::Reader.new(accept_uri: false, accept_file: true)
               JSON::Validator.validate!(schema_for(type), json, json: true)
             rescue JSON::Schema::JsonParseError, JSON::Schema::ValidationError => e
-              raise Occi::Core::Errors::ParsingError, "#{self} -> #{e.message}"
+              raise Occi::Core::Errors::ParsingError, e.message
             end
 
             # :nodoc:
@@ -66,7 +74,10 @@ module Occi
               if type.blank? || BASE_SCHEMAS.include?(type)
                 raise Occi::Core::Errors::ParserError, "Schema type #{type.inspect} is not allowed"
               end
-              File.join(SCHEMA_REPO, "#{type}.json")
+              schema_path = File.join(SCHEMA_REPO, "#{type}.json")
+              logger.debug "Found JSON schema for #{type} in #{schema_path}" if logger_debug?
+
+              schema_path
             end
             private :schema_for
           end

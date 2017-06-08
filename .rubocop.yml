@@ -55,6 +55,10 @@ Style/FileName:
   Exclude:
   - 'lib/occi/infrastructure-ext.rb'
 
+Style/YodaCondition:
+  Exclude:
+  - 'lib/occi/core/helpers/parser_dereferencer.rb'
+
 RSpec/MultipleExpectations:
   Max: 5
 

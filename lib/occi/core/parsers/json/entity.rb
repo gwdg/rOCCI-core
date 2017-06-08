@@ -14,6 +14,10 @@ module Occi
           include Helpers::ErrorHandler
           extend Helpers::RawJsonParser
 
+          # Shortcuts to interesting methods on logger
+          DELEGATED = %i[debug? info? warn? error? fatal?].freeze
+          delegate(*DELEGATED, to: :logger, prefix: true)
+
           # Constants
           SINGLE_INSTANCE_TYPES = %i[resource link].freeze
           MULTI_INSTANCE_TYPES  = %i[entity-collection].freeze
@@ -46,14 +50,16 @@ module Occi
           # @param type [Symbol] `:resource`, `:link`, or `:'entity-collection'`
           # @return [Array] constructed instances
           def json(body, type)
-            case type
-            when *SINGLE_INSTANCE_TYPES
-              json_single self.class.raw_hash(body)
-            when *MULTI_INSTANCE_TYPES
-              json_collection self.class.raw_hash(body)
-            else
-              raise Occi::Core::Errors::ParserError, "#{self.class} -> #{type.to_s.inspect} is not a valid type"
-            end
+            symbol = case type
+                     when *SINGLE_INSTANCE_TYPES
+                       :json_single
+                     when *MULTI_INSTANCE_TYPES
+                       :json_collection
+                     else
+                       raise Occi::Core::Errors::ParserError, "#{type.inspect} is not a valid type"
+                     end
+
+            send symbol, self.class.raw_hash(body)
           end
 
           # Builds an entity instance from the hash provided as input.
@@ -61,12 +67,14 @@ module Occi
           # @param hash [Hash] Hash body for parsing
           # @return [Array] constructed instances
           def json_single(hash)
+            logger.debug "Converting #{hash.inspect} into a single instance" if logger_debug?
             instance = @_ib.get hash[:kind], mixins: lookup(hash[:mixins]), actions: lookup(hash[:actions])
 
             set_attributes! instance.attributes, hash[:attributes]
             set_links! instance.links, hash[:links] if instance.respond_to?(:links)
             set_target! instance, hash[:target] if instance.respond_to?(:target)
 
+            logger.debug "Created instance #{instance.inspect}" if logger_debug?
             Set.new [instance]
           end
 
@@ -77,10 +85,12 @@ module Occi
           def json_collection(hash)
             all = []
 
+            logger.debug "Converting #{hash.inspect} into multiple instances" if logger_debug?
             all.concat hash[:resources] if hash[:resources]
             all.concat hash[:links] if hash[:links]
             all.map! { |a| json_single(a) }
 
+            logger.debug "Created instances #{all.inspect}" if logger_debug?
             Set.new(all).flatten
           end
 
@@ -96,10 +106,11 @@ module Occi
           def set_attributes!(attributes, hash)
             return if hash.blank?
             hash.each_pair do |name, value|
+              logger.debug "Setting attribute #{name} to #{value.inspect}" if logger_debug?
               attribute = attributes[name.to_s]
               unless attribute
                 raise Occi::Core::Errors::ParsingError,
-                      "#{self.class} -> attribute #{name.to_s.inspect} is not allowed for this entity"
+                      "Attribute #{name.inspect} is not allowed for this entity"
               end
               attribute.value = typecast(value, attribute.attribute_definition.type)
             end
@@ -121,11 +132,11 @@ module Occi
           # :nodoc:
           def typecast(value, type)
             if value.nil? || type.nil?
-              raise Occi::Core::Errors::ParsingError,
-                    "#{self.class} -> Cannot typecast (un)set value to (un)set type"
+              raise Occi::Core::Errors::ParsingError, 'Cannot typecast (un)set value to (un)set type'
             end
             return value unless TYPECASTER_HASH.key?(type)
 
+            logger.debug "Typecasting value #{value.inspect} to #{type}" if logger_debug?
             TYPECASTER_HASH[type].call(value)
           end
 

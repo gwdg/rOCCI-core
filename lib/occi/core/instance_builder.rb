@@ -42,7 +42,7 @@ module Occi
       # @return [Object] constructed instance
       # @return [NilClass] if such an instance could not be constructed
       def build(identifier, args = {})
-        logger.debug "#{self.class}: Building instance of #{identifier.inspect} with #{args.inspect}"
+        logger.debug "Building instance of #{identifier.inspect} with #{args.inspect}"
         k_args = args_with_kind(identifier, args)
         klass(identifier, parent_klass(k_args[:kind])).new k_args
       end
@@ -93,7 +93,7 @@ module Occi
                 "#{found_klass} is not a sub-type of #{known_ancestor}"
         end
 
-        logger.debug "#{self.class}: Found #{found_klass} for #{identifier.inspect}"
+        logger.debug "Found class #{found_klass} for #{identifier.inspect}"
         found_klass
       end
 
@@ -119,10 +119,10 @@ module Occi
       # @return [Class] located known parent class
       def parent_klass(kind)
         if kind.related? kind_instance(Occi::Core::Constants::RESOURCE_KIND)
-          logger.debug "#{self.class}: Identified #{kind.identifier} as Resource"
+          logger.debug "Identified #{kind.identifier} as Resource"
           Occi::Core::Resource
         elsif kind.related? kind_instance(Occi::Core::Constants::LINK_KIND)
-          logger.debug "#{self.class}: Identified #{kind.identifier} as Link"
+          logger.debug "Identified #{kind.identifier} as Link"
           Occi::Core::Link
         else
           raise Occi::Core::Errors::ModelLookupError,

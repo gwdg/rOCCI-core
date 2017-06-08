@@ -8,7 +8,7 @@ module Occi
       module ArgumentValidator
         # :nodoc:
         def default_args!(args)
-          logger.debug "#{self.class}: Merging given args #{args.inspect} with defaults #{defaults.inspect}"
+          logger.debug "Merging #{self.class} args #{args.inspect} with defaults #{defaults.inspect}"
           args.merge!(defaults) { |_, oldval, _| oldval }
           sufficient_args!(args)
         end

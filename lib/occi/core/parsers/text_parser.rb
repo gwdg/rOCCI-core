@@ -50,14 +50,15 @@ module Occi
         # @return [Set] set of instances
         def entities(body, headers, expectation = nil)
           expectation ||= Occi::Core::Entity
+          logger.debug "Parsing #{expectation} from #{body.inspect} and #{headers.inspect}" if logger_debug?
 
           entity_parser = Text::Entity.new(model: model)
           entity = entity_parser.plain transform(body, headers)
           unless entity.is_a?(expectation)
-            raise Occi::Core::Errors::ParsingError, "#{self.class} -> Given entity isn't #{expectation}"
+            raise Occi::Core::Errors::ParsingError, "Entity is not of type #{expectation}"
           end
 
-          Set.new([entity].compact)
+          setify(entity)
         end
 
         # Parses action instances from the given body/headers. Only actions already declared in the model are
@@ -67,16 +68,15 @@ module Occi
         # @param headers [Hash] raw headers as provided by the transport protocol
         # @return [Set] set of parsed instances
         def action_instances(body, headers)
+          logger.debug "Parsing Occi::Core::ActionInstance from #{body.inspect} and #{headers.inspect}" if logger_debug?
           entity_parser = Text::Entity.new(model: model)
           tformed = transform(body, headers)
 
-          cats = entity_parser.plain_categories tformed
-          action = cats.detect { |c| c.is_a? Occi::Core::Action }
-          raise Occi::Core::Errors::ParsingError, "#{self.class} -> AI does not specify action" unless action
-
-          ai = Occi::Core::ActionInstance.new(action: action)
-          entity_parser.plain_attributes! tformed, ai.attributes
-          Set.new([ai].compact)
+          action_instance = Occi::Core::ActionInstance.new(
+            action: action_instance_category(entity_parser, tformed)
+          )
+          entity_parser.plain_attributes! tformed, action_instance.attributes
+          setify(action_instance)
         end
 
         # Parses categories from the given body/headers and returns corresponding instances
@@ -88,11 +88,14 @@ module Occi
         # @return [Set] set of instances
         def categories(body, headers, expectation = nil)
           expectation ||= Occi::Core::Category
+          logger.debug "Parsing #{expectation} from #{body.inspect} and #{headers.inspect}" if logger_debug?
+
           cats = transform(body, headers).map do |line|
             cat = Text::Category.plain_category(line, false)
             lookup "#{cat[:scheme]}#{cat[:term]}", expectation
           end
-          Set.new(cats)
+
+          setify(cats)
         end
 
         # Transforms `body` and `headers` into an array of lines parsable by 'text/plain'
@@ -116,13 +119,16 @@ module Occi
           # @param model [Occi::Core::Model] `Model`-like instance to be populated (may contain existing categories)
           # @return [Occi::Core::Model] model instance filled with parsed categories
           def model(body, headers, media_type, model)
+            if logger_debug?
+              logger.debug "Parsing model from #{media_type.inspect} in #{body.inspect} and #{headers.inspect}"
+            end
+
             if HEADERS_TEXT_TYPES.include? media_type
               Text::Category.plain transform_headers(headers), model
             elsif PLAIN_TEXT_TYPES.include? media_type
               Text::Category.plain transform_body(body), model
             else
-              raise Occi::Core::Errors::ParsingError,
-                    "#{self} -> model cannot be parsed from #{media_type.inspect}"
+              raise Occi::Core::Errors::ParsingError, "Model cannot be parsed from #{media_type.inspect}"
             end
           end
 
@@ -133,6 +139,10 @@ module Occi
           # @param media_type [String] media type string as provided by the transport protocol
           # @return [Array] list of extracted URIs
           def locations(body, headers, media_type)
+            if logger_debug?
+              logger.debug "Parsing locations from #{media_type.inspect} in #{body.inspect} and #{headers.inspect}"
+            end
+
             if URI_LIST_TYPES.include? media_type
               Text::Location.uri_list transform_body(body)
             elsif HEADERS_TEXT_TYPES.include? media_type
@@ -159,6 +169,7 @@ module Occi
           # @param headers [Hash] hash with raw header key-value pairs
           # @return [Array] an array of body-like lines
           def transform_headers(headers)
+            logger.debug "Transforming headers #{headers.inspect}" if logger_debug?
             unify_headers(
               canonize_headers(
                 normalize_headers(headers)
@@ -177,6 +188,8 @@ module Occi
             ]                                                 # remove 'HTTP_' prefix in keys
             headers.delete_if { |_k, v| v.blank? }            # remove pairs with empty values
             headers.keep_if { |k, _v| OCCI_KEYS.include?(k) } # drop non-OCCI pairs
+
+            logger.debug "Normalized headers #{headers.inspect}" if logger_debug?
             headers
           end
 
@@ -194,6 +207,7 @@ module Occi
               canonical[pref.first] = [canonize_header_value(value)].flatten
             end
 
+            logger.debug "Canonized headers #{canonical.inspect}" if logger_debug?
             canonical
           end
 
@@ -219,6 +233,8 @@ module Occi
             headers.each_pair do |k, v|
               lines << v.map { |val| "#{k}: #{val}" }
             end
+
+            logger.debug "Unified headers #{lines.inspect}" if logger_debug?
             lines.flatten.sort
           end
 
@@ -230,8 +246,7 @@ module Occi
           def validate_header_keys!(headers_keys)
             return unless key_name_groups.any? { |elm| (headers_keys & elm).count > 1 }
 
-            raise Occi::Core::Errors::ParsingError,
-                  "#{self} -> Headers #{headers_keys.inspect} contain mixed key notations"
+            raise Occi::Core::Errors::ParsingError, "Headers #{headers_keys.inspect} contain mixed key notations"
           end
 
           # Returns a list of available key name groups accessible as constants by name on this class.
@@ -243,6 +258,19 @@ module Occi
         end
 
         protected
+
+        # :nodoc:
+        def action_instance_category(entity_parser, action_instance)
+          cats = entity_parser.plain_categories action_instance
+          action = cats.detect { |c| c.is_a? Occi::Core::Action }
+          raise Occi::Core::Errors::ParsingError, 'ActionInstance does not specify action' unless action
+          action
+        end
+
+        # :nodoc:
+        def setify(object)
+          object.is_a?(Enumerable) ? Set.new(object) : Set.new([object].compact)
+        end
 
         # :nodoc:
         def post_initialize(args)
