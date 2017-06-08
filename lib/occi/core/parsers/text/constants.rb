@@ -4,7 +4,7 @@ module Occi
       module Text
         module Constants
           # Base regular expressions
-          REGEXP_QUOTED_STRING = /([^"\\]|\\.)*/
+          REGEXP_QUOTED_STRING = /([^\\"]|\\\\|\\")*/
           REGEXP_LOALPHA = /[a-z]/
           REGEXP_ALPHA = /[a-zA-Z]/
           REGEXP_DIGIT = /[0-9]/

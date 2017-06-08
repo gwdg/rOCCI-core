@@ -158,6 +158,7 @@ module Occi
           # @param body [String] multi-line body
           # @return [Array] an array of lines
           def transform_body(body)
+            return [] if body.blank?
             lines = body.respond_to?(:lines) ? body.lines : body.split("\n")
             lines.map(&:strip)
           end
@@ -183,6 +184,8 @@ module Occi
           # @param headers [Hash] hash with raw header key-value pairs
           # @return [Hash] a cleaner hash with relevant headers
           def normalize_headers(headers)
+            return {} unless headers
+
             headers = Hash[
               headers.map { |k, v| [k.gsub(HEADER_HTTP_PREFIX, '').capitalize, v] }
             ]                                                 # remove 'HTTP_' prefix in keys

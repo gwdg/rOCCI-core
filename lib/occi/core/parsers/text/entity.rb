@@ -214,9 +214,12 @@ module Occi
             end
             logger.debug "Parsing inline link attributes from line #{md[:attributes].inspect}" if logger_debug?
 
+            regexp = Regexp.new "(\\s*#{Constants::REGEXP_ATTRIBUTE_REPR})"
             line = md[:attributes].strip.gsub(/^;\s*/, '')
-            attrs = line.split(';').map { |attrb| "#{TextParser::ATTRIBUTE_KEYS.first}: #{attrb}" }
-            plain_attributes! attrs, link.attributes
+            plain_attributes!(
+              line.scan(regexp).map { |attrb| "#{TextParser::ATTRIBUTE_KEYS.first}: #{attrb.first}" },
+              link.attributes
+            )
 
             link
           end
