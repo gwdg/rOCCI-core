@@ -128,7 +128,6 @@ module Occi
         # @param model [Occi::Core::Model] model instance for dereferencing (category look-up)
         # @return [Occi::Core::Category] instance located in the model
         def dereference_via_model(identifier, model)
-          logger.debug "Dereferencing #{identifier.inspect} by look-up in model"
           model.find_by_identifier!(identifier)
         end
 
@@ -139,7 +138,6 @@ module Occi
         # @param hash [Hash] hash with known attribute definitions for dereferencing
         # @return [Occi::Core::AttributeDefinition] definition located in the hash
         def dereference_via_hash(identifier, hash)
-          logger.debug "Dereferencing #{identifier.inspect} by look-up in hash"
           raise "Attribute definition #{identifier.inspect} not found in the hash" unless hash[identifier]
           hash[identifier]
         end
