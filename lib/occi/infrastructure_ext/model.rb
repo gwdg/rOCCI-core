@@ -13,6 +13,7 @@ module Occi
         logger.debug 'Loading InfrastructureExt from InfrastructureExt::Warehouse'
         Occi::InfrastructureExt::Warehouse.bootstrap! self
         self << Occi::InfrastructureExt::Mixins::AvailabilityZone.new
+        self << Occi::InfrastructureExt::Mixins::Region.new
         nil
       end
 
@@ -28,6 +29,13 @@ module Occi
       # @return [Set] set of mixins dependent on `availability_zone`
       def find_availability_zones
         find_dependent Occi::InfrastructureExt::Mixins::AvailabilityZone.new
+      end
+
+      # Returns all mixins dependent on the base `region` mixin defined by OGF.
+      #
+      # @return [Set] set of mixins dependent on `region`
+      def find_regions
+        find_dependent Occi::InfrastructureExt::Mixins::Region.new
       end
     end
   end
