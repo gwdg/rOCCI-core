@@ -62,7 +62,8 @@ module Occi
               'Occi::Core::Collection'     => Occi::Core::Renderers::Json::Collection,
               'Occi::Core::Model'          => Occi::Core::Renderers::Json::Model,
               'Occi::Core::Resource'       => Occi::Core::Renderers::Json::Resource,
-              'Occi::Core::Link'           => Occi::Core::Renderers::Json::Link
+              'Occi::Core::Link'           => Occi::Core::Renderers::Json::Link,
+              'Occi::Core::Locations'      => Occi::Core::Renderers::Json::Locations
             }
           end
         end
