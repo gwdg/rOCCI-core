@@ -28,6 +28,7 @@ module Occi
           #
           # @return [Hash] textual representation of Object for headers
           def render_headers
+            return {} if object.empty?
             { LOCATION_KEY_HEADERS => object.map(&:to_s) }
           end
         end
