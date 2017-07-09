@@ -11,7 +11,7 @@ module Occi
         class Locations < Base
           # :nodoc:
           def render_hash
-            { locations: object.map(&:to_s) }
+            object.map(&:to_s)
           end
         end
       end
