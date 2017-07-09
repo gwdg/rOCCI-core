@@ -13,7 +13,7 @@ module Occi
       include Enumerable
 
       # Methods to be redirected to `uris`
-      ENUM_METHODS = %i[each << add remove map!].freeze
+      ENUM_METHODS = %i[each << add remove map! empty? include?].freeze
       delegate(*ENUM_METHODS, to: :uris)
 
       attr_accessor :uris
