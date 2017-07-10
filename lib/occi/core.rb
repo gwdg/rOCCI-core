@@ -55,6 +55,7 @@ module Occi
     autoload :Model, 'occi/core/model'
     autoload :Warehouse, 'occi/core/warehouse'
     autoload :InstanceBuilder, 'occi/core/instance_builder'
+    autoload :Locations, 'occi/core/locations'
   end
 end
 
