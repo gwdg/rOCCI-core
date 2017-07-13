@@ -29,7 +29,15 @@ module Occi
           # @return [Hash] textual representation of Object for headers
           def render_headers
             return {} if object.empty?
-            { LOCATION_KEY_HEADERS => object.map(&:to_s) }
+            { LOCATION_KEY_HEADERS => location_ary_or_first }
+          end
+
+          protected
+
+          # :nodoc:
+          def location_ary_or_first
+            locations = object.map(&:to_s)
+            locations.many? ? locations : locations.first
           end
         end
       end

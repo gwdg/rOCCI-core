@@ -5,6 +5,9 @@ module Occi
         describe Locations do
           subject(:lsr) { locations_renderer }
 
+          let(:uri) do
+            Set.new([URI.parse('/compute/1')])
+          end
           let(:uris) do
             Set.new(
               [
@@ -15,8 +18,11 @@ module Occi
           end
 
           let(:object) { ::Occi::Core::Locations.new(uris: uris) }
+          let(:object_one) { ::Occi::Core::Locations.new(uris: uri) }
           let(:options) { { format: 'text' } }
+
           let(:locations_renderer) { Locations.new(object, options) }
+          let(:locations_renderer_one) { Locations.new(object_one, options) }
 
           %i[object options].each do |attr|
             it "has #{attr} accessor" do
@@ -38,6 +44,11 @@ module Occi
               it 'renders to headers' do
                 lsr.options = { format: 'headers' }
                 expect(lsr.render).to eq('Location' => ['/compute/1', '/compute/2'])
+              end
+
+              it 'renders one to headers' do
+                locations_renderer_one.options = { format: 'headers' }
+                expect(locations_renderer_one.render).to eq('Location' => '/compute/1')
               end
             end
 
