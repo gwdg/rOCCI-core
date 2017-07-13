@@ -3,7 +3,7 @@ module Occi
     MAJOR_VERSION = 5                # Major update constant
     MINOR_VERSION = 0                # Minor update constant
     PATCH_VERSION = 0                # Patch/Fix version constant
-    STAGE_VERSION = 'beta.4'.freeze # use `nil` for production releases
+    STAGE_VERSION = 'beta.5'.freeze # use `nil` for production releases
 
     unless defined?(::Occi::Core::VERSION)
       VERSION = [
