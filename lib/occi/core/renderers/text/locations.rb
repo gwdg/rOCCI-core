@@ -37,7 +37,7 @@ module Occi
           # :nodoc:
           def location_ary_or_first
             locations = object.map(&:to_s)
-            locations.count == 1 ? locations.first : locations
+            locations.many? ? locations : locations.first
           end
         end
       end
