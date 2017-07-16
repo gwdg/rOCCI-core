@@ -1,9 +1,9 @@
 language: ruby
 
 rvm:
-  - 2.2.2
-  - 2.3.0
-  - 2.4.0
+  - 2.2.7
+  - 2.3.4
+  - 2.4.1
   - ruby-head
 
 matrix:
@@ -14,13 +14,12 @@ matrix:
 branches:
   only:
     - master
-    - 4.3.x
     - next
 
 env:
   - ON_TRAVIS_CI=yes
 
-install: 'gem install bundler -v ">= 1.12" && bundle install --retry=10'
+install: 'gem install bundler -v ">= 1.15" && bundle install --retry=10'
 
 script: 'bundle exec rake acceptance'
 
