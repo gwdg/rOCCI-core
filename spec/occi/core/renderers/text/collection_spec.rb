@@ -151,12 +151,8 @@ module Occi
                 expect { collection_renderer.render }.not_to raise_error
               end
 
-              it 'renders category lines' do
-                rlines = collection_renderer.render
-                expect(rlines.values.first).to be_kind_of Enumerable
-                expect(rlines.values.first.count).to eq 5
-                expect(rlines.keys.count).to eq 1
-                expect(rlines.keys.first).to eq 'X-OCCI-Category'
+              it 'renders empty' do
+                expect(collection_renderer.render).to be_empty
               end
             end
 
@@ -174,10 +170,7 @@ module Occi
               end
 
               it 'renders category lines' do
-                rlines = collection_renderer.render
-                expect(rlines).to be_kind_of String
-                expect(rlines.lines.count).to eq 5
-                expect(rlines.lines).to all(start_with('Category: '))
+                expect(collection_renderer.render).to be_empty
               end
             end
 
@@ -328,14 +321,14 @@ module Occi
                 expect { collection_renderer.render }.to raise_error(Occi::Core::Errors::RenderingError)
               end
 
-              it 'raises error when combining Category and entity sub-type instance' do
+              it 'does not raise error when combining Category and entity sub-type instance' do
                 collection_renderer.object = c_r_collection
-                expect { collection_renderer.render }.to raise_error(Occi::Core::Errors::RenderingError)
+                expect { collection_renderer.render }.not_to raise_error
               end
 
-              it 'raises error when combining AI and Category' do
+              it 'does not raise error when combining AI and Category' do
                 collection_renderer.object = c_ai_collection
-                expect { collection_renderer.render }.to raise_error(Occi::Core::Errors::RenderingError)
+                expect { collection_renderer.render }.not_to raise_error
               end
             end
 
@@ -356,14 +349,14 @@ module Occi
                 expect { collection_renderer.render }.to raise_error(Occi::Core::Errors::RenderingError)
               end
 
-              it 'raises error when combining Category and entity sub-type instance' do
+              it 'does not raise error when combining Category and entity sub-type instance' do
                 collection_renderer.object = c_r_collection
-                expect { collection_renderer.render }.to raise_error(Occi::Core::Errors::RenderingError)
+                expect { collection_renderer.render }.not_to raise_error
               end
 
-              it 'raises error when combining AI and Category' do
+              it 'does not raise error when combining AI and Category' do
                 collection_renderer.object = c_ai_collection
-                expect { collection_renderer.render }.to raise_error(Occi::Core::Errors::RenderingError)
+                expect { collection_renderer.render }.not_to raise_error
               end
             end
           end

@@ -14,12 +14,11 @@ module Occi
         class Collection < Model
           # :nodoc:
           def render_hash
-            return {} if object_empty?
-            return super if object.only_categories?
+            return {} if object_empty? || object.only_categories?
 
-            if object.only_entities?
+            if ent_no_ai?
               render_entities_hash
-            elsif object.only_action_instances?
+            elsif ai_no_ent?
               render_action_instances_hash
             else
               raise Occi::Core::Errors::RenderingError, 'Cannot render mixed collection to JSON'
@@ -29,10 +28,10 @@ module Occi
           # :nodoc:
           def render_entities_hash
             hsh = {}
-            unless object_resources.blank?
+            if object_resources.any?
               hsh[:resources] = object_resources.collect { |r| Resource.new(r, options).render_hash }
             end
-            unless object_links.blank?
+            if object_links.any?
               hsh[:links] = object_links.collect { |r| Link.new(r, options).render_hash }
             end
             hsh
@@ -44,6 +43,16 @@ module Occi
               raise Occi::Core::Errors::RenderingError, 'Cannot render multiple action instances to JSON'
             end
             ActionInstance.new(object_action_instances.first, options).render_hash
+          end
+
+          # :nodoc:
+          def ent_no_ai?
+            object_entities.any? && object_action_instances.empty?
+          end
+
+          # :nodoc:
+          def ai_no_ent?
+            object_action_instances.any? && object_entities.empty?
           end
         end
       end

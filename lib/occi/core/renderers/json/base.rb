@@ -18,8 +18,8 @@ module Occi
           # Shortcuts to interesting object attributes, always prefixed with `object_`
           DELEGATED = %i[
             respond_to? send source target summary kind parent action
-            attributes actions mixins depends applies links rel empty? resources
-            links action_instances
+            attributes actions mixins depends applies rel empty?
+            categories entities resources links action_instances
           ].freeze
           delegate(*DELEGATED, to: :object, prefix: true)
 

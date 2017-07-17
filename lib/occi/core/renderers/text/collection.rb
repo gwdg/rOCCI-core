@@ -16,12 +16,11 @@ module Occi
           #
           # @return [String] textual representation of Object
           def render_plain
-            return '' if object.empty?
-            return super if object.only_categories?
+            return '' if object_empty? || object.only_categories?
 
-            if object.only_entities?
+            if ent_no_ai?
               prepare_instances 'entities'
-            elsif object.only_action_instances?
+            elsif ai_no_ent?
               prepare_instances 'action_instances'
             else
               raise Occi::Core::Errors::RenderingError,
@@ -34,12 +33,11 @@ module Occi
           #
           # @return [Hash] textual representation of Object for headers
           def render_headers
-            return {} if object.empty?
-            return super if object.only_categories?
+            return {} if object_empty? || object.only_categories?
 
-            if object.only_entities?
+            if ent_no_ai?
               prepare_instances 'entities'
-            elsif object.only_action_instances?
+            elsif ai_no_ent?
               prepare_instances 'action_instances'
             else
               raise Occi::Core::Errors::RenderingError,
@@ -51,12 +49,22 @@ module Occi
 
           # :nodoc:
           def prepare_instances(type)
-            if object.send(type).count > 1
+            if object_send(type).count > 1
               raise Occi::Core::Errors::RenderingError,
                     "Cannot render collection with multiple #{type.tr('_', ' ')} to text"
             end
 
-            Occi::Core::Renderers::TextRenderer.render object.send(type).first, options
+            Occi::Core::Renderers::TextRenderer.render object_send(type).first, options
+          end
+
+          # :nodoc:
+          def ent_no_ai?
+            object_entities.any? && object_action_instances.empty?
+          end
+
+          # :nodoc:
+          def ai_no_ent?
+            object_action_instances.any? && object_entities.empty?
           end
         end
       end
