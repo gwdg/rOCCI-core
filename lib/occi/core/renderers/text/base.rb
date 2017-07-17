@@ -18,6 +18,10 @@ module Occi
 
           attr_accessor :object, :options
 
+          # Shortcuts to interesting object attributes, always prefixed with `object_`
+          DELEGATED = %i[send empty? categories entities resources links action_instances].freeze
+          delegate(*DELEGATED, to: :object, prefix: true)
+
           # Constructs a renderer instance for the given
           # object.
           #
