@@ -12,7 +12,10 @@ task spec: 'rcov:all'
 
 Gem::Tasks.new(build: { tar: true, zip: true }, sign: { checksum: true, pgp: false })
 
-RuboCop::RakeTask.new
+desc 'Execute rubocop -D'
+RuboCop::RakeTask.new(:rubocop) do |t|
+  t.options = ['-D'] # display cop name
+end
 
 YARD::Rake::YardocTask.new do |t|
   t.stats_options = ['--list-undoc']
