@@ -208,11 +208,11 @@ module Occi
 
       # @return [String] text representation
       def to_text
-        text = "Category: #{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\";location=#{self.kind.location.inspect};title=#{self.kind.title.inspect}"
+        text = "Category: #{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\""
         @mixins.each do |mixin|
           scheme, term = mixin.to_s.split('#')
           scheme << '#'
-          text << "\nCategory: #{term};scheme=#{scheme.inspect};class=\"mixin\";location=#{mixin.location.inspect};title=#{mixin.title ? mixin.title.inspect : ''.inspect}"
+          text << "\nCategory: #{term};scheme=#{scheme.inspect};class=\"mixin\""
         end
 
         text << @attributes.to_text
@@ -225,12 +225,12 @@ module Occi
       # @return [Hash] hash containing the HTTP headers of the text/occi rendering
       def to_header
         header = Hashie::Mash.new
-        header['Category'] = "#{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\";location=#{self.kind.location.inspect};title=#{self.kind.title.inspect}"
+        header['Category'] = "#{self.kind.term};scheme=#{self.kind.scheme.inspect};class=\"kind\""
 
         @mixins.each do |mixin|
           scheme, term = mixin.to_s.split('#')
           scheme << '#'
-          header['Category'] << ",#{term};scheme=#{scheme.inspect};class=\"mixin\";location=#{mixin.location.inspect};title=#{mixin.title ? mixin.title.inspect : ''.inspect}"
+          header['Category'] << ",#{term};scheme=#{scheme.inspect};class=\"mixin\""
         end
 
         attributes = @attributes.to_header
