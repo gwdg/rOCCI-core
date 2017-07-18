@@ -93,7 +93,13 @@ module Occi
       # @param kind [Occi::Core::Kind, String] Kind or Type Identifier of a Kind where relation should be checked.
       # @return [true,false]
       def related_to?(kind)
-        self.parent.to_s == kind.to_s or self.to_s == kind.to_s
+        to_s == kind.to_s || parent.to_s == kind.to_s \
+	  || \
+	(parent.to_s == "http://schemas.ogf.org/occi/infrastructure#network" && kind.to_s == "http://schemas.ogf.org/occi/core#resource") \
+	  || \
+	(parent.to_s == "http://schemas.ogf.org/occi/infrastructure#storage" && kind.to_s == "http://schemas.ogf.org/occi/core#resource") \
+	  || \
+	(parent.to_s == "http://schemas.ogf.org/occi/infrastructure#compute" && kind.to_s == "http://schemas.ogf.org/occi/core#resource")
       end
 
       def entity_type
