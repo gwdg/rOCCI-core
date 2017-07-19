@@ -150,7 +150,7 @@ module Occi
 
       context '#to_text' do
         it 'renders fresh instance in text correctly' do
-          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/";title="entity"
+          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"
 X-OCCI-Attribute: occi.core.id="baf1"|
           expect(entity.to_text).to eq(expected)
         end
@@ -161,8 +161,8 @@ X-OCCI-Attribute: occi.core.id="baf1"|
           entity.location = '/TestLoc/1'
           entity.mixins <<  'http://example.com/mynamespace#mymixin'
 
-          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/";title="entity"
-Category: mymixin;scheme="http://example.com/mynamespace#";class="mixin";location="/mixin/mymixin/";title=""
+          expected = %Q|Category: entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"
+Category: mymixin;scheme="http://example.com/mynamespace#";class="mixin"
 X-OCCI-Attribute: occi.core.id="baf1"
 X-OCCI-Attribute: occi.core.title="TestTitle"
 Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entity/action#testaction"|
@@ -173,7 +173,7 @@ Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entit
       context '#to_header' do
         it 'renders fresh instance in HTTP Header correctly' do
           expected = Hashie::Mash.new
-          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/";title="entity"'
+          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind"'
           expected['X-OCCI-Attribute'] = 'occi.core.id="baf1"'
 
           expect(entity.to_header).to eql(expected)
@@ -186,7 +186,7 @@ Link: </TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entit
           entity.mixins <<  'http://example.com/mynamespace#mymixin'
 
           expected = Hashie::Mash.new
-          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind";location="/entity/";title="entity",mymixin;scheme="http://example.com/mynamespace#";class="mixin";location="/mixin/mymixin/";title=""'
+          expected['Category'] = 'entity;scheme="http://schemas.ogf.org/occi/core#";class="kind",mymixin;scheme="http://example.com/mynamespace#";class="mixin"'
           expected['X-OCCI-Attribute'] = 'occi.core.id="baf1",occi.core.title="TestTitle"'
           expected['Link'] = '</TestLoc/1?action=testaction>;rel="http://schemas.ogf.org/occi/core/entity/action#testaction"'
 
