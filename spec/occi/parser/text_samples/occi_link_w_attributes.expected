@@ -1,4 +1,4 @@
-Category: storagelink;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind";location="/link/storagelink/";title="storage link"
+Category: storagelink;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind"
 X-OCCI-Attribute: occi.core.id="b2f7f1de-c60c-5b08-879c-81f52429c4ef"
 X-OCCI-Attribute: occi.core.title="monitoring"
 X-OCCI-Attribute: occi.storagelink.deviceid="xvda"

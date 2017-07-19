@@ -1,4 +1,4 @@
-Category: networkinterface;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind";location="/networkinterface/";title=nil
+Category: networkinterface;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind"
 X-OCCI-Attribute: occi.core.id="b2f7f1de-c60c-5b08-879c-81f52429c4ef"
 X-OCCI-Attribute: occi.core.target="/network/123"
 X-OCCI-Attribute: occi.core.source="/vms/foo/vm1"

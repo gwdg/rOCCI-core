@@ -1,6 +1,6 @@
-Category: network;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind";location="/network/";title=nil
-Category: network;scheme="http://opennebula.org/occi/infrastructure#";class="mixin";location="/mixin/network/";title=""
-Category: ipnetwork;scheme="http://schemas.ogf.org/occi/infrastructure#";class="mixin";location="/mixin/ipnetwork/";title=""
+Category: network;scheme="http://schemas.ogf.org/occi/infrastructure#";class="kind"
+Category: network;scheme="http://opennebula.org/occi/infrastructure#";class="mixin"
+Category: ipnetwork;scheme="http://schemas.ogf.org/occi/infrastructure#";class="mixin"
 X-OCCI-Attribute: occi.core.id="e4bd81c4-adda-5626-840d-39bb7959db97"
 X-OCCI-Attribute: occi.core.title="monitoring"
 X-OCCI-Attribute: occi.network.state="active"
