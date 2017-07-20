@@ -59,6 +59,8 @@ module Occi
           new_attributes = {}
           self[:attributes].each do |attribute|
             new_attributes[attribute] = dereference_via_hash(attribute, attribute_definitions)
+            next unless fetch(:attribute_defaults, {})[attribute]
+            new_attributes[attribute].default = self[:attribute_defaults][attribute]
           end
           self[:attributes] = new_attributes
 
@@ -132,14 +134,15 @@ module Occi
         end
 
         # Looks up the given attribute definition in the hash. Raises error if no
-        # such attribute definition is found.
+        # such attribute definition is found. The prevent future changes from affecting
+        # new lookups, located definitions are cloned before they are returned.
         #
         # @param identifier [String] attribute identifier (name)
         # @param hash [Hash] hash with known attribute definitions for dereferencing
-        # @return [Occi::Core::AttributeDefinition] definition located in the hash
+        # @return [Occi::Core::AttributeDefinition] definition located in the hash, cloned
         def dereference_via_hash(identifier, hash)
           raise "Attribute definition #{identifier.inspect} not found in the hash" unless hash[identifier]
-          hash[identifier]
+          hash[identifier].clone
         end
 
         private :dereference_via_hash, :dereference_via_model
