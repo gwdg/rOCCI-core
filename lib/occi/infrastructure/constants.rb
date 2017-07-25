@@ -20,6 +20,8 @@ module Occi
       IPNETWORKINTERFACE_MIXIN = 'http://schemas.ogf.org/occi/infrastructure/networkinterface#ipnetworkinterface'.freeze
       OS_TPL_MIXIN             = 'http://schemas.ogf.org/occi/infrastructure#os_tpl'.freeze
       RESOURCE_TPL_MIXIN       = 'http://schemas.ogf.org/occi/infrastructure#resource_tpl'.freeze
+      USER_DATA_MIXIN          = 'http://schemas.ogf.org/occi/infrastructure/compute#user_data'.freeze
+      SSH_KEY_MIXIN            = 'http://schemas.ogf.org/occi/infrastructure/credentials#ssh_key'.freeze
     end
   end
 end
