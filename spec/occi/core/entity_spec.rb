@@ -26,7 +26,8 @@ module Occi
           term: 'root',
           schema: 'http://test.org/root#',
           title: 'Root kind',
-          attributes: attributes
+          attributes: attributes,
+          actions: actions.clone
         )
       end
 
@@ -176,7 +177,8 @@ module Occi
 
         context 'with action' do
           before do
-            ent.actions = actions
+            ent.actions = actions.clone
+            kind.actions << action << action2
           end
 
           context 'assigned to entity' do
@@ -424,6 +426,46 @@ module Occi
         context 'when no action is provided' do
           it 'fails' do
             expect { ent.remove_action(nil) }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+          end
+        end
+      end
+
+      describe '#enable_action' do
+        before do
+          ent.actions = Set.new
+          allow(action).to receive(:term).and_return('start')
+        end
+
+        context 'when action exists' do
+          it 'adds action from kind to entity' do
+            expect { ent.enable_action('start') }.not_to raise_error
+            expect(ent.actions).to include(action)
+          end
+        end
+
+        context 'when action does not exist' do
+          it 'raises error' do
+            expect { ent.enable_action 'meh' }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
+          end
+        end
+      end
+
+      describe '#disable_action' do
+        before do
+          ent.actions = Set.new([action])
+          allow(action).to receive(:term).and_return('start')
+        end
+
+        context 'when action exists' do
+          it 'removes action from entity' do
+            expect { ent.disable_action('start') }.not_to raise_error
+            expect(ent.actions).not_to include(action)
+          end
+        end
+
+        context 'when action does not exist' do
+          it 'finishes quietly' do
+            expect { ent.disable_action 'meh' }.not_to raise_error
           end
         end
       end
