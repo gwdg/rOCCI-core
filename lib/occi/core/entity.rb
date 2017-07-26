@@ -222,9 +222,8 @@ module Occi
       #
       # @param action [Occi::Core::Action] action to be added
       def add_action(action)
-        unless action
-          raise Occi::Core::Errors::MandatoryArgumentError,
-                'Cannot add a non-existent action'
+        unless action && kind.actions.include?(action)
+          raise Occi::Core::Errors::MandatoryArgumentError, 'Cannot add an action that is empty or not defined on kind'
         end
         actions << action
       end
@@ -234,10 +233,33 @@ module Occi
       # @param action [Occi::Core::Action] action to be removed
       def remove_action(action)
         unless action
-          raise Occi::Core::Errors::MandatoryArgumentError,
-                'Cannot remove a non-existent action'
+          raise Occi::Core::Errors::MandatoryArgumentError, 'Cannot remove a non-existent action'
         end
         actions.delete action
+      end
+
+      # Enables action identified by `term` on this instance. Actions are looked up
+      # in `kind.actions`. Unknown actions will raise errors.
+      #
+      # @example
+      #    entity.enable_action 'start'
+      #
+      # @param term [String] action term
+      def enable_action(term)
+        add_action(kind.actions.detect { |a| a.term == term })
+      end
+
+      # Disables action identified by `term` on this instance. Unknown actions
+      # will NOT raise errors.
+      #
+      # @example
+      #    entity.disable_action 'start'
+      #
+      # @param term [String] action term
+      def disable_action(term)
+        action = actions.detect { |a| a.term == term }
+        return unless action
+        remove_action action
       end
 
       # Validates the content of this entity instance, including
