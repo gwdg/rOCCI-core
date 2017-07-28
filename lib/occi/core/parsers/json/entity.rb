@@ -70,8 +70,8 @@ module Occi
             logger.debug "Converting #{hash.inspect} into a single instance" if logger_debug?
             instance = @_ib.get hash[:kind], mixins: lookup(hash[:mixins]), actions: lookup(hash[:actions])
 
-            set_attributes! instance.attributes, hash[:attributes]
-            set_links! instance.links, hash[:links] if instance.respond_to?(:links)
+            set_attributes! instance, hash[:attributes]
+            set_links! instance, hash[:links] if instance.respond_to?(:links)
             set_target! instance, hash[:target] if instance.respond_to?(:target)
 
             logger.debug "Created instance #{instance.inspect}" if logger_debug?
@@ -96,18 +96,19 @@ module Occi
 
           # :nodoc:
           def lookup(ary)
-            set = Set.new
-            return set if ary.blank?
-            ary.each { |i| set << handle(Occi::Core::Errors::ParsingError) { model.find_by_identifier!(i) } }
-            set
+            return Set.new if ary.blank?
+            cats = ary.map do |item|
+              handle(Occi::Core::Errors::ParsingError) { model.find_by_identifier!(item) }
+            end
+            Set.new cats
           end
 
           # :nodoc:
-          def set_attributes!(attributes, hash)
+          def set_attributes!(instance, hash)
             return if hash.blank?
             hash.each_pair do |name, value|
               logger.debug "Setting attribute #{name} to #{value.inspect}" if logger_debug?
-              attribute = attributes[name.to_s]
+              attribute = instance.attributes[name.to_s]
               unless attribute
                 raise Occi::Core::Errors::ParsingError,
                       "Attribute #{name.inspect} is not allowed for this entity"
@@ -116,9 +117,10 @@ module Occi
             end
           end
 
-          def set_links!(links, ary)
+          # :nodoc:
+          def set_links!(instance, ary)
             return if ary.blank?
-            ary.each { |l| links << json_single(l).first }
+            ary.each { |l| instance.add_link(json_single(l).first) }
           end
 
           # :nodoc:
