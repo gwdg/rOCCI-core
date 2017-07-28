@@ -29,7 +29,7 @@ module Occi
               logger.debug "Identified #{action.class}[#{action.identifier}]"
               ai = Occi::Core::ActionInstance.new(action: action)
               ep = Entity.new(model: model)
-              ep.set_attributes!(ai.attributes, parsed[:attributes]) if parsed[:attributes]
+              ep.set_attributes!(ai, parsed[:attributes]) if parsed[:attributes]
 
               logger.debug "Parsed into ActionInstance #{ai.inspect}" if logger_debug?
               ai
