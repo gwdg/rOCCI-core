@@ -175,7 +175,7 @@ module Occi
 
             link = plain_oglink_instance(md)
             link.location = handle(Occi::Core::Errors::ParsingError) { URI.parse md[:self] }
-            entity.links << link
+            entity.add_link link
 
             plain_oglink_attributes! md, link
 
