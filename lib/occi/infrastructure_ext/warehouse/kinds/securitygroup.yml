@@ -7,3 +7,4 @@ location: /securitygroup/
 attributes:
   - occi.securitygroup.rules
   - occi.securitygroup.state
+  - occi.securitygroup.state.message

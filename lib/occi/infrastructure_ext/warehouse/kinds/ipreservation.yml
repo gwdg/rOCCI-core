@@ -8,6 +8,7 @@ attributes:
   - occi.ipreservation.address
   - occi.ipreservation.used
   - occi.ipreservation.state
+  - occi.ipreservation.state.message
 actions:
   - http://schemas.ogf.org/occi/infrastructure/ipreservation/action#up
   - http://schemas.ogf.org/occi/infrastructure/ipreservation/action#down

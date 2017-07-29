@@ -8,6 +8,7 @@ attributes:
   - occi.networkinterface.interface
   - occi.networkinterface.mac
   - occi.networkinterface.state
+  - occi.networkinterface.state.message
 actions:
   - http://schemas.ogf.org/occi/infrastructure/networkinterface/action#up
   - http://schemas.ogf.org/occi/infrastructure/networkinterface/action#down
