@@ -8,6 +8,7 @@ attributes:
   - occi.storagelink.deviceid
   - occi.storagelink.mountpoint
   - occi.storagelink.state
+  - occi.storagelink.state.message
 actions:
   - http://schemas.ogf.org/occi/infrastructure/storagelink/action#online
   - http://schemas.ogf.org/occi/infrastructure/storagelink/action#offline

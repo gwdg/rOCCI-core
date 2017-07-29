@@ -6,3 +6,4 @@ parent: http://schemas.ogf.org/occi/core#link
 location: /link/securitygrouplink/
 attributes:
   - occi.securitygrouplink.state
+  - occi.securitygrouplink.state.message

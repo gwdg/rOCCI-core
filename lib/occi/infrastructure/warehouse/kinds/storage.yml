@@ -7,6 +7,7 @@ location: /storage/
 attributes:
   - occi.storage.size
   - occi.storage.state
+  - occi.storage.state.message
 actions:
   - http://schemas.ogf.org/occi/infrastructure/storage/action#online
   - http://schemas.ogf.org/occi/infrastructure/storage/action#offline

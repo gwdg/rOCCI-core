@@ -8,6 +8,7 @@ attributes:
   - occi.network.vlan
   - occi.network.label
   - occi.network.state
+  - occi.network.state.message
 actions:
   - http://schemas.ogf.org/occi/infrastructure/network/action#up
   - http://schemas.ogf.org/occi/infrastructure/network/action#down

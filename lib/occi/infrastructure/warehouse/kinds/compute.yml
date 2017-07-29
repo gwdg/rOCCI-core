@@ -11,6 +11,7 @@ attributes:
   - occi.compute.memory
   - occi.compute.speed
   - occi.compute.state
+  - occi.compute.state.message
 actions:
   - http://schemas.ogf.org/occi/infrastructure/compute/action#start
   - http://schemas.ogf.org/occi/infrastructure/compute/action#stop
