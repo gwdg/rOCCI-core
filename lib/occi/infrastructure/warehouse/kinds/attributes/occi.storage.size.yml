@@ -1,5 +1,5 @@
 ---
-type: !ruby/class Integer
+type: !ruby/class Float
 required: false
 mutable: true
 default: ~
