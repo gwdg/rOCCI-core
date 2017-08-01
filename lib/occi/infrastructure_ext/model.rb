@@ -14,6 +14,7 @@ module Occi
         Occi::InfrastructureExt::Warehouse.bootstrap! self
         self << Occi::InfrastructureExt::Mixins::AvailabilityZone.new
         self << Occi::InfrastructureExt::Mixins::Region.new
+        self << Occi::InfrastructureExt::Mixins::Floatingippool.new
         nil
       end
 
@@ -36,6 +37,13 @@ module Occi
       # @return [Set] set of mixins dependent on `region`
       def find_regions
         find_dependent Occi::InfrastructureExt::Mixins::Region.new
+      end
+
+      # Returns all mixins dependent on the base `floatingippool` mixin defined by OGF.
+      #
+      # @return [Set] set of mixins dependent on `floatingippool`
+      def find_floatingippools
+        find_dependent Occi::InfrastructureExt::Mixins::Floatingippool.new
       end
     end
   end
