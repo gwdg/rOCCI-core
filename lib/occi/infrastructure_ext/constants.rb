@@ -16,6 +16,7 @@ module Occi
       # Mixins
       AVAILABILITY_ZONE_MIXIN  = 'http://schemas.ogf.org/occi/infrastructure#availability_zone'.freeze
       REGION_MIXIN             = 'http://schemas.ogf.org/occi/infrastructure#region'.freeze
+      FLOATINGIPPOOL_MIXIN     = 'http://schemas.openstack.org/network#floatingippool'.freeze
     end
   end
 end
