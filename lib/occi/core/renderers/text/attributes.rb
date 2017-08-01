@@ -72,7 +72,7 @@ module Occi
             if (QUOTABLE_TYPES & type_ancestors).any?
               "\"#{value}\""
             elsif (JSONABLE_TYPES & type_ancestors).any?
-              "\"#{value.to_json}\""
+              value.to_json.inspect
             elsif (PRIMITIVE_TYPES & type_ancestors).any?
               value.inspect
             else
