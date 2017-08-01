@@ -25,7 +25,7 @@ module Occi
           DEFAULT_LAMBDA  = ->(val) { raise "#{self} -> Cannot typecast #{val.inspect} to an unknown type" }
 
           FLOAT_LAMBDA    = ->(val) { val.to_f }
-          JSON_LAMBDA     = ->(val) { JSON.parse(val) }
+          JSON_LAMBDA     = ->(val) { JSON.parse(val.gsub('\"', '"')) }
 
           TYPECASTER_HASH = {
             IPAddr  => ->(val) { IPAddr.new val },
