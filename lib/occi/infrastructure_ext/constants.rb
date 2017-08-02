@@ -14,9 +14,13 @@ module Occi
       SECURITY_GROUP_LINK_KIND = 'http://schemas.ogf.org/occi/infrastructure#securitygrouplink'.freeze
 
       # Mixins
-      AVAILABILITY_ZONE_MIXIN  = 'http://schemas.ogf.org/occi/infrastructure#availability_zone'.freeze
-      REGION_MIXIN             = 'http://schemas.ogf.org/occi/infrastructure#region'.freeze
-      FLOATINGIPPOOL_MIXIN     = 'http://schemas.openstack.org/network#floatingippool'.freeze
+      AVAILABILITY_ZONE_MIXIN = 'http://schemas.ogf.org/occi/infrastructure#availability_zone'.freeze
+      REGION_MIXIN            = 'http://schemas.ogf.org/occi/infrastructure#region'.freeze
+      FLOATINGIPPOOL_MIXIN    = 'http://schemas.openstack.org/network#floatingippool'.freeze
+      PUBLIC_NET_MIXIN        = 'http://schemas.fedcloud.egi.eu/occi/infrastructure/network#public_net'.freeze
+      PRIVATE_NET_MIXIN       = 'http://schemas.fedcloud.egi.eu/occi/infrastructure/network#private_net'.freeze
+      NAT_NET_MIXIN           = 'http://schemas.fedcloud.egi.eu/occi/infrastructure/network#nat_net'.freeze
+      DEFAULT_CONNECT_MIXIN   = 'http://schemas.fedcloud.egi.eu/occi/infrastructure/compute#default_connectivity'.freeze
     end
   end
 end

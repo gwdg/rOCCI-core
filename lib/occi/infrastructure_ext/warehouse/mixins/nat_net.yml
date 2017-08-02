@@ -1,0 +1,7 @@
+---
+term: nat_net
+schema: http://schemas.fedcloud.egi.eu/occi/infrastructure/network#
+title: OCCI NAT Network mixin
+location: /mixin/nat_net/
+applies:
+  - http://schemas.ogf.org/occi/infrastructure#network
