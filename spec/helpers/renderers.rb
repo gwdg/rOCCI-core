@@ -1,5 +1,7 @@
 module RocciCoreSpec
   class TestObject
+    def mixins; end
+
     def to_the_dummiest_dummy
       'original method'
     end
