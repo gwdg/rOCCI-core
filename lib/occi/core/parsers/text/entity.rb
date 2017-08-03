@@ -24,7 +24,7 @@ module Occi
           # Typecasting lambdas
           DEFAULT_LAMBDA  = ->(val) { raise "#{self} -> Cannot typecast #{val.inspect} to an unknown type" }
 
-          FLOAT_LAMBDA    = ->(val) { val.to_f }
+          FLOAT_LAMBDA    = ->(val) { Float(val) rescue raise(Occi::Core::Errors::ParsingError, "Wrong value #{val}") }
           JSON_LAMBDA     = ->(val) { JSON.parse(val.gsub('\"', '"')) }
 
           TYPECASTER_HASH = {
@@ -33,7 +33,7 @@ module Occi
             String  => ->(val) { val },
             Float   => FLOAT_LAMBDA,
             Numeric => FLOAT_LAMBDA,
-            Integer => ->(val) { val.to_i },
+            Integer => ->(val) { Integer(val) rescue raise(Occi::Core::Errors::ParsingError, "Wrong value #{val}") },
             Boolean => ->(val) { val.casecmp('true') || val.casecmp('yes') },
             Array   => JSON_LAMBDA,
             Hash    => JSON_LAMBDA

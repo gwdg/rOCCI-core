@@ -25,8 +25,8 @@ module Occi
           TYPECASTER_HASH = {
             IPAddr  => ->(val) { IPAddr.new val },
             URI     => ->(val) { URI.parse val },
-            Float   => ->(val) { val.to_f },
-            Integer => ->(val) { val.to_i }
+            Float   => ->(val) { Float(val) rescue raise(Occi::Core::Errors::ParsingError, "Wrong value #{val}") },
+            Integer => ->(val) { Integer(val) rescue raise(Occi::Core::Errors::ParsingError, "Wrong value #{val}") }
           }.freeze
 
           attr_reader :model
