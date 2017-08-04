@@ -22,13 +22,13 @@ module Occi
       include Helpers::InstanceAttributesAccessor
       include Helpers::ArgumentValidator
       include Helpers::InstanceAttributeResetter
+      include Helpers::MixinSelector
 
       attr_accessor :kind, :actions, :attributes, :mixins
       attr_writer :location
 
       ERRORS = [
-        Occi::Core::Errors::AttributeValidationError,
-        Occi::Core::Errors::AttributeDefinitionError,
+        Occi::Core::Errors::AttributeValidationError, Occi::Core::Errors::AttributeDefinitionError,
         Occi::Core::Errors::InstanceValidationError
       ].freeze
 
