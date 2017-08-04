@@ -3,7 +3,7 @@ term: securitygrouplink
 schema: http://schemas.ogf.org/occi/infrastructure#
 title: OCCI Infrastructure Security Group link
 parent: http://schemas.ogf.org/occi/core#link
-location: /link/securitygrouplink/
+location: /securitygrouplink/
 attributes:
   - occi.securitygrouplink.state
   - occi.securitygrouplink.state.message

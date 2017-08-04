@@ -420,7 +420,7 @@
           "type": "string"
         }
       },
-      "location": "/link/networkinterface/",
+      "location": "/networkinterface/",
       "parent": "http://schemas.ogf.org/occi/core#link",
       "scheme": "http://schemas.ogf.org/occi/infrastructure#",
       "term": "networkinterface",
@@ -531,7 +531,7 @@
           "type": "string"
         }
       },
-      "location": "/link/storagelink/",
+      "location": "/storagelink/",
       "parent": "http://schemas.ogf.org/occi/core#link",
       "scheme": "http://schemas.ogf.org/occi/infrastructure#",
       "term": "storagelink",
@@ -693,7 +693,7 @@
           "type": "string"
         }
       },
-      "location": "/link/securitygrouplink/",
+      "location": "/securitygrouplink/",
       "parent": "http://schemas.ogf.org/occi/core#link",
       "scheme": "http://schemas.ogf.org/occi/infrastructure#",
       "term": "securitygrouplink",

@@ -3,7 +3,7 @@ term: storagelink
 schema: http://schemas.ogf.org/occi/infrastructure#
 title: OCCI Infrastructure StorageLink
 parent: http://schemas.ogf.org/occi/core#link
-location: /link/storagelink/
+location: /storagelink/
 attributes:
   - occi.storagelink.deviceid
   - occi.storagelink.mountpoint
