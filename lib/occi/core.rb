@@ -62,6 +62,7 @@ end
 # Explicitly load monkey patches
 require 'occi/monkey_island/boolean'
 require 'occi/monkey_island/hash'
+require 'occi/monkey_island/ipaddr'
 
 # Explicitly pull in versioning information
 require 'occi/core/version'
