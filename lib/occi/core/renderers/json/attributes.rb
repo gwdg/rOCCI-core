@@ -11,10 +11,9 @@ module Occi
         class Attributes < Base
           # Typecasting lambdas
           DEFAULT_LAMBDA  = ->(val) { val }
-          STRING_LAMBDA   = ->(val) { val.to_s }
           TYPECASTER_HASH = {
-            IPAddr => STRING_LAMBDA,
-            URI    => STRING_LAMBDA
+            IPAddr => ->(val) { val.host? ? val.to_s : "#{val}/#{val.cidr_mask}" },
+            URI    => ->(val) { val.to_s }
           }.freeze
 
           # Renders the given object to `JSON`.

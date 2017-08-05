@@ -15,7 +15,8 @@ module Occi
 
           # Known primitive attribute value types
           PRIMITIVE_TYPES = [String, Numeric, Integer, Float, Boolean].freeze
-          QUOTABLE_TYPES  = [IPAddr, URI].freeze
+          IP_TYPES        = [IPAddr].freeze
+          QUOTABLE_TYPES  = [URI].freeze
           JSONABLE_TYPES  = [Array, Hash].freeze
 
           # Renders `object` into plain text and returns the result
@@ -68,17 +69,23 @@ module Occi
 
           # :nodoc:
           def prepare_instance_attribute_value(name, type, value)
-            type_ancestors = type.ancestors
-            if (QUOTABLE_TYPES & type_ancestors).any?
+            if ancestor_match?(IP_TYPES, type)
+              value.host? ? "\"#{value}\"" : "\"#{value}/#{value.cidr_mask}\""
+            elsif ancestor_match?(QUOTABLE_TYPES, type)
               "\"#{value}\""
-            elsif (JSONABLE_TYPES & type_ancestors).any?
+            elsif ancestor_match?(JSONABLE_TYPES, type)
               value.to_json.inspect
-            elsif (PRIMITIVE_TYPES & type_ancestors).any?
+            elsif ancestor_match?(PRIMITIVE_TYPES, type)
               value.inspect
             else
               raise Occi::Core::Errors::RenderingError, "Value #{value.inspect} " \
                     "for attribute #{name} cannot be rendered to text"
             end
+          end
+
+          # :nodoc:
+          def ancestor_match?(defined_types, type)
+            (defined_types & type.ancestors).any?
           end
         end
       end
