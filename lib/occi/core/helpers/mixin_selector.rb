@@ -34,6 +34,24 @@ module Occi
           select_mixin(filter) \
             || raise(Occi::Core::Errors::InstanceLookupError, "Mixin dependent on #{filter} not found")
         end
+
+        # Returns a list of term of mixins dependent on the given mixin.
+        #
+        # @param mixin [Occi::Core::Mixin] parent mixin
+        # @return [Array] terms of mixins
+        def dependent_terms(mixin)
+          select_mixins(mixin).map(&:term)
+        end
+
+        # @see `dependent_terms`
+        def dependent_term(mixin)
+          [select_mixin(mixin)].compact.map(&:term).first
+        end
+
+        # @see `dependent_term`
+        def dependent_term!(mixin)
+          select_mixin!(mixin).term
+        end
       end
     end
   end

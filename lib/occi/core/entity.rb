@@ -295,7 +295,7 @@ module Occi
       #
       # @return [NilClass] when entity instance is valid
       def valid!
-        %i[kind id location title attributes mixins actions].each do |attr|
+        %i[kind location attributes mixins actions].each do |attr|
           unless send(attr)
             raise Occi::Core::Errors::InstanceValidationError,
                   "Missing valid #{attr}"

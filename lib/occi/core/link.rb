@@ -10,6 +10,9 @@ module Occi
     #
     # @author Boris Parak <parak@cesnet.cz>
     class Link < Entity
+      # Separator in URI PATHs
+      URI_PATH_SEPARATOR = '/'.freeze
+
       attr_accessor :target_kind, :source_kind
 
       # @return [URI] link source
@@ -38,12 +41,22 @@ module Occi
 
       # See `#valid!` on `Occi::Core::Entity`.
       def valid!
-        %i[source target].each do |attr|
-          next if send(attr)
-          raise Occi::Core::Errors::InstanceValidationError, "Missing valid #{attr}"
-        end
-
         super
+
+        %i[source target].each do |attr|
+          next if valid_uri? send(attr)
+          raise Occi::Core::Errors::InstanceValidationError, "Malformed or incomplete occi.core.#{attr}"
+        end
+      end
+
+      # :nodoc:
+      def target_id
+        last_uri_segment target
+      end
+
+      # :nodoc:
+      def source_id
+        last_uri_segment source
       end
 
       protected
@@ -64,6 +77,21 @@ module Occi
         return unless attributes['occi.core.target']
         self.target = args.fetch(:target)
         @target_kind = args.fetch(:target_kind)
+      end
+
+      # :nodoc:
+      def valid_uri?(uri)
+        uri_path_segments(uri).count > 2
+      end
+
+      # :nodoc:
+      def last_uri_segment(uri)
+        uri_path_segments(uri).last
+      end
+
+      # :nodoc:
+      def uri_path_segments(uri)
+        uri.path.split(URI_PATH_SEPARATOR)
       end
     end
   end

@@ -41,6 +41,36 @@ module Occi
           end
         end
 
+        describe '#dependent_terms' do
+          before do
+            allow(selectable_object).to receive(:mixins).and_return(mixins_full)
+            allow(mxn1).to receive(:depends?).with(mxn1).and_return(false)
+          end
+
+          context 'without deps' do
+            before do
+              allow(mxn2).to receive(:depends?).with(mxn1).and_return(false)
+            end
+
+            it 'returns empty enumerable' do
+              expect(selectable_object.dependent_terms(mxn1)).to be_kind_of(Enumerable)
+              expect(selectable_object.dependent_terms(mxn1)).to be_empty
+            end
+          end
+
+          context 'with deps' do
+            before do
+              allow(mxn2).to receive(:depends?).with(mxn1).and_return(true)
+              allow(mxn2).to receive(:term).and_return('mxn2_term')
+            end
+
+            it 'returns dependent mixins' do
+              expect(selectable_object.dependent_terms(mxn1)).to be_kind_of(Enumerable)
+              expect(selectable_object.dependent_terms(mxn1)).to include('mxn2_term')
+            end
+          end
+        end
+
         describe '#select_mixin' do
           before do
             allow(selectable_object).to receive(:mixins).and_return(mixins_full)
@@ -68,6 +98,34 @@ module Occi
           end
         end
 
+        describe '#dependent_term' do
+          before do
+            allow(selectable_object).to receive(:mixins).and_return(mixins_full)
+            allow(mxn1).to receive(:depends?).with(mxn1).and_return(false)
+          end
+
+          context 'without deps' do
+            before do
+              allow(mxn2).to receive(:depends?).with(mxn1).and_return(false)
+            end
+
+            it 'returns nil' do
+              expect(selectable_object.dependent_term(mxn1)).to be_nil
+            end
+          end
+
+          context 'with deps' do
+            before do
+              allow(mxn2).to receive(:depends?).with(mxn1).and_return(true)
+              allow(mxn2).to receive(:term).and_return('mxn2_term')
+            end
+
+            it 'returns dependent mixin' do
+              expect(selectable_object.dependent_term(mxn1)).to eq 'mxn2_term'
+            end
+          end
+        end
+
         describe '#select_mixin!' do
           before do
             allow(selectable_object).to receive(:mixins).and_return(mixins_full)
@@ -91,6 +149,34 @@ module Occi
 
             it 'returns dependent mixin' do
               expect(selectable_object.select_mixin!(mxn1)).to be mxn2
+            end
+          end
+        end
+
+        describe '#dependent_term!' do
+          before do
+            allow(selectable_object).to receive(:mixins).and_return(mixins_full)
+            allow(mxn1).to receive(:depends?).with(mxn1).and_return(false)
+          end
+
+          context 'without deps' do
+            before do
+              allow(mxn2).to receive(:depends?).with(mxn1).and_return(false)
+            end
+
+            it 'raises error' do
+              expect { selectable_object.dependent_term!(mxn1) }.to raise_error(Occi::Core::Errors::InstanceLookupError)
+            end
+          end
+
+          context 'with deps' do
+            before do
+              allow(mxn2).to receive(:depends?).with(mxn1).and_return(true)
+              allow(mxn2).to receive(:term).and_return('mxn2_term')
+            end
+
+            it 'returns dependent mixin' do
+              expect(selectable_object.dependent_term!(mxn1)).to eq 'mxn2_term'
             end
           end
         end
