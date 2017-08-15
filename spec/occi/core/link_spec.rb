@@ -84,8 +84,9 @@ module Occi
       describe '#valid!' do
         context 'with missing required attributes' do
           before do
-            lnk.target = nil
-            lnk.source = nil
+            lnk.target = URI.parse 'http://test/network/1'
+            lnk.source = URI.parse 'http://test/compute/'
+            expect(attributes.values).to all(receive(:valid!))
           end
 
           it 'raises error' do
@@ -95,14 +96,34 @@ module Occi
 
         context 'with all required attributes' do
           before do
-            lnk.target = attributes['occi.core.target']
-            lnk.source = attributes['occi.core.source']
+            lnk.target = URI.parse 'http://test/network/1'
+            lnk.source = URI.parse 'http://test/compute/1'
             expect(attributes.values).to all(receive(:valid!))
           end
 
           it 'passes without error' do
             expect { lnk.valid! }.not_to raise_error
           end
+        end
+      end
+
+      describe '#target_id' do
+        before do
+          lnk.target = URI.parse 'http://test/network/1'
+        end
+
+        it 'returns ID' do
+          expect(lnk.target_id).to eq '1'
+        end
+      end
+
+      describe '#source_id' do
+        before do
+          lnk.source = URI.parse 'http://test/network/1'
+        end
+
+        it 'returns ID' do
+          expect(lnk.source_id).to eq '1'
         end
       end
     end

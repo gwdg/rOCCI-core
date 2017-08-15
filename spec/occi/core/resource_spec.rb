@@ -210,6 +210,7 @@ module Occi
       describe '#valid!' do
         context 'with missing required attributes' do
           before do
+            expect(attributes.values).to all(receive(:valid!))
             res.instance_variable_set(:@links, nil)
           end
 
@@ -225,6 +226,93 @@ module Occi
 
           it 'passes without error' do
             expect { res.valid! }.not_to raise_error
+          end
+        end
+      end
+
+      describe '#links_by_kind' do
+        let(:link) { instance_double('Occi::Core::Link') }
+        let(:links) { Set.new([link]) }
+
+        before do
+          res.instance_variable_set(:@links, links)
+        end
+
+        context 'with matches' do
+          before do
+            expect(link).to receive(:kind).and_return(link_kind)
+          end
+
+          it 'returns link(s)' do
+            expect(res.links_by_kind(link_kind)).to include(link)
+          end
+        end
+
+        context 'with no matches' do
+          before do
+            expect(link).to receive(:kind).and_return(kind)
+          end
+
+          it 'returns empty' do
+            expect(res.links_by_kind(link_kind)).to be_empty
+          end
+        end
+      end
+
+      describe '#links_by_kind_identifier' do
+        let(:link) { instance_double('Occi::Core::Link') }
+        let(:links) { Set.new([link]) }
+
+        before do
+          res.instance_variable_set(:@links, links)
+        end
+
+        context 'with matches' do
+          before do
+            expect(link).to receive(:kind_identifier).and_return('bla')
+          end
+
+          it 'returns link(s)' do
+            expect(res.links_by_kind_identifier('bla')).to include(link)
+          end
+        end
+
+        context 'with no matches' do
+          before do
+            expect(link).to receive(:kind_identifier).and_return('meh')
+          end
+
+          it 'returns empty' do
+            expect(res.links_by_kind_identifier('bla')).to be_empty
+          end
+        end
+      end
+
+      describe '#links_by_klass' do
+        let(:link) { instance_double('Occi::Core::Link') }
+        let(:links) { Set.new([link]) }
+
+        before do
+          res.instance_variable_set(:@links, links)
+        end
+
+        context 'with matches' do
+          before do
+            expect(link).to receive(:is_a?).and_return(true)
+          end
+
+          it 'returns link(s)' do
+            expect(res.links_by_klass('bla')).to include(link)
+          end
+        end
+
+        context 'with no matches' do
+          before do
+            expect(link).to receive(:is_a?).and_return(false)
+          end
+
+          it 'returns empty' do
+            expect(res.links_by_klass('bla')).to be_empty
           end
         end
       end

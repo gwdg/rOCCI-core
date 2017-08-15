@@ -21,14 +21,12 @@ module Occi
       end
 
       # @param links [Set] set of links
-      def links=(links)
-        unless links
-          raise Occi::Core::Errors::InstanceValidationError,
-                'Missing valid links'
-        end
+      def links=(new_links)
+        raise Occi::Core::Errors::InstanceValidationError, 'Missing valid links' unless new_links
+
         @links ||= Set.new
         @links.each { |l| remove_link(l) }
-        links.each { |l| add_link(l) }
+        new_links.each { |l| add_link(l) }
 
         @links
       end
@@ -59,10 +57,8 @@ module Occi
       #
       # @param link [Occi::Core::Link] link to be added
       def add_link(link)
-        unless link
-          raise Occi::Core::Errors::MandatoryArgumentError,
-                'Cannot add a non-existent link'
-        end
+        raise Occi::Core::Errors::MandatoryArgumentError, 'Cannot add a non-existent link' unless link
+
         link.source = location
         link.source_kind = kind
         links << link
@@ -72,10 +68,8 @@ module Occi
       #
       # @param link [Occi::Core::Link] link to be removed
       def remove_link(link)
-        unless link
-          raise Occi::Core::Errors::MandatoryArgumentError,
-                'Cannot remove a non-existent link'
-        end
+        raise Occi::Core::Errors::MandatoryArgumentError, 'Cannot remove a non-existent link' unless link
+
         link.source = nil
         link.source_kind = nil
         links.delete link
@@ -83,12 +77,25 @@ module Occi
 
       # See `#valid!` on `Occi::Core::Entity`.
       def valid!
-        unless links
-          raise Occi::Core::Errors::InstanceValidationError,
-                'Missing valid links'
-        end
-        links.each(&:valid!)
         super
+
+        raise Occi::Core::Errors::InstanceValidationError, 'Missing valid links' unless links
+        links.each(&:valid!)
+      end
+
+      # :nodoc:
+      def links_by_klass(klass)
+        links.select { |l| l.is_a?(klass) }
+      end
+
+      # :nodoc:
+      def links_by_kind(kind)
+        links.select { |l| l.kind == kind }
+      end
+
+      # :nodoc:
+      def links_by_kind_identifier(kind_identifier)
+        links.select { |l| l.kind_identifier == kind_identifier }
       end
 
       protected
@@ -103,8 +110,7 @@ module Occi
         super
 
         return unless args[:links].nil?
-        raise Occi::Core::Errors::MandatoryArgumentError,
-              "Links is a mandatory argument for #{self.class}"
+        raise Occi::Core::Errors::MandatoryArgumentError, "Links is a mandatory argument for #{self.class}"
       end
 
       # :nodoc:

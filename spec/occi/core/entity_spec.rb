@@ -491,7 +491,7 @@ module Occi
           before { ent.id = nil }
 
           it 'raises error' do
-            expect { ent.valid! }.to raise_error(Occi::Core::Errors::InstanceValidationError)
+            expect { ent.valid! }.to raise_error(Occi::Core::Errors::MandatoryArgumentError)
           end
         end
 
