@@ -4,6 +4,11 @@ module Occi
     # of known instances of the given sub-class. Does not contain any functionality.
     #
     # @author Boris Parak <parak@cesnet.cz>
-    class IPReservation < Occi::Infrastructure::Network; end
+    class IPReservation < Occi::Infrastructure::Network
+      # @return [Occi::Core::Mixin, NilClass] filtered mixin
+      def floatingippool
+        select_mixin Occi::InfrastructureExt::Mixins::Floatingippool.new
+      end
+    end
   end
 end
