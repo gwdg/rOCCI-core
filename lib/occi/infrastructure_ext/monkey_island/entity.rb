@@ -1,5 +1,6 @@
 module Occi
   module Core
+    # @see `Occi::Core::Entity`
     class Entity
       # @return [Occi::Core::Mixin, NilClass] filtered mixin
       def region

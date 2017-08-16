@@ -1,5 +1,6 @@
 module Occi
   module Infrastructure
+    # @see `Occi::Infrastructure::Compute`
     class Compute
       # @return [Enumerable] filtered set of links
       def securitygrouplinks
