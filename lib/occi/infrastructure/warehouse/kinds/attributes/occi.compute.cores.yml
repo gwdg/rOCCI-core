@@ -1,7 +1,0 @@
----
-type: !ruby/class Integer
-required: false
-mutable: true
-default: ~
-description: Number of compute processor cores.
-pattern: ~

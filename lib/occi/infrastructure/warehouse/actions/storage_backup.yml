@@ -1,4 +1,0 @@
----
-term: backup
-schema: http://schemas.ogf.org/occi/infrastructure/storage/action#
-title: Make a backup of the storage instance

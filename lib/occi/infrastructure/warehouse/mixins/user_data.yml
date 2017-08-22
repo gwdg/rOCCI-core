@@ -1,9 +1,0 @@
----
-term: user_data
-schema: http://schemas.ogf.org/occi/infrastructure/compute#
-title: OCCI contextualization data to be injected into a compute instance
-attributes:
-  - occi.compute.userdata
-location: /mixin/user_data
-applies:
-  - http://schemas.ogf.org/occi/infrastructure#compute

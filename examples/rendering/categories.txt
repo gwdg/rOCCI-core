@@ -1,4 +1,0 @@
-Category: resource_tpl;scheme="http://schemas.ogf.org/occi/infrastructure#";class="mixin"
-Category: os_tpl;scheme="http://schemas.ogf.org/occi/infrastructure#";class="mixin"
-Category: ipnetwork;scheme="http://schemas.ogf.org/occi/infrastructure/network#";class="mixin"
-Category: ipnetworkinterface;scheme="http://schemas.ogf.org/occi/infrastructure/networkinterface#";class="mixin"

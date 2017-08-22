@@ -1,7 +1,0 @@
----
-term: public_net
-schema: http://schemas.fedcloud.egi.eu/occi/infrastructure/network#
-title: OCCI Public Network mixin
-location: /mixin/public_net/
-applies:
-  - http://schemas.ogf.org/occi/infrastructure#network

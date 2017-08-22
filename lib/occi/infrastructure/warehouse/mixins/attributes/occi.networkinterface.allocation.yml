@@ -1,7 +1,0 @@
----
-type: !ruby/class String
-required: false
-mutable: true
-default: 'static'
-description: Network address allocation mechanism.
-pattern: !ruby/regexp '/^(dynamic|static)$/'

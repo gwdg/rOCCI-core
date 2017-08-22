@@ -1,7 +1,0 @@
----
-type: !ruby/class String
-required: false
-mutable: true
-default: ~
-description: Contextualization data formatted as Base64-encoded string (ref. 'cloud-config')
-pattern: !ruby/regexp '/^.+$/'

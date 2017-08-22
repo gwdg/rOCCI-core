@@ -1,8 +1,0 @@
-{
-  "mixins": [
-    "http://schemas.ogf.org/occi/infrastructure/network#ipnetwork",
-    "http://schemas.ogf.org/occi/infrastructure/networkinterface#ipnetworkinterface",
-    "http://schemas.ogf.org/occi/infrastructure#os_tpl",
-    "http://schemas.ogf.org/occi/infrastructure#resource_tpl"
-  ]
-}

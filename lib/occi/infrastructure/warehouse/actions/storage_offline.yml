@@ -1,4 +1,0 @@
----
-term: offline
-schema: http://schemas.ogf.org/occi/infrastructure/storage/action#
-title: Change storage status to offline

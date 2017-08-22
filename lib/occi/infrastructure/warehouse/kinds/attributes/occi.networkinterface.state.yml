@@ -1,7 +1,0 @@
----
-type: !ruby/class String
-required: true
-mutable: false
-default: 'inactive'
-description: Networkinterface instance state.
-pattern: !ruby/regexp '/^(active|inactive|error)$/'

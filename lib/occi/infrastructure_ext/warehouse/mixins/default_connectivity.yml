@@ -1,9 +1,0 @@
----
-term: default_connectivity
-schema: http://schemas.fedcloud.egi.eu/occi/infrastructure/compute#
-title: OCCI Default Connectivity mixin
-attributes:
-  - eu.egi.fedcloud.compute.default_connectivity
-location: /mixin/default_connectivity/
-applies:
-  - http://schemas.ogf.org/occi/infrastructure#compute

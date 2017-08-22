@@ -1,7 +1,0 @@
----
-type: !ruby/class String
-required: false
-mutable: false
-default: ~
-description: Default connectivity for new compute instances.
-pattern: !ruby/regexp '/^(public|private|nat)$/'

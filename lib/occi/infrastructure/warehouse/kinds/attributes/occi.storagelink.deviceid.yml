@@ -1,7 +1,0 @@
----
-type: !ruby/class String
-required: false
-mutable: false
-default: ~
-description: Block device ID.
-pattern: !ruby/regexp '/^([[:alnum:]]|-|_|\/)+$/'

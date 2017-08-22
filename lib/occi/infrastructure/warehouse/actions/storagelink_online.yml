@@ -1,4 +1,0 @@
----
-term: online
-schema: http://schemas.ogf.org/occi/infrastructure/storagelink/action#
-title: Change storagelink status to active

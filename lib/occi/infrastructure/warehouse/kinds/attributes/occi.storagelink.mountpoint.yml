@@ -1,7 +1,0 @@
----
-type: !ruby/class String
-required: false
-mutable: false
-default: ~
-description: Block device mount point.
-pattern: ~

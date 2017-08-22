@@ -1,7 +1,0 @@
----
-type: !ruby/class Array
-required: true
-mutable: true
-default: ~
-description: Status of the IPReservation instance.
-pattern: ~

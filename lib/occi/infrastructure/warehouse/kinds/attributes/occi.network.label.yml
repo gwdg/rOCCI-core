@@ -1,7 +1,0 @@
----
-type: !ruby/class String
-required: false
-mutable: true
-default: ~
-description: Label of the network instance.
-pattern: ~

@@ -1,4 +1,0 @@
----
-term: up
-schema: http://schemas.ogf.org/occi/infrastructure/network/action#
-title: Change network status to active

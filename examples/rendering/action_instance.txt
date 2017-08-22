@@ -1,2 +1,0 @@
-Category: suspend;scheme="http://schemas.ogf.org/occi/infrastructure/compute/action#";class="action"
-X-OCCI-Attribute: method="suspend"

@@ -1,9 +1,0 @@
----
-term: ssh_key
-schema: http://schemas.ogf.org/occi/infrastructure/credentials#
-title: OCCI SSH public key to be injected into a compute instance
-attributes:
-  - occi.credentials.ssh.publickey
-location: /mixin/ssh_key
-applies:
-  - http://schemas.ogf.org/occi/infrastructure#compute

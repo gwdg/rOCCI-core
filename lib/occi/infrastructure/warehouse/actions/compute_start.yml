@@ -1,4 +1,0 @@
----
-term: start
-schema: http://schemas.ogf.org/occi/infrastructure/compute/action#
-title: Change compute status to active

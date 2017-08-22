@@ -1,7 +1,0 @@
----
-term: private_net
-schema: http://schemas.fedcloud.egi.eu/occi/infrastructure/network#
-title: OCCI Private Network mixin
-location: /mixin/private_net/
-applies:
-  - http://schemas.ogf.org/occi/infrastructure#network
